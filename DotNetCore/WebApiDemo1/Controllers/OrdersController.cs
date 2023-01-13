@@ -71,6 +71,22 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
+        [Route("GetProductNameById1/{orderId}")]
+        public IActionResult GetProductNameById1(int orderId)
+        {
+            string stringQuery = @"SELECT ProductName FROM Orders where id = @orderId";
+
+            var sqlCommand = new SqlCommand(stringQuery, sqlConnection);
+            sqlCommand.Parameters.AddWithValue("@orderId", orderId);
+
+            sqlConnection.Open();
+            string productName = Convert.ToString(sqlCommand.ExecuteScalar());
+            sqlConnection.Close();
+
+            return Ok(productName);
+        }
+
+        [HttpGet]
         [Route("GetOrderByAmountRange/{minimumAmount}/{maximumAmount}")]
         public IActionResult GetOrderByAmountRange(int minimumAmount, int maximumAmount)
         {
