@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Collections.Specialized;
 using System.Data;
+using System.Text.RegularExpressions;
 using WebApiDemo1.DTO.InputDTO;
 
 namespace WebApplication1.Controllers
@@ -15,10 +16,11 @@ namespace WebApplication1.Controllers
     {
         public readonly IConfiguration _Configuration;
         SqlConnection sqlConnection;
+
         public EmployeesController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("EmployeesDBConnection").ToString());
+            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("EmployeesDBCSConnection").ToString());
         }
 
         [HttpGet]
@@ -43,9 +45,9 @@ namespace WebApplication1.Controllers
         [Route("GetEmployeesCount")]
         public IActionResult GetEmployeesCount()
         {
-            string insertQuery = "SELECT COUNT(*) FROM Employees ";
+            string sqlQuery = "SELECT COUNT(*) FROM Employees ";
 
-            var sqlCommand = new SqlCommand(insertQuery, sqlConnection);
+            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
 
             sqlConnection.Open();
             int employeeCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
@@ -55,13 +57,38 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
+        [Route("GetEmployeeDetailById/{employeeId}")]
+        public IActionResult GetEmployeeDetailById(int employeeId)
+        {
+            if (employeeId < 1)
+            {
+                return BadRequest("EmployeeId should be greater than 0");
+            }
+            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Employees WHERE Id = @employeeId", sqlConnection);
+
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@employeeId", employeeId);
+
+            DataTable dataTable = new();
+            sqlDataAdapter.Fill(dataTable);
+
+            if (dataTable.Rows.Count > 0)
+            {
+                return Ok(JsonConvert.SerializeObject(dataTable));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet]
         [Route("GetEmployeeFullNameById/{EmployeeId}")]
         public IActionResult GetEmployeeFullNameById(int employeeId)
         {
-            string stringQuery = "SELECT FullName FROM Employee WHERE Id = @EmployeeId";
+            string sqlQuery = "SELECT FullName FROM Employees WHERE Id = @employeeId";
 
-            var sqlCommand = new SqlCommand(stringQuery, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@Employee", employeeId);
+            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+            sqlCommand.Parameters.AddWithValue("@employeeId", employeeId);
 
             sqlConnection.Open();
             string employeeFullName = Convert.ToString(sqlCommand.ExecuteScalar());
@@ -74,8 +101,17 @@ namespace WebApplication1.Controllers
         [Route("GetEmployeeDetail/{gender}/{salary}")]
         public IActionResult GetEmployeeDetailByGenderBySalary(string gender, int salary)
         {
-            string query = $"SELECT * FROM Employees WHERE Gender = '{gender}' AND Salary > '{salary}' ";
-            SqlDataAdapter sqlDataAdapter = new(query, sqlConnection);
+            if (salary < 10000)
+            {
+                return BadRequest("Please Enter salary above 10000");
+            }
+            SqlDataAdapter sqlDataAdapter;
+            sqlDataAdapter = new SqlDataAdapter($@"SELECT * FROM Employees WHERE Gender = @gender 
+                                                   AND Salary > @salary", sqlConnection);
+
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@salary", salary);
+
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
@@ -93,11 +129,23 @@ namespace WebApplication1.Controllers
         [Route("GetEmployeeBySalaryRange/{minimumSalary}/{maximumSalary}")]
         public IActionResult GetEmployeeBySalaryRange(int minimumSalary, int maximumSalary)
         {
-            string query = $@" SELECT * FROM Employees 
-                                    WHERE Salary BETWEEN {minimumSalary} AND {maximumSalary}
-                                    ORDER BY Salary ";
-            SqlDataAdapter sqlDataAdapter = new(query, sqlConnection);
-            DataTable dataTable = new();
+            if (minimumSalary < 8000)
+            {
+                return BadRequest("Please Enter minimumSalary salary above 8000");
+            }
+            if (maximumSalary > 500000)
+            {
+                return BadRequest("Please Enter maximumSalary salary less than 500000");
+            }
+            SqlDataAdapter sqlDataAdapter;
+            sqlDataAdapter = new SqlDataAdapter($@" SELECT * FROM Employees 
+                                                    WHERE Salary BETWEEN @minimumSalary AND @maximumSalary
+                                                    ORDER BY Salary", sqlConnection);
+
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minimumSalary", minimumSalary);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maximumSalary", maximumSalary);
+
+            var dataTable = new DataTable();
             sqlDataAdapter.Fill(dataTable);
 
             if (dataTable.Rows.Count > 0)
@@ -116,25 +164,48 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                Regex regex = new Regex(@"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-
+                                  9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
+
+                Match match = regex.Match(employee.Email);
+                if (!match.Success)
                 {
-                    string insertQuery = $@"
-                    INSERT INTO Employees(FullName, Email, Gender, Salary)
-                    VALUES (@FullName, @Email, @Gender, @Salary)
-                    Select Scope_Identity() ";
-
-                    var sqlCommand = new SqlCommand(insertQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@FullName", employee.FullName);
-                    sqlCommand.Parameters.AddWithValue("@Email", employee.Email);
-                    sqlCommand.Parameters.AddWithValue("@Gender", employee.Gender);
-                    sqlCommand.Parameters.AddWithValue("@Salary", employee.Salary);
-
-                    sqlConnection.Open();
-                    employee.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
-                    sqlConnection.Close();
-
-                    return Ok(employee.Id);
+                    return BadRequest("Email is invalid");
                 }
+                if (string.IsNullOrWhiteSpace(employee.FullName))
+                {
+                    return BadRequest("Name can not be blank");
+                }
+                if (employee.FullName.Length < 3 || employee.FullName.Length > 30)
+                {
+                    return BadRequest("Name should be between 3 and 30 characters.");
+                }
+                if (employee.Salary < 8000)
+                {
+                    return BadRequest("Invalid salary, Employee salary should be above 8000");
+                }
+
+                if (ModelState.IsValid)
+
+                    if (ModelState.IsValid)
+                    {
+                        string sqlQuery = $@"INSERT INTO Employees(FullName, Email, Gender, DateOfJoining, Salary)
+                                             VALUES (@FullName, @Email, @Gender, @DateOfJoining, @Salary)
+                                             Select Scope_Identity() ";
+
+                        var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+                        sqlCommand.Parameters.AddWithValue("@FullName", employee.FullName);
+                        sqlCommand.Parameters.AddWithValue("@Email", employee.Email);
+                        sqlCommand.Parameters.AddWithValue("@Gender", employee.Gender);
+                        sqlCommand.Parameters.AddWithValue("@Salary", employee.Salary);
+
+                        sqlConnection.Open();
+                        employee.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                        sqlConnection.Close();
+
+
+                        return Ok(employee.Id);
+                    }
                 return BadRequest();
             }
             catch (Exception ex)

@@ -23,7 +23,7 @@ namespace WebApplication1.Controllers
         public CustomersController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("CustomerDBCConnection").ToString());
+            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("CustomerDBCSConnection").ToString());
         }
 
         [HttpGet]
@@ -49,9 +49,9 @@ namespace WebApplication1.Controllers
         public IActionResult GetCustomersCount()
         {
 
-            string insertQuery = @"SELECT COUNT(*) FROM Customers ";
+            string sqlQuery = @"SELECT COUNT(*) FROM Customers";
 
-            var sqlCommand = new SqlCommand(insertQuery, sqlConnection);
+            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
 
             sqlConnection.Open();
             int customerCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
@@ -60,31 +60,18 @@ namespace WebApplication1.Controllers
             return Ok(customerCount);
         }
 
-        //[HttpGet]
-        //[Route("GetCustomerDetailById/{CustomerId}")]
-        //public IActionResult GetCustomerDetailById(int customerId)
-        //{
-            //SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Customers WHERE Id =" + customerId, sqlConnection);
-            //DataTable dataTable = new();
-            //sqlDataAdapter.Fill(dataTable);
-
-            //if (dataTable.Rows.Count > 0)
-            //{
-                //return Ok(JsonConvert.SerializeObject(dataTable));
-            //}
-            //else
-            //{
-                //return NotFound();
-            //}
-        //}
-
         [HttpGet]
         [Route("GetCustomerFullNameById/{CustomerId}")]
         public IActionResult GetCustomerFullNameById(int customerId)
         {
-            string insertQuery = @"SELECT Name FROM Customers where id = @customerId";
+            if (customerId < 1)
+            {
+                return NotFound("Customer Id should be greater than 0");
+            }
 
-            var sqlCommand = new SqlCommand(insertQuery, sqlConnection);
+            string sqlQuery = @"SELECT Name FROM Customers where id = @customerId";
+
+            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@customerId", customerId);
 
             sqlConnection.Open();
@@ -98,8 +85,59 @@ namespace WebApplication1.Controllers
         [Route("GetCustomerDetailByGenderBYCountry/{gender}/{country}")]
         public IActionResult GetCustomerDetailByGenderBYCountry(string gender, string country)
         {
-            string query = $"SELECT * FROM Customers WHERE Gender ='{gender}' AND Country = '{country}' ";
-            SqlDataAdapter sqlDataAdapter = new(query, sqlConnection);
+            if (gender.Length > 6)
+            {
+                return BadRequest("Gender should not be more than 6 characters");
+            }
+            if (country.Length > 10)
+            {
+                return BadRequest("country should not be more than 10 characters");
+            }
+
+            SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Customers WHERE Gender = @gender
+                                                  AND Country = @country ", sqlConnection);
+
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@country", country);
+
+
+            DataTable dataTable = new();
+            sqlDataAdapter.Fill(dataTable);
+
+            if (dataTable.Rows.Count > 0)
+            {
+                return Ok(JsonConvert.SerializeObject(dataTable));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet]
+        [Route("GetCustomerDetail/{Name}/{Country?}")]
+        public IActionResult GetCustomerDetailByNameByCountry(string name, string? country)
+        {
+            if (string.IsNullOrWhiteSpace(country))
+            {
+                return BadRequest("Country name can not be blank");
+            }
+            if (country.Length < 3 || country.Length > 20)
+            {
+                return BadRequest("Country name should be between 3 and 20 characters.");
+            }
+
+            string sqlQuery = "SELECT * FROM Customers WHERE Name = @name ";
+
+            if (!string.IsNullOrWhiteSpace(country))
+            {
+                sqlQuery += "AND Country = @country ";
+            }
+
+            SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@name", name);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@country", country);
+
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
@@ -114,19 +152,39 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        [Route("Register")]
-        public IActionResult Register([FromBody] CustomerDto customer)
+        [Route("CustomerRegister")]
+        public IActionResult CustomerRegister([FromBody] CustomerDto customer)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    string insertQuery = $@"
+                    if (string.IsNullOrWhiteSpace(customer.FullName))
+                    {
+                        return BadRequest("Customer fullName can not be blank");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(customer.Gender))
+                    {
+                        return BadRequest("Customer gender can not be blank");
+                    }
+
+                    if (customer.Age < 21)
+                    {
+                        return BadRequest("Invalid customer age should be above 21");
+                    }
+
+                    if (customer.Country.Length < 3 || customer.Country.Length > 20 || customer.Country.Contains(" "))
+                    {
+                        return BadRequest("Country name should be between 3 and 20 characters");
+                    }
+
+                    string sqlQuery = $@"
                     INSERT INTO Customers(Name, Gender, Age, Country)
                     VALUES (@FullName, @Gender, @Age, @Country)
                     Select Scope_Identity() ";
 
-                    var sqlCommand = new SqlCommand(insertQuery, sqlConnection);
+                    var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
                     sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
                     sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                     sqlCommand.Parameters.AddWithValue("@Age", customer.Age);

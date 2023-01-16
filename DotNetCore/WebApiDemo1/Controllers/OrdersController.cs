@@ -15,10 +15,11 @@ namespace WebApplication1.Controllers
     {
         public readonly IConfiguration _Configuration;
         SqlConnection sqlConnection;
+
         public OrdersController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("OrderDBCConnection").ToString());
+            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("OrderDBCSonnection").ToString());
         }
 
         [HttpGet]
@@ -43,9 +44,9 @@ namespace WebApplication1.Controllers
         [Route("GetOrdersCount")]
         public IActionResult GetOrdersCount()
         {
-            string stringQuery = "SELECT COUNT(*) FROM Orders";
+            string sqlQuery = "SELECT COUNT(*) FROM Orders";
 
-            var sqlCommand = new SqlCommand(stringQuery, sqlConnection);
+            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
 
             sqlConnection.Open();
             int orderCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
@@ -55,45 +56,73 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetProductNameById/{orderId}")]
-        public IActionResult GetProductNameById(int orderId)
+        [Route("GetOrderDetail/{orderId}")]
+        public IActionResult GetOrderDetailById(int orderId)
         {
-            string stringQuery = @"SELECT ProductName FROM Orders where id = @orderId";
+            if (orderId < 1)
+            {
+                return BadRequest("OrderId should be greater than 0");
+            }
+            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Orders WHERE Id = @orderId", sqlConnection);
 
-            var sqlCommand = new SqlCommand(stringQuery, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@orderId", orderId);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@orderId", orderId);
 
-            sqlConnection.Open();
-            string productName = Convert.ToString(sqlCommand.ExecuteScalar());
-            sqlConnection.Close();
+            DataTable dataTable = new();
+            sqlDataAdapter.Fill(dataTable);
 
-            return Ok(productName);
+            if (dataTable.Rows.Count > 0)
+            {
+                return Ok(JsonConvert.SerializeObject(dataTable));
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         [HttpGet]
-        [Route("GetProductNameById1/{orderId}")]
-        public IActionResult GetProductNameById1(int orderId)
+        [Route("GetOrderDetailByOrderDate/{orderDate}")]
+        public IActionResult GetOrderDetailByOrderDate(string orderDate)
         {
-            string stringQuery = @"SELECT ProductName FROM Orders where id = @orderId";
+            var orderDateTime = DateTime.Parse(orderDate);
 
-            var sqlCommand = new SqlCommand(stringQuery, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@orderId", orderId);
+            if (orderDateTime > DateTime.Now)
+            {
+                return BadRequest("Order Date cannot be greater than current date");
+            }
+            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Orders WHERE OrderDate = @orderDateTime", sqlConnection);
 
-            sqlConnection.Open();
-            string productName = Convert.ToString(sqlCommand.ExecuteScalar());
-            sqlConnection.Close();
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@orderDateTime", orderDateTime);
 
-            return Ok(productName);
+            DataTable dataTable = new();
+            sqlDataAdapter.Fill(dataTable);
+
+            if (dataTable.Rows.Count > 0)
+            {
+                return Ok(JsonConvert.SerializeObject(dataTable));
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         [HttpGet]
         [Route("GetOrderByAmountRange/{minimumAmount}/{maximumAmount}")]
         public IActionResult GetOrderByAmountRange(int minimumAmount, int maximumAmount)
         {
-            string stringQuery = $@" SELECT * FROM Orders 
-                                    WHERE Amount BETWEEN {minimumAmount} AND {maximumAmount}
-                                    ORDER BY Amount ";
-            SqlDataAdapter sqlDataAdapter = new(stringQuery, sqlConnection);
+            if (minimumAmount < maximumAmount)
+            {
+                return BadRequest("Maximum amount cannot be smaller than minimum amount");
+            }
+
+            SqlDataAdapter sqlDataAdapter = new($@" SELECT * FROM Orders 
+                                                    WHERE Amount BETWEEN @minimumAmount AND @maximumAmount
+                                                    ORDER BY Amount", sqlConnection);
+
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minimumAmount", minimumAmount);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maximumAmount", maximumAmount);
+
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
@@ -108,30 +137,54 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        [Route("CreateNewOrders")]
-        public IActionResult CreateNewOrders([FromBody] OrderDto order)
+        [Route("OrderAdd")]
+        public IActionResult OrderAdd([FromBody] OrderDto order)
         {
             try
             {
-                if (ModelState.IsValid)
+                if (order.CustomerId < 1)
                 {
-                    string stringQuery = $@"
-                    INSERT INTO Orders(CustomerId, OrderDate, Amount, ProductName)
-                    VALUES (@CustomerId, @OrderDate, @Amount, @ProductName)
-                    Select Scope_Identity() ";
-
-                    var sqlCommand = new SqlCommand(stringQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@CustomerId", order.CustomerId);
-                    sqlCommand.Parameters.AddWithValue("@OrderDate", order.OrderDate);
-                    sqlCommand.Parameters.AddWithValue("@Amount", order.Amount);
-                    sqlCommand.Parameters.AddWithValue("@ProductName", order.ProductName);
-
-                    sqlConnection.Open();
-                    order.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
-                    sqlConnection.Close();
-
-                    return Ok(order.Id);
+                    return BadRequest("CustomerId Should be greater than 0");
                 }
+                if (string.IsNullOrWhiteSpace(order.ProductName))
+                {
+                    return BadRequest("ProductName can not be blank");
+                }
+                if (order.ProductName.Length < 3 || order.ProductName.Length > 30)
+                {
+                    return BadRequest("ProductName should be between 3 and 30 characters.");
+                }
+                if (order.TotalAmount < 50)
+                {
+                    return BadRequest("Invalid amount, order amount should be above 50");
+                }
+                var orderDateTime = DateTime.Parse(order.OrderDate);
+
+                if (orderDateTime > DateTime.Now)
+                {
+                    return BadRequest("Order Date cannot be greater than current date");
+                }
+
+                if (ModelState.IsValid)
+
+                    if (ModelState.IsValid)
+                    {
+                        string sqlQuery = $@"INSERT INTO Orders(CustomerId, OrderDate, Amount, ProductName)
+                                             VALUES (@CustomerId, @OrderDate, @Amount, @ProductName)
+                                             Select Scope_Identity() ";
+
+                        var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+                        sqlCommand.Parameters.AddWithValue("@CustomerId", order.CustomerId);
+                        sqlCommand.Parameters.AddWithValue("@OrderDate", order.OrderDate);
+                        sqlCommand.Parameters.AddWithValue("@TotalAmount", order.TotalAmount);
+                        sqlCommand.Parameters.AddWithValue("@ProductName", order.ProductName);
+
+                        sqlConnection.Open();
+                        order.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                        sqlConnection.Close();
+
+                        return Ok(order.Id);
+                    }
                 return BadRequest();
             }
             catch (Exception ex)

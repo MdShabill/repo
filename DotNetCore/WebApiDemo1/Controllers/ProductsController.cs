@@ -25,7 +25,7 @@ namespace WebApplication1.Controllers
         public ProductsController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("ProductDBCSonnection").ToString());
+            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("ProductDBCSConnection").ToString());
         }
 
         [HttpGet]
@@ -62,29 +62,38 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetBrandNameById/{productId}")]
-        public IActionResult GetBrandNameById(int productId)
+        [Route("GetProductDetail/{productId}")]
+        public IActionResult GetProductDetailById(int productId)
         {
-            string sqlQuery = @"SELECT BrandName FROM Products where id = @productId";
+            if (productId < 1)
+            {
+                return NotFound("ProductId should be greater than 0");
+            }
+            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Products WHERE Id = @productId", sqlConnection);
 
-            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@productId", productId);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productId", productId);
 
-            sqlConnection.Open();
-            string productBrandNane = Convert.ToString(sqlCommand.ExecuteScalar());
-            sqlConnection.Close();
+            DataTable dataTable = new();
+            sqlDataAdapter.Fill(dataTable);
 
-            return Ok(productBrandNane);
+            if (dataTable.Rows.Count > 0)
+            {
+                return Ok(JsonConvert.SerializeObject(dataTable));
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         [HttpGet]
-        [Route("GetProductsDetail/{brandName}/{productName}")]
-        public IActionResult GetProductsDetailByProductNameBrandName(string brandName, string productName)
+        [Route("GetProductsDetail/{brandName}/{productName?}")]
+        public IActionResult GetProductsDetailByBrandNameByProductNmae(string brandName, string? productName)
         {
             string sqlQuery = $"SELECT * FROM Products WHERE BrandName Like '%{brandName}%' ";
             if (!string.IsNullOrEmpty(productName))
             {
-                sqlQuery = sqlQuery + "AND ProductName Like '%{productName}%' ";
+                sqlQuery += $"AND ProductName Like '%{productName}%' ";
             }
 
             SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
@@ -102,18 +111,89 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetProductByPriceRange/{minimumPrice}/{maximumPrice}")]
-        public IActionResult GetProductByPriceRange(int minimumPrice, int maximumPrice)
+        [Route("GetProductsDetailByBrandNameByProductName/{brandName}/{productName?}")]
+        public IActionResult GetProductsDetailByBrandNameByProductName(string brandName, string? productName)
         {
-            if(minimumPrice < 900 || maximumPrice > 15000)
+            if (string.IsNullOrWhiteSpace(productName))
             {
-                return BadRequest("Product minimum and maximum price  Should be between 900 and 15000");
+                return BadRequest("ProductName can not be blank");
+            }
+            if (productName.Length < 3 || productName.Length > 20)
+            {
+                return BadRequest("ProductName should be between 3 and 20 characters.");
             }
 
-            string sqlQuery = $@" SELECT * FROM Products 
-                                    WHERE Price BETWEEN {minimumPrice} AND {maximumPrice}
-                                    ORDER BY Price ";
+            string sqlQuery = "SELECT * FROM Products WHERE BrandName = @brandName ";
+
+            if (!string.IsNullOrWhiteSpace(productName))
+            {
+                sqlQuery += "AND ProductName = @productName ";
+            }
+
             SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@brandName", brandName);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productName);
+
+            DataTable dataTable = new();
+            sqlDataAdapter.Fill(dataTable);
+
+            if (dataTable.Rows.Count > 0)
+            {
+                return Ok(JsonConvert.SerializeObject(dataTable));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet]
+        [Route("GetProducts/{brandName}/{priceUpto}")]
+        public IActionResult GetProductsDetailByBrandNameByPriceUpto(string brandName, int priceUpto)
+        {
+            if (string.IsNullOrWhiteSpace(brandName))
+            {
+                return BadRequest("BrandName can not be blank");
+            }
+            if (brandName.Length < 3 || brandName.Length > 15 || brandName.Contains(" "))
+            {
+                return BadRequest("BrandName should be between 3 and 15 characters.");
+            }
+            if (priceUpto < 600)
+            {
+                return BadRequest("priceUpto should be greater than 600");
+            }
+            string sqlQuery = $" SELECT * FROM Products WHERE BrandName = '{brandName}' AND Price <= '{priceUpto}' ";
+            SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+            DataTable dataTable = new();
+            sqlDataAdapter.Fill(dataTable);
+
+            if (dataTable.Rows.Count > 0)
+            {
+                return Ok(JsonConvert.SerializeObject(dataTable));
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet]
+        [Route("GetProductsByPriceRange/{minimumPrice}/{maximumPrice}")]
+        public IActionResult GetProductsByPriceRange(int minimumPrice, int maximumPrice)
+        {
+            if (maximumPrice < minimumPrice)
+            {
+                return BadRequest("Maximum price cannot be smaller than minimum price");
+            }
+
+            SqlDataAdapter sqlDataAdapter = new($@" SELECT * FROM Products 
+                                                    WHERE Price BETWEEN @minimumPrice AND @maximumPrice
+                                                    ORDER BY Price", sqlConnection);
+
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minimumPrice", minimumPrice);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maximumPrice", maximumPrice);
+
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
@@ -138,9 +218,9 @@ namespace WebApplication1.Controllers
                     return BadRequest("Name can not be blank");
                 }
 
-                if(product.BrandName.Length < 3 || product.BrandName.Length > 20)
+                if(product.BrandName.Length < 3 || product.BrandName.Length > 15 || product.BrandName.Contains(" "))
                 {
-                    return BadRequest("Brand name should be between 3 and 20 characters");
+                    return BadRequest("Brand name should be between 3 and 15 characters");
                 }
 
                 if(product.Size <= 25)
