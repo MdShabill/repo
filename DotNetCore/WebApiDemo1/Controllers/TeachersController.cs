@@ -48,19 +48,16 @@ namespace WebApplication1.Controllers
         [HttpGet]
         [Route("GetTeachersCount")]
         public IActionResult GetTeachersCount()
-        { 
-            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Teachers", sqlConnection);
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
+        {
+            string sqlQuery = "SELECT COUNT(*) FROM Teachers";
 
-            if (dataTable.Rows.Count > 0)
-            {
-                return Ok(JsonConvert.SerializeObject(dataTable));
-            }
-            else
-            {
-                return NotFound();
-            }
+            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+
+            sqlConnection.Open();
+            int customerCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
+            sqlConnection.Close();
+
+            return Ok(customerCount);
         }
 
         [HttpGet]
@@ -89,29 +86,26 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetTeachersByDepartmentByTeacherName/{department}/{teacherName}")]
-        public IActionResult GetTeachersByDepartmentByTeacherName(string department, string teacherName)
+        [Route("GetTeachersByDepartmentByTeacherName/{teacherName}/{department?}")]
+        public IActionResult GetTeachersByDepartmentByTeacherName(string teacherName, string? department)
         {
-            if (string.IsNullOrWhiteSpace(teacherName))
-            {
-                return BadRequest("TeacherName can not be blank");
-            }
-            if (teacherName.Length < 3 || teacherName.Length > 30)
-            {
-                return BadRequest("TeacherName should be between 3 and 30 characters.");
-            }
             if (string.IsNullOrWhiteSpace(department))
             {
                 return BadRequest("Department can not be blank");
             }
-            if (department.Length < 3 || department.Length > 30)
+
+            if (department.Length < 3 || department.Length > 30 || department != (" "))
             {
                 return BadRequest("Department should be between 3 and 30 characters.");
             }
 
-            SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Teachers WHERE FullName = @teacherName
-                                                  AND Department = @department", sqlConnection);
+            string sqlQuery = "SELECT * FROM Teachers Where FullName = @teacherName";
+            if(!string.IsNullOrWhiteSpace(department))
+            {
+                sqlQuery += "And Department = @department";
+            }
 
+            SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@teacherName", teacherName);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@department", department);
 
@@ -167,7 +161,7 @@ namespace WebApplication1.Controllers
                     return BadRequest("Teacher fullName can not be blank");
                 }
 
-                if (teacher.FullName.Length < 3 || teacher.FullName.Length > 20)
+                if (teacher.FullName.Length < 3 || teacher.FullName.Length > 20 || teacher.FullName != (" "))
                 {
                     return BadRequest("Name should be between 3 and 20 characters.");
                 }
@@ -177,9 +171,9 @@ namespace WebApplication1.Controllers
                     return BadRequest("Invalid age, Teacher age should be above 25");
                 }
 
-                if (teacher.Gender.Contains("TransGender") || teacher.Gender.Contains(" "))
+                if (string.IsNullOrWhiteSpace(teacher.Gender))
                 {
-                    return BadRequest("Invalid Gender Selation");
+                    return BadRequest("Teacher gender can not be blank");
                 }
 
                 if (teacher.Salary < 25000)

@@ -218,7 +218,7 @@ namespace WebApplication1.Controllers
                     return BadRequest("Name can not be blank");
                 }
 
-                if(product.BrandName.Length < 3 || product.BrandName.Length > 15 || product.BrandName.Contains(" "))
+                if(product.BrandName.Length < 3 || product.BrandName.Length > 15)
                 {
                     return BadRequest("Brand name should be between 3 and 15 characters");
                 }

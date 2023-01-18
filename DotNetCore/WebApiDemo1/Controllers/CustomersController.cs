@@ -122,7 +122,7 @@ namespace WebApplication1.Controllers
             {
                 return BadRequest("Country name can not be blank");
             }
-            if (country.Length < 3 || country.Length > 20)
+            if (country.Length < 3 || country.Length > 20 || country != (" "))
             {
                 return BadRequest("Country name should be between 3 and 20 characters.");
             }
@@ -174,7 +174,7 @@ namespace WebApplication1.Controllers
                         return BadRequest("Invalid customer age should be above 21");
                     }
 
-                    if (customer.Country.Length < 3 || customer.Country.Length > 20 || customer.Country.Contains(" "))
+                    if (customer.Country.Length < 3 || customer.Country.Length > 20 || customer.Country != (" "))
                     {
                         return BadRequest("Country name should be between 3 and 20 characters");
                     }

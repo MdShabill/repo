@@ -164,10 +164,9 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                Regex regex = new Regex(@"^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-
-                                  9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
-
+                Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
                 Match match = regex.Match(employee.Email);
+
                 if (!match.Success)
                 {
                     return BadRequest("Email is invalid");
@@ -176,7 +175,7 @@ namespace WebApplication1.Controllers
                 {
                     return BadRequest("Name can not be blank");
                 }
-                if (employee.FullName.Length < 3 || employee.FullName.Length > 30)
+                if (employee.FullName.Length < 3 || employee.FullName.Length > 30 || employee.FullName != (" "))
                 {
                     return BadRequest("Name should be between 3 and 30 characters.");
                 }
@@ -189,8 +188,8 @@ namespace WebApplication1.Controllers
 
                     if (ModelState.IsValid)
                     {
-                        string sqlQuery = $@"INSERT INTO Employees(FullName, Email, Gender, DateOfJoining, Salary)
-                                             VALUES (@FullName, @Email, @Gender, @DateOfJoining, @Salary)
+                        string sqlQuery = $@"INSERT INTO Employees(FullName, Email, Gender, Salary)
+                                             VALUES (@FullName, @Email, @Gender, @Salary)
                                              Select Scope_Identity() ";
 
                         var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);

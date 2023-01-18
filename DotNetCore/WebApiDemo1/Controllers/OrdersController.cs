@@ -19,7 +19,7 @@ namespace WebApplication1.Controllers
         public OrdersController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("OrderDBCSonnection").ToString());
+            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("OrderDBCSConnection").ToString());
         }
 
         [HttpGet]
@@ -111,9 +111,9 @@ namespace WebApplication1.Controllers
         [Route("GetOrderByAmountRange/{minimumAmount}/{maximumAmount}")]
         public IActionResult GetOrderByAmountRange(int minimumAmount, int maximumAmount)
         {
-            if (minimumAmount < maximumAmount)
+            if (minimumAmount > maximumAmount)
             {
-                return BadRequest("Maximum amount cannot be smaller than minimum amount");
+                return BadRequest("minimum amount cannot be greater than maximum amount");
             }
 
             SqlDataAdapter sqlDataAdapter = new($@" SELECT * FROM Orders 
@@ -146,23 +146,22 @@ namespace WebApplication1.Controllers
                 {
                     return BadRequest("CustomerId Should be greater than 0");
                 }
-                if (string.IsNullOrWhiteSpace(order.ProductName))
-                {
-                    return BadRequest("ProductName can not be blank");
-                }
-                if (order.ProductName.Length < 3 || order.ProductName.Length > 30)
-                {
-                    return BadRequest("ProductName should be between 3 and 30 characters.");
-                }
-                if (order.TotalAmount < 50)
-                {
-                    return BadRequest("Invalid amount, order amount should be above 50");
-                }
                 var orderDateTime = DateTime.Parse(order.OrderDate);
-
                 if (orderDateTime > DateTime.Now)
                 {
                     return BadRequest("Order Date cannot be greater than current date");
+                }
+                if (order.TotalAmount < 5000)
+                {
+                    return BadRequest("Invalid amount, order amount should be above 5000");
+                }
+                if (string.IsNullOrWhiteSpace(order.ProductName))
+                {
+                    return BadRequest("productname can not be blank");
+                }
+                if (order.ProductName.Length < 3 || order.ProductName.Length > 30 || order.ProductName != (" "))
+                {
+                    return BadRequest("ProductName should be between 3 and 30 characters.");
                 }
 
                 if (ModelState.IsValid)
@@ -176,7 +175,7 @@ namespace WebApplication1.Controllers
                         var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
                         sqlCommand.Parameters.AddWithValue("@CustomerId", order.CustomerId);
                         sqlCommand.Parameters.AddWithValue("@OrderDate", order.OrderDate);
-                        sqlCommand.Parameters.AddWithValue("@TotalAmount", order.TotalAmount);
+                        sqlCommand.Parameters.AddWithValue("@Amount", order.TotalAmount);
                         sqlCommand.Parameters.AddWithValue("@ProductName", order.ProductName);
 
                         sqlConnection.Open();
