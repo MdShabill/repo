@@ -23,7 +23,7 @@ namespace WebApplication1.Controllers
         public CustomersController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("CustomerDBCSConnection").ToString());
+            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("CustomerDBConnection").ToString());
         }
 
         [HttpGet]
@@ -31,7 +31,7 @@ namespace WebApplication1.Controllers
         public IActionResult GetAllCustomers()
         {
             SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Customers", sqlConnection);
-            DataTable dataTable = new DataTable();
+            DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
             if (dataTable.Rows.Count > 0)
@@ -49,7 +49,7 @@ namespace WebApplication1.Controllers
         public IActionResult GetCustomersCount()
         {
 
-            string sqlQuery = @"SELECT COUNT(*) FROM Customers";
+            string sqlQuery = "SELECT COUNT(*) FROM Customers";
 
             var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
 
@@ -66,10 +66,10 @@ namespace WebApplication1.Controllers
         {
             if (customerId < 1)
             {
-                return NotFound("Customer Id should be greater than 0");
+                return BadRequest("Customer Id should be greater than 0");
             }
 
-            string sqlQuery = @"SELECT Name FROM Customers where id = @customerId";
+            string sqlQuery = "SELECT Name FROM Customers where id = @customerId";
 
             var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@customerId", customerId);
@@ -82,8 +82,8 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetCustomerDetailByGenderBYCountry/{gender}/{country}")]
-        public IActionResult GetCustomerDetailByGenderBYCountry(string gender, string country)
+        [Route("GetCustomersDetailByGenderBYCountry/{gender}/{country}")]
+        public IActionResult GetCustomersDetailByGenderBYCountry(string gender, string country)
         {
             if (gender.Length > 6)
             {
@@ -100,7 +100,7 @@ namespace WebApplication1.Controllers
                                                   AND Country = @country ", sqlConnection);
 
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@country", country.Trim());
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@country", country);
 
 
             DataTable dataTable = new();
@@ -117,8 +117,8 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetCustomerDetail/{Name}/{Country?}")]
-        public IActionResult GetCustomerDetailByNameByCountry(string name, string? country)
+        [Route("GetCustomersDetail/{Name}/{Country?}")]
+        public IActionResult GetCustomersDetailByNameByCountry(string name, string? country)
         {
             if (string.IsNullOrWhiteSpace(country))
             {
@@ -140,7 +140,7 @@ namespace WebApplication1.Controllers
 
             SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@name", name);
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@country", country.Trim());
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@country", country);
 
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
@@ -189,16 +189,15 @@ namespace WebApplication1.Controllers
                         return BadRequest("Country name should be between 3 and 20 characters");
                     }
 
-                    string sqlQuery = @"
-                    INSERT INTO Customers(Name, Gender, Age, Country)
-                    VALUES (@FullName, @Gender, @Age, @Country)
-                    Select Scope_Identity() ";
+                    string sqlQuery = @"INSERT INTO Customers(Name, Gender, Age, Country)
+                                        VALUES (@FullName, @Gender, @Age, @Country)
+                                        Select Scope_Identity() ";
 
                     var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName.Trim());
+                    sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
                     sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                     sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
-                    sqlCommand.Parameters.AddWithValue("@Country", customer.Country.Trim());
+                    sqlCommand.Parameters.AddWithValue("@Country", customer.Country);
 
                     sqlConnection.Open();
                     customer.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());

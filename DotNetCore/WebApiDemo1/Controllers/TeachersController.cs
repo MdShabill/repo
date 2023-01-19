@@ -25,7 +25,7 @@ namespace WebApplication1.Controllers
         public TeachersController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("TeacherDBCSConnection").ToString());
+            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("TeacherDBConnection").ToString());
         }
 
         [HttpGet]
@@ -33,7 +33,7 @@ namespace WebApplication1.Controllers
         public IActionResult GetTeachers()
         {
             SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Teachers", sqlConnection);
-            DataTable dataTable = new DataTable();
+            DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
             if (dataTable.Rows.Count > 0)
@@ -62,12 +62,12 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetTeacherDetail/{teacherId}")]
-        public IActionResult GetTeacherDetailById(int teacherId)
+        [Route("GetTeachersDetail/{teacherId}")]
+        public IActionResult GetTeachersDetailById(int teacherId)
         {
             if (teacherId < 1)
             {
-                return NotFound("TeacherId Id should be greater than 0");
+                return BadRequest("TeacherId Id should be greater than 0");
             }
             SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Teachers WHERE Id = @teacherId", sqlConnection);
 
@@ -108,7 +108,7 @@ namespace WebApplication1.Controllers
 
             SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@teacherName", teacherName);
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@department", department.Trim());
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@department", department);
 
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
@@ -124,8 +124,8 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetTeacherBySalaryRange/{minimumSalary}/{maximumSalary}")]
-        public IActionResult GetTeacherBySalaryRange(int minimumSalary, int maximumSalary)
+        [Route("GetTeachersBySalaryRange/{minimumSalary}/{maximumSalary}")]
+        public IActionResult GetTeachersBySalaryRange(int minimumSalary, int maximumSalary)
         {
             if (maximumSalary < minimumSalary)
             {
@@ -184,13 +184,12 @@ namespace WebApplication1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    string sqlQuery = @"
-                    INSERT INTO Teachers(FullName, Age, Gender, SchoolName, Department, Salary)
-                    VALUES (@FullName, @Age, @Gender, @SchoolName, @Department, @Salary)
-                    Select Scope_Identity() ";
+                    string sqlQuery = @"INSERT INTO Teachers(FullName, Age, Gender, SchoolName, Department, Salary)
+                                        VALUES (@FullName, @Age, @Gender, @SchoolName, @Department, @Salary)
+                                        Select Scope_Identity() ";
 
                     var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@FullName", teacher.FullName.Trim());
+                    sqlCommand.Parameters.AddWithValue("@FullName", teacher.FullName);
                     sqlCommand.Parameters.AddWithValue("@Age", teacher.Age);
                     sqlCommand.Parameters.AddWithValue("@Gender", teacher.Gender);
                     sqlCommand.Parameters.AddWithValue("@SchoolName", teacher.SchoolName);

@@ -19,7 +19,7 @@ namespace WebApplication1.Controllers
         public OrdersController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("OrderDBCSConnection").ToString());
+            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("OrderDBConnection").ToString());
         }
 
         [HttpGet]
@@ -27,7 +27,7 @@ namespace WebApplication1.Controllers
         public IActionResult GetAllOrders()
         {
             SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Orders", sqlConnection);
-            var dataTable = new DataTable();
+            DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
             if (dataTable.Rows.Count > 0)
@@ -81,8 +81,8 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetOrderDetailByOrderDate/{orderDate}")]
-        public IActionResult GetOrderDetailByOrderDate(string orderDate)
+        [Route("GetOrdersDetailByOrderDate/{orderDate}")]
+        public IActionResult GetOrdersDetailByOrderDate(string orderDate)
         {
             var orderDateTime = DateTime.Parse(orderDate);
 
@@ -108,8 +108,8 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetOrderByAmountRange/{minimumAmount}/{maximumAmount}")]
-        public IActionResult GetOrderByAmountRange(int minimumAmount, int maximumAmount)
+        [Route("GetOrdersByAmountRange/{minimumAmount}/{maximumAmount}")]
+        public IActionResult GetOrdersByAmountRange(int minimumAmount, int maximumAmount)
         {
             if (minimumAmount > maximumAmount)
             {
@@ -179,7 +179,7 @@ namespace WebApplication1.Controllers
                         sqlCommand.Parameters.AddWithValue("@CustomerId", order.CustomerId);
                         sqlCommand.Parameters.AddWithValue("@OrderDate", order.OrderDate);
                         sqlCommand.Parameters.AddWithValue("@Amount", order.TotalAmount);
-                        sqlCommand.Parameters.AddWithValue("@ProductName", order.ProductName.Trim());
+                        sqlCommand.Parameters.AddWithValue("@ProductName", order.ProductName);
 
                         sqlConnection.Open();
                         order.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());

@@ -23,7 +23,7 @@ namespace WebApplication1.Controllers
         public ProductsController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("ProductDBCSConnection").ToString());
+            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("ProductDBConnection").ToString());
         }
 
         [HttpGet]
@@ -31,7 +31,7 @@ namespace WebApplication1.Controllers
         public IActionResult GetAllProducts()
         {
             SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Products", sqlConnection);
-            var dataTable = new DataTable();
+            DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
             if (dataTable.Rows.Count > 0)
@@ -65,7 +65,7 @@ namespace WebApplication1.Controllers
         {
             if (productId < 1)
             {
-                return NotFound("ProductId should be greater than 0");
+                return BadRequest("ProductId should be greater than 0");
             }
             SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Products WHERE Id = @productId", sqlConnection);
 
@@ -88,30 +88,6 @@ namespace WebApplication1.Controllers
         [Route("GetProductsDetailByBrandNameByProductName/{brandName}/{productName?}")]
         public IActionResult GetProductsDetailByBrandNameByProductName(string brandName, string? productName)
         {
-            string sqlQuery = $"SELECT * FROM Products WHERE BrandName Like '%{brandName}%' ";
-            if (!string.IsNullOrEmpty(productName))
-            {
-                sqlQuery += $"AND ProductName Like '%{productName}%' ";
-            }
-
-            SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
-
-            if (dataTable.Rows.Count > 0)
-            {
-                return Ok(JsonConvert.SerializeObject(dataTable));
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
-
-        [HttpGet]
-        [Route("GetProductsDetailByBrandNameByProductName1/{brandName}/{productName?}")]
-        public IActionResult GetProductsDetailByBrandNameByProductName1(string brandName, string? productName)
-        {
             if (string.IsNullOrWhiteSpace(productName))
             {
                 return BadRequest("ProductName can not be blank");
@@ -132,7 +108,7 @@ namespace WebApplication1.Controllers
 
             SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@brandName", brandName);
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productName.Trim());
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productName);
 
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
@@ -155,19 +131,22 @@ namespace WebApplication1.Controllers
             {
                 return BadRequest("BrandName can not be blank");
             }
-
-            brandName= brandName.Trim();
-            if (brandName.Length < 3 || brandName.Length > 15)
+            brandName = brandName.Trim();
+            if (brandName.Length < 3 || brandName.Length > 30)
             {
-                return BadRequest("BrandName should be between 3 and 15 characters.");
+                return BadRequest("BrandName should be between 3 and 30 characters.");
             }
 
             if (priceUpto < 600)
             {
                 return BadRequest("priceUpto should be greater than 600");
             }
-            string sqlQuery = $" SELECT * FROM Products WHERE BrandName = '{brandName}' AND Price <= '{priceUpto}'";
-            SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+            SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Products WHERE BrandName = @brandName AND
+                                                    Price <= @priceUpto", sqlConnection);
+
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@brandName", brandName);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@priceUpto", priceUpto);
+
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
@@ -231,7 +210,6 @@ namespace WebApplication1.Controllers
                 {
                     return BadRequest("Brand name can not be blank");
                 }
-
                 product.BrandName = product.BrandName.Trim();
                 if(product.BrandName.Length < 3 || product.BrandName.Length > 15)
                 {
@@ -270,14 +248,13 @@ namespace WebApplication1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    string sqlQuery = @"
-                    INSERT INTO Products(ProductName, BrandName, Size, Color, Fit, Fabric, Category, Discount, Price)
-                    VALUES (@ProductName, @BrandName, @Size, @Color, @Fit, @Fabric, @Category, @Discount, @Price)
-                    Select Scope_Identity() ";
+                    string sqlQuery = @"INSERT INTO Products(ProductName, BrandName, Size, Color, Fit, Fabric, Category, Discount, Price)
+                                        VALUES (@ProductName, @BrandName, @Size, @Color, @Fit, @Fabric, @Category, @Discount, @Price)
+                                        Select Scope_Identity() ";
 
                     var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@ProductName", product.ProductName.Trim());
-                    sqlCommand.Parameters.AddWithValue("@BrandName", product.BrandName.Trim());
+                    sqlCommand.Parameters.AddWithValue("@ProductName", product.ProductName);
+                    sqlCommand.Parameters.AddWithValue("@BrandName", product.BrandName);
                     sqlCommand.Parameters.AddWithValue("@Size", product.Size);
                     sqlCommand.Parameters.AddWithValue("@Color", product.Color);
                     sqlCommand.Parameters.AddWithValue("@Fit", product.Fit);

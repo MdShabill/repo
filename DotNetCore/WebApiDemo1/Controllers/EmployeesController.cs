@@ -20,7 +20,7 @@ namespace WebApplication1.Controllers
         public EmployeesController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("EmployeesDBCSConnection").ToString());
+            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("EmployeeDBConnection").ToString());
         }
 
         [HttpGet]
@@ -28,7 +28,7 @@ namespace WebApplication1.Controllers
         public IActionResult GetAllEmployees()
         {
             SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Employees", sqlConnection);
-            DataTable dataTable = new DataTable();
+            DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
             if (dataTable.Rows.Count > 0)
@@ -82,8 +82,8 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetEmployeeFullNameById/{EmployeeId}")]
-        public IActionResult GetEmployeeFullNameById(int employeeId)
+        [Route("GetEmployeesFullNameById/{EmployeeId}")]
+        public IActionResult GetEmployeesFullNameById(int employeeId)
         {
             string sqlQuery = "SELECT FullName FROM Employees WHERE Id = @employeeId";
 
@@ -98,8 +98,8 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetEmployeeDetail/{gender}/{salary}")]
-        public IActionResult GetEmployeeDetailByGenderBySalary(string gender, int salary)
+        [Route("GetEmployeesDetail/{gender}/{salary}")]
+        public IActionResult GetEmployeesDetailByGenderBySalary(string gender, int salary)
         {
             if (salary < 10000)
             {
@@ -126,8 +126,8 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetEmployeeBySalaryRange/{minimumSalary}/{maximumSalary}")]
-        public IActionResult GetEmployeeBySalaryRange(int minimumSalary, int maximumSalary)
+        [Route("GetEmployeesBySalaryRange/{minimumSalary}/{maximumSalary}")]
+        public IActionResult GetEmployeesBySalaryRange(int minimumSalary, int maximumSalary)
         {
             if (minimumSalary < 8000)
             {
@@ -229,7 +229,7 @@ namespace WebApplication1.Controllers
                                              Select Scope_Identity() ";
 
                         var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
-                        sqlCommand.Parameters.AddWithValue("@FullName", employee.FullName.Trim());
+                        sqlCommand.Parameters.AddWithValue("@FullName", employee.FullName);
                         sqlCommand.Parameters.AddWithValue("@Email", employee.Email);
                         sqlCommand.Parameters.AddWithValue("@Gender", employee.Gender);
                         sqlCommand.Parameters.AddWithValue("@Salary", employee.Salary);
