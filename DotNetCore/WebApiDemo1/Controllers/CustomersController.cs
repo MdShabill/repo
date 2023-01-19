@@ -48,10 +48,9 @@ namespace WebApplication1.Controllers
         [Route("GetCustomersCount")]
         public IActionResult GetCustomersCount()
         {
-
             string sqlQuery = "SELECT COUNT(*) FROM Customers";
 
-            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+            SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
 
             sqlConnection.Open();
             int customerCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
@@ -71,7 +70,7 @@ namespace WebApplication1.Controllers
 
             string sqlQuery = "SELECT Name FROM Customers where id = @customerId";
 
-            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+            SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@customerId", customerId);
 
             sqlConnection.Open();
@@ -193,7 +192,7 @@ namespace WebApplication1.Controllers
                                         VALUES (@FullName, @Gender, @Age, @Country)
                                         Select Scope_Identity() ";
 
-                    var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+                    SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                     sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
                     sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                     sqlCommand.Parameters.AddWithValue("@Age", customer.Age);

@@ -47,7 +47,7 @@ namespace WebApplication1.Controllers
         {
             string sqlQuery = "SELECT COUNT(*) FROM Employees ";
 
-            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+            SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
 
             sqlConnection.Open();
             int employeeCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
@@ -87,7 +87,7 @@ namespace WebApplication1.Controllers
         {
             string sqlQuery = "SELECT FullName FROM Employees WHERE Id = @employeeId";
 
-            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+            SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@employeeId", employeeId);
 
             sqlConnection.Open();
@@ -105,8 +105,7 @@ namespace WebApplication1.Controllers
             {
                 return BadRequest("Please Enter salary above 10000");
             }
-            SqlDataAdapter sqlDataAdapter;
-            sqlDataAdapter = new SqlDataAdapter(@"SELECT * FROM Employees WHERE Gender = @gender 
+            SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Employees WHERE Gender = @gender 
                                                    AND Salary > @salary", sqlConnection);
 
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
@@ -129,23 +128,18 @@ namespace WebApplication1.Controllers
         [Route("GetEmployeesBySalaryRange/{minimumSalary}/{maximumSalary}")]
         public IActionResult GetEmployeesBySalaryRange(int minimumSalary, int maximumSalary)
         {
-            if (minimumSalary < 8000)
+            if (maximumSalary < minimumSalary)
             {
-                return BadRequest("Please Enter minimumSalary salary above 8000");
+                return BadRequest("Maximum salary cannot be smaller than minimum salary");
             }
-            if (maximumSalary > 500000)
-            {
-                return BadRequest("Please Enter maximumSalary salary less than 500000");
-            }
-            SqlDataAdapter sqlDataAdapter;
-            sqlDataAdapter = new SqlDataAdapter(@" SELECT * FROM Employees 
+            SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Employees 
                                                     WHERE Salary BETWEEN @minimumSalary AND @maximumSalary
                                                     ORDER BY Salary", sqlConnection);
 
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minimumSalary", minimumSalary);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maximumSalary", maximumSalary);
 
-            var dataTable = new DataTable();
+            DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
             if (dataTable.Rows.Count > 0)
@@ -228,7 +222,7 @@ namespace WebApplication1.Controllers
                                              VALUES (@FullName, @Email, @Gender, @Salary)
                                              Select Scope_Identity() ";
 
-                        var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+                        SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                         sqlCommand.Parameters.AddWithValue("@FullName", employee.FullName);
                         sqlCommand.Parameters.AddWithValue("@Email", employee.Email);
                         sqlCommand.Parameters.AddWithValue("@Gender", employee.Gender);

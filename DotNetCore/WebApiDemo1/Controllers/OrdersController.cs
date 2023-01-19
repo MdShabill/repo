@@ -46,7 +46,7 @@ namespace WebApplication1.Controllers
         {
             string sqlQuery = "SELECT COUNT(*) FROM Orders";
 
-            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+            SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
 
             sqlConnection.Open();
             int orderCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
@@ -175,7 +175,7 @@ namespace WebApplication1.Controllers
                                              VALUES (@CustomerId, @OrderDate, @Amount, @ProductName)
                                              Select Scope_Identity() ";
 
-                        var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+                        SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                         sqlCommand.Parameters.AddWithValue("@CustomerId", order.CustomerId);
                         sqlCommand.Parameters.AddWithValue("@OrderDate", order.OrderDate);
                         sqlCommand.Parameters.AddWithValue("@Amount", order.TotalAmount);

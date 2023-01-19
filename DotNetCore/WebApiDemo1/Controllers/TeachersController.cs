@@ -52,7 +52,7 @@ namespace WebApplication1.Controllers
         {
             string sqlQuery = "SELECT COUNT(*) FROM Teachers";
 
-            var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+            SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
 
             sqlConnection.Open();
             int customerCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
@@ -188,7 +188,7 @@ namespace WebApplication1.Controllers
                                         VALUES (@FullName, @Age, @Gender, @SchoolName, @Department, @Salary)
                                         Select Scope_Identity() ";
 
-                    var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
+                    SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                     sqlCommand.Parameters.AddWithValue("@FullName", teacher.FullName);
                     sqlCommand.Parameters.AddWithValue("@Age", teacher.Age);
                     sqlCommand.Parameters.AddWithValue("@Gender", teacher.Gender);
