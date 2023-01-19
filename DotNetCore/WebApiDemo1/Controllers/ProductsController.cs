@@ -20,8 +20,6 @@ namespace WebApplication1.Controllers
         public readonly IConfiguration _Configuration;
         SqlConnection sqlConnection;
 
-        public object ProductName { get; private set; }
-
         public ProductsController(IConfiguration configuration)
         {
             _Configuration = configuration;
@@ -87,8 +85,8 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetProductsDetail/{brandName}/{productName?}")]
-        public IActionResult GetProductsDetailByBrandNameByProductNmae(string brandName, string? productName)
+        [Route("GetProductsDetailByBrandNameByProductName/{brandName}/{productName?}")]
+        public IActionResult GetProductsDetailByBrandNameByProductName(string brandName, string? productName)
         {
             string sqlQuery = $"SELECT * FROM Products WHERE BrandName Like '%{brandName}%' ";
             if (!string.IsNullOrEmpty(productName))
@@ -111,13 +109,15 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetProductsDetailByBrandNameByProductName/{brandName}/{productName?}")]
-        public IActionResult GetProductsDetailByBrandNameByProductName(string brandName, string? productName)
+        [Route("GetProductsDetailByBrandNameByProductName1/{brandName}/{productName?}")]
+        public IActionResult GetProductsDetailByBrandNameByProductName1(string brandName, string? productName)
         {
             if (string.IsNullOrWhiteSpace(productName))
             {
                 return BadRequest("ProductName can not be blank");
             }
+
+            productName= productName.Trim();
             if (productName.Length < 3 || productName.Length > 20)
             {
                 return BadRequest("ProductName should be between 3 and 20 characters.");
@@ -132,7 +132,7 @@ namespace WebApplication1.Controllers
 
             SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@brandName", brandName);
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productName);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productName.Trim());
 
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
@@ -148,22 +148,25 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetProducts/{brandName}/{priceUpto}")]
+        [Route("GetProductsDetailByBrandNameByPriceUpto/{brandName}/{priceUpto}")]
         public IActionResult GetProductsDetailByBrandNameByPriceUpto(string brandName, int priceUpto)
         {
             if (string.IsNullOrWhiteSpace(brandName))
             {
                 return BadRequest("BrandName can not be blank");
             }
-            if (brandName.Length < 3 || brandName.Length > 15 || brandName.Contains(" "))
+
+            brandName= brandName.Trim();
+            if (brandName.Length < 3 || brandName.Length > 15)
             {
                 return BadRequest("BrandName should be between 3 and 15 characters.");
             }
+
             if (priceUpto < 600)
             {
                 return BadRequest("priceUpto should be greater than 600");
             }
-            string sqlQuery = $" SELECT * FROM Products WHERE BrandName = '{brandName}' AND Price <= '{priceUpto}' ";
+            string sqlQuery = $" SELECT * FROM Products WHERE BrandName = '{brandName}' AND Price <= '{priceUpto}'";
             SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
@@ -187,7 +190,7 @@ namespace WebApplication1.Controllers
                 return BadRequest("Maximum price cannot be smaller than minimum price");
             }
 
-            SqlDataAdapter sqlDataAdapter = new($@" SELECT * FROM Products 
+            SqlDataAdapter sqlDataAdapter = new(@" SELECT * FROM Products 
                                                     WHERE Price BETWEEN @minimumPrice AND @maximumPrice
                                                     ORDER BY Price", sqlConnection);
 
@@ -218,6 +221,18 @@ namespace WebApplication1.Controllers
                     return BadRequest("Name can not be blank");
                 }
 
+                product.ProductName = product.ProductName.Trim();
+                if (product.ProductName.Length < 3 || product.ProductName.Length > 15)
+                {
+                    return BadRequest("Brand name should be between 3 and 15 characters");
+                }
+
+                if (string.IsNullOrWhiteSpace(product.BrandName))
+                {
+                    return BadRequest("Brand name can not be blank");
+                }
+
+                product.BrandName = product.BrandName.Trim();
                 if(product.BrandName.Length < 3 || product.BrandName.Length > 15)
                 {
                     return BadRequest("Brand name should be between 3 and 15 characters");
@@ -255,14 +270,14 @@ namespace WebApplication1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    string sqlQuery = $@"
+                    string sqlQuery = @"
                     INSERT INTO Products(ProductName, BrandName, Size, Color, Fit, Fabric, Category, Discount, Price)
                     VALUES (@ProductName, @BrandName, @Size, @Color, @Fit, @Fabric, @Category, @Discount, @Price)
                     Select Scope_Identity() ";
 
                     var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@ProductName", product.ProductName);
-                    sqlCommand.Parameters.AddWithValue("@BrandName", product.BrandName);
+                    sqlCommand.Parameters.AddWithValue("@ProductName", product.ProductName.Trim());
+                    sqlCommand.Parameters.AddWithValue("@BrandName", product.BrandName.Trim());
                     sqlCommand.Parameters.AddWithValue("@Size", product.Size);
                     sqlCommand.Parameters.AddWithValue("@Color", product.Color);
                     sqlCommand.Parameters.AddWithValue("@Fit", product.Fit);

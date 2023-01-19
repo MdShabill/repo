@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.DTO;
+using Microsoft.VisualBasic;
 
 namespace WebApplication1.Controllers
 {
@@ -93,8 +94,8 @@ namespace WebApplication1.Controllers
             {
                 return BadRequest("Department can not be blank");
             }
-
-            if (department.Length < 3 || department.Length > 30 || department != (" "))
+            department= department.Trim();
+            if (department.Length < 3 || department.Length > 30)
             {
                 return BadRequest("Department should be between 3 and 30 characters.");
             }
@@ -107,7 +108,7 @@ namespace WebApplication1.Controllers
 
             SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@teacherName", teacherName);
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@department", department);
+            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@department", department.Trim());
 
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
@@ -130,7 +131,7 @@ namespace WebApplication1.Controllers
             {
                 return BadRequest("Maximum salary cannot be smaller than minimum salary");
             }
-            SqlDataAdapter sqlDataAdapter = new($@" SELECT * FROM Teachers 
+            SqlDataAdapter sqlDataAdapter = new(@" SELECT * FROM Teachers 
                                                     WHERE Salary BETWEEN @minimumSalary AND @maximumSalary
                                                     ORDER BY Salary", sqlConnection);
 
@@ -160,10 +161,10 @@ namespace WebApplication1.Controllers
                 {
                     return BadRequest("Teacher fullName can not be blank");
                 }
-
-                if (teacher.FullName.Length < 3 || teacher.FullName.Length > 20 || teacher.FullName != (" "))
+                teacher.FullName = teacher.FullName.Trim();
+                if (teacher.FullName.Length < 3 || teacher.FullName.Length > 20 )
                 {
-                    return BadRequest("Name should be between 3 and 20 characters.");
+                    return BadRequest("Teacher name should be between 3 and 20 characters");
                 }
 
                 if (teacher.Age <= 25)
@@ -183,13 +184,13 @@ namespace WebApplication1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    string sqlQuery = $@"
+                    string sqlQuery = @"
                     INSERT INTO Teachers(FullName, Age, Gender, SchoolName, Department, Salary)
                     VALUES (@FullName, @Age, @Gender, @SchoolName, @Department, @Salary)
                     Select Scope_Identity() ";
 
                     var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@FullName", teacher.FullName);
+                    sqlCommand.Parameters.AddWithValue("@FullName", teacher.FullName.Trim());
                     sqlCommand.Parameters.AddWithValue("@Age", teacher.Age);
                     sqlCommand.Parameters.AddWithValue("@Gender", teacher.Gender);
                     sqlCommand.Parameters.AddWithValue("@SchoolName", teacher.SchoolName);

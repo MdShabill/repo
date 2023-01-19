@@ -106,7 +106,7 @@ namespace WebApplication1.Controllers
                 return BadRequest("Please Enter salary above 10000");
             }
             SqlDataAdapter sqlDataAdapter;
-            sqlDataAdapter = new SqlDataAdapter($@"SELECT * FROM Employees WHERE Gender = @gender 
+            sqlDataAdapter = new SqlDataAdapter(@"SELECT * FROM Employees WHERE Gender = @gender 
                                                    AND Salary > @salary", sqlConnection);
 
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
@@ -138,7 +138,7 @@ namespace WebApplication1.Controllers
                 return BadRequest("Please Enter maximumSalary salary less than 500000");
             }
             SqlDataAdapter sqlDataAdapter;
-            sqlDataAdapter = new SqlDataAdapter($@" SELECT * FROM Employees 
+            sqlDataAdapter = new SqlDataAdapter(@" SELECT * FROM Employees 
                                                     WHERE Salary BETWEEN @minimumSalary AND @maximumSalary
                                                     ORDER BY Salary", sqlConnection);
 
@@ -167,18 +167,54 @@ namespace WebApplication1.Controllers
                 Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
                 Match match = regex.Match(employee.Email);
 
+                //# Approach 1
                 if (!match.Success)
                 {
                     return BadRequest("Email is invalid");
                 }
+
+                    ////# Approach 2
+                    //if (match.Success == false)
+                    //{
+                    //return BadRequest("Email is invalid");
+                    //}
+
+                    //// Approach 3
+                    //if (match.Success != true)
+                    //{
+                    //return BadRequest("Email is invalid");
+                    //}
+
+                    ////# Approach 4
+                    //if (match.Success)
+                    //{
+
+                    //}
+                    //else
+                    //{
+                    //return BadRequest("Email is invalid");
+                    //}
+
+                    ////# Approach 5
+                    //if (match.Success == true)
+                    //{
+
+                    //}
+                    //else
+                    //{
+                    //return BadRequest("Email is invalid");
+                    //}
+
                 if (string.IsNullOrWhiteSpace(employee.FullName))
                 {
                     return BadRequest("Name can not be blank");
                 }
-                if (employee.FullName.Length < 3 || employee.FullName.Length > 30 || employee.FullName != (" "))
+                employee.FullName = employee.FullName.Trim();
+                if (employee.FullName.Length < 3 || employee.FullName.Length > 30)
                 {
                     return BadRequest("Name should be between 3 and 30 characters.");
                 }
+
                 if (employee.Salary < 8000)
                 {
                     return BadRequest("Invalid salary, Employee salary should be above 8000");
@@ -188,12 +224,12 @@ namespace WebApplication1.Controllers
 
                     if (ModelState.IsValid)
                     {
-                        string sqlQuery = $@"INSERT INTO Employees(FullName, Email, Gender, Salary)
+                        string sqlQuery = @"INSERT INTO Employees(FullName, Email, Gender, Salary)
                                              VALUES (@FullName, @Email, @Gender, @Salary)
                                              Select Scope_Identity() ";
 
                         var sqlCommand = new SqlCommand(sqlQuery, sqlConnection);
-                        sqlCommand.Parameters.AddWithValue("@FullName", employee.FullName);
+                        sqlCommand.Parameters.AddWithValue("@FullName", employee.FullName.Trim());
                         sqlCommand.Parameters.AddWithValue("@Email", employee.Email);
                         sqlCommand.Parameters.AddWithValue("@Gender", employee.Gender);
                         sqlCommand.Parameters.AddWithValue("@Salary", employee.Salary);

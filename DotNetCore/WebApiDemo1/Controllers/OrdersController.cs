@@ -116,7 +116,7 @@ namespace WebApplication1.Controllers
                 return BadRequest("minimum amount cannot be greater than maximum amount");
             }
 
-            SqlDataAdapter sqlDataAdapter = new($@" SELECT * FROM Orders 
+            SqlDataAdapter sqlDataAdapter = new(@" SELECT * FROM Orders 
                                                     WHERE Amount BETWEEN @minimumAmount AND @maximumAmount
                                                     ORDER BY Amount", sqlConnection);
 
@@ -151,15 +151,18 @@ namespace WebApplication1.Controllers
                 {
                     return BadRequest("Order Date cannot be greater than current date");
                 }
+
                 if (order.TotalAmount < 5000)
                 {
                     return BadRequest("Invalid amount, order amount should be above 5000");
                 }
+
                 if (string.IsNullOrWhiteSpace(order.ProductName))
                 {
                     return BadRequest("productname can not be blank");
                 }
-                if (order.ProductName.Length < 3 || order.ProductName.Length > 30 || order.ProductName != (" "))
+                order.ProductName = order.ProductName.Trim();
+                if (order.ProductName.Length < 3 || order.ProductName.Length > 30)
                 {
                     return BadRequest("ProductName should be between 3 and 30 characters.");
                 }
@@ -168,7 +171,7 @@ namespace WebApplication1.Controllers
 
                     if (ModelState.IsValid)
                     {
-                        string sqlQuery = $@"INSERT INTO Orders(CustomerId, OrderDate, Amount, ProductName)
+                        string sqlQuery = @"INSERT INTO Orders(CustomerId, OrderDate, Amount, ProductName)
                                              VALUES (@CustomerId, @OrderDate, @Amount, @ProductName)
                                              Select Scope_Identity() ";
 
@@ -176,7 +179,7 @@ namespace WebApplication1.Controllers
                         sqlCommand.Parameters.AddWithValue("@CustomerId", order.CustomerId);
                         sqlCommand.Parameters.AddWithValue("@OrderDate", order.OrderDate);
                         sqlCommand.Parameters.AddWithValue("@Amount", order.TotalAmount);
-                        sqlCommand.Parameters.AddWithValue("@ProductName", order.ProductName);
+                        sqlCommand.Parameters.AddWithValue("@ProductName", order.ProductName.Trim());
 
                         sqlConnection.Open();
                         order.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
