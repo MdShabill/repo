@@ -23,7 +23,7 @@ namespace WebApplication1.Controllers
         public CustomersController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("CustomerDBConnection").ToString());
+            sqlConnection = new(_Configuration.GetConnectionString("CustomerDBConnection").ToString());
         }
 
         [HttpGet]
@@ -65,7 +65,7 @@ namespace WebApplication1.Controllers
         {
             if (customerId < 1)
             {
-                return BadRequest("Customer Id should be greater than 0");
+                return BadRequest("Customer id should be greater than 0");
             }
 
             string sqlQuery = "SELECT Name FROM Customers where id = @customerId";
@@ -81,18 +81,18 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetCustomersDetailByGenderBYCountry/{gender}/{country}")]
-        public IActionResult GetCustomersDetailByGenderBYCountry(string gender, string country)
+        [Route("GetCustomersDetailByGenderByCountry/{gender}/{country}")]
+        public IActionResult GetCustomersDetailByGenderByCountry(string gender, string country)
         {
             if (gender.Length > 6)
             {
                 return BadRequest("Gender should not be more than 6 characters");
             }
 
-            country= country.Trim();
+            country = country.Trim();
             if (country.Length > 10)
             {
-                return BadRequest("country should not be more than 10 characters");
+                return BadRequest("Country should not be more than 10 characters");
             }
 
             SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Customers WHERE Gender = @gender
@@ -100,7 +100,6 @@ namespace WebApplication1.Controllers
 
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@country", country);
-
 
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
@@ -116,7 +115,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetCustomersDetail/{Name}/{Country?}")]
+        [Route("GetCustomersDetailByNameByCountry/{Name}/{Country?}")]
         public IActionResult GetCustomersDetailByNameByCountry(string name, string? country)
         {
             if (string.IsNullOrWhiteSpace(country))

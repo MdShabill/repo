@@ -19,14 +19,14 @@ namespace WebApplication1.Controllers
         public OrdersController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("OrderDBConnection").ToString());
+            sqlConnection = new(_Configuration.GetConnectionString("OrderDBConnection").ToString());
         }
 
         [HttpGet]
         [Route("GetAllOrders")]
         public IActionResult GetAllOrders()
         {
-            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Orders", sqlConnection);
+            SqlDataAdapter sqlDataAdapter = new("Select * From Orders", sqlConnection);
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
@@ -44,7 +44,7 @@ namespace WebApplication1.Controllers
         [Route("GetOrdersCount")]
         public IActionResult GetOrdersCount()
         {
-            string sqlQuery = "SELECT COUNT(*) FROM Orders";
+            string sqlQuery = "Select Count(*) From Orders";
 
             SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
 
@@ -56,14 +56,14 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetOrderDetail/{orderId}")]
+        [Route("GetOrderDetailById/{orderId}")]
         public IActionResult GetOrderDetailById(int orderId)
         {
             if (orderId < 1)
             {
                 return BadRequest("OrderId should be greater than 0");
             }
-            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Orders WHERE Id = @orderId", sqlConnection);
+            SqlDataAdapter sqlDataAdapter = new("Select * From Orders Where Id = @orderId", sqlConnection);
 
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@orderId", orderId);
 
@@ -85,12 +85,11 @@ namespace WebApplication1.Controllers
         public IActionResult GetOrdersDetailByOrderDate(string orderDate)
         {
             var orderDateTime = DateTime.Parse(orderDate);
-
             if (orderDateTime > DateTime.Now)
             {
                 return BadRequest("Order Date cannot be greater than current date");
             }
-            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Orders WHERE OrderDate = @orderDateTime", sqlConnection);
+            SqlDataAdapter sqlDataAdapter = new("Select * From Order Where OrderDate = @orderDateTime", sqlConnection);
 
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@orderDateTime", orderDateTime);
 
@@ -113,12 +112,12 @@ namespace WebApplication1.Controllers
         {
             if (minimumAmount > maximumAmount)
             {
-                return BadRequest("minimum amount cannot be greater than maximum amount");
+                return BadRequest("minimum amount cannot be more than maximum amount");
             }
 
-            SqlDataAdapter sqlDataAdapter = new(@" SELECT * FROM Orders 
-                                                    WHERE Amount BETWEEN @minimumAmount AND @maximumAmount
-                                                    ORDER BY Amount", sqlConnection);
+            SqlDataAdapter sqlDataAdapter = new(@"Select * From Orders 
+                                                    Where Amount Between @minimumAmount AND @maximumAmount
+                                                    Order By Amount", sqlConnection);
 
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minimumAmount", minimumAmount);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maximumAmount", maximumAmount);
@@ -144,7 +143,7 @@ namespace WebApplication1.Controllers
             {
                 if (order.CustomerId < 1)
                 {
-                    return BadRequest("CustomerId Should be greater than 0");
+                    return BadRequest("Customer id Should be greater than 0");
                 }
                 var orderDateTime = DateTime.Parse(order.OrderDate);
                 if (orderDateTime > DateTime.Now)
@@ -159,12 +158,12 @@ namespace WebApplication1.Controllers
 
                 if (string.IsNullOrWhiteSpace(order.ProductName))
                 {
-                    return BadRequest("productname can not be blank");
+                    return BadRequest("product name can not be blank");
                 }
                 order.ProductName = order.ProductName.Trim();
                 if (order.ProductName.Length < 3 || order.ProductName.Length > 30)
                 {
-                    return BadRequest("ProductName should be between 3 and 30 characters.");
+                    return BadRequest("Product name should be between 3 and 30 characters.");
                 }
 
                 if (ModelState.IsValid)

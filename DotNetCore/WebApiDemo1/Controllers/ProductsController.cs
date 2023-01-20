@@ -23,7 +23,7 @@ namespace WebApplication1.Controllers
         public ProductsController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("ProductDBConnection").ToString());
+            sqlConnection = new(_Configuration.GetConnectionString("ProductDBConnection").ToString());
         }
 
         [HttpGet]
@@ -166,7 +166,7 @@ namespace WebApplication1.Controllers
         {
             if (maximumPrice < minimumPrice)
             {
-                return BadRequest("Maximum price cannot be smaller than minimum price");
+                return BadRequest("Maximum price cannot be less than minimum price");
             }
 
             SqlDataAdapter sqlDataAdapter = new(@" SELECT * FROM Products 
@@ -218,7 +218,7 @@ namespace WebApplication1.Controllers
 
                 if(product.Size <= 25)
                 {
-                    return BadRequest("Invalid size product size should be above 25");
+                    return BadRequest("Product size should be above 25");
                 }
 
                 if(product.Color.Contains("Red"))
@@ -233,12 +233,12 @@ namespace WebApplication1.Controllers
 
                 if(product.Fabric.Contains("Polyester"))
                 {
-                    return BadRequest("This  product fabric is not accept ");
+                    return BadRequest("This fabric is not accepted");
                 }
                 
                 if(product.Category.Contains("Summer Wear"))
                 {
-                    return BadRequest("This product category is not accept");
+                    return BadRequest("This product category is not accepted");
                 }
 
                 if(product.Price < 400 || product.Price > 5000)

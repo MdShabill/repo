@@ -20,7 +20,7 @@ namespace WebApplication1.Controllers
         public EmployeesController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("EmployeeDBConnection").ToString());
+            sqlConnection = new(_Configuration.GetConnectionString("EmployeeDBConnection").ToString());
         }
 
         [HttpGet]
@@ -62,7 +62,7 @@ namespace WebApplication1.Controllers
         {
             if (employeeId < 1)
             {
-                return BadRequest("EmployeeId should be greater than 0");
+                return BadRequest("Employee id should be greater than 0");
             }
             SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Employees WHERE Id = @employeeId", sqlConnection);
 
@@ -130,7 +130,7 @@ namespace WebApplication1.Controllers
         {
             if (maximumSalary < minimumSalary)
             {
-                return BadRequest("Maximum salary cannot be smaller than minimum salary");
+                return BadRequest("Maximum salary cannot be less than minimum salary");
             }
             SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Employees 
                                                     WHERE Salary BETWEEN @minimumSalary AND @maximumSalary

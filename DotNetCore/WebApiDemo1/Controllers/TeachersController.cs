@@ -25,7 +25,7 @@ namespace WebApplication1.Controllers
         public TeachersController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new SqlConnection(_Configuration.GetConnectionString("TeacherDBConnection").ToString());
+            sqlConnection = new(_Configuration.GetConnectionString("TeacherDBConnection").ToString());
         }
 
         [HttpGet]
@@ -62,7 +62,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetTeachersDetail/{teacherId}")]
+        [Route("GetTeachersDetailById/{teacherId}")]
         public IActionResult GetTeachersDetailById(int teacherId)
         {
             if (teacherId < 1)
@@ -129,11 +129,11 @@ namespace WebApplication1.Controllers
         {
             if (maximumSalary < minimumSalary)
             {
-                return BadRequest("Maximum salary cannot be smaller than minimum salary");
+                return BadRequest("Maximum salary cannot be less than minimum salary");
             }
-            SqlDataAdapter sqlDataAdapter = new(@" SELECT * FROM Teachers 
-                                                    WHERE Salary BETWEEN @minimumSalary AND @maximumSalary
-                                                    ORDER BY Salary", sqlConnection);
+            SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Teachers 
+                                                  WHERE Salary BETWEEN @minimumSalary AND @maximumSalary
+                                                  ORDER BY Salary", sqlConnection);
 
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minimumSalary", minimumSalary);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maximumSalary", maximumSalary);
