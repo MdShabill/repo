@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using System.Reflection;
 using WebApplication1.DTO.InputDTO;
+using WebApiDemo1.Repositories;
 
 namespace WebApplication1.Controllers
 {
@@ -30,9 +31,8 @@ namespace WebApplication1.Controllers
         [Route("GetAllCustomers")]
         public IActionResult GetAllCustomers()
         {
-            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Customers", sqlConnection);
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
+            CustomerRepository customerRepository = new(_Configuration);
+            DataTable dataTable = customerRepository.GetAllCustomers();
 
             if (dataTable.Rows.Count > 0)
             {
@@ -187,21 +187,10 @@ namespace WebApplication1.Controllers
                         return BadRequest("Country name should be between 3 and 20 characters");
                     }
 
-                    string sqlQuery = @"INSERT INTO Customers(Name, Gender, Age, Country)
-                                        VALUES (@FullName, @Gender, @Age, @Country)
-                                        Select Scope_Identity() ";
+                    CustomerRepository customerRepository = new(_Configuration);
+                    int id = customerRepository.Register(customer);
 
-                    SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
-                    sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
-                    sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
-                    sqlCommand.Parameters.AddWithValue("@Country", customer.Country);
-
-                    sqlConnection.Open();
-                    customer.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
-                    sqlConnection.Close();
-
-                    return Ok(customer.Id);
+                    return Ok(id);
                 }
                 return BadRequest();
             }
