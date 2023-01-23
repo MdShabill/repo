@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 using System.Data;
-using System.Text.RegularExpressions;
 using WebApiDemo1.DTO.InputDTO;
-using WebApplication1.DTO.InputDTO;
 
 namespace WebApiDemo1.Controllers
 {
@@ -29,10 +27,12 @@ namespace WebApiDemo1.Controllers
             SqlDataAdapter sqlDataAdapter = new("Select * From Doctors", sqlConnection);
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
+            DataTable copyDataTable = dataTable.Copy();
+            sqlDataAdapter.Fill(copyDataTable);
 
             if (dataTable.Rows.Count > 0)
             {
-                return Ok(JsonConvert.SerializeObject(dataTable));
+                return Ok(JsonConvert.SerializeObject(copyDataTable));
             }
             else
             {
@@ -45,9 +45,7 @@ namespace WebApiDemo1.Controllers
         public IActionResult GetDoctorsCount()
         {
             string sqlQuery = "Select Count(*) From Doctors";
-
             SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-
             sqlConnection.Open();
             int doctorcount = Convert.ToInt32(sqlCommand.ExecuteScalar());
             sqlConnection.Close();
@@ -56,7 +54,7 @@ namespace WebApiDemo1.Controllers
         }
 
         [HttpGet]
-        [Route("GetDoctorDepartmentById/{DoctorId}")]
+        [Route("GetDoctorDepartmentById/{doctorId}")]
         public IActionResult GetDoctorDepartmentById(int doctorId)
         {
             if (doctorId < 1)
@@ -65,15 +63,14 @@ namespace WebApiDemo1.Controllers
             }
 
             string sqlQuery = "Select Department From Doctors where id = @doctorId";
-
             SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@doctorId", doctorId);
-
             sqlConnection.Open();
             string doctorDepartment = Convert.ToString(sqlCommand.ExecuteScalar());
+            string subStringDoctorDepartment = doctorDepartment.Substring(4);
             sqlConnection.Close();
 
-            return Ok(doctorDepartment);
+            return Ok(subStringDoctorDepartment);
         }
 
         [HttpGet]
@@ -102,10 +99,8 @@ namespace WebApiDemo1.Controllers
 
             SqlDataAdapter sqlDataAdapter = new(@"Select * From Doctors Where FullName = @fullName
                                                   And Department = @department", sqlConnection);
-
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@fullName", fullName);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@department", department);
-
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
@@ -149,7 +144,6 @@ namespace WebApiDemo1.Controllers
             SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@department", department);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@city", city);
-
             DataTable dataTable = new();
             sqlDataAdapter.Fill(dataTable);
 
@@ -165,39 +159,41 @@ namespace WebApiDemo1.Controllers
 
         [HttpPost]
         [Route("DoctorAdd")]
-        public IActionResult DoctorAdd([FromBody] DoctorDto dector)
+        public IActionResult DoctorAdd([FromBody] DoctorDto doctor)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    if (string.IsNullOrWhiteSpace(dector.FullName))
+                    if (string.IsNullOrWhiteSpace(doctor.FullName))
                     {
                         return BadRequest("Doctor fullName can not be blank");
                     }
-                    dector.FullName = dector.FullName.Trim();
-                    if (dector.FullName.Length < 3 || dector.FullName.Length > 20)
+                    doctor.FullName = doctor.FullName.Trim();
+                    string completeFullName = doctor.FullName.Insert(0, "Md.");
+                    string completeFullName1 = completeFullName.Replace("Md.", "Janab");
+                    if (completeFullName1.Length < 3 || completeFullName1.Length > 20)
                     {
                         return BadRequest("Doctor full name should be between 3 and 20 characters");
                     }
 
-                    if (string.IsNullOrWhiteSpace(dector.Department))
+                    if (string.IsNullOrWhiteSpace(doctor.Department))
                     {
                         return BadRequest("Department name can not be blank");
                     }
-                    dector.Department = dector.Department.Trim();
-                    if (dector.Department.Length < 3 || dector.Department.Length > 20)
+                    doctor.Department = doctor.Department.Trim();
+                    if (doctor.Department.Length < 3 || doctor.Department.Length > 20)
                     {
                         return BadRequest("Department name should be between 3 and 20 characters");
                     }
 
-                    if (string.IsNullOrWhiteSpace(dector.Gender))
+                    if (string.IsNullOrWhiteSpace(doctor.Gender))
                     {
                         return BadRequest("Gender can not be blank");
                     }
 
-                    dector.City = dector.City.Trim();
-                    if (dector.City.Length < 3 || dector.City.Length > 20)
+                    doctor.City = doctor.City.Trim();
+                    if (doctor.City.Length < 3 || doctor.City.Length > 20)
                     {
                         return BadRequest("City name should be between 3 and 20 characters");
                     }
@@ -207,16 +203,15 @@ namespace WebApiDemo1.Controllers
                                         Select Scope_Identity() ";
 
                     SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@FullName", dector.FullName);
-                    sqlCommand.Parameters.AddWithValue("@Department", dector.Department);
-                    sqlCommand.Parameters.AddWithValue("@Gender", dector.Gender);
-                    sqlCommand.Parameters.AddWithValue("@City", dector.City);
-
+                    sqlCommand.Parameters.AddWithValue("@FullName", completeFullName1);
+                    sqlCommand.Parameters.AddWithValue("@Department", doctor.Department);
+                    sqlCommand.Parameters.AddWithValue("@Gender", doctor.Gender);
+                    sqlCommand.Parameters.AddWithValue("@City", doctor.City);
                     sqlConnection.Open();
-                    dector.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                    doctor.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
                     sqlConnection.Close();
 
-                    return Ok(dector.Id);
+                    return Ok(doctor.Id);
                 }
                 return BadRequest();
             }
