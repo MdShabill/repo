@@ -48,14 +48,8 @@ namespace WebApplication1.Controllers
         [Route("GetCustomersCount")]
         public IActionResult GetCustomersCount()
         {
-            string sqlQuery = "SELECT COUNT(*) FROM Customers";
-
-            SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-
-            sqlConnection.Open();
-            int customerCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
-            sqlConnection.Close();
-
+            CustomerRepository customerRepository = new(_Configuration);
+            int customerCount = customerRepository.GetCustomersCount();
             return Ok(customerCount);
         }
 
@@ -68,16 +62,9 @@ namespace WebApplication1.Controllers
                 return BadRequest("Customer id should be greater than 0");
             }
 
-            string sqlQuery = "SELECT Name FROM Customers where id = @customerId";
-
-            SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@customerId", customerId);
-
-            sqlConnection.Open();
-            string customerFullName = Convert.ToString(sqlCommand.ExecuteScalar());
-            sqlConnection.Close();
-
-            return Ok(customerFullName);
+            CustomerRepository customerRepository = new(_Configuration);
+            string fullName = customerRepository.GetCustomerFullNameById(customerId);
+            return Ok(fullName);
         }
 
         [HttpGet]
@@ -95,14 +82,8 @@ namespace WebApplication1.Controllers
                 return BadRequest("Country should not be more than 10 characters");
             }
 
-            SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Customers WHERE Gender = @gender
-                                                  AND Country = @country ", sqlConnection);
-
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@country", country);
-
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
+            CustomerRepository customerRepository = new(_Configuration);
+            DataTable dataTable = customerRepository.GetCustomersDetailByGenderByCountry(gender, country);
 
             if (dataTable.Rows.Count > 0)
             {
@@ -118,30 +99,13 @@ namespace WebApplication1.Controllers
         [Route("GetCustomersDetailByNameByCountry/{Name}/{Country?}")]
         public IActionResult GetCustomersDetailByNameByCountry(string name, string? country)
         {
-            if (string.IsNullOrWhiteSpace(country))
+            if (name.Length < 3 || name.Length > 20)
             {
-                return BadRequest("Country name can not be blank");
+                return BadRequest("Customer name should be between 3 and 20 characters.");
             }
 
-            country = country.Trim();
-            if (country.Length < 3 || country.Length > 20)
-            {
-                return BadRequest("Country name should be between 3 and 20 characters.");
-            }
-
-            string sqlQuery = "SELECT * FROM Customers WHERE Name = @name ";
-
-            if (!string.IsNullOrWhiteSpace(country))
-            {
-                sqlQuery += "AND Country = @country ";
-            }
-
-            SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@name", name);
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@country", country);
-
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
+            CustomerRepository customerRepository = new(_Configuration);
+            DataTable dataTable = customerRepository.GetCustomersDetailByNameByCountry(name, country);
 
             if (dataTable.Rows.Count > 0)
             {
@@ -188,7 +152,7 @@ namespace WebApplication1.Controllers
                     }
 
                     CustomerRepository customerRepository = new(_Configuration);
-                    int id = customerRepository.Register(customer);
+                    int id = customerRepository.Add(customer);
 
                     return Ok(id);
                 }
