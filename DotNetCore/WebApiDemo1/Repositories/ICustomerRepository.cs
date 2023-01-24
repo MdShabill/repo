@@ -11,6 +11,6 @@ namespace WebApiDemo1.Repositories
         public DataTable GetCustomersDetailByGenderByCountry(string gender, string country);
         public DataTable GetCustomersDetailByNameByCountry(string name, string country);
         public int Add(CustomerDto customer);
-        
+        public void Update(CustomerDto customer);
     }
 }

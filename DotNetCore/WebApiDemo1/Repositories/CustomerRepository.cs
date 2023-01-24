@@ -78,8 +78,8 @@ namespace WebApiDemo1.Repositories
         public int Add(CustomerDto customer)
         {
             string sqlQuery = @"INSERT INTO Customers(Name, Gender, Age, Country)
-                                        VALUES (@FullName, @Gender, @Age, @Country)
-                                        Select Scope_Identity() ";
+                    VALUES (@FullName, @Gender, @Age, @Country)
+                    Select Scope_Identity() ";
 
             SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
@@ -91,6 +91,22 @@ namespace WebApiDemo1.Repositories
             sqlConnection.Close();
             return customer.Id;
 
+        }
+
+        public void Update(CustomerDto customer)
+        {
+            string sqlQuery = @" UPDATE Customers SET Name = @FullName, Gender = @Gender,
+                    Age = @Age, Country = @Country
+                    WHERE Id = @Id ";
+            SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+            sqlCommand.Parameters.AddWithValue("@Id", customer.Id);
+            sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
+            sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
+            sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
+            sqlCommand.Parameters.AddWithValue("@Country", customer.Country);
+            sqlConnection.Open();
+            sqlCommand.ExecuteNonQuery();
+            sqlConnection.Close();
         }
 
     }
