@@ -10,36 +10,30 @@ namespace WebApplication1.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        public readonly IConfiguration _Configuration;
+        IProductRepository _productRepository;
 
-        public ProductsController(IConfiguration configuration)
+        public ProductsController(IProductRepository productRepository)
         {
-            _Configuration = configuration;
+            _productRepository = productRepository;
         }
 
         [HttpGet]
         [Route("GetAllProducts")]
         public IActionResult GetAllProducts()
         {
-            ProductRepository productRepository = new(_Configuration);
-            DataTable dataTable = productRepository.GetAllProducts();
+            DataTable dataTable = _productRepository.GetAllProducts();
 
             if (dataTable.Rows.Count > 0)
-            {
                 return Ok(JsonConvert.SerializeObject(dataTable));
-            }
             else
-            {
                 return NotFound();
-            }
         }
 
         [HttpGet]
         [Route("GetProductCount")]
         public IActionResult GetProductsCount()
         {
-            ProductRepository productRepository = new(_Configuration);
-            int productCount = productRepository.GetProductsCount();
+            int productCount = _productRepository.GetProductsCount();
             return Ok(productCount);           
         }
 
@@ -48,12 +42,9 @@ namespace WebApplication1.Controllers
         public IActionResult GetProductDetailByBaradNameById(int productId)
         {
             if (productId < 1)
-            {
                 return BadRequest("ProductId should be greater than 0");
-            }
-
-            ProductRepository productRepository = new(_Configuration);
-            string brandName = productRepository.GetProductDetailByBaradNameById(productId);
+            
+            string brandName = _productRepository.GetProductDetailByBaradNameById(productId);
             return Ok(brandName);
         }
 
@@ -62,26 +53,17 @@ namespace WebApplication1.Controllers
         public IActionResult GetProductsDetailByBrandNameByProductName(string brandName, string? productName)
         {
             if (string.IsNullOrWhiteSpace(productName))
-            {
                 return BadRequest("ProductName can not be blank");
-            }
             productName= productName.Trim();
             if (productName.Length < 3 || productName.Length > 20)
-            {
                 return BadRequest("ProductName should be between 3 and 20 characters.");
-            }
 
-            ProductRepository productRepository = new(_Configuration);
-            DataTable dataTable = productRepository.GetProductsDetailByBrandNameByProductName(brandName, productName);
+            DataTable dataTable = _productRepository.GetProductsDetailByBrandNameByProductName(brandName, productName);
 
             if (dataTable.Rows.Count > 0)
-            {
                 return Ok(JsonConvert.SerializeObject(dataTable));
-            }
             else
-            {
                 return NotFound();
-            }
         }
 
         [HttpGet]
@@ -89,30 +71,21 @@ namespace WebApplication1.Controllers
         public IActionResult GetProductsDetailByBrandNameByPriceUpto(string brandName, int priceUpto)
         {
             if (string.IsNullOrWhiteSpace(brandName))
-            {
                 return BadRequest("BrandName can not be blank");
-            }
+
             brandName = brandName.Trim();
             if (brandName.Length < 3 || brandName.Length > 30)
-            {
                 return BadRequest("BrandName should be between 3 and 30 characters.");
-            }
-            if (priceUpto < 600)
-            {
-                return BadRequest("priceUpto should be greater than 600");
-            }
 
-            ProductRepository productRepository = new(_Configuration);
-            DataTable dataTable = productRepository.GetProductsDetailByBrandNameByPriceUpto(brandName, priceUpto);
+            if (priceUpto < 600)
+                return BadRequest("priceUpto should be greater than 600");
+
+            DataTable dataTable = _productRepository.GetProductsDetailByBrandNameByPriceUpto(brandName, priceUpto);
 
             if (dataTable.Rows.Count > 0)
-            {
                 return Ok(JsonConvert.SerializeObject(dataTable));
-            }
             else
-            {
                 return NotFound();
-            }
         }
 
         [HttpGet]
@@ -120,21 +93,14 @@ namespace WebApplication1.Controllers
         public IActionResult GetProductsByPriceRange(int minimumPrice, int maximumPrice)
         {
             if (maximumPrice < minimumPrice)
-            {
                 return BadRequest("Maximum price cannot be less than minimum price");
-            }
 
-            ProductRepository productRepository = new(_Configuration);
-            DataTable dataTable = productRepository.GetProductsByPriceRange(minimumPrice, maximumPrice);
+            DataTable dataTable = _productRepository.GetProductsByPriceRange(minimumPrice, maximumPrice);
 
             if (dataTable.Rows.Count > 0)
-            {
                 return Ok(JsonConvert.SerializeObject(dataTable));
-            }
             else
-            {
                 return NotFound();
-            }
         }
 
         [HttpPost]
@@ -145,14 +111,11 @@ namespace WebApplication1.Controllers
             {
                 string errorMessage = validateProductAddOrUpdate(product);
                 if (!string.IsNullOrEmpty(errorMessage))
-                {
                     return BadRequest(errorMessage);
-                }
 
                 if (ModelState.IsValid)
                 {
-                    ProductRepository productRepository = new(_Configuration);
-                    int id = productRepository.ProductAdd(product);
+                    int id = _productRepository.ProductAdd(product);
 
                     return Ok(product.Id);
                 }
@@ -185,45 +148,35 @@ namespace WebApplication1.Controllers
             }
 
             if (string.IsNullOrWhiteSpace(product.ProductName))
-            {
                 errorMessage = "Name can not be blank";
-            }
+
             else if (product.ProductName.Length < 3 || product.ProductName.Length > 15)
-            {
                 errorMessage = "Brand name should be between 3 and 15 characters";
-            }
+
             else if (string.IsNullOrWhiteSpace(product.BrandName))
-            {
                 errorMessage = "Brand name can not be blank";
-            }
+
             else if (product.BrandName.Length < 3 || product.BrandName.Length > 15)
-            {
                 errorMessage = "Brand name should be between 3 and 15 characters";
-            }
+
             else if (product.Size <= 25)
-            {
                 errorMessage = "Product size should be above 25";
-            }
+
             else if (product.Color.Contains("Red"))
-            {
                 errorMessage = "This product color is invalid";
-            }
+
             else if (product.Fit.Contains("Skinny Fit"))
-            {
                 errorMessage = "This product fitting size is invalid";
-            }
+
             else if (product.Fabric.Contains("Polyester"))
-            {
                 errorMessage = "This fabric is not accepted";
-            }
+
             else if (product.Category.Contains("Summer Wear"))
-            {
                 errorMessage = "This product category is not accepted";
-            }
+
             else if (product.Price < 400 || product.Price > 5000)
-            {
                 errorMessage = "Product price should be between 400 and 5000";
-            }
+
             return errorMessage;
         }
 
@@ -235,14 +188,11 @@ namespace WebApplication1.Controllers
             {
                 string errorMessage = validateProductAddOrUpdate(product, true);
                 if (!string.IsNullOrEmpty(errorMessage))
-                {
                     return BadRequest(errorMessage);
-                }
 
                 if (ModelState.IsValid)
                 {
-                    ProductRepository productRepository = new(_Configuration);
-                    productRepository.Update(product);
+                    _productRepository.Update(product);
                     return Ok("Record updated");
                 }
                 return BadRequest("Record not updated");
