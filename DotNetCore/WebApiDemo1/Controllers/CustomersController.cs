@@ -131,8 +131,7 @@ namespace WebApplication1.Controllers
                 {
                     CustomerRepository customerRepository = new(_Configuration);
                     int id = customerRepository.Add(customer);
-                    return Ok(id)
- ;
+                    return Ok(id);
                 }
                 return BadRequest();
             }
@@ -145,32 +144,56 @@ namespace WebApplication1.Controllers
             }
         }
 
-        private string validateCustomerRegisterOrUpdate(CustomerDto customer)
+        private string validateCustomerRegisterOrUpdate(CustomerDto customerDto, bool isUpdate = false)
         {
             string errorMessage = "";
+            
+            customerDto.FullName = customerDto.FullName.Trim();
+            customerDto.Gender = customerDto.Gender.Trim();
+            customerDto.Country = customerDto.Country.Trim();
 
-            customer.FullName = customer.FullName.Trim();
-            customer.Gender = customer.Gender.Trim();
-            customer.Country = customer.Country.Trim();
+            // Approach 1
+            if (isUpdate == true)
+            {
+                if (customerDto.Id < 1)
+                {
+                    errorMessage = "Id can not be less than 0";
+                }
+            }
+
+            // Approach 2
+            //if (isUpdate != false)
+            //{
+            //    if (customerDto.Id < 1)
+            //    {
+            //        errorMessage = "Id can not be less than 0";
+            //    }
+            //}
+
+            // Approach 3
+            //if (isUpdate == true && customer.Id < 1)
+            //{
+            //    errorMessage = "Id can not be less than 0";
+            //}
 
 
-            if (string.IsNullOrWhiteSpace(customer.FullName))
+            if (string.IsNullOrWhiteSpace(customerDto.FullName))
             {
                 errorMessage = "FullName can not be blank";
             }
-            else if (customer.FullName.Length < 3 || customer.FullName.Length > 30)
+            else if (customerDto.FullName.Length < 3 || customerDto.FullName.Length > 30)
             {
                 errorMessage = "FullName should be between 3 and 30 characters.";
             }
-            else if (customer.Age <= 18)
+            else if (customerDto.Age <= 18)
             {
                 errorMessage = "Invalid age, customer age should be above 18";
             }
-            else if (string.IsNullOrWhiteSpace(customer.Country))
+            else if (string.IsNullOrWhiteSpace(customerDto.Country))
             {
                 errorMessage = "Country can not be blank";
             }
-            else if (string.IsNullOrWhiteSpace(customer.Gender))
+            else if (string.IsNullOrWhiteSpace(customerDto.Gender))
             {
                 errorMessage = "Gender can not be blank";
             }
@@ -183,12 +206,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                if (customer.Id < 1)
-                {
-                    return BadRequest("Id can not be less than 0");
-                }
-
-                string errorMessage = validateCustomerRegisterOrUpdate(customer);
+                string errorMessage = validateCustomerRegisterOrUpdate(customer, true);
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
                     return BadRequest(errorMessage);

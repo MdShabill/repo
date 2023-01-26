@@ -49,7 +49,6 @@ namespace WebApiDemo1.Repositories
         {
             SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Customers 
                     WHERE Gender = @gender AND Country = @country ", sqlConnection);
-
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
             sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@country", country);
             DataTable dataTable = new();
@@ -58,7 +57,7 @@ namespace WebApiDemo1.Repositories
 
         }
 
-        public DataTable GetCustomersDetailByNameByCountry(string name, string country)
+        public DataTable GetCustomersDetailByNameByCountry(string name, string? country)
         {
             string sqlQuery = "SELECT * FROM Customers WHERE Name = @name ";
 
@@ -80,7 +79,6 @@ namespace WebApiDemo1.Repositories
             string sqlQuery = @"INSERT INTO Customers(Name, Gender, Age, Country)
                     VALUES (@FullName, @Gender, @Age, @Country)
                     Select Scope_Identity() ";
-
             SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
             sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
