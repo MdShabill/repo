@@ -18,37 +18,46 @@ namespace WebApplication1.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        public readonly IConfiguration _Configuration;
-        
-        public CustomersController(IConfiguration configuration)
+        ICustomerRepository _customerRepository;
+
+        public CustomersController(ICustomerRepository customerRepository)
         {
-            _Configuration = configuration;
+            _customerRepository = customerRepository;
         }
 
         [HttpGet]
         [Route("GetAllCustomers")]
         public IActionResult GetAllCustomers()
         {
-            CustomerRepository customerRepository = new(_Configuration);
-            DataTable dataTable = customerRepository.GetAllCustomers();
+            DataTable dataTable = _customerRepository.GetAllCustomers();
 
             if (dataTable.Rows.Count > 0)
-            {
                 return Ok(JsonConvert.SerializeObject(dataTable));
-            }
             else
-            {
                 return NotFound();
-            }
         }
 
         [HttpGet]
         [Route("GetCustomersCount")]
         public IActionResult GetCustomersCount()
         {
-            CustomerRepository customerRepository = new(_Configuration);
-            int customerCount = customerRepository.GetCustomersCount();
+            int customerCount = _customerRepository.GetCustomersCount();
             return Ok(customerCount);
+        }
+
+        [HttpGet]
+        [Route("GetCustomerDetailById/{CustomerId}")]
+        public IActionResult GetCustomerDetailById(int customerId)
+        {
+            if (customerId < 1)
+                return BadRequest("Customer id should be greater than 0");
+
+            DataTable dataTable = _customerRepository.GetCustomerDetailById(customerId);
+
+            if (dataTable.Rows.Count > 0)
+                return Ok(JsonConvert.SerializeObject(dataTable));
+            else
+                return NotFound();
         }
 
         [HttpGet]
@@ -56,13 +65,10 @@ namespace WebApplication1.Controllers
         public IActionResult GetCustomerFullNameById(int customerId)
         {
             if (customerId < 1)
-            {
                 return BadRequest("Customer id should be greater than 0");
-            }
 
-            CustomerRepository customerRepository = new(_Configuration);
-            string fullName = customerRepository.GetCustomerFullNameById(customerId);
-            return Ok(fullName);
+            string customerFullName = _customerRepository.GetCustomerFullNameById(customerId);
+            return Ok(customerFullName);
         }
 
         [HttpGet]
@@ -70,49 +76,17 @@ namespace WebApplication1.Controllers
         public IActionResult GetCustomersDetailByGenderByCountry(string gender, string country)
         {
             if (gender.Length > 6)
-            {
-                return BadRequest("Gender should not be more than 6 characters");
-            }
+                return BadRequest("Gender should not be more than of 6 characters");
 
-            country = country.Trim();
             if (country.Length > 10)
-            {
-                return BadRequest("Country should not be more than 10 characters");
-            }
+                return BadRequest("country should not be more than of 10 characters");
 
-            CustomerRepository customerRepository = new(_Configuration);
-            DataTable dataTable = customerRepository.GetCustomersDetailByGenderByCountry(gender, country);
+            DataTable dataTable = _customerRepository.GetCustomersDetailByGenderByCountry(gender, country);
 
             if (dataTable.Rows.Count > 0)
-            {
                 return Ok(JsonConvert.SerializeObject(dataTable));
-            }
             else
-            {
                 return NotFound();
-            }
-        }
-
-        [HttpGet]
-        [Route("GetCustomersDetailByNameByCountry/{Name}/{Country?}")]
-        public IActionResult GetCustomersDetailByNameByCountry(string name, string? country)
-        {
-            if (name.Length < 3 || name.Length > 20)
-            {
-                return BadRequest("Customer name should be between 3 and 20 characters.");
-            }
-
-            CustomerRepository customerRepository = new(_Configuration);
-            DataTable dataTable = customerRepository.GetCustomersDetailByNameByCountry(name, country);
-
-            if (dataTable.Rows.Count > 0)
-            {
-                return Ok(JsonConvert.SerializeObject(dataTable));
-            }
-            else
-            {
-                return NotFound();
-            }
         }
 
         [HttpPost]
@@ -123,14 +97,11 @@ namespace WebApplication1.Controllers
             {
                 string errorMessage = validateCustomerRegisterOrUpdate(customer);
                 if (!string.IsNullOrEmpty(errorMessage))
-                {
                     return BadRequest(errorMessage);
-                }
 
                 if (ModelState.IsValid)
                 {
-                    CustomerRepository customerRepository = new(_Configuration);
-                    int id = customerRepository.Add(customer);
+                    int id = _customerRepository.Add(customer);
                     return Ok(id);
                 }
                 return BadRequest();
@@ -144,59 +115,35 @@ namespace WebApplication1.Controllers
             }
         }
 
-        private string validateCustomerRegisterOrUpdate(CustomerDto customerDto, bool isUpdate = false)
+        private string validateCustomerRegisterOrUpdate(CustomerDto customer, bool isUpdate = false)
         {
             string errorMessage = "";
-            
-            customerDto.FullName = customerDto.FullName.Trim();
-            customerDto.Gender = customerDto.Gender.Trim();
-            customerDto.Country = customerDto.Country.Trim();
 
-            // Approach 1
+            customer.FullName = customer.FullName.Trim();
+            customer.Gender = customer.Gender.Trim();
+            customer.Country = customer.Country.Trim();
+
             if (isUpdate == true)
             {
-                if (customerDto.Id < 1)
-                {
+                if (customer.Id < 1)
                     errorMessage = "Id can not be less than 0";
-                }
             }
 
-            // Approach 2
-            //if (isUpdate != false)
-            //{
-            //    if (customerDto.Id < 1)
-            //    {
-            //        errorMessage = "Id can not be less than 0";
-            //    }
-            //}
-
-            // Approach 3
-            //if (isUpdate == true && customer.Id < 1)
-            //{
-            //    errorMessage = "Id can not be less than 0";
-            //}
-
-
-            if (string.IsNullOrWhiteSpace(customerDto.FullName))
-            {
+            if (string.IsNullOrWhiteSpace(customer.FullName))
                 errorMessage = "FullName can not be blank";
-            }
-            else if (customerDto.FullName.Length < 3 || customerDto.FullName.Length > 30)
-            {
+
+            else if (customer.FullName.Length < 3 || customer.FullName.Length > 30)
                 errorMessage = "FullName should be between 3 and 30 characters.";
-            }
-            else if (customerDto.Age <= 18)
-            {
+
+            else if (customer.Age <= 18)
                 errorMessage = "Invalid age, customer age should be above 18";
-            }
-            else if (string.IsNullOrWhiteSpace(customerDto.Country))
-            {
+
+            else if (string.IsNullOrWhiteSpace(customer.Country))
                 errorMessage = "Country can not be blank";
-            }
-            else if (string.IsNullOrWhiteSpace(customerDto.Gender))
-            {
+
+            else if (string.IsNullOrWhiteSpace(customer.Gender))
                 errorMessage = "Gender can not be blank";
-            }
+
             return errorMessage;
         }
 
@@ -208,14 +155,11 @@ namespace WebApplication1.Controllers
             {
                 string errorMessage = validateCustomerRegisterOrUpdate(customer, true);
                 if (!string.IsNullOrEmpty(errorMessage))
-                {
                     return BadRequest(errorMessage);
-                }
 
                 if (ModelState.IsValid)
                 {
-                    CustomerRepository customerRepository = new(_Configuration);
-                    customerRepository.Update(customer);
+                    _customerRepository.Update(customer);
                     return Ok("Record updated");
                 }
                 return BadRequest("Record not updated");
@@ -230,11 +174,3 @@ namespace WebApplication1.Controllers
         }
     }
 }
-
-
-
-
-
-
-
-
