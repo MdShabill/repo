@@ -7,16 +7,16 @@ IConfigurationRoot? configuration = new ConfigurationBuilder()
         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
         .Build();
 
+string EcommerceDBConnectionString = configuration.GetConnectionString("EcommerceDBConnection");
+
 builder.Services.AddTransient<ICustomerRepository>((svc) =>
-{
-    string sqlConnectionString = configuration.GetConnectionString("EcommerceDBConnection");
-    return new CustomerRepository(sqlConnectionString);
+{   
+    return new CustomerRepository(EcommerceDBConnectionString);
 });
 
 builder.Services.AddTransient<IProductRepository>((svc) =>
 {
-    string sqlConnectionString = configuration.GetConnectionString("EcommerceDBConnection");
-    return new ProductRepository(sqlConnectionString);
+    return new ProductRepository(EcommerceDBConnectionString);
 });
 
 builder.Services.AddTransient<IEmployeeRepository>((svc) =>
