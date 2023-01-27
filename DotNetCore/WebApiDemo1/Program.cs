@@ -9,13 +9,13 @@ IConfigurationRoot? configuration = new ConfigurationBuilder()
 
 builder.Services.AddTransient<ICustomerRepository>((svc) =>
 {
-    string sqlConnectionString = configuration.GetConnectionString("CustomerDBConnection");
+    string sqlConnectionString = configuration.GetConnectionString("EcommerceDBConnection");
     return new CustomerRepository(sqlConnectionString);
 });
 
 builder.Services.AddTransient<IProductRepository>((svc) =>
 {
-    string sqlConnectionString = configuration.GetConnectionString("ProductDBConnection");
+    string sqlConnectionString = configuration.GetConnectionString("EcommerceDBConnection");
     return new ProductRepository(sqlConnectionString);
 });
 
