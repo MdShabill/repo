@@ -1,21 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.IO;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Configuration;
 using System.Data;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Data.SqlClient;
-//using WebApiDemo2.DTO;
-using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.DTO;
 using Microsoft.VisualBasic;
 using WebApiDemo1.Repositories;
-using System.Diagnostics.Metrics;
-using System.Reflection;
-using WebApplication1.DTO.InputDTO;
 
 namespace WebApplication1.Controllers
 {

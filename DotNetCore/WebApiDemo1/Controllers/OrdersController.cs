@@ -98,8 +98,6 @@ namespace WebApplication1.Controllers
                 if (!string.IsNullOrEmpty(errorMessage))
                     return BadRequest(errorMessage);
  
-                if (ModelState.IsValid)
-
                     if (ModelState.IsValid)
                     {
                         int id = _orderRepository.OrderAdd(order);

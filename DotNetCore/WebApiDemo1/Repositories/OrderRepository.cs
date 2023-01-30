@@ -16,7 +16,6 @@ namespace WebApiDemo1.Repositories
 
         public DataTable GetAllOrders()
         {
-            //Apporach #1 - Recommended
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 SqlDataAdapter sqlDataAdapter = new("Select * From Orders", sqlConnection);
@@ -70,7 +69,6 @@ namespace WebApiDemo1.Repositories
                 SqlDataAdapter sqlDataAdapter = new(@"Select * From Orders 
                         Where Amount Between @minimumAmount AND @maximumAmount
                         Order By Amount", sqlConnection);
-
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minimumAmount", minimumAmount);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maximumAmount", maximumAmount);
                 DataTable dataTable = new();
@@ -86,7 +84,6 @@ namespace WebApiDemo1.Repositories
                 string sqlQuery = @"INSERT INTO Orders(CustomerId, OrderDate, Amount, ProductName)
                         VALUES (@CustomerId, @OrderDate, @Amount, @ProductName)
                         Select Scope_Identity() ";
-
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@CustomerId", order.CustomerId);
                 sqlCommand.Parameters.AddWithValue("@OrderDate", order.OrderDate);
