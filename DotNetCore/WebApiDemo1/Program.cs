@@ -19,6 +19,11 @@ builder.Services.AddTransient<IProductRepository>((svc) =>
     return new ProductRepository(EcommerceDBConnectionString);
 });
 
+builder.Services.AddTransient<IOrderRepository>((svc) =>
+{
+    return new OrderRepository(EcommerceDBConnectionString);
+});
+
 builder.Services.AddTransient<IEmployeeRepository>((svc) =>
 {
     string sqlConnectionString = configuration.GetConnectionString("EmployeeDBConnection");
@@ -29,6 +34,12 @@ builder.Services.AddTransient<IDoctorRepository>((svc) =>
 {
     string sqlConnectionString = configuration.GetConnectionString("DoctorDBConnection");
     return new DoctorRepository(sqlConnectionString);
+});
+
+builder.Services.AddTransient<ITeacherRepository>((svc) =>
+{
+    string sqlConnectionString = configuration.GetConnectionString("TeacherDBConnection");
+    return new TeacherRepository(sqlConnectionString);
 });
 
 // Add services to the container.
