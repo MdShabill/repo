@@ -99,11 +99,12 @@ namespace WebApiDemo1.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"INSERT INTO Customers(Name, Gender, Age, Country)
-                                VALUES (@FullName, @Gender, @Age, @Country)
+                string sqlQuery = @"INSERT INTO Customers(Name, Email, Gender, Age, Country)
+                                VALUES (@FullName, @Email, @Gender, @Age, @Country)
                                 Select Scope_Identity()";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
+                sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
                 sqlCommand.Parameters.AddWithValue("@Country", customer.Country);
@@ -119,12 +120,13 @@ namespace WebApiDemo1.Repositories
             //Approach #1  - Recommended
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @" UPDATE Customers SET Name = @FullName, Gender = @Gender,
+                string sqlQuery = @" UPDATE Customers SET Name = @FullName, Email = @Email, Gender = @Gender,
                                          Age = @Age, Country = @Country
                                          WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Id", customer.Id);
                 sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
+                sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
                 sqlCommand.Parameters.AddWithValue("@Country", customer.Country);

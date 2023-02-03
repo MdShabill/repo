@@ -1,16 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.IO;
-using Microsoft.AspNetCore.Mvc;
-using System.Configuration;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Data;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Data.SqlClient;
-using System.Text.Json.Serialization;
 using Newtonsoft.Json;
-using System.Reflection;
 using WebApplication1.DTO.InputDTO;
 using WebApiDemo1.Repositories;
+using WebApiDemo1.Enums;
+using System.Text.RegularExpressions;
 
 namespace WebApplication1.Controllers
 {
@@ -115,38 +109,6 @@ namespace WebApplication1.Controllers
             }
         }
 
-        private string validateCustomerRegisterOrUpdate(CustomerDto customer, bool isUpdate = false)
-        {
-            string errorMessage = "";
-
-            customer.FullName = customer.FullName.Trim();
-            customer.Gender = customer.Gender.Trim();
-            customer.Country = customer.Country.Trim();
-
-            if (isUpdate == true)
-            {
-                if (customer.Id < 1)
-                    errorMessage = "Id can not be less than 0";
-            }
-
-            if (string.IsNullOrWhiteSpace(customer.FullName))
-                errorMessage = "FullName can not be blank";
-
-            else if (customer.FullName.Length < 3 || customer.FullName.Length > 30)
-                errorMessage = "FullName should be between 3 and 30 characters.";
-
-            else if (customer.Age <= 18)
-                errorMessage = "Invalid age, customer age should be above 18";
-
-            else if (string.IsNullOrWhiteSpace(customer.Country))
-                errorMessage = "Country can not be blank";
-
-            else if (string.IsNullOrWhiteSpace(customer.Gender))
-                errorMessage = "Gender can not be blank";
-
-            return errorMessage;
-        }
-
         [HttpPost]
         [Route("CustomerUpdate")]
         public IActionResult CustomerUpdate([FromBody] CustomerDto customer)
@@ -171,6 +133,42 @@ namespace WebApplication1.Controllers
                     see your system administrator.");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+        }
+
+        private string validateCustomerRegisterOrUpdate(CustomerDto customer, bool isUpdate = false)
+        {
+            string errorMessage = "";
+
+            customer.FullName = customer.FullName.Trim();
+            customer.Country = customer.Country.Trim();
+
+            if (isUpdate == true)
+            {
+                if (customer.Id < 1)
+                    errorMessage = "Id can not be less than 0";
+            }
+
+            if (string.IsNullOrWhiteSpace(customer.FullName))
+                errorMessage = "FullName can not be blank";
+
+            else if (customer.FullName.Length < 3 || customer.FullName.Length > 30)
+                errorMessage = "FullName should be between 3 and 30 characters.";
+
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regex.Match(customer.Email);
+            if (!match.Success)
+                errorMessage = "Email is invalid";
+
+            else if (customer.Age <= 18)
+                errorMessage = "Invalid age, customer age should be above 18";
+
+            else if (string.IsNullOrWhiteSpace(customer.Country))
+                errorMessage = "Country can not be blank";
+
+            else if(! Enum.IsDefined(typeof(GenderType), customer.Gender))
+                errorMessage = "Invalid Gender";
+
+            return errorMessage;
         }
     }
 }
