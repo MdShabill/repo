@@ -3,6 +3,7 @@ using System.Data;
 using Newtonsoft.Json;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Repositories;
+using WebApiDemo1.Enums;
 
 namespace WebApplication1.Controllers
 {
@@ -136,7 +137,6 @@ namespace WebApplication1.Controllers
 
             product.ProductName = product.ProductName.Trim();
             product.BrandName = product.BrandName.Trim();
-            product.Color = product.Color.Trim();
             product.Fabric = product.Fabric.Trim();
 
             if (isUpdate == true)
@@ -162,8 +162,8 @@ namespace WebApplication1.Controllers
             else if (product.Size <= 25)
                 errorMessage = "Product size should be above 25";
 
-            else if (product.Color.Contains("Red"))
-                errorMessage = "This product color is invalid";
+            else if (!Enum.IsDefined(typeof(ColorType), product.Color))
+                errorMessage = "Invalid Color";
 
             else if (product.Fit.Contains("Skinny Fit"))
                 errorMessage = "This product fitting size is invalid";

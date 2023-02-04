@@ -1,4 +1,6 @@
-﻿namespace WebApiDemo1.DTO.InputDTO
+﻿using WebApiDemo1.Enums;
+
+namespace WebApiDemo1.DTO.InputDTO
 {
     public class ProductDto
     {
@@ -6,7 +8,7 @@
         public string ProductName { get; set; }
         public string BrandName { get; set; }
         public int Size { get; set; }
-        public string Color { get; set; }  
+        public ColorType Color { get; set; }  
         public string Fit { get; set; }
         public string Fabric { get; set; }
         public string Category { get; set; }

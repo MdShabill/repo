@@ -1,11 +1,13 @@
-﻿namespace WebApiDemo1.DTO.InputDTO
+﻿using WebApiDemo1.Enums;
+
+namespace WebApiDemo1.DTO.InputDTO
 {
     public class OrderDto
     {
         public int Id { get; set; }
         public int CustomerId { get; set; }
         public string OrderDate { get; set; }
-        public int Amount { get; set; }
-        public string ProductName { get; set; }
+        public int TotalAmount { get; set; }
+        public ProductType ProductName { get; set; }
     }
 }

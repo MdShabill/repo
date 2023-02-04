@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Collections.Specialized;
 using System.Data;
 using WebApiDemo1.DTO.InputDTO;
+using WebApiDemo1.Enums;
 using WebApiDemo1.Repositories;
 using WebApplication1.DTO.InputDTO;
 
@@ -145,7 +146,6 @@ namespace WebApplication1.Controllers
             string errorMessage = "";
 
             var orderDateTime = DateTime.Parse(order.OrderDate);
-            order.ProductName = order.ProductName.Trim();
 
             if (isUpdate == true)
             {
@@ -162,11 +162,8 @@ namespace WebApplication1.Controllers
             if (order.TotalAmount < 5000)
                 errorMessage = "Invalid amount, order amount should be above 5000";
 
-            if (string.IsNullOrWhiteSpace(order.ProductName))
-                errorMessage = "product name can not be blank";
-
-            if (order.ProductName.Length < 3 || order.ProductName.Length > 30)
-                errorMessage = "Product name should be between 3 and 30 characters.";
+            else if (!Enum.IsDefined(typeof(ProductType), order.ProductName))
+                errorMessage = "Invalid Product Name";
 
             return errorMessage;
         }
