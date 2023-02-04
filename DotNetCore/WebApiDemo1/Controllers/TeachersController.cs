@@ -6,6 +6,8 @@ using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.DTO;
 using Microsoft.VisualBasic;
 using WebApiDemo1.Repositories;
+using System.Text.RegularExpressions;
+using WebApiDemo1.Enums;
 
 namespace WebApplication1.Controllers
 {
@@ -158,11 +160,16 @@ namespace WebApplication1.Controllers
             if (teacher.FullName.Length < 3 || teacher.FullName.Length > 20)
                 errorMessage = "Teacher name should be between 3 and 20 characters";
 
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regex.Match(teacher.Email);
+            if (!match.Success)
+                errorMessage = "Email is invalid";
+
             if (teacher.Age <= 25)
                 errorMessage = "Invalid age, Teacher age should be above 25";
 
-            if (string.IsNullOrWhiteSpace(teacher.Gender))
-                errorMessage = "Teacher gender can not be blank";
+            else if (!Enum.IsDefined(typeof(GenderType), teacher.Gender))
+                errorMessage = "Invalid Gender";
 
             if (teacher.Salary < 25000)
                 errorMessage = "Invalid salary, Teacher salary should be above 25000";

@@ -85,11 +85,12 @@ namespace WebApiDemo1.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"INSERT INTO Teachers(FullName, Age, Gender, SchoolName, Department, Salary)
-                            VALUES (@FullName, @Age, @Gender, @SchoolName, @Department, @Salary)
+                string sqlQuery = @"INSERT INTO Teachers(FullName, Email, Age, Gender, SchoolName, Department, Salary)
+                            VALUES (@FullName, @Email, @Age, @Gender, @SchoolName, @Department, @Salary)
                             Select Scope_Identity() ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@FullName", teacher.FullName);
+                sqlCommand.Parameters.AddWithValue("@Email", teacher.Email);
                 sqlCommand.Parameters.AddWithValue("@Age", teacher.Age);
                 sqlCommand.Parameters.AddWithValue("@Gender", teacher.Gender);
                 sqlCommand.Parameters.AddWithValue("@SchoolName", teacher.SchoolName);
@@ -106,12 +107,13 @@ namespace WebApiDemo1.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @" UPDATE Teachers Set FullName = @FullName, Age = @Age, 
+                string sqlQuery = @" UPDATE Teachers Set FullName = @FullName, Email = @Email, Age = @Age, 
                             Gender = @Gender, SchoolName = @SchoolName, Salary = @Salary
                             WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Id", teacher.Id);
                 sqlCommand.Parameters.AddWithValue("@FullName", teacher.FullName);
+                sqlCommand.Parameters.AddWithValue("@Email", teacher.Email);
                 sqlCommand.Parameters.AddWithValue("@Age", teacher.Age);
                 sqlCommand.Parameters.AddWithValue("@Gender", teacher.Gender);
                 sqlCommand.Parameters.AddWithValue("@SchoolName", teacher.SchoolName);

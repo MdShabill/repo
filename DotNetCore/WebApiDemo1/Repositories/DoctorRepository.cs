@@ -91,11 +91,12 @@ namespace WebApiDemo1.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"INSERT INTO Doctors(FullName, Department, Gender, City)
-                   VALUES (@FullName, @Department, @Gender, @City)
+                string sqlQuery = @"INSERT INTO Doctors(FullName, Email, Department, Gender, City)
+                   VALUES (@FullName, @Email, @Department, @Gender, @City)
                    Select Scope_Identity() ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@FullName", doctor.FullName);
+                sqlCommand.Parameters.AddWithValue("@Email", doctor.Email);
                 sqlCommand.Parameters.AddWithValue("@Department", doctor.Department);
                 sqlCommand.Parameters.AddWithValue("@Gender", doctor.Gender);
                 sqlCommand.Parameters.AddWithValue("@City", doctor.City);
@@ -110,11 +111,12 @@ namespace WebApiDemo1.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @" UPDATE Doctors SET FullName = @FullName, Department = @Department, 
-                    Gender = @Gender, City = @City
-                    WHERE Id = @Id ";
+                string sqlQuery = @" UPDATE Doctors SET FullName = @FullName, Email = @Email, 
+                        Department = @Department, Gender = @Gender, City = @City
+                        WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Id", doctor.Id);
+                sqlCommand.Parameters.AddWithValue("@Email", doctor.Email);
                 sqlCommand.Parameters.AddWithValue("@FullName", doctor.FullName);
                 sqlCommand.Parameters.AddWithValue("@Department", doctor.Department);
                 sqlCommand.Parameters.AddWithValue("@Gender", doctor.Gender);

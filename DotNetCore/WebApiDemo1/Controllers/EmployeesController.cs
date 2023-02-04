@@ -9,6 +9,7 @@ using System.Diagnostics.Metrics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using WebApiDemo1.DTO.InputDTO;
+using WebApiDemo1.Enums;
 using WebApiDemo1.Repositories;
 using WebApplication1.DTO.InputDTO;
 
@@ -114,41 +115,6 @@ namespace WebApplication1.Controllers
             }
         }
 
-        private string ValidateEmployeeRegisterOrUpdate(EmployeeDto employee, bool isUpdate = false)
-        {
-            string errorMessage = "";
-
-            employee.FullName = employee.FullName.Trim();
-            employee.Gender = employee.Gender.Trim();
-
-            if (isUpdate == true)
-            {
-                if (employee.Id < 1)
-                {
-                    errorMessage = "Id can not be less than 0";
-                }
-            }
-
-            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-            Match match = regex.Match(employee.Email);
-            if (!match.Success)
-                errorMessage = "Email is invalid";
-
-            else if (string.IsNullOrWhiteSpace(employee.FullName))
-                errorMessage = "Name can not be blank";
-
-            else if (employee.FullName.Length < 3 || employee.FullName.Length > 30)
-                errorMessage = "FullName should be between 3 and 30 characters.";
-
-            else if (string.IsNullOrWhiteSpace(employee.Gender))
-                errorMessage = "Employee gender can not be blank";
-
-            else if (employee.Salary < 8000)
-                errorMessage = "Invalid salary, employee salary should be above 8000";
-            
-            return errorMessage;
-        }
-
         [HttpPost]
         [Route("EmployeeUpdate")]
         public IActionResult EmployeeUpdate([FromBody] EmployeeDto employee)
@@ -173,6 +139,40 @@ namespace WebApplication1.Controllers
                     see your system administrator.");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+        }
+
+        private string ValidateEmployeeRegisterOrUpdate(EmployeeDto employee, bool isUpdate = false)
+        {
+            string errorMessage = "";
+
+            employee.FullName = employee.FullName.Trim();
+
+            if (isUpdate == true)
+            {
+                if (employee.Id < 1)
+                {
+                    errorMessage = "Id can not be less than 0";
+                }
+            }
+
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regex.Match(employee.Email);
+            if (!match.Success)
+                errorMessage = "Email is invalid";
+
+            else if (string.IsNullOrWhiteSpace(employee.FullName))
+                errorMessage = "Name can not be blank";
+
+            else if (employee.FullName.Length < 3 || employee.FullName.Length > 30)
+                errorMessage = "FullName should be between 3 and 30 characters.";
+
+            else if (!Enum.IsDefined(typeof(GenderType), employee.Gender))
+                errorMessage = "Invalid Gender";
+
+            else if (employee.Salary < 8000)
+                errorMessage = "Invalid salary, employee salary should be above 8000";
+
+            return errorMessage;
         }
     }
 }

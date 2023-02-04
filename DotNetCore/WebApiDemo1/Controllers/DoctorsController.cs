@@ -5,7 +5,9 @@ using Newtonsoft.Json;
 using System.Data;
 using System.Diagnostics.Metrics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using WebApiDemo1.DTO.InputDTO;
+using WebApiDemo1.Enums;
 using WebApiDemo1.Repositories;
 using WebApplication1.DTO.InputDTO;
 
@@ -130,43 +132,6 @@ namespace WebApiDemo1.Controllers
             }
         }
 
-        private string validateDoctorAddOrUpdate(DoctorDto doctor, bool isUpdate = false)
-        {
-            string errorMessage = "";
-
-            doctor.FullName = doctor.FullName.Trim();
-            doctor.Department = doctor.Department.Trim();
-            doctor.City = doctor.City.Trim();
-
-            if (isUpdate == true)
-            {
-                if (doctor.Id < 1)
-                {
-                    errorMessage = "Id can not be less than 0";
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(doctor.FullName))
-                errorMessage = "Doctor fullName can not be blank";
-
-            else if (doctor.FullName.Length < 3 || doctor.FullName.Length > 20)
-                errorMessage = "Doctor full name should be between 3 and 20 characters";
-
-            else if (string.IsNullOrWhiteSpace(doctor.Department))
-                errorMessage = "Department name can not be blank";
-
-            else if (doctor.Department.Length < 3 || doctor.Department.Length > 20)
-                errorMessage = "Department name should be between 3 and 20 characters";
-
-            else if (string.IsNullOrWhiteSpace(doctor.Gender))
-                errorMessage = "Gender can not be blank";
-
-            else if (doctor.City.Length < 3 || doctor.City.Length > 20)
-                errorMessage = "City name should be between 3 and 20 characters";
-
-            return errorMessage;
-        }
-
         [HttpPost]
         [Route("DoctorUpdate")]
         public IActionResult DoctorUpdate([FromBody] DoctorDto doctor)
@@ -191,6 +156,48 @@ namespace WebApiDemo1.Controllers
                     see your system administrator.");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+        }
+
+        private string validateDoctorAddOrUpdate(DoctorDto doctor, bool isUpdate = false)
+        {
+            string errorMessage = "";
+
+            doctor.FullName = doctor.FullName.Trim();
+            doctor.Department = doctor.Department.Trim();
+            doctor.City = doctor.City.Trim();
+
+            if (isUpdate == true)
+            {
+                if (doctor.Id < 1)
+                {
+                    errorMessage = "Id can not be less than 0";
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(doctor.FullName))
+                errorMessage = "Doctor fullName can not be blank";
+
+            else if (doctor.FullName.Length < 3 || doctor.FullName.Length > 20)
+                errorMessage = "Doctor full name should be between 3 and 20 characters";
+
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regex.Match(doctor.Email);
+            if (!match.Success)
+                errorMessage = "Email is invalid";
+
+            else if (string.IsNullOrWhiteSpace(doctor.Department))
+                errorMessage = "Department name can not be blank";
+
+            else if (doctor.Department.Length < 3 || doctor.Department.Length > 20)
+                errorMessage = "Department name should be between 3 and 20 characters";
+
+            else if (!Enum.IsDefined(typeof(GenderType), doctor.Gender))
+                errorMessage = "Invalid Gender";
+
+            else if (doctor.City.Length < 3 || doctor.City.Length > 20)
+                errorMessage = "City name should be between 3 and 20 characters";
+
+            return errorMessage;
         }
     }
 }
