@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Configuration;
 using System.Data;
 using Newtonsoft.Json;
 using WebApiDemo1.DTO.InputDTO;
-using WebApiDemo1.DTO;
-using Microsoft.VisualBasic;
 using WebApiDemo1.Repositories;
 using System.Text.RegularExpressions;
 using WebApiDemo1.Enums;
+using Microsoft.Data.SqlClient;
 
 namespace WebApplication1.Controllers
 {
@@ -107,6 +105,13 @@ namespace WebApplication1.Controllers
                 }
                 return BadRequest();
             }
+            catch (SqlException ex)
+            {
+                if (ex.Number == 2627)
+                    return BadRequest("Email already exist");
+                else
+                    return BadRequest("Some error at database side");
+            }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", @"Unable to save changes. 
@@ -132,6 +137,13 @@ namespace WebApplication1.Controllers
                     return Ok("Record updated");
                 }
                 return BadRequest("Record not updated");
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Number == 2627)
+                    return BadRequest("Email already exist");
+                else
+                    return BadRequest("Some error at database side");
             }
             catch (Exception ex)
             {
