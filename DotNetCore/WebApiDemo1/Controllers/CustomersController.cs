@@ -180,7 +180,7 @@ namespace WebApplication1.Controllers
             else if (string.IsNullOrWhiteSpace(customer.Country))
                 errorMessage = "Country can not be blank";
 
-            else if(! Enum.IsDefined(typeof(GenderType), customer.Gender))
+            else if(! Enum.IsDefined(typeof(GenderTypes), customer.Gender))
                 errorMessage = "Invalid Gender";
 
             return errorMessage;

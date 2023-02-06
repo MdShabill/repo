@@ -201,7 +201,7 @@ namespace WebApiDemo1.Controllers
             else if (doctor.Department.Length < 3 || doctor.Department.Length > 20)
                 errorMessage = "Department name should be between 3 and 20 characters";
 
-            else if (!Enum.IsDefined(typeof(GenderType), doctor.Gender))
+            else if (!Enum.IsDefined(typeof(GenderTypes), doctor.Gender))
                 errorMessage = "Invalid Gender";
 
             else if (doctor.City.Length < 3 || doctor.City.Length > 20)

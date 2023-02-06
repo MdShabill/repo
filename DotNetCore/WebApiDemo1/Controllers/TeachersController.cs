@@ -59,9 +59,11 @@ namespace WebApplication1.Controllers
         [Route("GetTeachersByDepartmentByTeacherName/{teacherName}/{department?}")]
         public IActionResult GetTeachersByDepartmentByTeacherName(string teacherName, string? department)
         {
+            department = department.Trim();
+
             if (string.IsNullOrWhiteSpace(department))
                 return BadRequest("Department can not be blank");
-            department= department.Trim();
+
             if (department.Length < 3 || department.Length > 30)
                 return BadRequest("Department should be between 3 and 30 characters.");
 
@@ -180,7 +182,7 @@ namespace WebApplication1.Controllers
             if (teacher.Age <= 25)
                 errorMessage = "Invalid age, Teacher age should be above 25";
 
-            else if (!Enum.IsDefined(typeof(GenderType), teacher.Gender))
+            else if (!Enum.IsDefined(typeof(GenderTypes), teacher.Gender))
                 errorMessage = "Invalid Gender";
 
             if (teacher.Salary < 25000)

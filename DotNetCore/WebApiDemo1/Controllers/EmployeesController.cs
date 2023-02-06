@@ -174,7 +174,7 @@ namespace WebApplication1.Controllers
             else if (employee.FullName.Length < 3 || employee.FullName.Length > 30)
                 errorMessage = "FullName should be between 3 and 30 characters.";
 
-            else if (!Enum.IsDefined(typeof(GenderType), employee.Gender))
+            else if (!Enum.IsDefined(typeof(GenderTypes), employee.Gender))
                 errorMessage = "Invalid Gender";
 
             else if (employee.Salary < 8000)

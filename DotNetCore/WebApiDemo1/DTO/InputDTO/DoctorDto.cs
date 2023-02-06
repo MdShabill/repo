@@ -8,7 +8,7 @@ namespace WebApiDemo1.DTO.InputDTO
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Department { get; set; }
-        public GenderType Gender { get; set; }
+        public GenderTypes Gender { get; set; }
         public string City { get; set; }
     }
 }
