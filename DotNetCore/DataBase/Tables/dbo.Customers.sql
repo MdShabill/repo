@@ -6,6 +6,6 @@ CREATE TABLE Customers
 	Gender Int Not Null,
 	Age INT,
 	Country NVARCHAR(100),
-	CONSTRAINT UC_Customers UNIQUE (Email)
+	CONSTRAINT CustomersUniqueEmail UNIQUE (Email)
 )
 

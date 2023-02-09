@@ -6,8 +6,12 @@ CREATE TABLE Doctors
 	Department NVARCHAR(100),
 	Gender Int Not Null,
 	City NVARCHAR(100),
-	CONSTRAINT UC_Doctors UNIQUE (Email)
+	CONSTRAINT DoctorsUniqueEmail UNIQUE (Email)
 )
 
 --Truncate table Doctors
 --Select * From Doctors
+
+Insert into Doctors(FullName, Email, Department, Gender, City)
+	   Values ('Shabill', 'shabill8@gmail.com', 'Physiotherapist', 1, 'India')
+
