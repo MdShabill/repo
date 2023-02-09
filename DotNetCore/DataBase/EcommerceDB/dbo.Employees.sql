@@ -5,5 +5,6 @@ CREATE TABLE Employees
 	Email NVarchar(100) Not Null,
 	Gender Int Not Null,
 	Salary INT,
+	PRIMARY KEY (Id),
 	CONSTRAINT EmployeesUniqueEmail UNIQUE (Email)
 )

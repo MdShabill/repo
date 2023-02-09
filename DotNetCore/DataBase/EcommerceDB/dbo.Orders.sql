@@ -4,5 +4,6 @@ CREATE TABLE Orders
 	CustomerId INT,
 	OrderDate DATETIME,
 	Amount INT,
-	ProductName Int
+	ProductName Int,
+	PRIMARY KEY (Id)
 )

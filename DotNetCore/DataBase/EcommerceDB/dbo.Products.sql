@@ -12,6 +12,7 @@ Create Table Products
 	Category NVarchar(100) Not Null,
 	Discount Int Not Null,
 	Price Int Not Null,
+	PRIMARY KEY (Id)
 )
 
 

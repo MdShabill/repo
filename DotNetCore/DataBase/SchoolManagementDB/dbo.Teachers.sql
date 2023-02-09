@@ -8,5 +8,6 @@ CREATE TABLE Teachers
     SchoolName NVARCHAR(100),
 	Department NVARCHAR(100),
 	Salary INT,
+	PRIMARY KEY (Id),
 	CONSTRAINT TeachersUniqueEmail UNIQUE (Email)
 )

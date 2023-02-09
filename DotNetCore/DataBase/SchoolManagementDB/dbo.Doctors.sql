@@ -6,7 +6,8 @@ CREATE TABLE Doctors
 	Department NVARCHAR(100),
 	Gender Int Not Null,
 	City NVARCHAR(100),
-	CONSTRAINT DoctorsUniqueEmail UNIQUE (Email)
+	PRIMARY KEY (Id),
+	CONSTRAINT UniqueEmail UNIQUE (Email)
 )
 
 --Truncate table Doctors

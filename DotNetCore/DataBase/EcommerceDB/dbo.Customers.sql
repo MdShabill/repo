@@ -6,6 +6,7 @@ CREATE TABLE Customers
 	Gender Int Not Null,
 	Age INT,
 	Country NVARCHAR(100),
+	PRIMARY KEY (Id),
 	CONSTRAINT CustomersUniqueEmail UNIQUE (Email)
 )
 
