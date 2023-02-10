@@ -122,7 +122,7 @@ namespace WebApiDemo1.Controllers
             catch (SqlException ex)
             {
                 if (ex.Number == 2627)
-                    return BadRequest("Email already exist");
+                    return BadRequest("Email or RegistrationNumber already exist");
                 else
                     return BadRequest("Some error at database side");
             }
@@ -155,7 +155,7 @@ namespace WebApiDemo1.Controllers
             catch (SqlException ex)
             {
                 if (ex.Number == 2627)
-                    return BadRequest("Email already exist");
+                    return BadRequest("Email or RegistrationNumber already exist");
                 else
                     return BadRequest("Some error at database side");
             }

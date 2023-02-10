@@ -91,10 +91,11 @@ namespace WebApiDemo1.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"INSERT INTO Doctors(FullName, Email, Department, Gender, City)
-                   VALUES (@FullName, @Email, @Department, @Gender, @City)
-                   Select Scope_Identity() ";
+                string sqlQuery = @"INSERT INTO Doctors(RegistrationNumber, FullName, Email, Department, Gender, City)
+                           VALUES (@RegistrationNumber, @FullName, @Email, @Department, @Gender, @City)
+                           Select Scope_Identity() ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@RegistrationNumber", doctor.RegistrationNumber);
                 sqlCommand.Parameters.AddWithValue("@FullName", doctor.FullName);
                 sqlCommand.Parameters.AddWithValue("@Email", doctor.Email);
                 sqlCommand.Parameters.AddWithValue("@Department", doctor.Department);
@@ -111,13 +112,14 @@ namespace WebApiDemo1.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @" UPDATE Doctors SET FullName = @FullName, Email = @Email, 
-                        Department = @Department, Gender = @Gender, City = @City
-                        WHERE Id = @Id ";
+                string sqlQuery = @" UPDATE Doctors SET RegistrationNumber = @RegistrationNumber, FullName = @FullName, 
+                            Email = @Email, Department = @Department, Gender = @Gender, City = @City
+                            WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Id", doctor.Id);
-                sqlCommand.Parameters.AddWithValue("@Email", doctor.Email);
+                sqlCommand.Parameters.AddWithValue("@RegistrationNumber", doctor.RegistrationNumber);
                 sqlCommand.Parameters.AddWithValue("@FullName", doctor.FullName);
+                sqlCommand.Parameters.AddWithValue("@Email", doctor.Email);
                 sqlCommand.Parameters.AddWithValue("@Department", doctor.Department);
                 sqlCommand.Parameters.AddWithValue("@Gender", doctor.Gender);
                 sqlCommand.Parameters.AddWithValue("@City", doctor.City);
