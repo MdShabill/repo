@@ -33,6 +33,30 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllEmployees_New")]
+        public IActionResult GetAllEmployees_New()
+        {
+            List<EmployeeDto> employees = _employeeRepository.GetAllEmployeesAsList();
+
+            if (employees.Count > 0)
+                return Ok(employees);
+            else
+                return NotFound();
+        }
+
+        [HttpGet]
+        [Route("GetEmployeeById_New/{id}")]
+        public IActionResult GetEmployeeById_New(int id)
+        {
+            EmployeeDto employee = _employeeRepository.GetAllEmployeeById(id);
+
+            if(employee is not null)
+                return Ok(employee);
+            else 
+                    return NotFound("No Record Found for given id");
+        }
+
+        [HttpGet]
         [Route("GetEmployeesCount")]
         public IActionResult GetEmployeesCount()
         {
@@ -103,7 +127,16 @@ namespace WebApplication1.Controllers
             catch (SqlException ex)
             {
                 if (ex.Number == 2627)
-                    return BadRequest("Email already exist");
+                {
+                    if (ex.Message.Contains("UQ_Employees_Email"))
+                        return BadRequest("Email already exist");
+
+                    if (ex.Message.Contains("UQ_Employees_MobileNumber"))
+                        return BadRequest("Mobile number already exist");
+
+                    else
+                        return BadRequest("Some error at database side");
+                }
                 else
                     return BadRequest("Some error at database side");
             }
@@ -136,7 +169,16 @@ namespace WebApplication1.Controllers
             catch (SqlException ex)
             {
                 if (ex.Number == 2627)
-                    return BadRequest("Email already exist");
+                {
+                    if (ex.Message.Contains("UQ_Employees_Email"))
+                        return BadRequest("Email already exist");
+
+                    if (ex.Message.Contains("UQ_Employees_MobileNumber"))
+                        return BadRequest("Mobile number already exist");
+
+                    else
+                        return BadRequest("Some error at database side");
+                }
                 else
                     return BadRequest("Some error at database side");
             }

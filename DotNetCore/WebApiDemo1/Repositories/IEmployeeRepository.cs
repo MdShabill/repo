@@ -7,6 +7,10 @@ namespace WebApiDemo1.Repositories
     public interface IEmployeeRepository
     {
         public DataTable GetAllEmployees();
+
+        public List<EmployeeDto> GetAllEmployeesAsList();
+        public EmployeeDto GetAllEmployeeById(int id);
+
         public int GetEmployeesCount();
         public string GetEmployeesFullNameById(int employeeId);
         public DataTable GetEmployeesDetailByGenderBySalary(string gender, int salary);

@@ -6,8 +6,9 @@ namespace WebApiDemo1.DTO.InputDTO
     {
         public int Id { get; set; }
         public string FullName { get; set; }
-        public string Email { get; set; }
         public GenderTypes Gender { get; set; }
+        public string Email { get; set; }
+        public string MobileNumber { get; set; }
         public int Salary { get; set; }
     }
 }
