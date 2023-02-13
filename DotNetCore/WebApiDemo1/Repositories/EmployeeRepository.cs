@@ -48,6 +48,7 @@ namespace WebApiDemo1.Repositories
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@Id", id);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
+
                 if (dataTable.Rows.Count > 0)
                 {
                     EmployeeDto employeeDto = new();

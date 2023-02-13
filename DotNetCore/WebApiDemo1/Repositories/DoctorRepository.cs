@@ -167,8 +167,7 @@ namespace WebApiDemo1.Repositories
                             RegistrationNumber = @RegistrationNumber, Department = @Department, City = @City
                             WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@Id", doctor.Id);
-                
+                sqlCommand.Parameters.AddWithValue("@Id", doctor.Id); 
                 sqlCommand.Parameters.AddWithValue("@FullName", doctor.FullName);
                 sqlCommand.Parameters.AddWithValue("@Gender", doctor.Gender);
                 sqlCommand.Parameters.AddWithValue("@Email", doctor.Email);
