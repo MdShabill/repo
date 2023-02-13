@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using Newtonsoft.Json;
-using System.Data;
 using System.Text.RegularExpressions;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
@@ -24,9 +22,10 @@ namespace WebApiDemo1.Controllers
         [Route("GetAllDoctors")]
         public IActionResult GetAllDoctors()
         {
-            DataTable dataTable = _doctorRepository.GetAllDoctors();
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            List<DoctorDto> doctors = _doctorRepository.GetAllDoctorsAsList();
+
+            if (doctors.Count > 0)
+                return Ok(doctors);
             else
                 return NotFound();
         }
@@ -40,63 +39,58 @@ namespace WebApiDemo1.Controllers
         }
 
         [HttpGet]
-        [Route("GetDoctorDepartmentById/{doctorId}")]
-        public IActionResult GetDoctorDepartmentById(int doctorId)
+        [Route("GetDoctorDetailById/{doctorId}")]
+        public IActionResult GetDoctorDetailById(int doctorId)
         {
             if (doctorId < 1)
-                return BadRequest("Doctor id should be greater than 0");
+                return BadRequest("Doctor Id should be greater than 0");
 
-            string subStringDoctorDepartment = _doctorRepository.GetDoctorDepartmentById(doctorId);
-            return Ok(subStringDoctorDepartment);
+            DoctorDto doctor = _doctorRepository.GetDoctorDetailById(doctorId);
+
+            if (doctor is not null)
+                return Ok(doctor);
+            else
+                return NotFound("No Record Found for given id");
         }
 
         [HttpGet]
-        [Route("GetDoctorsDetailByFullNameByDepartment/{fullName}/{department}")]
-        public IActionResult GetDoctorsDetailByFullNameByDepartment(string fullName, string department)
+        [Route("GetDoctorsByDepartmentByDoctorName/{department}/{doctorName}")]
+        public IActionResult GetDoctorsByDepartmentByDoctorName(string department, string doctorName)
         {
-            fullName = fullName.Trim();
+            doctorName = doctorName.Trim();
             department = department.Trim();
 
-            if (string.IsNullOrWhiteSpace(fullName))
-                return BadRequest("Doctor full name can not be blank");
+            if (string.IsNullOrWhiteSpace(doctorName))
+                return BadRequest("Doctor name cannot be blank");
 
-            if (fullName.Length < 3 || fullName.Length > 20)
-                return BadRequest("Doctor full name should be between 3 and 20 characters");
+            else if (doctorName.Length < 3 || doctorName.Length > 30)
+                return BadRequest("DoctorName should be between 3 and 30 characters.");
 
-            if (string.IsNullOrWhiteSpace(department))
-                return BadRequest("Department name can not be blank");
+            else if (department.Length < 3 || department.Length > 30)
+                return BadRequest("Department should be between 3 and 30 characters.");
 
-            if (department.Length < 3 || department.Length > 20)
-                return BadRequest("Department name should be between 3 and 20 characters");
+            List<DoctorDto> doctors = _doctorRepository.GetDoctorsByDepartmentByDoctorName(department, doctorName);
 
-            DataTable dataTable = _doctorRepository.GetDoctorsDetailByFullNameByDepartment(fullName, department);
-
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (doctors.Count > 0)
+                return Ok(doctors);
             else
                 return NotFound();
         }
 
         [HttpGet]
-        [Route("GetDoctorsDetailByDepartmentByCity/{department}/{city?}")]
-        public IActionResult GetDoctorsDetailByDepartmentByCity(string department, string? city)
+        [Route("GetDoctorsNameListByDepartment/{department}")]
+        public IActionResult GetDoctorsNameListByDepartment(string department)
         {
-            city = city.Trim();
-            department = department.Trim();
-
-            if (city.Length < 3 || city.Length > 20)
-                return BadRequest("City name should be between 3 and 20 characters");
-
             if (string.IsNullOrWhiteSpace(department))
-                return BadRequest("Department name can not be blank");
+                return BadRequest("Department cannot be blank");
 
-            if (department.Length < 3 || department.Length > 20)
-                return BadRequest("Department name should be between 3 and 20 characters");
+            else if (department.Length < 3 || department.Length > 30)
+                return BadRequest("Department should be between 3 and 30 characters.");
 
-            DataTable dataTable = _doctorRepository.GetDoctorsDetailByDepartmentByCity(department, city);
+            List<DoctorDto> doctors = _doctorRepository.GetDoctorsNameListByDepartment(department);
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (doctors.Count > 0)
+                return Ok(doctors);
             else
                 return NotFound();
         }
@@ -114,7 +108,6 @@ namespace WebApiDemo1.Controllers
                 if (ModelState.IsValid)
                 {
                     int id = _doctorRepository.Add(doctor);
-
                     return Ok(id);
                 }
                 return BadRequest();
@@ -122,7 +115,16 @@ namespace WebApiDemo1.Controllers
             catch (SqlException ex)
             {
                 if (ex.Number == 2627)
-                    return BadRequest("Email or RegistrationNumber already exist");
+                {
+                    if (ex.Message.Contains("UQ_Doctors_RegistrationNumber"))
+                        return BadRequest("RegistrationNumber already exist");
+
+                    if(ex.Message.Contains("UQ_Doctors_Email"))
+                        return BadRequest("Email already exist");
+
+                    else
+                        return BadRequest("Some error at database side");
+                }
                 else
                     return BadRequest("Some error at database side");
             }
@@ -155,7 +157,16 @@ namespace WebApiDemo1.Controllers
             catch (SqlException ex)
             {
                 if (ex.Number == 2627)
-                    return BadRequest("Email or RegistrationNumber already exist");
+                {
+                    if (ex.Message.Contains("UQ_Doctors_RegistrationNumber"))
+                        return BadRequest("RegistrationNumber already exist");
+
+                    if (ex.Message.Contains("UQ_Doctors_Email"))
+                        return BadRequest("Email already exist");
+
+                    else
+                        return BadRequest("Some error at database side");
+                }
                 else
                     return BadRequest("Some error at database side");
             }

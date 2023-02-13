@@ -6,6 +6,7 @@ using WebApiDemo1.Repositories;
 using WebApiDemo1.Enums;
 using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
+using WebApiDemo1.DTO.InputDTO;
 
 namespace WebApplication1.Controllers
 {
@@ -24,10 +25,10 @@ namespace WebApplication1.Controllers
         [Route("GetAllCustomers")]
         public IActionResult GetAllCustomers()
         {
-            DataTable dataTable = _customerRepository.GetAllCustomers();
+            List<CustomerDto> customers = _customerRepository.GetAllCustomersAsList();
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (customers.Count > 0)
+                return Ok(customers);
             else
                 return NotFound();
         }
@@ -41,18 +42,15 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetCustomerDetailById/{CustomerId}")]
-        public IActionResult GetCustomerDetailById(int customerId)
+        [Route("GetCustomerById/{id}")]
+        public IActionResult GetCustomerById(int id)
         {
-            if (customerId < 1)
-                return BadRequest("Customer id should be greater than 0");
+            CustomerDto customer = _customerRepository.GetAllCustomerById(id);
 
-            DataTable dataTable = _customerRepository.GetCustomerDetailById(customerId);
-
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (customer is not null)
+                return Ok(customer);
             else
-                return NotFound();
+                return NotFound("No Record Found for given id");
         }
 
         [HttpGet]
@@ -68,18 +66,15 @@ namespace WebApplication1.Controllers
 
         [HttpGet]
         [Route("GetCustomersDetailByGenderByCountry/{gender}/{country}")]
-        public IActionResult GetCustomersDetailByGenderByCountry(string gender, string country)
+        public IActionResult GetCustomersDetailByGenderByCountry(int gender, string country)
         {
-            if (gender.Length > 6)
-                return BadRequest("Gender should not be more than of 6 characters");
-
             if (country.Length > 10)
                 return BadRequest("country should not be more than of 10 characters");
 
-            DataTable dataTable = _customerRepository.GetCustomersDetailByGenderByCountry(gender, country);
+            List<CustomerDto> customers = _customerRepository.GetCustomersDetailByGenderByCountry(gender, country);
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (customers.Count > 0)
+                return Ok(customers);
             else
                 return NotFound();
         }
@@ -104,7 +99,16 @@ namespace WebApplication1.Controllers
             catch (SqlException ex)
             {
                 if (ex.Number == 2627)
-                    return BadRequest("Email already exist");
+                {
+                    if (ex.Message.Contains("UQ_Customers_Email"))
+                        return BadRequest("Email already exist");
+
+                    if (ex.Message.Contains("UQ_Customers_MobileNumber"))
+                        return BadRequest("Mobile Number already exist");
+
+                    else
+                        return BadRequest("Some error at database side");
+                }
                 else
                     return BadRequest("Some error at database side");
             }
@@ -137,7 +141,16 @@ namespace WebApplication1.Controllers
             catch (SqlException ex)
             {
                 if (ex.Number == 2627)
-                    return BadRequest("Email already exist");
+                {
+                    if (ex.Message.Contains("UQ_Customers_Email"))
+                        return BadRequest("Email already exist");
+
+                    if (ex.Message.Contains("UQ_Customers_MobileNumber"))
+                        return BadRequest("Mobile Number already exist");
+
+                    else
+                        return BadRequest("Some error at database side");
+                }
                 else
                     return BadRequest("Some error at database side");
             }

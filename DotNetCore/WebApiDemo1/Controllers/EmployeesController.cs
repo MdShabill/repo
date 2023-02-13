@@ -24,18 +24,6 @@ namespace WebApplication1.Controllers
         [Route("GetAllEmployees")]
         public IActionResult GetAllEmployees()
         {
-            DataTable dataTable = _employeeRepository.GetAllEmployees();
-
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
-            else
-                return NotFound();
-        }
-
-        [HttpGet]
-        [Route("GetAllEmployees_New")]
-        public IActionResult GetAllEmployees_New()
-        {
             List<EmployeeDto> employees = _employeeRepository.GetAllEmployeesAsList();
 
             if (employees.Count > 0)
@@ -45,15 +33,15 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetEmployeeById_New/{id}")]
-        public IActionResult GetEmployeeById_New(int id)
+        [Route("GetEmployeeById/{id}")]
+        public IActionResult GetEmployeeById(int id)
         {
             EmployeeDto employee = _employeeRepository.GetAllEmployeeById(id);
 
             if(employee is not null)
                 return Ok(employee);
             else 
-                    return NotFound("No Record Found for given id");
+                return NotFound("No Record Found for given id");
         }
 
         [HttpGet]
@@ -65,27 +53,16 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetEmployeesFullNameById/{EmployeeId}")]
-        public IActionResult GetEmployeesFullNameById(int employeeId)
+        [Route("GetEmployeesDetail/{gender}/{salary}")]
+        public IActionResult GetEmployeesDetailByGenderBySalary(int gender, int salary)
         {
-            if (employeeId < 1)
-                return BadRequest("Employee id should be greater than 0");
+            if (salary < 8000)
+                return BadRequest("Please enter salary above 8000");
 
-            string employeeFullName = _employeeRepository.GetEmployeesFullNameById(employeeId);
-            return Ok(employeeFullName);
-        }
+            List<EmployeeDto> employees = _employeeRepository.GetEmployeesDetailByGenderBySalary(gender, salary);
 
-        [HttpGet]
-        [Route("GetEmployeesDetailByGenderBySalary/{gender}/{salary}")]
-        public IActionResult GetEmployeesDetailByGenderBySalary(string gender, int salary)
-        {
-            if (salary < 10000)
-                return BadRequest("Please Enter salary above 10000");
-
-            DataTable dataTable = _employeeRepository.GetEmployeesDetailByGenderBySalary(gender, salary);
-
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (employees.Count > 0)
+                return Ok(employees);
             else
                 return NotFound();
         }
@@ -95,12 +72,18 @@ namespace WebApplication1.Controllers
         public IActionResult GetEmployeesBySalaryRange(int minimumSalary, int maximumSalary)
         {
             if (maximumSalary < minimumSalary)
-                return BadRequest("Maximum salary cannot be less than minimum salary");
+                return BadRequest("maximum salary can not be less than minimumSalary");
 
-            DataTable dataTable = _employeeRepository.GetEmployeesBySalaryRange(minimumSalary, maximumSalary);
+            else if (minimumSalary < 8000)
+                return BadRequest("Please enter minimum salary above 8000");
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            else if (maximumSalary > 500000)
+                return BadRequest("Please enter maximum salary less than 500000");
+
+            List<EmployeeDto> employees = _employeeRepository.GetEmployeesBySalaryRange(minimumSalary, maximumSalary);
+
+            if (employees.Count > 0)
+                return Ok(employees);
             else
                 return NotFound();
         }

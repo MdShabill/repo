@@ -1,16 +1,15 @@
 ﻿using System.Data;
 using WebApiDemo1.DTO.InputDTO;
-using WebApplication1.DTO.InputDTO;
 
 namespace WebApiDemo1.Repositories
 {
     public interface IDoctorRepository
     {
-        public DataTable GetAllDoctors();
+        public List<DoctorDto> GetAllDoctorsAsList();
         public int GetDoctorsCount();
-        public string GetDoctorDepartmentById(int doctorId);
-        public DataTable GetDoctorsDetailByFullNameByDepartment(string fullName, string department);
-        public DataTable GetDoctorsDetailByDepartmentByCity(string department, string? city);
+        public DoctorDto GetDoctorDetailById(int doctorId);
+        public List<DoctorDto> GetDoctorsByDepartmentByDoctorName(string department, string doctorName);
+        public List<DoctorDto> GetDoctorsNameListByDepartment(string department);
         public int Add(DoctorDto doctor);
         public void Update(DoctorDto doctor);
     }

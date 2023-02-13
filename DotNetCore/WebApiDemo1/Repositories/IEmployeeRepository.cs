@@ -6,15 +6,11 @@ namespace WebApiDemo1.Repositories
 {
     public interface IEmployeeRepository
     {
-        public DataTable GetAllEmployees();
-
         public List<EmployeeDto> GetAllEmployeesAsList();
         public EmployeeDto GetAllEmployeeById(int id);
-
         public int GetEmployeesCount();
-        public string GetEmployeesFullNameById(int employeeId);
-        public DataTable GetEmployeesDetailByGenderBySalary(string gender, int salary);
-        public DataTable GetEmployeesBySalaryRange(int minimumSalary, int maximumSalary);
+        public List<EmployeeDto> GetEmployeesDetailByGenderBySalary(int gender, int salary);
+        public List<EmployeeDto> GetEmployeesBySalaryRange(int minimumSalary, int maximumSalary);
         public int Add(EmployeeDto employee);
         public void Update(EmployeeDto employee);
     }

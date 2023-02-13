@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
 using WebApiDemo1.DTO.InputDTO;
-using WebApplication1.DTO.InputDTO;
+using WebApiDemo1.Enums;
 
 namespace WebApiDemo1.Repositories
 {
@@ -12,18 +12,32 @@ namespace WebApiDemo1.Repositories
         public DoctorRepository(string connectionString)
         {
             _connectionString = connectionString;
-        }  
+        }
 
-        public DataTable GetAllDoctors()
+        public List<DoctorDto> GetAllDoctorsAsList()
         {
+            List<DoctorDto> doctors = new();
+
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SqlDataAdapter sqlDataAdapter = new("Select * From Doctors", sqlConnection);
+                SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Doctors", sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
-                DataTable copyDataTable = dataTable.Copy();
-                sqlDataAdapter.Fill(copyDataTable);
-                return dataTable;
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    DoctorDto doctorDto = new();
+                    doctorDto.Id = (int)dataTable.Rows[i]["Id"];
+                    doctorDto.FullName = (string)dataTable.Rows[i]["FullName"];
+                    doctorDto.Gender = (GenderTypes)dataTable.Rows[i]["Gender"];
+                    doctorDto.Email = (string)dataTable.Rows[i]["Email"];
+                    doctorDto.RegistrationNumber = (int)dataTable.Rows[i]["RegistrationNumber"];
+                    doctorDto.Department = (string)dataTable.Rows[i]["Department"];
+                    doctorDto.City = (string)dataTable.Rows[i]["City"];
+
+                    doctors.Add(doctorDto);
+                }
+                return doctors;
             }
         }
 
@@ -40,50 +54,87 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public string GetDoctorDepartmentById(int doctorId)
+        public DoctorDto GetDoctorDetailById(int doctorId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "Select Department From Doctors where id = @doctorId";
-                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@doctorId", doctorId);
-                sqlConnection.Open();
-                string doctorDepartment = Convert.ToString(sqlCommand.ExecuteScalar());
-                string subStringDoctorDepartment = doctorDepartment.Substring(4);
-                sqlConnection.Close();
-                return subStringDoctorDepartment;
+                SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Doctors WHERE Id = @doctorId", sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@doctorId", doctorId);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    DoctorDto doctorDto = new();
+                    doctorDto.Id = (int)dataTable.Rows[0]["Id"];
+                    doctorDto.FullName = (string)dataTable.Rows[0]["FullName"];
+                    doctorDto.Gender = (GenderTypes)dataTable.Rows[0]["Gender"];
+                    doctorDto.Email = (string)dataTable.Rows[0]["Email"];
+                    doctorDto.RegistrationNumber = (int)dataTable.Rows[0]["RegistrationNumber"];
+                    doctorDto.Department = (string)dataTable.Rows[0]["Department"];
+                    doctorDto.City = (string)dataTable.Rows[0]["City"];
+                    return doctorDto;
+                }
+                else
+                    return null;
             }
         }
 
-        public DataTable GetDoctorsDetailByFullNameByDepartment(string fullName, string department)
+        public List<DoctorDto> GetDoctorsByDepartmentByDoctorName(string department, string doctorName)
         {
+            List<DoctorDto> doctors = new();
+
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SqlDataAdapter sqlDataAdapter = new(@"Select * From Doctors Where FullName = @fullName
-                        And Department = @department", sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@fullName", fullName);
+                SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Doctors WHERE Department = @department
+                               AND FullName = @doctorName ", sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@department", department);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@doctorName", doctorName);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
-                return dataTable;
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    DoctorDto doctorDto = new();
+                    doctorDto.Id = (int)dataTable.Rows[i]["Id"];
+                    doctorDto.FullName = (string)dataTable.Rows[i]["FullName"];
+                    doctorDto.Gender = (GenderTypes)dataTable.Rows[i]["Gender"];
+                    doctorDto.Email = (string)dataTable.Rows[i]["Email"];
+                    doctorDto.RegistrationNumber = (int)dataTable.Rows[i]["RegistrationNumber"];
+                    doctorDto.Department = (string)dataTable.Rows[i]["Department"];
+                    doctorDto.City = (string)dataTable.Rows[i]["City"];
+
+                    doctors.Add(doctorDto);
+                }
+                return doctors;
             }
         }
 
-        public DataTable GetDoctorsDetailByDepartmentByCity(string department, string? city)
+        public List<DoctorDto> GetDoctorsNameListByDepartment(string department)
         {
+            List<DoctorDto> doctors = new();
+
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "Select * From Doctors Where Department = @department ";
-
-                if (!string.IsNullOrWhiteSpace(city))
-                    sqlQuery += "And City = @city ";
-
-                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Doctors WHERE Department = @department", sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@department", department);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@city", city);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
-                return dataTable;
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    DoctorDto doctorDto = new();
+                    doctorDto.Id = (int)dataTable.Rows[i]["Id"];
+                    doctorDto.FullName = (string)dataTable.Rows[i]["FullName"];
+                    doctorDto.Gender = (GenderTypes)dataTable.Rows[i]["Gender"];
+                    doctorDto.Email = (string)dataTable.Rows[i]["Email"];
+                    doctorDto.RegistrationNumber = (int)dataTable.Rows[i]["RegistrationNumber"];
+                    doctorDto.Department = (string)dataTable.Rows[i]["Department"];
+                    doctorDto.City = (string)dataTable.Rows[i]["City"];
+
+                    doctors.Add(doctorDto);
+                }
+                return doctors;
             }
         }
 
@@ -91,15 +142,15 @@ namespace WebApiDemo1.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"INSERT INTO Doctors(RegistrationNumber, FullName, Email, Department, Gender, City)
-                           VALUES (@RegistrationNumber, @FullName, @Email, @Department, @Gender, @City)
+                string sqlQuery = @"INSERT INTO Doctors(FullName, Gender, Email, RegistrationNumber, Department, City)
+                           VALUES (@FullName, @Gender, @Email, @RegistrationNumber, @Department, @City)
                            Select Scope_Identity() ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@RegistrationNumber", doctor.RegistrationNumber);
                 sqlCommand.Parameters.AddWithValue("@FullName", doctor.FullName);
-                sqlCommand.Parameters.AddWithValue("@Email", doctor.Email);
-                sqlCommand.Parameters.AddWithValue("@Department", doctor.Department);
                 sqlCommand.Parameters.AddWithValue("@Gender", doctor.Gender);
+                sqlCommand.Parameters.AddWithValue("@Email", doctor.Email);
+                sqlCommand.Parameters.AddWithValue("@RegistrationNumber", doctor.RegistrationNumber);
+                sqlCommand.Parameters.AddWithValue("@Department", doctor.Department);
                 sqlCommand.Parameters.AddWithValue("@City", doctor.City);
                 sqlConnection.Open();
                 doctor.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
@@ -112,16 +163,17 @@ namespace WebApiDemo1.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @" UPDATE Doctors SET RegistrationNumber = @RegistrationNumber, FullName = @FullName, 
-                            Email = @Email, Department = @Department, Gender = @Gender, City = @City
+                string sqlQuery = @" UPDATE Doctors SET FullName = @FullName, Gender = @Gender, Email = @Email,
+                            RegistrationNumber = @RegistrationNumber, Department = @Department, City = @City
                             WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Id", doctor.Id);
-                sqlCommand.Parameters.AddWithValue("@RegistrationNumber", doctor.RegistrationNumber);
+                
                 sqlCommand.Parameters.AddWithValue("@FullName", doctor.FullName);
-                sqlCommand.Parameters.AddWithValue("@Email", doctor.Email);
-                sqlCommand.Parameters.AddWithValue("@Department", doctor.Department);
                 sqlCommand.Parameters.AddWithValue("@Gender", doctor.Gender);
+                sqlCommand.Parameters.AddWithValue("@Email", doctor.Email);
+                sqlCommand.Parameters.AddWithValue("@RegistrationNumber", doctor.RegistrationNumber);
+                sqlCommand.Parameters.AddWithValue("@Department", doctor.Department);
                 sqlCommand.Parameters.AddWithValue("@City", doctor.City);
                 sqlConnection.Open();
                 sqlCommand.ExecuteNonQuery();
