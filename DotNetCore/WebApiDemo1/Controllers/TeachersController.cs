@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Data;
-using Newtonsoft.Json;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Repositories;
 using System.Text.RegularExpressions;
@@ -24,10 +22,10 @@ namespace WebApplication1.Controllers
         [Route("GetAllTeachers")]
         public IActionResult GetAllTeachers()
         {
-            DataTable dataTable = _teacherRepository.GetAllTeachers();
+            List<TeacherDto> teachers = _teacherRepository.GetAllTeachersAsList();
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (teachers.Count > 0)
+                return Ok(teachers);
             else
                 return NotFound();
         }
@@ -41,23 +39,20 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetTeachersDetailById/{teacherId}")]
-        public IActionResult GetTeachersDetailById(int teacherId)
+        [Route("GetTeacherDetailById/{Id}")]
+        public IActionResult GetTeacherDetailById(int id)
         {
-            if (teacherId < 1)
-                return BadRequest("TeacherId Id should be greater than 0");
+            TeacherDto teachers = _teacherRepository.GetTeacherDetailById(id);
 
-            DataTable dataTable = _teacherRepository.GetTeachersDetailById(teacherId);
-
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (teachers is not null)
+                return Ok(teachers);
             else
-                return NotFound();
+                return NotFound("No Record Found for given id");
         }
 
         [HttpGet]
-        [Route("GetTeachersByDepartmentByTeacherName/{teacherName}/{department?}")]
-        public IActionResult GetTeachersByDepartmentByTeacherName(string teacherName, string? department)
+        [Route("GetTeachersByDepartmentByTeacherName/{FullName}/{department?}")]
+        public IActionResult GetTeachersByDepartmentByTeacherName(string fullName, string? department)
         {
             department = department.Trim();
 
@@ -67,10 +62,10 @@ namespace WebApplication1.Controllers
             if (department.Length < 3 || department.Length > 30)
                 return BadRequest("Department should be between 3 and 30 characters.");
 
-            DataTable dataTable = _teacherRepository.GetTeachersByDepartmentByTeacherName(teacherName, department);
+            List<TeacherDto> teachers = _teacherRepository.GetTeachersByDepartmentByTeacherName(fullName, department);
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (teachers.Count > 0)
+                return Ok(teachers);
             else
                 return NotFound();
         }
@@ -82,17 +77,17 @@ namespace WebApplication1.Controllers
             if (maximumSalary < minimumSalary)
                 return BadRequest("Maximum salary cannot be less than minimum salary");
 
-            DataTable dataTable = _teacherRepository.GetTeachersBySalaryRange(minimumSalary, maximumSalary);
+            List<TeacherDto> teachers = _teacherRepository.GetTeachersBySalaryRange(minimumSalary, maximumSalary);
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (teachers.Count > 0)
+                return Ok(teachers);
             else
                 return NotFound();
         }
 
         [HttpPost]
-        [Route("TeacherAdd")]
-        public IActionResult TeacherAdd([FromBody] TeacherDto teacher)
+        [Route("Add")]
+        public IActionResult Add([FromBody] TeacherDto teacher)
         {
             try
             {
@@ -102,7 +97,7 @@ namespace WebApplication1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    int id = _teacherRepository.TeacherAdd(teacher);
+                    int id = _teacherRepository.Add(teacher);
                     return Ok(id);
                 }
                 return BadRequest();
@@ -110,7 +105,16 @@ namespace WebApplication1.Controllers
             catch (SqlException ex)
             {
                 if (ex.Number == 2627)
-                    return BadRequest("Email already exist");
+                {
+                    if (ex.Message.Contains("UQ_Teachers_Email"))
+                        return BadRequest("Email already exist");
+
+                    if (ex.Message.Contains("UQ_Teachers_MobileNumber"))
+                        return BadRequest("Mobile Number already exist");
+
+                    else
+                        return BadRequest("Some error at database side");
+                }
                 else
                     return BadRequest("Some error at database side");
             }
@@ -124,8 +128,8 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        [Route("TeacherUpdate")]
-        public IActionResult TeacherUpdate([FromBody] TeacherDto teacher)
+        [Route("Update")]
+        public IActionResult Update([FromBody] TeacherDto teacher)
         {
             try
             {
@@ -135,7 +139,7 @@ namespace WebApplication1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    _teacherRepository.TeacherUpdate(teacher);
+                    _teacherRepository.Update(teacher);
                     return Ok("Record updated");
                 }
                 return BadRequest("Record not updated");
@@ -143,7 +147,16 @@ namespace WebApplication1.Controllers
             catch (SqlException ex)
             {
                 if (ex.Number == 2627)
-                    return BadRequest("Email already exist");
+                {
+                    if (ex.Message.Contains("UQ_Teachers_Email"))
+                        return BadRequest("Email already exist");
+
+                    if (ex.Message.Contains("UQ_Teachers_MobileNumber"))
+                        return BadRequest("Mobile Number already exist");
+
+                    else
+                        return BadRequest("Some error at database side");
+                }
                 else
                     return BadRequest("Some error at database side");
             }

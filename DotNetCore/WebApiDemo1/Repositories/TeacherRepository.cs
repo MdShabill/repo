@@ -1,6 +1,9 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
 using WebApiDemo1.DTO;
+using WebApiDemo1.DTO.InputDTO;
+using WebApiDemo1.Enums;
+using WebApplication1.DTO.InputDTO;
 
 namespace WebApiDemo1.Repositories
 {
@@ -13,14 +16,31 @@ namespace WebApiDemo1.Repositories
             _connectionString = connectionString;
         }
 
-        public DataTable GetAllTeachers()
+        public List<TeacherDto> GetAllTeachersAsList()
         {
+            List<TeacherDto> teachers = new();
+
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Teachers", sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
-                return dataTable;
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    TeacherDto teacherDto = new();
+                    teacherDto.Id = (int)dataTable.Rows[i]["Id"];
+                    teacherDto.FullName = (string)dataTable.Rows[i]["FullName"];
+                    teacherDto.Age = (int)dataTable.Rows[i]["Age"];
+                    teacherDto.Gender = (GenderTypes)dataTable.Rows[i]["Gender"];
+                    teacherDto.Email = (string)dataTable.Rows[i]["Email"];
+                    teacherDto.MobileNumber = (string)dataTable.Rows[i]["MobileNumber"];
+                    teacherDto.SchoolName = (string)dataTable.Rows[i]["SchoolName"];
+                    teacherDto.Department = (string)dataTable.Rows[i]["Department"];
+                    teacherDto.Salary = (int)dataTable.Rows[i]["Salary"];
+                    teachers.Add(teacherDto);
+                }
+                return teachers;
             }
         }
 
@@ -35,39 +55,73 @@ namespace WebApiDemo1.Repositories
                 sqlConnection.Close();
                 return teacherCount;
             }
-
         }
 
-        public DataTable GetTeachersDetailById(int teacherId)
+        public TeacherDto GetTeacherDetailById(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Teachers WHERE Id = @teacherId", sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@teacherId", teacherId);
+                SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Teachers Where Id = @id", sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@Id", id);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
-                return dataTable;
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    TeacherDto teacherDto = new();
+                    teacherDto.Id = (int)dataTable.Rows[0]["Id"];
+                    teacherDto.FullName = (string)dataTable.Rows[0]["FullName"];
+                    teacherDto.Age = (int)dataTable.Rows[0]["Age"];
+                    teacherDto.Gender = (GenderTypes)dataTable.Rows[0]["Gender"];
+                    teacherDto.Email = (string)dataTable.Rows[0]["Email"];
+                    teacherDto.MobileNumber = (string)dataTable.Rows[0]["MobileNumber"];
+                    teacherDto.SchoolName = (string)dataTable.Rows[0]["SchoolName"];
+                    teacherDto.Department = (string)dataTable.Rows[0]["Department"];
+                    teacherDto.Salary = (int)dataTable.Rows[0]["Salary"];
+                    return teacherDto;
+                }
+                else
+                    return null;
             }
         }
 
-        public DataTable GetTeachersByDepartmentByTeacherName(string teacherName, string? department)
+        public List<TeacherDto> GetTeachersByDepartmentByTeacherName(string fullName, string? department)
         {
+            List<TeacherDto> teachers = new();
+
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "SELECT * FROM Teachers Where FullName = @teacherName ";
+                string sqlQuery = "SELECT * FROM Teachers Where FullName = @fullName ";
                 if (!string.IsNullOrWhiteSpace(department))
                     sqlQuery += "And Department = @department";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@teacherName", teacherName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@fullName", fullName);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@department", department);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
-                return dataTable;
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    TeacherDto teacherDto = new();
+                    teacherDto.Id = (int)dataTable.Rows[i]["Id"];
+                    teacherDto.FullName = (string)dataTable.Rows[i]["FullName"];
+                    teacherDto.Age = (int)dataTable.Rows[i]["Age"];
+                    teacherDto.Gender = (GenderTypes)dataTable.Rows[i]["Gender"];
+                    teacherDto.Email = (string)dataTable.Rows[i]["Email"];
+                    teacherDto.MobileNumber = (string)dataTable.Rows[i]["MobileNumber"];
+                    teacherDto.SchoolName = (string)dataTable.Rows[i]["SchoolName"];
+                    teacherDto.Department = (string)dataTable.Rows[i]["Department"];
+                    teacherDto.Salary = (int)dataTable.Rows[i]["Salary"];
+                    teachers.Add(teacherDto);
+                }
+                return teachers;
             }
         }
 
-        public DataTable GetTeachersBySalaryRange(int minimumSalary, int maximumSalary)
+        public List<TeacherDto> GetTeachersBySalaryRange(int minimumSalary, int maximumSalary)
         {
+            List<TeacherDto> teachers = new();
+
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Teachers 
@@ -77,22 +131,40 @@ namespace WebApiDemo1.Repositories
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maximumSalary", maximumSalary);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
-                return dataTable;
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    TeacherDto teacherDto = new();
+                    teacherDto.Id = (int)dataTable.Rows[i]["Id"];
+                    teacherDto.FullName = (string)dataTable.Rows[i]["FullName"];
+                    teacherDto.Age = (int)dataTable.Rows[i]["Age"];
+                    teacherDto.Gender = (GenderTypes)dataTable.Rows[i]["Gender"];
+                    teacherDto.Email = (string)dataTable.Rows[i]["Email"];
+                    teacherDto.MobileNumber = (string)dataTable.Rows[i]["MobileNumber"];
+                    teacherDto.SchoolName = (string)dataTable.Rows[i]["SchoolName"];
+                    teacherDto.Department = (string)dataTable.Rows[i]["Department"];
+                    teacherDto.Salary = (int)dataTable.Rows[i]["Salary"];
+                    teachers.Add(teacherDto);
+                }
+                return teachers;
             }
         }
 
-        public int TeacherAdd(TeacherDto teacher)
+        public int Add(TeacherDto teacher)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"INSERT INTO Teachers(FullName, Email, Age, Gender, SchoolName, Department, Salary)
-                            VALUES (@FullName, @Email, @Age, @Gender, @SchoolName, @Department, @Salary)
+                string sqlQuery = @"INSERT INTO Teachers(FullName, Age, Gender, 
+                            Email, MobileNumber, SchoolName, Department, Salary)
+                            VALUES (@FullName, @Age, @Gender, @Email, @MobileNumber, 
+                            @SchoolName, @Department, @Salary)       
                             Select Scope_Identity() ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@FullName", teacher.FullName);
-                sqlCommand.Parameters.AddWithValue("@Email", teacher.Email);
                 sqlCommand.Parameters.AddWithValue("@Age", teacher.Age);
                 sqlCommand.Parameters.AddWithValue("@Gender", teacher.Gender);
+                sqlCommand.Parameters.AddWithValue("@Email", teacher.Email);
+                sqlCommand.Parameters.AddWithValue("@MobileNumber", teacher.MobileNumber);
                 sqlCommand.Parameters.AddWithValue("@SchoolName", teacher.SchoolName);
                 sqlCommand.Parameters.AddWithValue("@Department", teacher.Department);
                 sqlCommand.Parameters.AddWithValue("@Salary", teacher.Salary);
@@ -103,19 +175,21 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public void TeacherUpdate(TeacherDto teacher)
+        public void Update(TeacherDto teacher)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @" UPDATE Teachers Set FullName = @FullName, Email = @Email, Age = @Age, 
-                            Gender = @Gender, SchoolName = @SchoolName, Salary = @Salary
-                            WHERE Id = @Id ";
+                string sqlQuery = @" UPDATE Teachers Set FullName = @FullName, Age = @Age, 
+                        Gender = @Gender, Email = @Email, MobileNumber = @MobileNumber, SchoolName = @SchoolName, 
+                        Salary = @Salary, Department = @Department
+                        WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Id", teacher.Id);
                 sqlCommand.Parameters.AddWithValue("@FullName", teacher.FullName);
-                sqlCommand.Parameters.AddWithValue("@Email", teacher.Email);
                 sqlCommand.Parameters.AddWithValue("@Age", teacher.Age);
                 sqlCommand.Parameters.AddWithValue("@Gender", teacher.Gender);
+                sqlCommand.Parameters.AddWithValue("@Email", teacher.Email);
+                sqlCommand.Parameters.AddWithValue("@MobileNumber", teacher.MobileNumber);
                 sqlCommand.Parameters.AddWithValue("@SchoolName", teacher.SchoolName);
                 sqlCommand.Parameters.AddWithValue("@Department", teacher.Department);
                 sqlCommand.Parameters.AddWithValue("@Salary", teacher.Salary);

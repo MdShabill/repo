@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using WebApiDemo1.DTO;
+using WebApiDemo1.DTO.InputDTO;
 using WebApplication1.DTO.InputDTO;
 
 namespace WebApiDemo1.Repositories
 {
     public interface ITeacherRepository
     {
-        public DataTable GetAllTeachers();
+        public List<TeacherDto> GetAllTeachersAsList();
         public int GetTeachersCount();
-        public DataTable GetTeachersDetailById(int teacherId);
-        public DataTable GetTeachersByDepartmentByTeacherName(string teacherName, string? department);
-        public DataTable GetTeachersBySalaryRange(int minimumSalary, int maximumSalary);
-        public int TeacherAdd(TeacherDto teacher);
-        public void TeacherUpdate(TeacherDto teacher);
+        public TeacherDto GetTeacherDetailById(int id);
+        public List<TeacherDto> GetTeachersByDepartmentByTeacherName(string fullName, string? department);
+        public List<TeacherDto> GetTeachersBySalaryRange(int minimumSalary, int maximumSalary);
+        public int Add(TeacherDto teacher);
+        public void Update(TeacherDto teacher);
     }
 }
