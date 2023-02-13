@@ -7,12 +7,12 @@ namespace WebApiDemo1.Repositories
 {
     public interface IProductRepository
     {
-        public DataTable GetAllProducts();
+        public List<ProductDto> GetAllProductAsList();
         public int GetProductsCount();
         public string GetProductDetailByBaradNameById(int productId);
-        public DataTable GetProductsDetailByBrandNameByProductName(string brandName, string? productName);
-        public DataTable GetProductsDetailByBrandNameByPriceUpto(string brandName, int priceUpto);
-        public DataTable GetProductsByPriceRange(int minimumPrice, int maximumPrice);
+        public List<ProductDto> GetProductsDetailByBrandNameByProductName(string brandName, string? productName);
+        public List<ProductDto> GetProductsDetailByBrandNameByPrice(string brandName, int price);
+        public List<ProductDto> GetProductsByPriceRange(int minimumPrice, int maximumPrice);
         public int ProductAdd(ProductDto product);
         public void Update(ProductDto product);
     }

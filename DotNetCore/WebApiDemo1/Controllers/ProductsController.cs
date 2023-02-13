@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Repositories;
 using WebApiDemo1.Enums;
+using System.Reflection;
 
 namespace WebApplication1.Controllers
 {
@@ -22,10 +23,10 @@ namespace WebApplication1.Controllers
         [Route("GetAllProducts")]
         public IActionResult GetAllProducts()
         {
-            DataTable dataTable = _productRepository.GetAllProducts();
+            List<ProductDto> products = _productRepository.GetAllProductAsList();
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (products.Count > 0)
+                return Ok(products);
             else
                 return NotFound();
         }
@@ -53,38 +54,41 @@ namespace WebApplication1.Controllers
         [Route("GetProductsDetailByBrandNameByProductName/{brandName}/{productName?}")]
         public IActionResult GetProductsDetailByBrandNameByProductName(string brandName, string? productName)
         {
+            productName = productName.Trim();
+
             if (string.IsNullOrWhiteSpace(productName))
                 return BadRequest("ProductName can not be blank");
-            productName= productName.Trim();
+
             if (productName.Length < 3 || productName.Length > 20)
                 return BadRequest("ProductName should be between 3 and 20 characters.");
 
-            DataTable dataTable = _productRepository.GetProductsDetailByBrandNameByProductName(brandName, productName);
+            List<ProductDto> products = _productRepository.GetProductsDetailByBrandNameByProductName(brandName, productName);
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (products.Count > 0)
+                return Ok(products);
             else
                 return NotFound();
         }
 
         [HttpGet]
-        [Route("GetProductsDetailByBrandNameByPriceUpto/{brandName}/{priceUpto}")]
-        public IActionResult GetProductsDetailByBrandNameByPriceUpto(string brandName, int priceUpto)
+        [Route("GetProductsDetailByBrandNameByPrice/{brandName}/{price}")]
+        public IActionResult GetProductsDetailByBrandNameByPrice(string brandName, int price)
         {
+            brandName = brandName.Trim();
+
             if (string.IsNullOrWhiteSpace(brandName))
                 return BadRequest("BrandName can not be blank");
 
-            brandName = brandName.Trim();
             if (brandName.Length < 3 || brandName.Length > 30)
                 return BadRequest("BrandName should be between 3 and 30 characters.");
 
-            if (priceUpto < 600)
-                return BadRequest("priceUpto should be greater than 600");
+            if (price < 600)
+                return BadRequest("Product price should be greater than 600");
 
-            DataTable dataTable = _productRepository.GetProductsDetailByBrandNameByPriceUpto(brandName, priceUpto);
+            List<ProductDto> products = _productRepository.GetProductsDetailByBrandNameByPrice(brandName, price);
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (products.Count > 0)
+                return Ok(products);
             else
                 return NotFound();
         }
@@ -96,10 +100,10 @@ namespace WebApplication1.Controllers
             if (maximumPrice < minimumPrice)
                 return BadRequest("Maximum price cannot be less than minimum price");
 
-            DataTable dataTable = _productRepository.GetProductsByPriceRange(minimumPrice, maximumPrice);
+            List<ProductDto> products = _productRepository.GetProductsByPriceRange(minimumPrice, maximumPrice);
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (products.Count > 0)
+                return Ok(products);
             else
                 return NotFound();
         }
