@@ -40,13 +40,13 @@ namespace WebApplication1.Controllers
         }
 
         [HttpGet]
-        [Route("GetProductDetailByBaradNameById/{productId}")]
-        public IActionResult GetProductDetailByBaradNameById(int productId)
+        [Route("GetProductDetailByBrandNameById/{productId}")]
+        public IActionResult GetProductDetailByBrandNameById(int productId)
         {
             if (productId < 1)
                 return BadRequest("ProductId should be greater than 0");
             
-            string brandName = _productRepository.GetProductDetailByBaradNameById(productId);
+            string brandName = _productRepository.GetProductDetailByBrandNameById(productId);
             return Ok(brandName);
         }
 

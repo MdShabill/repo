@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
 using WebApiDemo1.DTO.InputDTO;
+using WebApiDemo1.Enums;
 using WebApplication1.DTO.InputDTO;
 
 namespace WebApiDemo1.Repositories
@@ -14,14 +15,27 @@ namespace WebApiDemo1.Repositories
             _connectionString = connectionString;
         }
 
-        public DataTable GetAllOrders()
+        public List<OrderDto> GetAllOrdersAsList()
         {
+            List<OrderDto> orders = new();
+
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SqlDataAdapter sqlDataAdapter = new("Select * From Orders", sqlConnection);
+                SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Orders", sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
-                return dataTable;
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    OrderDto orderDto = new();
+                    orderDto.Id = (int)dataTable.Rows[i]["Id"];
+                    orderDto.CustomerId = (int)dataTable.Rows[i]["CustomerId"];
+                    orderDto.TotalAmount = (int)dataTable.Rows[i]["Amount"];
+                    orderDto.ProductName = (ProductType)dataTable.Rows[i]["ProductName"];
+
+                    orders.Add(orderDto);
+                }
+                return orders;
             }
         }
 
@@ -38,32 +52,34 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public DataTable GetOrderDetailById(int orderId)
+        public OrderDto GetOrderDetailById(int orderId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SqlDataAdapter sqlDataAdapter = new("Select * From Orders Where Id = @orderId", sqlConnection);
+                SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Orders WHERE Id = @orderId", sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@orderId", orderId);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
-                return dataTable;
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    OrderDto orderDto = new();
+                    orderDto.Id = (int)dataTable.Rows[0]["Id"];
+                    orderDto.CustomerId = (int)dataTable.Rows[0]["CustomerId"];
+                    orderDto.TotalAmount = (int)dataTable.Rows[0]["Amount"];
+                    orderDto.ProductName = (ProductType)dataTable.Rows[0]["ProductName"];
+
+                    return orderDto;
+                }
+                else
+                    return null;
             }
         }
 
-        public DataTable GetOrdersDetailByOrderDate(string orderDateTime)
+        public List<OrderDto> GetOrdersByAmountRange(int minimumAmount, int maximumAmount)
         {
-            using (SqlConnection sqlConnection = new(_connectionString))
-            {
-                SqlDataAdapter sqlDataAdapter = new("Select * From Orders Where OrderDate = @orderDateTime", sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@orderDateTime", orderDateTime);
-                DataTable dataTable = new();
-                sqlDataAdapter.Fill(dataTable);
-                return dataTable;
-            }
-        }
+            List<OrderDto> orders = new();
 
-        public DataTable GetOrdersByAmountRange(int minimumAmount, int maximumAmount)
-        {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 SqlDataAdapter sqlDataAdapter = new(@"Select * From Orders 
@@ -73,7 +89,18 @@ namespace WebApiDemo1.Repositories
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maximumAmount", maximumAmount);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
-                return dataTable;
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    OrderDto orderDto = new();
+                    orderDto.Id = (int)dataTable.Rows[i]["Id"];
+                    orderDto.CustomerId = (int)dataTable.Rows[i]["CustomerId"];
+                    orderDto.TotalAmount = (int)dataTable.Rows[i]["Amount"];
+                    orderDto.ProductName = (ProductType)dataTable.Rows[i]["ProductName"];
+
+                    orders.Add(orderDto);
+                }
+                return orders;
             }
         }
 

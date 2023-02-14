@@ -7,11 +7,10 @@ namespace WebApiDemo1.Repositories
 {
     public interface IOrderRepository
     {
-        public DataTable GetAllOrders();
+        public List<OrderDto> GetAllOrdersAsList();
         public int GetOrdersCount();
-        public DataTable GetOrderDetailById(int orderId);
-        public DataTable GetOrdersDetailByOrderDate(string orderDateTime);
-        public DataTable GetOrdersByAmountRange(int minimumAmount, int maximumAmount);
+        public OrderDto GetOrderDetailById(int orderId);
+        public List<OrderDto> GetOrdersByAmountRange(int minimumAmount, int maximumAmount);
         public int OrderAdd(OrderDto order);
         public void OrderUpdate(OrderDto order);
     }

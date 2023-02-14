@@ -27,10 +27,10 @@ namespace WebApplication1.Controllers
         [Route("GetAllOrders")]
         public IActionResult GetAllOrders()
         {
-            DataTable dataTable = _orderRepository.GetAllOrders();
+            List<OrderDto> orders = _orderRepository.GetAllOrdersAsList();
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (orders.Count > 0)
+                return Ok(orders);
             else
                 return NotFound();
         }
@@ -50,28 +50,12 @@ namespace WebApplication1.Controllers
             if (orderId < 1)
                 return BadRequest("OrderId should be greater than 0");
 
-            DataTable dataTable = _orderRepository.GetOrderDetailById(orderId);
+            OrderDto order = _orderRepository.GetOrderDetailById(orderId);
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (order is not null)
+                return Ok(order);
             else
-                return NotFound();
-        }
-
-        [HttpGet]
-        [Route("GetOrdersDetailByOrderDate/{orderDate}")]
-        public IActionResult GetOrdersDetailByOrderDate(string orderDate)
-        {
-            var orderDateTime = DateTime.Parse(orderDate);
-            if (orderDateTime > DateTime.Now)
-                return BadRequest("Order Date cannot be greater than current date");
-
-            DataTable dataTable = _orderRepository.GetOrdersDetailByOrderDate(orderDate);
-
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
-            else
-                return NotFound();
+                return NotFound("No Record Found for given id");
         }
 
         [HttpGet]
@@ -81,10 +65,10 @@ namespace WebApplication1.Controllers
             if (minimumAmount > maximumAmount)
                 return BadRequest("minimum amount cannot be more than maximum amount");
 
-            DataTable dataTable = _orderRepository.GetOrdersByAmountRange(minimumAmount, maximumAmount);
+            List<OrderDto> orders = _orderRepository.GetOrdersByAmountRange(minimumAmount, maximumAmount);
 
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            if (orders.Count > 0)
+                return Ok(orders);
             else
                 return NotFound();
         }

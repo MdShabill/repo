@@ -57,7 +57,7 @@ namespace WebApiDemo1.Repositories
             }          
         }
 
-        public string GetProductDetailByBaradNameById(int productId)
+        public string GetProductDetailByBrandNameById(int productId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
