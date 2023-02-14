@@ -135,6 +135,32 @@ namespace WebApplication1.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("ProductUpdate")]
+        public IActionResult ProductUpdate([FromBody] ProductDto product)
+        {
+            try
+            {
+                string errorMessage = validateProductAddOrUpdate(product, true);
+                if (!string.IsNullOrEmpty(errorMessage))
+                    return BadRequest(errorMessage);
+
+                if (ModelState.IsValid)
+                {
+                    _productRepository.Update(product);
+                    return Ok("Record updated");
+                }
+                return BadRequest("Record not updated");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", @"Unable to save changes. 
+                    Try again, and if the problem persists 
+                    see your system administrator.");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
         private string validateProductAddOrUpdate(ProductDto product, bool isUpdate = false)
         {
             string errorMessage = "";
@@ -182,32 +208,6 @@ namespace WebApplication1.Controllers
                 errorMessage = "Product price should be between 400 and 5000";
 
             return errorMessage;
-        }
-
-        [HttpPost]
-        [Route("ProductUpdate")]
-        public IActionResult ProductUpdate([FromBody] ProductDto product)
-        {
-            try
-            {
-                string errorMessage = validateProductAddOrUpdate(product, true);
-                if (!string.IsNullOrEmpty(errorMessage))
-                    return BadRequest(errorMessage);
-
-                if (ModelState.IsValid)
-                {
-                    _productRepository.Update(product);
-                    return Ok("Record updated");
-                }
-                return BadRequest("Record not updated");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", @"Unable to save changes. 
-                    Try again, and if the problem persists 
-                    see your system administrator.");
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
         }
     }
 }
