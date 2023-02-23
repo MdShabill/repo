@@ -1,10 +1,11 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Diagnostics.Metrics;
+using System.Text;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
 using WebApplication1.DTO.InputDTO;
-
+using System.Security.Cryptography;
 
 namespace WebApiDemo1.Repositories
 {
@@ -173,10 +174,46 @@ namespace WebApiDemo1.Repositories
             }
         }
 
+        public List<CustomerDto> Login(string email, string password)
+        {
+            List<CustomerDto> customers = new();
+
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                SHA256 sha256 = SHA256.Create();
+                byte[] hashValue;
+                UTF8Encoding objUtf8 = new();
+                hashValue = sha256.ComputeHash(objUtf8.GetBytes(password));
+
+                SqlDataAdapter sqlDataAdapter = new(@"SELECT Email, Password FROM Customers
+                        WHERE Email = @email AND Password = @password ", sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@email", email);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@password", hashValue);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    CustomerDto customerDto = new()
+                    {
+                        Email = (string)dataTable.Rows[i]["Email"],
+                        Password = (string)dataTable.Rows[i]["Password"],
+                    };
+                    customers.Add(customerDto);
+                }
+                return customers;
+            }
+        }
+
         public int Add(CustomerDto customer)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
+                SHA256 sha256 = SHA256.Create();
+                byte[] hashValue;
+                UTF8Encoding objutf8 = new();
+                hashValue = sha256.ComputeHash(objutf8.GetBytes(customer.Password));
+
                 string sqlQuery = @"INSERT INTO Customers(Name, Gender, Age, Email, Password, MobileNumber, Country)
                             VALUES (@FullName, @Gender, @Age, @Email, @Password, @Mobilenumber, @Country)
                             Select Scope_Identity()";
@@ -185,7 +222,7 @@ namespace WebApiDemo1.Repositories
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
                 sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
-                sqlCommand.Parameters.AddWithValue("@Password", customer.Password);
+                sqlCommand.Parameters.AddWithValue("@Password", hashValue);
                 sqlCommand.Parameters.AddWithValue("@MobileNumber", customer.MobileNumber);
                 sqlCommand.Parameters.AddWithValue("@Country", customer.Country);
                 sqlConnection.Open();

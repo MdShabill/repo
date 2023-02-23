@@ -6,7 +6,6 @@ using WebApiDemo1.Repositories;
 using WebApiDemo1.Enums;
 using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
-using WebApiDemo1.DTO.InputDTO;
 
 namespace WebApplication1.Controllers
 {
@@ -77,6 +76,18 @@ namespace WebApplication1.Controllers
                 return Ok(customers);
             else
                 return NotFound();
+        }
+
+        [HttpGet]
+        [Route("Login/{email}/{password}")]
+        public IActionResult Login(string email, string password)
+        {
+            List<CustomerDto> customersEmailPassword = _customerRepository.Login(email, password);
+
+            if (customersEmailPassword.Count > 0)
+                return Ok("Login Successfull");
+            else
+                return NotFound("Invalid Email or Password");
         }
 
         [HttpPost]
