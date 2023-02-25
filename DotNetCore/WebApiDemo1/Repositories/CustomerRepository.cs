@@ -174,34 +174,83 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public List<CustomerDto> Login(string email, string password)
+        public int Login(string email, string password)
         {
-            List<CustomerDto> customers = new();
-
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 SHA256 sha256 = SHA256.Create();
-                byte[] hashValue;
+                byte[] hashValuePassword;
                 UTF8Encoding objUtf8 = new();
-                hashValue = sha256.ComputeHash(objUtf8.GetBytes(password));
+                hashValuePassword = sha256.ComputeHash(objUtf8.GetBytes(password));
 
-                SqlDataAdapter sqlDataAdapter = new(@"SELECT Email, Password FROM Customers
-                        WHERE Email = @email AND Password = @password ", sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@email", email);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@password", hashValue);
-                DataTable dataTable = new();
-                sqlDataAdapter.Fill(dataTable);
+                string sqlQuery = @"SELECT COUNT(*) FROM Customers
+                            WHERE Email = @email AND Password = @password";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@email", email);
+                sqlCommand.Parameters.AddWithValue("@password", hashValuePassword);
+                sqlConnection.Open();
+                int customerCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                sqlConnection.Close();
+                return customerCount;
+            }
+        }
 
-                for (int i = 0; i < dataTable.Rows.Count; i++)
-                {
-                    CustomerDto customerDto = new()
-                    {
-                        Email = (string)dataTable.Rows[i]["Email"],
-                        Password = (string)dataTable.Rows[i]["Password"],
-                    };
-                    customers.Add(customerDto);
-                }
-                return customers;
+        public void UpdateOnLoginFailed(string email)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = $@"UPDATE Customers SET LoginFailedCount = IsNull(LoginFailedCount, 0) + 1,
+                                    LastFailedLoginDate = getdate()
+                                    WHERE Email = @email";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@email", email);
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+            }
+        }
+
+        public void UpdateOnLoginSuccessfull(string email)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                DateTime lastSucccessfulLoginDate = DateTime.Now;
+                string sqlQuery = @"UPDATE Customers SET LastSucccessfulLoginDate = getdate()
+                                    WHERE Email = @email";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@email", email);
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+            }
+        }
+
+        public int LoginFailedCount(string email)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = "SELECT IsNull(LoginFailedCount, 0) FROM Customers WHERE Email = @Email";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@email", email);
+                sqlConnection.Open();
+                int loginFailedCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                sqlConnection.Close();
+                return loginFailedCount;
+            }
+        }
+
+        public void UpdateIsLocked(string email, bool isLocked = true)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"UPDATE Customers SET IsLocked = @isLocked
+                                    WHERE Email = @email";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@email", email);
+                sqlCommand.Parameters.AddWithValue("@isLocked", isLocked);
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
             }
         }
 

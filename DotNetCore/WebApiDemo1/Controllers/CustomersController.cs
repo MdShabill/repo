@@ -82,12 +82,24 @@ namespace WebApplication1.Controllers
         [Route("Login/{email}/{password}")]
         public IActionResult Login(string email, string password)
         {
-            List<CustomerDto> customersEmailPassword = _customerRepository.Login(email, password);
+            int customerCount = _customerRepository.Login(email, password);
+            int loginFailedCount = _customerRepository.LoginFailedCount(email);
 
-            if (customersEmailPassword.Count > 0)
+            if (customerCount > 0)
+            {
+                _customerRepository.UpdateOnLoginSuccessfull(email);
                 return Ok("Login Successfull");
+            }
+            else if (loginFailedCount > 3)
+            {
+                _customerRepository.UpdateIsLocked(email);
+                return Ok("Login attempt exceeded, your account has been temporarily locked");
+            }
             else
+            {
+                _customerRepository.UpdateOnLoginFailed(email);
                 return NotFound("Invalid Email or Password");
+            }
         }
 
         [HttpPost]
