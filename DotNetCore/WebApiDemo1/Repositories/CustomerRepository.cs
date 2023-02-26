@@ -6,6 +6,8 @@ using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
 using WebApplication1.DTO.InputDTO;
 using System.Security.Cryptography;
+using System.Collections;
+using WebApiDemo1.Helpers;
 
 namespace WebApiDemo1.Repositories
 {
@@ -174,24 +176,43 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public int Login(string email, string password)
+        public CustomerDto GetCustomerDetailsByEmailAndPassword(string email, byte[] password)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SHA256 sha256 = SHA256.Create();
-                byte[] hashValuePassword;
-                UTF8Encoding objUtf8 = new();
-                hashValuePassword = sha256.ComputeHash(objUtf8.GetBytes(password));
+                SqlDataAdapter sqlDataAdapter = new(@"SELECT TOP 1 * FROM Customers
+                        WHERE Email = @email AND Password = @password ", sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@email", email);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@password", password);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
 
-                string sqlQuery = @"SELECT COUNT(*) FROM Customers
-                            WHERE Email = @email AND Password = @password";
-                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@email", email);
-                sqlCommand.Parameters.AddWithValue("@password", hashValuePassword);
-                sqlConnection.Open();
-                int customerCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
-                sqlConnection.Close();
-                return customerCount;
+                if (dataTable.Rows.Count > 0)
+                {
+                    CustomerDto customerDto = new()
+                    {
+                        Id = (int)dataTable.Rows[0]["Id"],
+                        FullName = (string)dataTable.Rows[0]["Name"],
+                        Gender = (GenderTypes)dataTable.Rows[0]["Gender"],
+                        Age = (int)dataTable.Rows[0]["Age"],
+                        Email = (string)dataTable.Rows[0]["Email"],
+                        Country = (string)dataTable.Rows[0]["Country"],
+                        Password = (string)dataTable.Rows[0]["Password"],
+                        MobileNumber = (string)dataTable.Rows[0]["MobileNumber"],
+                        LastFailedLoginDate = (DateTime)dataTable.Rows[0]["LastFailedLoginDate"],
+                        LastSucccessfulLoginDate = (DateTime)dataTable.Rows[0]["LastSucccessfulLoginDate"],
+
+                        LoginFailedCount = (int)dataTable.Rows[0]["LoginFailedCount"],
+                        IsLocked = dataTable.Rows[0]["IsLocked"] != DBNull.Value ? (bool)dataTable.Rows[0]["IsLocked"] : false
+                        //if (dataTable.Rows[0]["IsLocked"] != DBNull.Value)
+                        //    customerDto.IsLocked = (bool)dataTable.Rows[0]["IsLocked"];
+                        //else
+                        //    customerDto.IsLocked = false
+                    };
+
+                    return customerDto;
+                }
+                return null;
             }
         }
 
@@ -215,7 +236,7 @@ namespace WebApiDemo1.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 DateTime lastSucccessfulLoginDate = DateTime.Now;
-                string sqlQuery = @"UPDATE Customers SET LastSucccessfulLoginDate = getdate()
+                string sqlQuery = @"UPDATE Customers SET LastSucccessfulLoginDate = getdate(), LoginFailedCount = 0
                                     WHERE Email = @email";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@email", email);
@@ -225,7 +246,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public int LoginFailedCount(string email)
+        public int GetLoginFailedCount(string email)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -239,7 +260,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public void UpdateIsLocked(string email, bool isLocked = true)
+        public void UpdateIsLocked(string email, bool isLocked)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -258,10 +279,7 @@ namespace WebApiDemo1.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SHA256 sha256 = SHA256.Create();
-                byte[] hashValue;
-                UTF8Encoding objutf8 = new();
-                hashValue = sha256.ComputeHash(objutf8.GetBytes(customer.Password));
+                byte[] hashValuePassword = StringHelper.StringToByteArray(customer.Password);
 
                 string sqlQuery = @"INSERT INTO Customers(Name, Gender, Age, Email, Password, MobileNumber, Country)
                             VALUES (@FullName, @Gender, @Age, @Email, @Password, @Mobilenumber, @Country)
@@ -271,7 +289,7 @@ namespace WebApiDemo1.Repositories
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
                 sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
-                sqlCommand.Parameters.AddWithValue("@Password", hashValue);
+                sqlCommand.Parameters.AddWithValue("@Password", hashValuePassword);
                 sqlCommand.Parameters.AddWithValue("@MobileNumber", customer.MobileNumber);
                 sqlCommand.Parameters.AddWithValue("@Country", customer.Country);
                 sqlConnection.Open();

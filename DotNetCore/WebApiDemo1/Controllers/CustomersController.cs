@@ -6,6 +6,9 @@ using WebApiDemo1.Repositories;
 using WebApiDemo1.Enums;
 using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
+using System.Text;
+using System.Security.Cryptography;
+using WebApiDemo1.Helpers;
 
 namespace WebApplication1.Controllers
 {
@@ -82,26 +85,28 @@ namespace WebApplication1.Controllers
         [Route("Login/{email}/{password}")]
         public IActionResult Login(string email, string password)
         {
-            int customerCount = _customerRepository.Login(email, password);
-            int loginFailedCount = _customerRepository.LoginFailedCount(email);
+            byte[] hashValuePassword = StringHelper.StringToByteArray(password);
+            CustomerDto customer = _customerRepository.GetCustomerDetailsByEmailAndPassword(email, hashValuePassword);
 
-            if (customerCount > 0)
-            {
-                _customerRepository.UpdateOnLoginSuccessfull(email);
-                return Ok("Login Successfull");
-            }
-            else if (loginFailedCount > 3)
-            {
-                _customerRepository.UpdateIsLocked(email);
-                return Ok("Login attempt exceeded, your account has been temporarily locked");
-            }
-            else
+            if (customer is null)
             {
                 _customerRepository.UpdateOnLoginFailed(email);
+                int aleadyFailedCountInDB = _customerRepository.GetLoginFailedCount(email);
+                if (aleadyFailedCountInDB > 1) //2
+                {
+                    _customerRepository.UpdateIsLocked(email);
+                }
+
                 return NotFound("Invalid Email or Password");
             }
-        }
 
+            if (customer.IsLocked == true)
+                return Ok("your account has been locked, kindly contact system administrator");
+
+            _customerRepository.UpdateOnLoginSuccessfull(email);
+            return Ok("Login Successfull");
+        }
+        
         [HttpPost]
         [Route("CustomerRegister")]
         public IActionResult CustomerRegister([FromBody] CustomerDto customer)
