@@ -24,6 +24,11 @@ builder.Services.AddTransient<IOrderRepository>((svc) =>
     return new OrderRepository(EcommerceDBConnectionString);
 });
 
+builder.Services.AddTransient<IBankAccountServiceRepository>((svc) =>
+{
+    return new BankAccountServiceRepository(EcommerceDBConnectionString);
+});
+
 builder.Services.AddTransient<IEmployeeRepository>((svc) =>
 {
     string sqlConnectionString = configuration.GetConnectionString("EmployeeDBConnection");
