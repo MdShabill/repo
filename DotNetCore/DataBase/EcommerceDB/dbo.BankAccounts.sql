@@ -17,7 +17,6 @@ CREATE TABLE BankAccounts
 	PRIMARY KEY (Id),
 	CONSTRAINT UQ_BankAccounts_AccountNumber UNIQUE (AccountNumber),
 	CONSTRAINT UQ_BankAccounts_Holder1Email UNIQUE (Holder1Email),
-	CONSTRAINT UQ_BankAccounts_Holder2Email UNIQUE (Holder2Email)
 )
 
 

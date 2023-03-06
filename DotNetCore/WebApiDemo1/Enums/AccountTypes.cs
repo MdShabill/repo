@@ -3,7 +3,7 @@
     public enum AccountTypes
     {
         SavingsAccount = 1,
-        CurrenyAccount = 2,
+        CurrentAccount = 2,
         JointAccount = 3
     }
 }
