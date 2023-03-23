@@ -5,7 +5,9 @@ using System.Data;
 using System.Text.RegularExpressions;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
+using WebApiDemo1.Helpers;
 using WebApiDemo1.Repositories;
+using WebApplication1.DTO.InputDTO;
 
 namespace WebApplication1.Controllers
 {
@@ -88,10 +90,40 @@ namespace WebApplication1.Controllers
                 return NotFound();
         }
 
+        [HttpGet]
+        [Route("Login/{email}/{password}")]
+        public IActionResult Login(string email, string password)
+        {
+            byte[] hashValuePassword = StringHelper.StringToByteArray(password);
+            EmployeeDto employee = _employeeRepository.GetEmployeeDetailsByEmailAndPassword(email, hashValuePassword);
+
+            if (employee is null)
+            {
+                _employeeRepository.UpdateOnLoginFailed(email);
+
+                int aleadyFailedCountInDB = _employeeRepository.GetLoginFailedCount(email);
+
+                if (aleadyFailedCountInDB > 1)
+                {
+                    _employeeRepository.UpdateIsLocked(email);
+                }
+                return NotFound("Invalid Email or Password");
+            }
+
+            if (employee.IsLocked == true)
+                return Ok("your account has been locked, kindly contact system administrator");
+
+            _employeeRepository.UpdateOnLoginSuccessfull(email);
+            return Ok("Login Successfull");
+        }
+
         [HttpPost]
         [Route("EmployeeRegister")]
         public IActionResult EmployeeRegister([FromBody] EmployeeDto employee)
         {
+            byte[] hashValuePassword = StringHelper.StringToByteArray(employee.Password);
+            employee.HashValuePassword = hashValuePassword;
+
             try
             {
                 string errorMessage = ValidateEmployeeRegisterOrUpdate(employee);
@@ -136,6 +168,9 @@ namespace WebApplication1.Controllers
         [Route("EmployeeUpdate")]
         public IActionResult EmployeeUpdate([FromBody] EmployeeDto employee)
         {
+            byte[] hashValuePassword = StringHelper.StringToByteArray(employee.Password);
+            employee.HashValuePassword = hashValuePassword;
+
             try
             {
                 string errorMessage = ValidateEmployeeRegisterOrUpdate(employee, true);
