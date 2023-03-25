@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using WebApiDemo1.DataModel;
 using WebApiDemo1.DTO.InputDTO;
 
 namespace WebApiDemo1.Repositories
@@ -12,26 +13,24 @@ namespace WebApiDemo1.Repositories
             _connectionString = connectionString;
         }
 
-        public void AddAddress(CustomerDto customer)
+        public void AddAddress(Address address)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 {
                     string sqlQuery = @"INSERT INTO Addresses(CustomerId, AddressLine1, AddressLine2, PinCode,
-                            Country, AddressType, CreatedOn, LastEditedOn)
-
+                            Country, AddressType, CreatedOn)
                             VALUES (@CustomerId, @AddressLine1, @AddressLine2, @PinCode, @Country, @AddressType,
-                            @CreatedOn, @LastEditedOn)
+                            @CreatedOn)
                             Select Scope_Identity()";
                     SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@CustomerId", customer.Id);
-                    sqlCommand.Parameters.AddWithValue("@AddressLine1", customer.AddressLine1);
-                    sqlCommand.Parameters.AddWithValue("@AddressLine2", customer.AddressLine2);
-                    sqlCommand.Parameters.AddWithValue("@PinCode", customer.PinCode);
-                    sqlCommand.Parameters.AddWithValue("@Country", customer.Country);
-                    sqlCommand.Parameters.AddWithValue("@AddressType", customer.AddressType);
-                    sqlCommand.Parameters.AddWithValue("@CreatedOn", customer.CreatedOn);
-                    sqlCommand.Parameters.AddWithValue("@LastEditedOn", customer.LastEditedOn);
+                    sqlCommand.Parameters.AddWithValue("@CustomerId", address.CustomerId);
+                    sqlCommand.Parameters.AddWithValue("@AddressLine1", address.AddressLine1);
+                    sqlCommand.Parameters.AddWithValue("@AddressLine2", address.AddressLine2);
+                    sqlCommand.Parameters.AddWithValue("@PinCode", address.PinCode);
+                    sqlCommand.Parameters.AddWithValue("@Country", address.Country);
+                    sqlCommand.Parameters.AddWithValue("@AddressType", address.AddressType);
+                    sqlCommand.Parameters.AddWithValue("@CreatedOn", DateTime.Now);
                     sqlConnection.Open();
                     sqlCommand.ExecuteNonQuery();
                     sqlConnection.Close();
