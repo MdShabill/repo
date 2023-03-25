@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using Newtonsoft.Json;
-using WebApplication1.DTO.InputDTO;
+using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Repositories;
 using WebApiDemo1.Enums;
 using System.Text.RegularExpressions;
@@ -9,18 +9,21 @@ using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Security.Cryptography;
 using WebApiDemo1.Helpers;
+using WebApiDemo1.DTO.InputDTO;
 
-namespace WebApplication1.Controllers
+namespace WebApiDemo1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class CustomersController : ControllerBase
     {
         ICustomerRepository _customerRepository;
+        IAddressRepository _addressRepository;
 
-        public CustomersController(ICustomerRepository customerRepository)
+        public CustomersController(ICustomerRepository customerRepository, IAddressRepository addressRepository)
         {
             _customerRepository = customerRepository;
+            _addressRepository = addressRepository;
         }
 
         [HttpGet]
@@ -91,12 +94,13 @@ namespace WebApplication1.Controllers
             if (customer is null)
             {
                 _customerRepository.UpdateOnLoginFailed(email);
+
                 int aleadyFailedCountInDB = _customerRepository.GetLoginFailedCount(email);
+
                 if (aleadyFailedCountInDB > 1) //2
                 {
                     _customerRepository.UpdateIsLocked(email);
                 }
-
                 return NotFound("Invalid Email or Password");
             }
 
@@ -106,11 +110,56 @@ namespace WebApplication1.Controllers
             _customerRepository.UpdateOnLoginSuccessfull(email);
             return Ok("Login Successfull");
         }
-        
+
+        [HttpPost]
+        [Route("ChangePassword")]
+        public IActionResult CustomerRegister([FromBody] ChangePasswordDto changePassword)
+        {
+            try
+            {
+                if (changePassword.NewPassword != changePassword.ReEnterPassword)
+                    return BadRequest("Re-entered password does not match with new password");
+
+                if (changePassword.NewPassword == changePassword.CurrentPassword)
+                    return BadRequest("New password cannot be same as current password");
+
+                byte[] hashValueCurrentPassword = StringHelper.StringToByteArray(changePassword.CurrentPassword);
+                CustomerDto customer = _customerRepository.GetCustomerDetailsByEmailAndPassword(changePassword.Email, hashValueCurrentPassword);
+
+                if (ModelState.IsValid)
+                {
+                    if (customer is null)
+                        return BadRequest("Email password or account does not exist ");
+
+                    byte[] hashValueNewPassword = StringHelper.StringToByteArray(changePassword.NewPassword);
+                    _customerRepository.UpdateNewPassword(changePassword.Email, hashValueNewPassword);
+                    return Ok("New password updated");
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", @"Unable to save changes. 
+                    Try again, and if the problem persists 
+                    see your system administrator.");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        //[HttpGet]
+        //[Route("ForgetPassword/{email}/{password}")]
+        //public IActionResult ForgetPassword(string email, string password) 
+        //{
+
+        //}
+
         [HttpPost]
         [Route("CustomerRegister")]
         public IActionResult CustomerRegister([FromBody] CustomerDto customer)
         {
+            byte[] hashValuePassword = StringHelper.StringToByteArray(customer.Password);
+            customer.HashValuePassword = hashValuePassword;
+
             try
             {
                 string errorMessage = validateCustomerRegisterOrUpdate(customer);
@@ -120,13 +169,14 @@ namespace WebApplication1.Controllers
                 if (ModelState.IsValid)
                 {
                     int id = _customerRepository.Add(customer);
+                    _addressRepository.AddAddress(customer);
                     return Ok(id);
                 }
                 return BadRequest();
             }
             catch (SqlException ex)
             {
-                if (ex.Number == 2627)
+                if (ex.Number == Constants.UniqueConstraintViolationErrorcode)
                 {
                     if (ex.Message.Contains("UQ_Customers_Email"))
                         return BadRequest("Email already exist");
@@ -153,6 +203,9 @@ namespace WebApplication1.Controllers
         [Route("CustomerUpdate")]
         public IActionResult CustomerUpdate([FromBody] CustomerDto customer)
         {
+            byte[] hashValuePassword = StringHelper.StringToByteArray(customer.Password);
+            customer.HashValuePassword = hashValuePassword;
+
             try
             {
                 string errorMessage = validateCustomerRegisterOrUpdate(customer, true);

@@ -2,10 +2,10 @@
 using System.Data;
 using System.Diagnostics.Metrics;
 using System.Text;
+using System.Security.Cryptography;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
-using WebApplication1.DTO.InputDTO;
-using System.Security.Cryptography;
+using WebApiDemo1.DTO.InputDTO;
 using System.Collections;
 using WebApiDemo1.Helpers;
 
@@ -44,18 +44,25 @@ namespace WebApiDemo1.Repositories
                     //customerDto.Country = (string)dataTable.Rows[i]["Country"];
                     //customers.Add(customerDto);
 
-                    //Approch 2
-                    CustomerDto customerDto = new()
-                    {
-                         Id = (int)dataTable.Rows[i]["Id"],
-                         FullName = (string)dataTable.Rows[i]["Name"],
-                         Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
-                         Age = (int)dataTable.Rows[i]["Age"],
-                         Email = (string)dataTable.Rows[i]["Email"],
-                         Password = (string)dataTable.Rows[i]["Password"],
-                         MobileNumber = (string)dataTable.Rows[i]["MobileNumber"],
-                         Country = (string)dataTable.Rows[i]["Country"],
-                    };
+                    ////Approch 2
+                    //CustomerDto customerDto = new()
+                    //{
+                    //     Id = (int)dataTable.Rows[i]["Id"],
+                    //     FullName = (string)dataTable.Rows[i]["Name"],
+                    //     Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
+                    //     Age = (int)dataTable.Rows[i]["Age"],
+                    //     Email = (string)dataTable.Rows[i]["Email"],
+                    //     Password = (string)dataTable.Rows[i]["Password"],
+                    //     MobileNumber = (string)dataTable.Rows[i]["MobileNumber"],
+                    //};
+
+                    //Approch 3 - Using Constructor
+                    CustomerDto customerDto = new(
+                        (int)dataTable.Rows[i]["Id"], (string)dataTable.Rows[i]["Name"], (GenderTypes)dataTable.Rows[i]["Gender"],
+                        (int)dataTable.Rows[i]["Age"], (string)dataTable.Rows[i]["Email"], (string)dataTable.Rows[i]["Password"],
+                        dataTable.Rows[i]["Mobile"] != DBNull.Value ? (string)dataTable.Rows[i]["Mobile"] : null,
+                        dataTable.Rows[i]["Country"] != DBNull.Value ? (string)dataTable.Rows[i]["Country"] : null);
+
                     customers.Add(customerDto);
                 }
                 return customers;
@@ -108,7 +115,6 @@ namespace WebApiDemo1.Repositories
                         Email = (string)dataTable.Rows[0]["Email"],
                         Password = (string)dataTable.Rows[0]["Password"],
                         MobileNumber = (string)dataTable.Rows[0]["MobileNumber"],
-                        Country = (string)dataTable.Rows[0]["Country"],
                     };
                     return customerDto;
                 }
@@ -168,7 +174,6 @@ namespace WebApiDemo1.Repositories
                         Email = (string)dataTable.Rows[i]["Email"],
                         Password = (string)dataTable.Rows[i]["Password"],
                         MobileNumber = (string)dataTable.Rows[i]["MobileNumber"],
-                        Country = (string)dataTable.Rows[i]["Country"],
                     };
                     customers.Add(customerDto);
                 }
@@ -180,7 +185,7 @@ namespace WebApiDemo1.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SqlDataAdapter sqlDataAdapter = new(@"SELECT TOP 1 * FROM Customers
+                SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Customers
                         WHERE Email = @email AND Password = @password ", sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@email", email);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@password", password);
@@ -196,20 +201,17 @@ namespace WebApiDemo1.Repositories
                         Gender = (GenderTypes)dataTable.Rows[0]["Gender"],
                         Age = (int)dataTable.Rows[0]["Age"],
                         Email = (string)dataTable.Rows[0]["Email"],
-                        Country = (string)dataTable.Rows[0]["Country"],
                         Password = (string)dataTable.Rows[0]["Password"],
                         MobileNumber = (string)dataTable.Rows[0]["MobileNumber"],
-                        LastFailedLoginDate = (DateTime)dataTable.Rows[0]["LastFailedLoginDate"],
-                        LastSucccessfulLoginDate = (DateTime)dataTable.Rows[0]["LastSucccessfulLoginDate"],
-
-                        LoginFailedCount = (int)dataTable.Rows[0]["LoginFailedCount"],
+                        LastSuccessfulLoginDate = dataTable.Rows[0]["LastSuccessfulLoginDate"] != DBNull.Value ? (DateTime)dataTable.Rows[0]["LastSuccessfulLoginDate"] : null,
+                        LastFailedLoginDate = dataTable.Rows[0]["LastFailedLoginDate"] != DBNull.Value ? (DateTime)dataTable.Rows[0]["LastFailedLoginDate"] : null,
+                        LoginFailedCount = dataTable.Rows[0]["LoginFailedCount"] != DBNull.Value ? (int)dataTable.Rows[0]["LoginFailedCount"] : null,
                         IsLocked = dataTable.Rows[0]["IsLocked"] != DBNull.Value ? (bool)dataTable.Rows[0]["IsLocked"] : false
                         //if (dataTable.Rows[0]["IsLocked"] != DBNull.Value)
                         //    customerDto.IsLocked = (bool)dataTable.Rows[0]["IsLocked"];
                         //else
                         //    customerDto.IsLocked = false
                     };
-
                     return customerDto;
                 }
                 return null;
@@ -236,7 +238,7 @@ namespace WebApiDemo1.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 DateTime lastSucccessfulLoginDate = DateTime.Now;
-                string sqlQuery = @"UPDATE Customers SET LastSucccessfulLoginDate = getdate(), LoginFailedCount = 0
+                string sqlQuery = @"UPDATE Customers SET LastSuccessfulLoginDate = getdate(), LoginFailedCount = 0
                                     WHERE Email = @email";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@email", email);
@@ -275,23 +277,35 @@ namespace WebApiDemo1.Repositories
             }
         }
 
+        public void UpdateNewPassword(string email, byte[] password)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"UPDATE Customers SET Password = @newPassword
+                                    WHERE Email = @email";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@email", email);
+                sqlCommand.Parameters.AddWithValue("@newPassword", password);
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+            }
+        }
+
         public int Add(CustomerDto customer)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                byte[] hashValuePassword = StringHelper.StringToByteArray(customer.Password);
-
-                string sqlQuery = @"INSERT INTO Customers(Name, Gender, Age, Email, Password, MobileNumber, Country)
-                            VALUES (@FullName, @Gender, @Age, @Email, @Password, @Mobilenumber, @Country)
+                string sqlQuery = @"INSERT INTO Customers(Name, Gender, Age, Email, Password, MobileNumber)
+                            VALUES (@FullName, @Gender, @Age, @Email, @Password, @Mobilenumber)
                             Select Scope_Identity()";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
                 sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
-                sqlCommand.Parameters.AddWithValue("@Password", hashValuePassword);
+                sqlCommand.Parameters.AddWithValue("@Password", customer.HashValuePassword);
                 sqlCommand.Parameters.AddWithValue("@MobileNumber", customer.MobileNumber);
-                sqlCommand.Parameters.AddWithValue("@Country", customer.Country);
                 sqlConnection.Open();
                 customer.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
                 sqlConnection.Close();
@@ -305,7 +319,7 @@ namespace WebApiDemo1.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @" UPDATE Customers SET Name = @FullName, Gender = @Gender, Age = @Age,
-                            Email = @Email, Password = @Password, MobileNumber = @MobileNumber, Country = @Country
+                            Email = @Email, Password = @Password, MobileNumber = @MobileNumber
                             WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Id", customer.Id);
@@ -313,9 +327,8 @@ namespace WebApiDemo1.Repositories
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
                 sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
-                sqlCommand.Parameters.AddWithValue("@Password", customer.Password);
+                sqlCommand.Parameters.AddWithValue("@Password", customer.HashValuePassword);
                 sqlCommand.Parameters.AddWithValue("@MobileNumber", customer.MobileNumber);
-                sqlCommand.Parameters.AddWithValue("@Country", customer.Country);
                 sqlConnection.Open();
                 sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
@@ -323,14 +336,13 @@ namespace WebApiDemo1.Repositories
             ////Approach #2
             //SqlConnection sqlConnection = new(_connectionString);
             //string sqlQuery = @" UPDATE Customers SET Name = @FullName, Gender = @Gender,
-            //                         Age = @Age, Country = @Country
+            //                         Age = @Age
             //                         WHERE Id = @Id ";
             //SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
             //sqlCommand.Parameters.AddWithValue("@Id", customer.Id);
             //sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
             //sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
             //sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
-            //sqlCommand.Parameters.AddWithValue("@Country", customer.Country);
             //sqlConnection.Open();
             //sqlCommand.ExecuteNonQuery();
             //sqlConnection.Close();

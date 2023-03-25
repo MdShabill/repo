@@ -5,7 +5,6 @@ CREATE TABLE Customers
 	Gender Int Not Null,
 	Age INT,
 	Email NVarchar(100),
-	Country NVARCHAR(100),
 	Password NVarchar(100) Not Null,
 	MobileNumber NVarchar(100),
 	LastFailedLoginDate DateTime,

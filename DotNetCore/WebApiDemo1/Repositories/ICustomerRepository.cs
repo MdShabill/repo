@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Data;
 using WebApiDemo1.DTO.InputDTO;
-using WebApplication1.DTO.InputDTO;
+using WebApiDemo1.DTO.InputDTO;
 
 namespace WebApiDemo1.Repositories
 {
@@ -17,6 +17,7 @@ namespace WebApiDemo1.Repositories
         public void UpdateOnLoginFailed(string email);
         public int GetLoginFailedCount(string email);
         public void UpdateIsLocked(string email, bool isLocked = true);
+        public void UpdateNewPassword(string email, byte[] password);
         public int Add(CustomerDto customer);
         public void Update(CustomerDto customer);
     }
