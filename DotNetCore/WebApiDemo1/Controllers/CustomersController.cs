@@ -10,6 +10,8 @@ using System.Text;
 using System.Security.Cryptography;
 using WebApiDemo1.Helpers;
 using WebApiDemo1.DTO.InputDTO;
+using AutoMapper;
+using WebApiDemo1.DataModel;
 
 namespace WebApiDemo1.Controllers
 {
@@ -160,6 +162,14 @@ namespace WebApiDemo1.Controllers
             byte[] hashValuePassword = StringHelper.StringToByteArray(customer.Password);
             customer.HashValuePassword = hashValuePassword;
 
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<CustomerDto, Address>();
+            });
+
+            IMapper iMapper = configuration.CreateMapper();
+            Address address = iMapper.Map<CustomerDto, Address>(customer);
+
             try
             {
                 string errorMessage = validateCustomerRegisterOrUpdate(customer);
@@ -168,9 +178,10 @@ namespace WebApiDemo1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    int id = _customerRepository.Add(customer);
-                    _addressRepository.AddAddress(customer);
-                    return Ok(id);
+                    customer.Id = _customerRepository.Add(customer);
+                    address.CustomerId= customer.Id;
+                    _addressRepository.AddAddress(address);
+                    return Ok(customer.Id);
                 }
                 return BadRequest();
             }
@@ -249,7 +260,6 @@ namespace WebApiDemo1.Controllers
             string errorMessage = "";
 
             customer.FullName = customer.FullName.Trim();
-            customer.Country = customer.Country.Trim();
 
             if (isUpdate == true)
             {
@@ -270,9 +280,6 @@ namespace WebApiDemo1.Controllers
 
             else if (customer.Age <= 18)
                 errorMessage = "Invalid age, customer age should be above 18";
-
-            else if (string.IsNullOrWhiteSpace(customer.Country))
-                errorMessage = "Country can not be blank";
 
             else if(! Enum.IsDefined(typeof(GenderTypes), customer.Gender))
                 errorMessage = "Invalid Gender";
