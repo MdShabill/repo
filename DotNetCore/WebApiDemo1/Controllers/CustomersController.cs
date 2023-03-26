@@ -19,13 +19,23 @@ namespace WebApiDemo1.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
+
         ICustomerRepository _customerRepository;
         IAddressRepository _addressRepository;
+        IMapper _imapper;
 
         public CustomersController(ICustomerRepository customerRepository, IAddressRepository addressRepository)
         {
             _customerRepository = customerRepository;
             _addressRepository = addressRepository;
+
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<CustomerDto, Address>();
+                cfg.CreateMap<CustomerDto, Customer>();
+            });
+
+            _imapper = configuration.CreateMapper();
         }
 
         [HttpGet]
@@ -115,7 +125,7 @@ namespace WebApiDemo1.Controllers
 
         [HttpPost]
         [Route("ChangePassword")]
-        public IActionResult CustomerRegister([FromBody] ChangePasswordDto changePassword)
+        public IActionResult ChangePassword([FromBody] ChangePasswordDto changePassword)
         {
             try
             {
@@ -157,28 +167,23 @@ namespace WebApiDemo1.Controllers
 
         [HttpPost]
         [Route("CustomerRegister")]
-        public IActionResult CustomerRegister([FromBody] CustomerDto customer)
+        public IActionResult CustomerRegister([FromBody] CustomerDto customerDto)
         {
-            byte[] hashValuePassword = StringHelper.StringToByteArray(customer.Password);
-            customer.HashValuePassword = hashValuePassword;
+            byte[] hashValuePassword = StringHelper.StringToByteArray(customerDto.Password);
+            customerDto.HashValuePassword = hashValuePassword;
 
-            var configuration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<CustomerDto, Address>();
-            });
-
-            IMapper iMapper = configuration.CreateMapper();
-            Address address = iMapper.Map<CustomerDto, Address>(customer);
+            Address address = _imapper.Map<CustomerDto, Address>(customerDto);
+            Customer customer = _imapper.Map<CustomerDto, Customer>(customerDto);
 
             try
             {
-                string errorMessage = validateCustomerRegisterOrUpdate(customer);
+                string errorMessage = validateCustomerRegisterOrUpdate(customerDto);
                 if (!string.IsNullOrEmpty(errorMessage))
                     return BadRequest(errorMessage);
 
                 if (ModelState.IsValid)
                 {
-                    customer.Id = _customerRepository.Add(customer);
+                    customer.Id = _customerRepository.Add(customerDto);
                     address.CustomerId= customer.Id;
                     _addressRepository.AddAddress(address);
                     return Ok(customer.Id);
@@ -212,20 +217,20 @@ namespace WebApiDemo1.Controllers
 
         [HttpPost]
         [Route("CustomerUpdate")]
-        public IActionResult CustomerUpdate([FromBody] CustomerDto customer)
+        public IActionResult CustomerUpdate([FromBody] CustomerDto customerDto)
         {
-            byte[] hashValuePassword = StringHelper.StringToByteArray(customer.Password);
-            customer.HashValuePassword = hashValuePassword;
+            byte[] hashValuePassword = StringHelper.StringToByteArray(customerDto.Password);
+            customerDto.HashValuePassword = hashValuePassword;
 
             try
             {
-                string errorMessage = validateCustomerRegisterOrUpdate(customer, true);
+                string errorMessage = validateCustomerRegisterOrUpdate(customerDto, true);
                 if (!string.IsNullOrEmpty(errorMessage))
                     return BadRequest(errorMessage);
 
                 if (ModelState.IsValid)
                 {
-                    _customerRepository.Update(customer);
+                    _customerRepository.Update(customerDto);
                     return Ok("Record updated");
                 }
                 return BadRequest("Record not updated");
@@ -255,34 +260,38 @@ namespace WebApiDemo1.Controllers
             }
         }
 
-        private string validateCustomerRegisterOrUpdate(CustomerDto customer, bool isUpdate = false)
+        private string validateCustomerRegisterOrUpdate(CustomerDto customerDto, bool isUpdate = false)
         {
             string errorMessage = "";
 
-            customer.FullName = customer.FullName.Trim();
+            customerDto.FullName = customerDto.FullName.Trim();
+            customerDto.Country = customerDto.Country.Trim();
 
             if (isUpdate == true)
             {
-                if (customer.Id < 1)
+                if (customerDto.Id < 1)
                     errorMessage = "Id can not be less than 0";
             }
 
-            if (string.IsNullOrWhiteSpace(customer.FullName))
+            if (string.IsNullOrWhiteSpace(customerDto.FullName))
                 errorMessage = "FullName can not be blank";
 
-            else if (customer.FullName.Length < 3 || customer.FullName.Length > 30)
+            else if (customerDto.FullName.Length < 3 || customerDto.FullName.Length > 30)
                 errorMessage = "FullName should be between 3 and 30 characters.";
 
             Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-            Match match = regex.Match(customer.Email);
+            Match match = regex.Match(customerDto.Email);
             if (!match.Success)
                 errorMessage = "Email is invalid";
 
-            else if (customer.Age <= 18)
+            else if (customerDto.Age <= 18)
                 errorMessage = "Invalid age, customer age should be above 18";
 
-            else if(! Enum.IsDefined(typeof(GenderTypes), customer.Gender))
+            else if(! Enum.IsDefined(typeof(GenderTypes), customerDto.Gender))
                 errorMessage = "Invalid Gender";
+
+            else if (!Enum.IsDefined(typeof(AddressTypes), customerDto.AddressType))
+                errorMessage = "Invalid Address Type";
 
             return errorMessage;
         }
