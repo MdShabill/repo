@@ -43,12 +43,10 @@ namespace WebApiDemo1.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 {
-                    string sqlQuery = @" UPDATE Addresses SET CustomerId = @CustomerId, AddressLine1 = @AddressLine1, 
-                            AddressLine2 = @AddressLine2, PinCode = @PinCode, Country = @Country, AddressType = @AddressType, 
-                            LastEditedOn = @LastEditedOn
-                            WHERE Id = @Id ";
+                    string sqlQuery = @" UPDATE Addresses SET AddressLine1 = @AddressLine1, AddressLine2 = @AddressLine2, 
+                            PinCode = @PinCode, Country = @Country, AddressType = @AddressType, LastEditedOn = @LastEditedOn
+                            WHERE CustomerId = @CustomerId ";
                     SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@Id", address.Id);
                     sqlCommand.Parameters.AddWithValue("@CustomerId", address.CustomerId);
                     sqlCommand.Parameters.AddWithValue("@AddressLine1", address.AddressLine1);
                     sqlCommand.Parameters.AddWithValue("@AddressLine2", address.AddressLine2);

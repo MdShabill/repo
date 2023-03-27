@@ -5,6 +5,7 @@ namespace WebApiDemo1.DataModel
     public class Customer
     {
         public int Id { get; set; }
+        public int CustomerId { get; set; }
         public string FullName { get; set; }
         public GenderTypes Gender { get; set; }
         public int Age { get; set; }

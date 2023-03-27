@@ -6,5 +6,6 @@ namespace WebApiDemo1.Repositories
     public interface IAddressRepository
     {
         public void AddAddress(Address address);
+        public void UpdateAddress(Address address);
     }
 }

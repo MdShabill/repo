@@ -241,7 +241,7 @@ namespace WebApiDemo1.Controllers
             }
             catch (SqlException ex)
             {
-                if (ex.Number == 2627)
+                if (ex.Number == Constants.UniqueConstraintViolationErrorcode)
                 {
                     if (ex.Message.Contains("UQ_Customers_Email"))
                         return BadRequest("Email already exist");
@@ -273,7 +273,7 @@ namespace WebApiDemo1.Controllers
 
             if (isUpdate == true)
             {
-                if (customerDto.Id < 1)
+                if (customerDto.CustomerId < 1)
                     errorMessage = "Id can not be less than 0";
             }
 

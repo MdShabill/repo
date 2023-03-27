@@ -323,7 +323,7 @@ namespace WebApiDemo1.Repositories
                             Email = @Email, Password = @Password, MobileNumber = @MobileNumber
                             WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@Id", customer.Id);
+                sqlCommand.Parameters.AddWithValue("@Id", customer.CustomerId);
                 sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Age", customer.Age);

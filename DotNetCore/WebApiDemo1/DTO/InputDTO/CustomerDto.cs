@@ -17,6 +17,7 @@ namespace WebApiDemo1.DTO.InputDTO
         public bool? IsLocked { get; set; }
         public byte[]? HashValuePassword { get; set; }
 
+        public int AddressId { get; set; }
         public int CustomerId { get; set; }
         public string AddressLine1 { get; set; }
         public string AddressLine2 { get; set; }
