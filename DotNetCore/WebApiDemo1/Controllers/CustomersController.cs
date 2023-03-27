@@ -12,6 +12,7 @@ using WebApiDemo1.Helpers;
 using WebApiDemo1.DTO.InputDTO;
 using AutoMapper;
 using WebApiDemo1.DataModel;
+using System.Transactions;
 
 namespace WebApiDemo1.Controllers
 {
@@ -183,10 +184,21 @@ namespace WebApiDemo1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    customer.Id = _customerRepository.Add(customer);
-                    address.CustomerId= customer.Id;
-                    _addressRepository.AddAddress(address);
-                    return Ok(customer.Id);
+                    using (TransactionScope transactionScope = new TransactionScope())
+                    {
+                        try
+                        {
+                            customer.Id = _customerRepository.Add(customer);
+                            address.CustomerId = customer.Id;
+                            _addressRepository.AddAddress(address);
+                            transactionScope.Complete();
+                            return Ok(customer.Id);
+                        }
+                        catch (TransactionException ex)
+                        {
+                            transactionScope.Dispose();
+                        }
+                    }                  
                 }
                 return BadRequest();
             }
@@ -233,9 +245,21 @@ namespace WebApiDemo1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    _customerRepository.Update(customer);
-                    _addressRepository.UpdateAddress(address);
-                    return Ok("Record updated");
+                    using (var transactionScope = new TransactionScope())
+                    {
+                        try
+                        {
+                            _customerRepository.Update(customer);
+                            _addressRepository.UpdateAddress(address);
+                            transactionScope.Complete();
+                            return Ok("Record updated");
+                        }
+                        catch (Exception ex)
+                        {
+                            transactionScope.Dispose();
+                            return BadRequest(ex.Message);
+                        }
+                    }
                 }
                 return BadRequest("Record not updated");
             }
