@@ -183,7 +183,7 @@ namespace WebApiDemo1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    customer.Id = _customerRepository.Add(customerDto);
+                    customer.Id = _customerRepository.Add(customer);
                     address.CustomerId= customer.Id;
                     _addressRepository.AddAddress(address);
                     return Ok(customer.Id);
@@ -222,6 +222,9 @@ namespace WebApiDemo1.Controllers
             byte[] hashValuePassword = StringHelper.StringToByteArray(customerDto.Password);
             customerDto.HashValuePassword = hashValuePassword;
 
+            Address address = _imapper.Map<CustomerDto, Address>(customerDto);
+            Customer customer = _imapper.Map<CustomerDto, Customer>(customerDto);
+
             try
             {
                 string errorMessage = validateCustomerRegisterOrUpdate(customerDto, true);
@@ -230,7 +233,8 @@ namespace WebApiDemo1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    _customerRepository.Update(customerDto);
+                    _customerRepository.Update(customer);
+                    _addressRepository.UpdateAddress(address);
                     return Ok("Record updated");
                 }
                 return BadRequest("Record not updated");

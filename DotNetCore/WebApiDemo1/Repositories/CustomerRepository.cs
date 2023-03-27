@@ -8,6 +8,7 @@ using WebApiDemo1.Enums;
 using WebApiDemo1.DTO.InputDTO;
 using System.Collections;
 using WebApiDemo1.Helpers;
+using WebApiDemo1.DataModel;
 
 namespace WebApiDemo1.Repositories
 {
@@ -292,7 +293,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public int Add(CustomerDto customer)
+        public int Add(Customer customer)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -313,7 +314,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public void Update(CustomerDto customer)
+        public void Update(Customer customer)
         {
             //Approach #1  - Recommended
             using (SqlConnection sqlConnection = new(_connectionString))

@@ -37,5 +37,30 @@ namespace WebApiDemo1.Repositories
                 }
             }
         }
+
+        public void UpdateAddress(Address address)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                {
+                    string sqlQuery = @" UPDATE Addresses SET CustomerId = @CustomerId, AddressLine1 = @AddressLine1, 
+                            AddressLine2 = @AddressLine2, PinCode = @PinCode, Country = @Country, AddressType = @AddressType, 
+                            LastEditedOn = @LastEditedOn
+                            WHERE Id = @Id ";
+                    SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                    sqlCommand.Parameters.AddWithValue("@Id", address.Id);
+                    sqlCommand.Parameters.AddWithValue("@CustomerId", address.CustomerId);
+                    sqlCommand.Parameters.AddWithValue("@AddressLine1", address.AddressLine1);
+                    sqlCommand.Parameters.AddWithValue("@AddressLine2", address.AddressLine2);
+                    sqlCommand.Parameters.AddWithValue("@PinCode", address.PinCode);
+                    sqlCommand.Parameters.AddWithValue("@Country", address.Country);
+                    sqlCommand.Parameters.AddWithValue("@AddressType", address.AddressType);
+                    sqlCommand.Parameters.AddWithValue("@LastEditedOn", DateTime.Now);
+                    sqlConnection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                    sqlConnection.Close();
+                }
+            }
+        }
     }
 }
