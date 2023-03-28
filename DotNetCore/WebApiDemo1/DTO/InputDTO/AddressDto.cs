@@ -1,6 +1,6 @@
 ﻿using WebApiDemo1.Enums;
 
-namespace WebApiDemo1.DataModel
+namespace WebApiDemo1.DTO.InputDTO
 {
     public class AddressDto
     {

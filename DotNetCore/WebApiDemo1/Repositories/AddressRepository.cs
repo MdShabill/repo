@@ -13,7 +13,7 @@ namespace WebApiDemo1.Repositories
             _connectionString = connectionString;
         }
 
-        public void AddAddress(Address address)
+        public void Add(Address address)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -38,7 +38,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public void UpdateAddress(Address address)
+        public void Update(Address address)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {

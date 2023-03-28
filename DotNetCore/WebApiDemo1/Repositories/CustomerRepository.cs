@@ -293,7 +293,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public int AddCustomer(Customer customer)
+        public int Add(Customer customer)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -314,7 +314,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public void UpdateCustomer(Customer customer)
+        public void Update(Customer customer)
         {
             //Approach #1  - Recommended
             using (SqlConnection sqlConnection = new(_connectionString))

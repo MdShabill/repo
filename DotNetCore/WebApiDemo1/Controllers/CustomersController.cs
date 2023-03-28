@@ -32,7 +32,7 @@ namespace WebApiDemo1.Controllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<CustomerDto, Address>();
+                cfg.CreateMap<AddressDto, Address>();
                 cfg.CreateMap<CustomerDto, Customer>();
             });
 
@@ -167,8 +167,8 @@ namespace WebApiDemo1.Controllers
         //}
 
         [HttpPost]
-        [Route("CustomerRegister")]
-        public IActionResult CustomerRegister([FromBody] CustomerDto customerDto)
+        [Route("Register")]
+        public IActionResult Register([FromBody] CustomerDto customerDto)
         {
             byte[] hashValuePassword = StringHelper.StringToByteArray(customerDto.Password);
             customerDto.HashValuePassword = hashValuePassword;
@@ -181,29 +181,31 @@ namespace WebApiDemo1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    using (TransactionScope transactionScope = new TransactionScope())
+                    //using (TransactionScope transactionScope = new TransactionScope())
+                    //using (var transactionScope = new TransactionScope())
+                    using (TransactionScope transactionScope = new ())
                     {
                         try
                         {
-                            //Address address = _imapper.Map<CustomerDto, Address>(customerDto);
-
                             Customer customer = _imapper.Map<CustomerDto, Customer>(customerDto);
-                            customer.Id = _customerRepository.AddCustomer(customer);
+                            customer.Id = _customerRepository.Add(customer);
 
-                            for(int i = 0; i < customerDto.Addresses.Count; i++)
+                            //Approach #1
+                            //for(int i = 0; i < customerDto.Addresses.Count; i++)
+                            //{
+                            //    Address address = _imapper.Map<AddressDto, Address>(customerDto.Addresses[i]);
+                            //    address.CustomerId = customer.Id;
+                            //    _addressRepository.Add(address);
+                            //}
+
+                            //Approach #2
+                            foreach (AddressDto addressDto in customerDto.Addresses)
                             {
-                                Address address = new()
-                                {
-                                    CustomerId = customerDto.Addresses[i].CustomerId,
-                                    AddressLine1 = customerDto.Addresses[i].AddressLine1,
-                                    AddressLine2 = customerDto.Addresses[i].AddressLine2,
-                                    PinCode = customerDto.Addresses[i].PinCode,
-                                    Country = customerDto.Addresses[i].Country,
-                                    AddressType = customerDto.Addresses[i].AddressType
-                                };
+                                Address address = _imapper.Map<AddressDto, Address>(addressDto);
                                 address.CustomerId = customer.Id;
-                                _addressRepository.AddAddress(address);
+                                _addressRepository.Add(address);
                             }
+
                             transactionScope.Complete();
                             return Ok(customer.Id);
                         }
@@ -241,8 +243,8 @@ namespace WebApiDemo1.Controllers
         }
 
         [HttpPost]
-        [Route("CustomerUpdate")]
-        public IActionResult CustomerUpdate([FromBody] CustomerDto customerDto)
+        [Route("Update")]
+        public IActionResult Update([FromBody] CustomerDto customerDto)
         {
             byte[] hashValuePassword = StringHelper.StringToByteArray(customerDto.Password);
             customerDto.HashValuePassword = hashValuePassword;
@@ -261,8 +263,8 @@ namespace WebApiDemo1.Controllers
                         {
                             Address address = _imapper.Map<CustomerDto, Address>(customerDto);
                             Customer customer = _imapper.Map<CustomerDto, Customer>(customerDto);
-                            _customerRepository.UpdateCustomer(customer);
-                            _addressRepository.UpdateAddress(address);
+                            _customerRepository.Update(customer);
+                            _addressRepository.Update(address);
                             transactionScope.Complete();
                             return Ok("Record updated");
                         }
