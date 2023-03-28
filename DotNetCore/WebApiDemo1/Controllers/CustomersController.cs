@@ -173,9 +173,6 @@ namespace WebApiDemo1.Controllers
             byte[] hashValuePassword = StringHelper.StringToByteArray(customerDto.Password);
             customerDto.HashValuePassword = hashValuePassword;
 
-            Address address = _imapper.Map<CustomerDto, Address>(customerDto);
-            Customer customer = _imapper.Map<CustomerDto, Customer>(customerDto);
-
             try
             {
                 string errorMessage = validateCustomerRegisterOrUpdate(customerDto);
@@ -188,9 +185,25 @@ namespace WebApiDemo1.Controllers
                     {
                         try
                         {
-                            customer.Id = _customerRepository.Add(customer);
-                            address.CustomerId = customer.Id;
-                            _addressRepository.AddAddress(address);
+                            //Address address = _imapper.Map<CustomerDto, Address>(customerDto);
+
+                            Customer customer = _imapper.Map<CustomerDto, Customer>(customerDto);
+                            customer.Id = _customerRepository.AddCustomer(customer);
+
+                            for(int i = 0; i < customerDto.Addresses.Count; i++)
+                            {
+                                Address address = new()
+                                {
+                                    CustomerId = customerDto.Addresses[i].CustomerId,
+                                    AddressLine1 = customerDto.Addresses[i].AddressLine1,
+                                    AddressLine2 = customerDto.Addresses[i].AddressLine2,
+                                    PinCode = customerDto.Addresses[i].PinCode,
+                                    Country = customerDto.Addresses[i].Country,
+                                    AddressType = customerDto.Addresses[i].AddressType
+                                };
+                                address.CustomerId = customer.Id;
+                                _addressRepository.AddAddress(address);
+                            }
                             transactionScope.Complete();
                             return Ok(customer.Id);
                         }
@@ -234,9 +247,6 @@ namespace WebApiDemo1.Controllers
             byte[] hashValuePassword = StringHelper.StringToByteArray(customerDto.Password);
             customerDto.HashValuePassword = hashValuePassword;
 
-            Address address = _imapper.Map<CustomerDto, Address>(customerDto);
-            Customer customer = _imapper.Map<CustomerDto, Customer>(customerDto);
-
             try
             {
                 string errorMessage = validateCustomerRegisterOrUpdate(customerDto, true);
@@ -249,7 +259,9 @@ namespace WebApiDemo1.Controllers
                     {
                         try
                         {
-                            _customerRepository.Update(customer);
+                            Address address = _imapper.Map<CustomerDto, Address>(customerDto);
+                            Customer customer = _imapper.Map<CustomerDto, Customer>(customerDto);
+                            _customerRepository.UpdateCustomer(customer);
                             _addressRepository.UpdateAddress(address);
                             transactionScope.Complete();
                             return Ok("Record updated");
@@ -293,13 +305,13 @@ namespace WebApiDemo1.Controllers
             string errorMessage = "";
 
             customerDto.FullName = customerDto.FullName.Trim();
-            customerDto.Country = customerDto.Country.Trim();
+            //customerDto.Country = customerDto.Country.Trim();
 
-            if (isUpdate == true)
-            {
-                if (customerDto.CustomerId < 1)
-                    errorMessage = "Id can not be less than 0";
-            }
+            //if (isUpdate == true)
+            //{
+            //    if (customerDto.CustomerId < 1)
+            //        errorMessage = "Id can not be less than 0";
+            //}
 
             if (string.IsNullOrWhiteSpace(customerDto.FullName))
                 errorMessage = "FullName can not be blank";
@@ -318,8 +330,8 @@ namespace WebApiDemo1.Controllers
             else if(! Enum.IsDefined(typeof(GenderTypes), customerDto.Gender))
                 errorMessage = "Invalid Gender";
 
-            else if (!Enum.IsDefined(typeof(AddressTypes), customerDto.AddressType))
-                errorMessage = "Invalid Address Type";
+            //else if (!Enum.IsDefined(typeof(AddressTypes), customerDto.AddressType))
+                //errorMessage = "Invalid Address Type";
 
             return errorMessage;
         }

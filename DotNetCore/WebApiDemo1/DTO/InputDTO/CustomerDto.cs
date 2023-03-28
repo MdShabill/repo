@@ -1,4 +1,5 @@
-﻿using WebApiDemo1.Enums;
+﻿using WebApiDemo1.DataModel;
+using WebApiDemo1.Enums;
 
 namespace WebApiDemo1.DTO.InputDTO
 {
@@ -17,13 +18,15 @@ namespace WebApiDemo1.DTO.InputDTO
         public bool? IsLocked { get; set; }
         public byte[]? HashValuePassword { get; set; }
 
-        public int AddressId { get; set; }
-        public int CustomerId { get; set; }
-        public string AddressLine1 { get; set; }
-        public string AddressLine2 { get; set; }
-        public int PinCode { get; set; }
-        public string Country { get; set; }
-        public AddressTypes AddressType { get; set; }
+        public List<Address> Addresses { get; set; }
+
+        //public int AddressId { get; set; }
+        //public int CustomerId { get; set; }
+        //public string AddressLine1 { get; set; }
+        //public string AddressLine2 { get; set; }
+        //public int PinCode { get; set; }
+        //public string Country { get; set; }
+        //public AddressTypes AddressType { get; set; }
 
         public CustomerDto()
         {

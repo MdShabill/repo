@@ -19,7 +19,7 @@ namespace WebApiDemo1.Repositories
         public int GetLoginFailedCount(string email);
         public void UpdateIsLocked(string email, bool isLocked = true);
         public void UpdateNewPassword(string email, byte[] password);
-        public int Add(Customer customer);
-        public void Update(Customer customer);
+        public int AddCustomer(Customer customer);
+        public void UpdateCustomer(Customer customer);
     }
 }

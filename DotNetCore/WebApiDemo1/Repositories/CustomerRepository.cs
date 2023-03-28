@@ -33,7 +33,7 @@ namespace WebApiDemo1.Repositories
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    //Approch 1
+                    //Approach 1
                     //CustomerDto customerDto = new();
                     //customerDto.Id = (int)dataTable.Rows[i]["Id"];
                     //customerDto.FullName = (string)dataTable.Rows[i]["Name"];
@@ -45,7 +45,7 @@ namespace WebApiDemo1.Repositories
                     //customerDto.Country = (string)dataTable.Rows[i]["Country"];
                     //customers.Add(customerDto);
 
-                    ////Approch 2
+                    ////Approach 2
                     //CustomerDto customerDto = new()
                     //{
                     //     Id = (int)dataTable.Rows[i]["Id"],
@@ -57,7 +57,7 @@ namespace WebApiDemo1.Repositories
                     //     MobileNumber = (string)dataTable.Rows[i]["MobileNumber"],
                     //};
 
-                    //Approch 3 - Using Constructor
+                    //Approach 3 - Using Constructor
                     CustomerDto customerDto = new(
                         (int)dataTable.Rows[i]["Id"], (string)dataTable.Rows[i]["Name"], (GenderTypes)dataTable.Rows[i]["Gender"],
                         (int)dataTable.Rows[i]["Age"], (string)dataTable.Rows[i]["Email"], (string)dataTable.Rows[i]["Password"],
@@ -94,7 +94,7 @@ namespace WebApiDemo1.Repositories
 
                 if (dataTable.Rows.Count > 0)
                 {
-                    //Approch 1
+                    //Approach 1
                     //CustomerDto customerDto = new();
                     //customerDto.Id = (int)dataTable.Rows[0]["Id"];
                     //customerDto.FullName = (string)dataTable.Rows[0]["Name"];
@@ -106,7 +106,7 @@ namespace WebApiDemo1.Repositories
                     //customerDto.Country = (string)dataTable.Rows[0]["Country"];
                     //return customerDto;
 
-                    //Approch 2
+                    //Approach 2
                     CustomerDto customerDto = new()
                     {
                         Id = (int)dataTable.Rows[0]["Id"],
@@ -153,7 +153,7 @@ namespace WebApiDemo1.Repositories
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    //Approch 1
+                    //Approach 1
                     //CustomerDto customerDto = new();
                     //customerDto.Id = (int)dataTable.Rows[i]["Id"];
                     //customerDto.FullName = (string)dataTable.Rows[i]["Name"];
@@ -165,7 +165,7 @@ namespace WebApiDemo1.Repositories
                     //customerDto.Country = (string)dataTable.Rows[i]["Country"];
                     //customers.Add(customerDto);
 
-                    //Approch 2
+                    //Approach 2
                     CustomerDto customerDto = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
@@ -293,7 +293,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public int Add(Customer customer)
+        public int AddCustomer(Customer customer)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -314,7 +314,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public void Update(Customer customer)
+        public void UpdateCustomer(Customer customer)
         {
             //Approach #1  - Recommended
             using (SqlConnection sqlConnection = new(_connectionString))
