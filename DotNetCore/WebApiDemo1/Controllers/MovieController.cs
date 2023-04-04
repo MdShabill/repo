@@ -25,7 +25,7 @@ namespace WebApiDemo1.Controllers
         {
             try
             {
-                string errormessage = validateMovieAdd(movieDto);
+                string errormessage = validateMovieAddOrUpdate(movieDto);
                 if(!string.IsNullOrEmpty(errormessage)) 
                     return BadRequest(errormessage);
 
@@ -65,30 +65,12 @@ namespace WebApiDemo1.Controllers
         {
             try
             {
-                movieDto.ActorName = movieDto.ActorName.Trim();
-                movieDto.ActressName = movieDto.ActressName.Trim();
-                movieDto.Title = movieDto.Title.Trim();
+                string errormessage = validateMovieAddOrUpdate(movieDto, true);
+                if (!string.IsNullOrEmpty(errormessage))
+                    return BadRequest(errormessage);
 
                 if (ModelState.IsValid)
                 {
-                    if (string.IsNullOrEmpty(movieDto.ActorName))
-                        return BadRequest("Actor Name can not be blank");
-
-                    if (movieDto.ActorName.Length >= 20)
-                        return BadRequest("Actor Name should be under 20 characters");
-
-                    if (string.IsNullOrEmpty(movieDto.ActressName))
-                        return BadRequest("Actress Name can not be blank");
-
-                    if (movieDto.ActressName.Length >= 20)
-                        return BadRequest("Actress Name should be under 20 characters");
-
-                    if (string.IsNullOrEmpty(movieDto.Title))
-                        return BadRequest("Title can not be blank");
-
-                    if (!Enum.IsDefined(typeof(MovieTypes), movieDto.MovieType))
-                        return BadRequest("Invalid Movie Type");
-
                     string updateQuery = @"Update Movies
                     Set ActorName = @ActorName, ActressName = @ActressName, Title = @Title, MovieType = @MovieType
                     Where Id = @Id;";
@@ -117,9 +99,15 @@ namespace WebApiDemo1.Controllers
             }
         }
 
-        private string validateMovieAdd(MovieDto movieDto)
+        private string validateMovieAddOrUpdate(MovieDto movieDto, bool IsUpdate = false)
         {
             string errorMessage = "";
+
+            if(IsUpdate == true) 
+            {
+                if (movieDto.Id < 1)
+                    errorMessage = "Movie Id Can Not Be Less Then Zero";
+            }
 
             movieDto.ActorName = movieDto.ActorName.Trim();
             movieDto.ActressName = movieDto.ActressName.Trim();
@@ -128,8 +116,14 @@ namespace WebApiDemo1.Controllers
             if (string.IsNullOrEmpty(movieDto.ActorName))
                 errorMessage = "Actor Name can not be blank";
 
+            else if (movieDto.ActorName.Length >= 20)
+                errorMessage = "Actor Name should be under 20 characters";
+
             else if (string.IsNullOrEmpty(movieDto.ActressName))
                 errorMessage = "Actress Name can not be blank";
+
+            else if (movieDto.ActressName.Length >= 20)
+                errorMessage = "Actress Name should be under 20 characters";
 
             else if (string.IsNullOrEmpty(movieDto.Title))
                 errorMessage = "Title can not be blank";

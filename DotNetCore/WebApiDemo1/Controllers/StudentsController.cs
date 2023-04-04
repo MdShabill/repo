@@ -16,7 +16,7 @@ namespace WebApiDemo1.Controllers
         public StudentsController(IConfiguration configuration)
         {
             _Configuration = configuration;
-            sqlConnection = new(_Configuration.GetConnectionString("StudentDBConnection").ToString());
+            sqlConnection = new(_Configuration.GetConnectionString("SchoolManagementDB").ToString());
         }
 
         [HttpPost]
@@ -25,33 +25,22 @@ namespace WebApiDemo1.Controllers
         {
             try
             {
-                studentDto.FullName = studentDto.FullName.Trim();
-                studentDto.Email = studentDto.Email.Trim();
-                studentDto.Password = studentDto.Password.Trim();
+                string errorMessage = ValidateStudentRegisterOrUpdate(studentDto);
+                    if(!string.IsNullOrEmpty(errorMessage))
+                        return BadRequest(errorMessage);
 
                 if (ModelState.IsValid)
                 {
-                    if (string.IsNullOrWhiteSpace(studentDto.FullName))
-                        return BadRequest("Full Name can not be blank");
-
-                    if (studentDto.FullName.Length < 3 || studentDto.FullName.Length > 20)
-                        return BadRequest ("FullName should be between 3 and 20 characters.");
-
-                    if (! Enum.IsDefined(typeof(GenderTypes), studentDto.Gender))
-                        return BadRequest("Invalid Gender");
-
-                    if (string.IsNullOrWhiteSpace(studentDto.Email))
-                        return BadRequest("Student Email can not be blank");
-
-                    if (string.IsNullOrWhiteSpace(studentDto.Password))
-                        return BadRequest("Student Password can not be blank");
-
-                    string insertQuery = $@"
+                    string insertQuery = @"
                     INSERT INTO Students(FullName, Gender, Email, Password, RegistrationDate)
-                    VALUES ('{studentDto.FullName}', {(int)studentDto.Gender}, 
-                   '{studentDto.Email}', '{studentDto.Password}', GetDate())";
+                    VALUES (@FullNae, @Gender, @Email, @Password, @RegistrationDate)";
 
                     var sqlCommand = new SqlCommand(insertQuery, sqlConnection);
+                    sqlCommand.Parameters.AddWithValue("@FullName", studentDto.FullName);
+                    sqlCommand.Parameters.AddWithValue("@Gender", studentDto.Gender);
+                    sqlCommand.Parameters.AddWithValue("@Email", studentDto.Email);
+                    sqlCommand.Parameters.AddWithValue("@Password", studentDto.Password);
+                    sqlCommand.Parameters.AddWithValue("@RegistrationDate", DateTime.Now);
                     sqlConnection.Open();
                     sqlCommand.ExecuteNonQuery();
                     sqlConnection.Close();
@@ -76,14 +65,22 @@ namespace WebApiDemo1.Controllers
         {
             try
             {
+                string errorMessage = ValidateStudentRegisterOrUpdate(studentDto, true);
+                if (!string.IsNullOrEmpty(errorMessage))
+                    return BadRequest(errorMessage);
+
                 if (ModelState.IsValid) 
                 {
-                    string updateQuery = $@"Update Students
-                    Set FullName = '{studentDto.FullName}', Gender = {(int)studentDto.Gender}, 
-                    Email = '{studentDto.Email}', Password = '{studentDto.Password}'
-                    Where Id = {studentDto.Id};";
+                    string updateQuery = @"Update Students
+                    Set FullName = @FullName, Gender = @Gender, Email = @Email, Password = @password
+                    Where @Id = Id;";
                     
                     var sqlCommand = new SqlCommand(updateQuery, sqlConnection);
+                    sqlCommand.Parameters.AddWithValue("@Id", studentDto.Id);
+                    sqlCommand.Parameters.AddWithValue("@FullName", studentDto.FullName);
+                    sqlCommand.Parameters.AddWithValue("@Gender", studentDto.Gender);
+                    sqlCommand.Parameters.AddWithValue("@Email", studentDto.Email);
+                    sqlCommand.Parameters.AddWithValue("@Password", studentDto.Password);
                     sqlConnection.Open();
                     sqlCommand.ExecuteNonQuery();
                     sqlConnection.Close();
@@ -98,6 +95,41 @@ namespace WebApiDemo1.Controllers
 
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+        }
+
+        private string ValidateStudentRegisterOrUpdate(StudentDto studentDto, bool IsUpdate = false)
+        {
+            string errorMessage = "";
+
+            if(IsUpdate == true)
+            {
+                if (studentDto.Id < 1)
+                    errorMessage = "Student Id can Not Be Less Then Zero";
+            }
+
+            studentDto.FullName = studentDto.FullName.Trim();
+            studentDto.Email = studentDto.Email.Trim();
+            studentDto.Password = studentDto.Password.Trim();
+
+            if (string.IsNullOrWhiteSpace(studentDto.FullName))
+                errorMessage = "Full Name can not be blank";
+
+            else if (studentDto.FullName.Length >= 20)
+                errorMessage = "FullName should be under 20 characters";
+
+            else if (!Enum.IsDefined(typeof(GenderTypes), studentDto.Gender))
+                errorMessage = "Invalid Gender";
+
+            else if (string.IsNullOrWhiteSpace(studentDto.Email))
+                errorMessage = "Student Email can not be blank";
+
+            else if (string.IsNullOrWhiteSpace(studentDto.Password))
+                errorMessage = "Student Password can not be blank";
+
+            else if (studentDto.Password.Length >= 30)
+                errorMessage = "Password should be under 30 characters";
+
+            return errorMessage;
         }
     }
 }
