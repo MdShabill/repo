@@ -25,30 +25,22 @@ namespace WebApiDemo1.Controllers
         {
             try
             {
-                movieDto.ActorName = movieDto.ActorName.Trim();
-                movieDto.ActressName = movieDto.ActressName.Trim();
-                movieDto.Title = movieDto.Title.Trim();
+                string errormessage = validateMovieAdd(movieDto);
+                if(!string.IsNullOrEmpty(errormessage)) 
+                    return BadRequest(errormessage);
 
-                if(ModelState.IsValid)
+                if (ModelState.IsValid)
                 {
-                    if(string.IsNullOrEmpty(movieDto.ActorName)) 
-                        return BadRequest("Actor Name can not be blank");
-
-                    if(string.IsNullOrEmpty(movieDto.ActressName))
-                        return BadRequest("Actress Name can not be blank");
-
-                    if (string.IsNullOrEmpty(movieDto.Title))
-                        return BadRequest("Title can not be blank");
-
-                    if(!Enum.IsDefined(typeof(MovieTypes), movieDto.MovieType))
-                        return BadRequest("Invalid Movie Type");
-
-                    string insertQuery = $@"
+                    string insertQuery = @"
                     INSERT INTO MOVIES(ActorName, ActressName, Title, MovieType, ReleaseDate)
-                    VALUES('{movieDto.ActorName}','{movieDto.ActressName}', '{movieDto.Title}', 
-                    {(int)movieDto.MovieType}, GetDate())";
+                    VALUES(@ActorName, @ActressName, @Title, @MovieType, @ReleaseDate)";
 
                     var sqlCommand = new SqlCommand(insertQuery, sqlConnection);
+                    sqlCommand.Parameters.AddWithValue("@ActorName", movieDto.ActorName);
+                    sqlCommand.Parameters.AddWithValue("@ActressName", movieDto.ActressName);
+                    sqlCommand.Parameters.AddWithValue("@Title", movieDto.Title);
+                    sqlCommand.Parameters.AddWithValue("@MovieType", movieDto.MovieType);
+                    sqlCommand.Parameters.AddWithValue("@ReleaseDate", DateTime.Now);
                     sqlConnection.Open();
                     sqlCommand.ExecuteNonQuery();
                     sqlConnection.Close();
@@ -97,12 +89,16 @@ namespace WebApiDemo1.Controllers
                     if (!Enum.IsDefined(typeof(MovieTypes), movieDto.MovieType))
                         return BadRequest("Invalid Movie Type");
 
-                    string updateQuery = $@"Update Movies
-                    Set ActorName = '{movieDto.ActorName}', ActressName = '{movieDto.ActressName}',
-                    Title = '{movieDto.Title}', MovieType = {(int)movieDto.MovieType}
-                    Where Id = {movieDto.Id};";
+                    string updateQuery = @"Update Movies
+                    Set ActorName = @ActorName, ActressName = @ActressName, Title = @Title, MovieType = @MovieType
+                    Where Id = @Id;";
 
                     var sqlCommand = new SqlCommand(updateQuery, sqlConnection);
+                    sqlCommand.Parameters.AddWithValue("@Id", movieDto.Id);
+                    sqlCommand.Parameters.AddWithValue("@ActorName", movieDto.ActorName);
+                    sqlCommand.Parameters.AddWithValue("@ActressName", movieDto.ActressName);
+                    sqlCommand.Parameters.AddWithValue("@Title", movieDto.Title);
+                    sqlCommand.Parameters.AddWithValue("@MovieType", movieDto.MovieType);
                     sqlConnection.Open();
                     sqlCommand.ExecuteNonQuery();
                     sqlConnection.Close();
@@ -119,6 +115,29 @@ namespace WebApiDemo1.Controllers
 
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+        }
+
+        private string validateMovieAdd(MovieDto movieDto)
+        {
+            string errorMessage = "";
+
+            movieDto.ActorName = movieDto.ActorName.Trim();
+            movieDto.ActressName = movieDto.ActressName.Trim();
+            movieDto.Title = movieDto.Title.Trim();
+
+            if (string.IsNullOrEmpty(movieDto.ActorName))
+                errorMessage = "Actor Name can not be blank";
+
+            else if (string.IsNullOrEmpty(movieDto.ActressName))
+                errorMessage = "Actress Name can not be blank";
+
+            else if (string.IsNullOrEmpty(movieDto.Title))
+                errorMessage = "Title can not be blank";
+
+            else if (!Enum.IsDefined(typeof(MovieTypes), movieDto.MovieType))
+                errorMessage = "Invalid Movie Type";
+
+            return errorMessage;
         }
     }
 }
