@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using System.Data;
+using WebApiDemo1.DataModel;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
+using Newtonsoft.Json;
 
 namespace WebApiDemo1.Controllers
 {
@@ -17,6 +20,44 @@ namespace WebApiDemo1.Controllers
         {
             _Configuration = configuration;
             sqlConnection = new(_Configuration.GetConnectionString("MoviesDB").ToString());
+        }
+
+        [HttpGet]
+        [Route("GetAllMovies")]
+        public IActionResult GetAllMovies()
+        {
+            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Movies", sqlConnection);
+            DataTable dataTable = new();
+            sqlDataAdapter.Fill(dataTable);
+            if (dataTable.Rows.Count > 0)
+                return Ok(JsonConvert.SerializeObject(dataTable));
+            else
+                return NotFound();   
+        }
+
+        [HttpGet]
+        [Route("GetMovieCount")]
+        public IActionResult GetMovieCount()
+        {
+            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Movies", sqlConnection);
+            DataTable dataTable = new();
+            sqlDataAdapter.Fill(dataTable);
+
+            int numberOfRecords = dataTable.Rows.Count;
+            return Ok (numberOfRecords);
+        }
+
+        [HttpGet]
+        [Route("Delete/{MovieId}")]
+        public IActionResult DeleteMovie(int id) 
+        {
+            string deleteQuery = @"Delete From Movies Where Id = @id";
+            SqlCommand sqlCommand = new(deleteQuery, sqlConnection);
+            sqlCommand.Parameters.AddWithValue("@id", id);
+            sqlConnection.Open();
+            sqlCommand.ExecuteNonQuery();
+            sqlConnection.Close();
+            return Ok(deleteQuery);
         }
 
         [HttpPost]

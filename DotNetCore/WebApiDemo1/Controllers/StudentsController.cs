@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Newtonsoft.Json;
+using System.Data;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
 
@@ -17,6 +19,31 @@ namespace WebApiDemo1.Controllers
         {
             _Configuration = configuration;
             sqlConnection = new(_Configuration.GetConnectionString("SchoolManagementDB").ToString());
+        }
+
+        [HttpGet]
+        [Route("GetAllStudents")]
+        public IActionResult GetAllStudents()
+        {
+            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Students", sqlConnection);
+            DataTable dataTable = new();
+            sqlDataAdapter.Fill(dataTable);
+            if (dataTable.Rows.Count > 0)
+                return Ok(JsonConvert.SerializeObject(dataTable));
+            else
+                return NotFound();
+        }
+
+        [HttpGet]
+        [Route("GetStudentCount")]
+        public IActionResult GetStudentCount()
+        {
+            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Students", sqlConnection);
+            DataTable dataTable = new();
+            sqlDataAdapter.Fill(dataTable);
+
+            int studentRecords = dataTable.Rows.Count;
+            return Ok(studentRecords);
         }
 
         [HttpPost]
