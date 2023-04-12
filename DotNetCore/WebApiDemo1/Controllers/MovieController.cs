@@ -6,6 +6,7 @@ using WebApiDemo1.DataModel;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
 using Newtonsoft.Json;
+using WebApiDemo1.Repositories;
 
 namespace WebApiDemo1.Controllers
 {
@@ -13,53 +14,42 @@ namespace WebApiDemo1.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
-        public readonly IConfiguration _Configuration;
-        SqlConnection sqlConnection;
+        IMovieRepository _movieRepository;
 
-        public MovieController(IConfiguration configuration)
+        public MovieController(IMovieRepository movieRepository)
         {
-            _Configuration = configuration;
-            sqlConnection = new(_Configuration.GetConnectionString("MoviesDB").ToString());
+            _movieRepository = movieRepository;
         }
 
         [HttpGet]
         [Route("GetAllMovies")]
         public IActionResult GetAllMovies()
         {
-            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Movies", sqlConnection);
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
+            DataTable dataTable = _movieRepository.GetAllMovies();
             if (dataTable.Rows.Count > 0)
                 return Ok(JsonConvert.SerializeObject(dataTable));
             else
-                return NotFound();   
+                return NotFound();
         }
 
         [HttpGet]
         [Route("GetMovieCount")]
         public IActionResult GetMovieCount()
         {
-            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Movies", sqlConnection);
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
+            DataTable dataTable = _movieRepository.GetMovieCount();
 
             int numberOfRecords = dataTable.Rows.Count;
             return Ok (numberOfRecords);
         }
-
+        
         [HttpGet]
-        [Route("Delete/{MovieId}")]
-        public IActionResult DeleteMovie(int id) 
+        [Route("DeleteRecord/{Id}")]
+        public IActionResult DeleteRecord(int id) 
         {
-            string deleteQuery = @"Delete From Movies Where Id = @id";
-            SqlCommand sqlCommand = new(deleteQuery, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@id", id);
-            sqlConnection.Open();
-            sqlCommand.ExecuteNonQuery();
-            sqlConnection.Close();
-            return Ok(deleteQuery);
+            MovieDto movieDto = _movieRepository.DeleteRecord(id);
+            return Ok(movieDto);
         }
-
+        
         [HttpPost]
         [Route("Add")]
         public IActionResult Add([FromBody] MovieDto movieDto)
@@ -69,24 +59,12 @@ namespace WebApiDemo1.Controllers
                 string errormessage = validateMovieAddOrUpdate(movieDto);
                 if(!string.IsNullOrEmpty(errormessage)) 
                     return BadRequest(errormessage);
-
+        
                 if (ModelState.IsValid)
                 {
-                    string insertQuery = @"
-                    INSERT INTO MOVIES(ActorName, ActressName, Title, MovieType, ReleaseDate)
-                    VALUES(@ActorName, @ActressName, @Title, @MovieType, @ReleaseDate)";
+                    movieDto.Id = _movieRepository.Add(movieDto);
 
-                    var sqlCommand = new SqlCommand(insertQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@ActorName", movieDto.ActorName);
-                    sqlCommand.Parameters.AddWithValue("@ActressName", movieDto.ActressName);
-                    sqlCommand.Parameters.AddWithValue("@Title", movieDto.Title);
-                    sqlCommand.Parameters.AddWithValue("@MovieType", movieDto.MovieType);
-                    sqlCommand.Parameters.AddWithValue("@ReleaseDate", DateTime.Now);
-                    sqlConnection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                    sqlConnection.Close();
-
-                    return Ok();
+                    return Ok(movieDto.Id);
                 }
                 return BadRequest();
             }
@@ -95,11 +73,11 @@ namespace WebApiDemo1.Controllers
                 ModelState.AddModelError("", @"Unable to save changes. 
                     Try again, and if the problem persists 
                     see your system administrator.");
-
+        
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-
+        
         [HttpPost]
         [Route("Update")]
         public IActionResult Update([FromBody] MovieDto movieDto)
@@ -109,24 +87,12 @@ namespace WebApiDemo1.Controllers
                 string errormessage = validateMovieAddOrUpdate(movieDto, true);
                 if (!string.IsNullOrEmpty(errormessage))
                     return BadRequest(errormessage);
-
+        
                 if (ModelState.IsValid)
                 {
-                    string updateQuery = @"Update Movies
-                    Set ActorName = @ActorName, ActressName = @ActressName, Title = @Title, MovieType = @MovieType
-                    Where Id = @Id;";
-
-                    var sqlCommand = new SqlCommand(updateQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@Id", movieDto.Id);
-                    sqlCommand.Parameters.AddWithValue("@ActorName", movieDto.ActorName);
-                    sqlCommand.Parameters.AddWithValue("@ActressName", movieDto.ActressName);
-                    sqlCommand.Parameters.AddWithValue("@Title", movieDto.Title);
-                    sqlCommand.Parameters.AddWithValue("@MovieType", movieDto.MovieType);
-                    sqlConnection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                    sqlConnection.Close();
-
-                    return Ok();
+                    _movieRepository.Update(movieDto);
+                    
+                    return Ok("Record Update");
                 }
                 return BadRequest();
             }
@@ -135,7 +101,7 @@ namespace WebApiDemo1.Controllers
                 ModelState.AddModelError("", @"Unable to save changes. 
                     Try again, and if the problem persists 
                     see your system administrator.");
-
+        
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
