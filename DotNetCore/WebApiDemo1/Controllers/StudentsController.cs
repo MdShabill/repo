@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Data;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
+using WebApiDemo1.Repositories;
 
 namespace WebApiDemo1.Controllers
 {
@@ -12,22 +13,18 @@ namespace WebApiDemo1.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
-        public readonly IConfiguration _Configuration;
-        SqlConnection sqlConnection;
+        IStudentRepository _studentRepository;
 
-        public StudentsController(IConfiguration configuration)
+        public StudentsController(IStudentRepository studentRepository)
         {
-            _Configuration = configuration;
-            sqlConnection = new(_Configuration.GetConnectionString("SchoolManagementDB").ToString());
+            _studentRepository = studentRepository;
         }
 
         [HttpGet]
         [Route("GetAllStudents")]
         public IActionResult GetAllStudents()
         {
-            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Students", sqlConnection);
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
+            DataTable dataTable= _studentRepository.GetAllStudents();
             if (dataTable.Rows.Count > 0)
                 return Ok(JsonConvert.SerializeObject(dataTable));
             else
@@ -38,12 +35,18 @@ namespace WebApiDemo1.Controllers
         [Route("GetStudentCount")]
         public IActionResult GetStudentCount()
         {
-            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Students", sqlConnection);
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
+            DataTable dataTable= _studentRepository.GetStudentCount();
 
             int studentRecords = dataTable.Rows.Count;
             return Ok(studentRecords);
+        }
+
+        [HttpGet]
+        [Route("DeleteStudent/{Id}")]
+        public IActionResult DeleteStudent(int id)
+        {
+            _studentRepository.DeleteStudent(id);
+            return Ok("Record Deleted");
         }
 
         [HttpPost]
@@ -58,21 +61,9 @@ namespace WebApiDemo1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    string insertQuery = @"
-                    INSERT INTO Students(FullName, Gender, Email, Password, RegistrationDate)
-                    VALUES (@FullNae, @Gender, @Email, @Password, @RegistrationDate)";
+                    studentDto.Id = _studentRepository.Add(studentDto);
 
-                    var sqlCommand = new SqlCommand(insertQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@FullName", studentDto.FullName);
-                    sqlCommand.Parameters.AddWithValue("@Gender", studentDto.Gender);
-                    sqlCommand.Parameters.AddWithValue("@Email", studentDto.Email);
-                    sqlCommand.Parameters.AddWithValue("@Password", studentDto.Password);
-                    sqlCommand.Parameters.AddWithValue("@RegistrationDate", DateTime.Now);
-                    sqlConnection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                    sqlConnection.Close();
-
-                    return Ok();
+                    return Ok(studentDto.Id);
                 }
                 return BadRequest();
             }
@@ -98,19 +89,7 @@ namespace WebApiDemo1.Controllers
 
                 if (ModelState.IsValid) 
                 {
-                    string updateQuery = @"Update Students
-                    Set FullName = @FullName, Gender = @Gender, Email = @Email, Password = @password
-                    Where @Id = Id;";
-                    
-                    var sqlCommand = new SqlCommand(updateQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@Id", studentDto.Id);
-                    sqlCommand.Parameters.AddWithValue("@FullName", studentDto.FullName);
-                    sqlCommand.Parameters.AddWithValue("@Gender", studentDto.Gender);
-                    sqlCommand.Parameters.AddWithValue("@Email", studentDto.Email);
-                    sqlCommand.Parameters.AddWithValue("@Password", studentDto.Password);
-                    sqlConnection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                    sqlConnection.Close();
+                    _studentRepository.Update(studentDto);
                 }
                 return Ok("Record Updated");
             }
