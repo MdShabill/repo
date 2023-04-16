@@ -6,9 +6,11 @@ namespace WebApiDemo1.Repositories
 {
     public interface IMovieRepository
     {
-        public DataTable GetAllMovies();
+        public MovieDto GetMovieById(int id);
+        public List<MovieDto> GetAllMovies();
+
         public DataTable GetMovieCount();
-        public MovieDto DeleteRecord(int id);
+        public void DeleteMovie(int id);
         public int Add(MovieDto movieDto);
         public void Update(MovieDto movieDto);
     }

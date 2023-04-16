@@ -9,5 +9,6 @@ namespace WebApiDemo1.DTO.InputDTO
         public string ActressName { get; set; }
         public string Title { get; set; }
         public MovieTypes MovieType { get; set;}
+        public DateTime ReleaseDate { get; set; }
     }
 }

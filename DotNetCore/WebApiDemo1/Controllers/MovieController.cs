@@ -22,12 +22,25 @@ namespace WebApiDemo1.Controllers
         }
 
         [HttpGet]
+        [Route("GetMovieById/{id}")]
+        public IActionResult GetMovieById(int id)
+        {
+            MovieDto movieDto = _movieRepository.GetMovieById(id);
+
+            if (movieDto != null)
+                return Ok(movieDto);
+            else
+                return NotFound();
+        }
+
+        [HttpGet]
         [Route("GetAllMovies")]
         public IActionResult GetAllMovies()
         {
-            DataTable dataTable = _movieRepository.GetAllMovies();
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            List<MovieDto> movies = _movieRepository.GetAllMovies();
+
+            if (movies.Count > 0)
+                return Ok(movies);
             else
                 return NotFound();
         }
@@ -41,13 +54,13 @@ namespace WebApiDemo1.Controllers
             int numberOfRecords = dataTable.Rows.Count;
             return Ok (numberOfRecords);
         }
-        
+
         [HttpGet]
-        [Route("DeleteRecord/{Id}")]
-        public IActionResult DeleteRecord(int id) 
+        [Route("Delete/{Id}")]
+        public IActionResult Delete(int id) 
         {
-            MovieDto movieDto = _movieRepository.DeleteRecord(id);
-            return Ok(movieDto);
+            _movieRepository.DeleteMovie(id);
+            return Ok("Record Deleted");
         }
         
         [HttpPost]
@@ -91,10 +104,8 @@ namespace WebApiDemo1.Controllers
                 if (ModelState.IsValid)
                 {
                     _movieRepository.Update(movieDto);
-                    
-                    return Ok("Record Update");
                 }
-                return BadRequest();
+                return Ok("Record Update");
             }
             catch (Exception ex)
             {
