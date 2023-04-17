@@ -21,12 +21,25 @@ namespace WebApiDemo1.Controllers
         }
 
         [HttpGet]
+        [Route("GetStudentById/{Id}")]
+        public IActionResult GetStudentById(int id)
+        {
+            StudentDto studentDto = _studentRepository.GetStudentById(id);
+
+            if (studentDto != null)
+                return Ok(studentDto);
+            else
+                return NotFound();
+        }
+
+        [HttpGet]
         [Route("GetAllStudents")]
         public IActionResult GetAllStudents()
         {
-            DataTable dataTable= _studentRepository.GetAllStudents();
-            if (dataTable.Rows.Count > 0)
-                return Ok(JsonConvert.SerializeObject(dataTable));
+            List<StudentDto> student = _studentRepository.GetAllStudents();
+
+            if (student.Count > 0)
+                return Ok(student);
             else
                 return NotFound();
         }
@@ -35,10 +48,19 @@ namespace WebApiDemo1.Controllers
         [Route("GetStudentCount")]
         public IActionResult GetStudentCount()
         {
-            DataTable dataTable= _studentRepository.GetStudentCount();
+            int studentCount = _studentRepository.GetStudentCount();
+            return Ok(studentCount);
+        }
 
-            int studentRecords = dataTable.Rows.Count;
-            return Ok(studentRecords);
+        [HttpGet]
+        [Route("GetStudentFullNameById/{Id}")]
+        public IActionResult GetStudentFullNameById(int id) 
+        {
+            if(id < 1)
+                return BadRequest("Student Id Should be greater Than 0");
+
+            string studentFullName = _studentRepository.GetStudentFullNameById(id);
+            return Ok(studentFullName);
         }
 
         [HttpGet]
