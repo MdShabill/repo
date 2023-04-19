@@ -26,7 +26,6 @@ namespace WebApiDemo1.Repositories
                 sqlDataAdapter.Fill(dataTable);
 
                 ////apporach #1
-                ///
                 if (dataTable.Rows.Count > 0)
                 {
                     ////apporach #1
@@ -85,15 +84,46 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        //TODO: make use f Count(*) function
-        public DataTable GetMovieCount()
+        //TODO: Make Use Count(*) Function
+        public int GetMovieCount()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Movies", sqlConnection);
-                DataTable dataTable = new();
+                string sqlQuery = "SELECT Count(*) FROM Movies";
+                SqlCommand sqlCommand= new(sqlQuery, sqlConnection);
+                sqlConnection.Open();
+                int movieCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                sqlConnection.Close();
+                return movieCount;
+            }
+        }
+
+        public List<MovieDto> GetMoviesByArtistsName(string artistName)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                SqlDataAdapter sqlDataAdapter = new(@"Select * From Movies Where ActorName LIKE '%' + @artistName + '%'
+                                Or ActressName LIKE '%' + @artistName + '%' ", sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@artistName", artistName);
+                DataTable dataTable= new();
                 sqlDataAdapter.Fill(dataTable);
-                return dataTable;
+
+                List<MovieDto> artist = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    MovieDto movieDto = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        ActorName = (string)dataTable.Rows[i]["ActorName"],
+                        ActressName = (string)dataTable.Rows[i]["ActressName"],
+                        Title = (string)dataTable.Rows[i]["Title"],
+                        MovieType = (MovieTypes)dataTable.Rows[i]["MovieType"],
+                        ReleaseDate = (DateTime)dataTable.Rows[i]["ReleaseDate"]
+                    };
+                    artist.Add(movieDto);
+                }
+                return artist;
             }
         }
 

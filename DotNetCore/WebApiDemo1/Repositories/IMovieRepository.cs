@@ -8,8 +8,8 @@ namespace WebApiDemo1.Repositories
     {
         public MovieDto GetMovieById(int id);
         public List<MovieDto> GetAllMovies();
-
-        public DataTable GetMovieCount();
+        public int GetMovieCount();
+        public List<MovieDto> GetMoviesByArtistsName(string artistName);
         public void DeleteMovie(int id);
         public int Add(MovieDto movieDto);
         public void Update(MovieDto movieDto);

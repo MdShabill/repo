@@ -49,10 +49,26 @@ namespace WebApiDemo1.Controllers
         [Route("GetMovieCount")]
         public IActionResult GetMovieCount()
         {
-            DataTable dataTable = _movieRepository.GetMovieCount();
+            int movieCount = _movieRepository.GetMovieCount();
+            return Ok (movieCount);
+        }
 
-            int numberOfRecords = dataTable.Rows.Count;
-            return Ok (numberOfRecords);
+        [HttpGet]
+        [Route("GetMoviesByArtistsName/{ArtistName}")]
+        public IActionResult GetMoviesByArtistsName(string artistName)
+        {
+            if (string.IsNullOrEmpty(artistName))
+                return BadRequest("Artist Name can not be blank");
+
+            artistName = artistName.Trim();
+            if (artistName.Length < 3)
+                return BadRequest("Artist Name Should be Greater Than 3 Characters");
+
+            List<MovieDto> artist = _movieRepository.GetMoviesByArtistsName(artistName);
+            if (artist.Count > 0)
+                return Ok(artist);
+            else
+                return NotFound();
         }
 
         [HttpGet]
