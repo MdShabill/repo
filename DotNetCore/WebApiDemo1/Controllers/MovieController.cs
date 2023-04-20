@@ -22,10 +22,10 @@ namespace WebApiDemo1.Controllers
         }
 
         [HttpGet]
-        [Route("GetMovieById/{id}")]
-        public IActionResult GetMovieById(int id)
+        [Route("GetById/{id}")]
+        public IActionResult GetById(int id)
         {
-            MovieDto movieDto = _movieRepository.GetMovieById(id);
+            MovieDto movieDto = _movieRepository.GetById(id);
 
             if (movieDto != null)
                 return Ok(movieDto);
@@ -54,19 +54,19 @@ namespace WebApiDemo1.Controllers
         }
 
         [HttpGet]
-        [Route("GetMoviesByArtistsName/{ArtistName}")]
-        public IActionResult GetMoviesByArtistsName(string artistName)
+        [Route("GetMoviesByArtistName/{ArtistName}")]
+        public IActionResult GetMoviesByArtistName(string artistName)
         {
             if (string.IsNullOrEmpty(artistName))
                 return BadRequest("Artist Name can not be blank");
 
             artistName = artistName.Trim();
             if (artistName.Length < 3)
-                return BadRequest("Artist Name Should be Greater Than 3 Characters");
+                return BadRequest("Artist Name Should be Greater Than 2 Characters");
 
-            List<MovieDto> artist = _movieRepository.GetMoviesByArtistsName(artistName);
-            if (artist.Count > 0)
-                return Ok(artist);
+            List<MovieDto> movie = _movieRepository.GetMoviesByArtistName(artistName);
+            if (movie.Count > 0)
+                return Ok(movie);
             else
                 return NotFound();
         }
@@ -75,7 +75,7 @@ namespace WebApiDemo1.Controllers
         [Route("Delete/{Id}")]
         public IActionResult Delete(int id) 
         {
-            _movieRepository.DeleteMovie(id);
+            _movieRepository.Delete(id);
             return Ok("Record Deleted");
         }
         

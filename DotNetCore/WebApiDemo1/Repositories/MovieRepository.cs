@@ -16,7 +16,7 @@ namespace WebApiDemo1.Repositories
             _connectionString = connectionString;
         }
 
-        public MovieDto GetMovieById(int id)
+        public MovieDto GetById(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -98,7 +98,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public List<MovieDto> GetMoviesByArtistsName(string artistName)
+        public List<MovieDto> GetMoviesByArtistName(string artistName)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -108,7 +108,7 @@ namespace WebApiDemo1.Repositories
                 DataTable dataTable= new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<MovieDto> artist = new();
+                List<MovieDto> movie = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
@@ -121,13 +121,13 @@ namespace WebApiDemo1.Repositories
                         MovieType = (MovieTypes)dataTable.Rows[i]["MovieType"],
                         ReleaseDate = (DateTime)dataTable.Rows[i]["ReleaseDate"]
                     };
-                    artist.Add(movieDto);
+                    movie.Add(movieDto);
                 }
-                return artist;
+                return movie;
             }
         }
 
-        public void DeleteMovie(int id)
+        public void Delete(int id)
         {
             using (SqlConnection sqlConnection =new(_connectionString)) 
             {
