@@ -64,9 +64,20 @@ namespace WebApiDemo1.Controllers
             if (artistName.Length < 3)
                 return BadRequest("Artist Name Should be Greater Than 2 Characters");
 
-            List<MovieDto> movie = _movieRepository.GetMoviesByArtistName(artistName);
-            if (movie.Count > 0)
-                return Ok(movie);
+            List<MovieDto> celebrity = _movieRepository.GetMoviesByArtistName(artistName);
+            if (celebrity.Count > 0)
+                return Ok(celebrity);
+            else
+                return NotFound();
+        }
+
+        [HttpGet]
+        [Route("GetMoviesDetail/{SearchKeyWord}")]
+        public IActionResult GetMoviesDetail(string? searchKeyWord, string? sort)
+        {    
+            List<MovieDto> movieDetail = _movieRepository.GetMoviesDetail(searchKeyWord, sort);
+            if (movieDetail.Count > 0)
+                return Ok(movieDetail);
             else
                 return NotFound();
         }

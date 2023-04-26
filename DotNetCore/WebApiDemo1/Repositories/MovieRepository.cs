@@ -65,7 +65,7 @@ namespace WebApiDemo1.Repositories
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<MovieDto> movies = new();
+                List<MovieDto> celebrity = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
@@ -78,9 +78,9 @@ namespace WebApiDemo1.Repositories
                         MovieType = (MovieTypes)dataTable.Rows[i]["MovieType"],
                         ReleaseDate = (DateTime)dataTable.Rows[i]["ReleaseDate"]
                     };
-                    movies.Add(movieDto);
+                    celebrity.Add(movieDto);
                 }
-                return movies;
+                return celebrity;
             }
         }
 
@@ -124,6 +124,43 @@ namespace WebApiDemo1.Repositories
                     movie.Add(movieDto);
                 }
                 return movie;
+            }
+        }
+
+        public List<MovieDto> GetMoviesDetail(string? searchKeyWord, string? sort)
+        {
+            using SqlConnection sqlConnection= new(_connectionString);
+            {
+                string sqlBasicQuery = "Select * From Movies ";
+
+                if (!string.IsNullOrWhiteSpace(searchKeyWord))
+                    sqlBasicQuery += "Where ActorName LIKE '%' + @search + '%' Or ActressName LIKE '%' + @search + '%' Or Title Like '%' + @search + '%' ";
+                    sqlBasicQuery += "Order By ActorName, ActressName, Title DESC";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlBasicQuery, sqlConnection);
+
+                if(!string.IsNullOrWhiteSpace(searchKeyWord))
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@search", searchKeyWord);
+
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<MovieDto> movieDetail = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    MovieDto movieDto = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        ActorName = (string)dataTable.Rows[i]["ActorName"],
+                        ActressName = (string)dataTable.Rows[i]["ActressName"],
+                        Title = (string)dataTable.Rows[i]["Title"],
+                        MovieType = (MovieTypes)dataTable.Rows[i]["MovieType"],
+                        ReleaseDate = (DateTime)dataTable.Rows[i]["ReleaseDate"]
+                    };
+                    movieDetail.Add(movieDto);
+                }
+                return movieDetail;
             }
         }
 
