@@ -127,15 +127,16 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public List<MovieDto> GetMoviesDetail(string? searchKeyWord, string? sort)
+        public List<MovieDto> GetMoviesDetail(string? searchKeyWord, string? sortColumnName, string? sortOrder, int pageSize)
         {
             using SqlConnection sqlConnection= new(_connectionString);
             {
-                string sqlBasicQuery = "Select * From Movies ";
+                string sqlBasicQuery = $"Select Top {pageSize} * From Movies ";
 
                 if (!string.IsNullOrWhiteSpace(searchKeyWord))
                     sqlBasicQuery += "Where ActorName LIKE '%' + @search + '%' Or ActressName LIKE '%' + @search + '%' Or Title Like '%' + @search + '%' ";
-                    sqlBasicQuery += "Order By ActorName, ActressName, Title DESC";
+                                
+                sqlBasicQuery += $"Order By {sortColumnName} {sortOrder}";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlBasicQuery, sqlConnection);
 

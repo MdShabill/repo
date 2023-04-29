@@ -72,10 +72,10 @@ namespace WebApiDemo1.Controllers
         }
 
         [HttpGet]
-        [Route("GetMoviesDetail/{SearchKeyWord}")]
-        public IActionResult GetMoviesDetail(string? searchKeyWord, string? sort)
-        {    
-            List<MovieDto> movieDetail = _movieRepository.GetMoviesDetail(searchKeyWord, sort);
+        [Route("GetMoviesDetail/{SearchKeyWord}/{sortColumnName}/{sortOrder}/{pageSize}")]
+        public IActionResult GetMoviesDetail(string? searchKeyWord, string? sortColumnName, string? sortOrder, int pageSize)
+        {
+            List<MovieDto> movieDetail = _movieRepository.GetMoviesDetail(searchKeyWord, sortColumnName, sortOrder, pageSize);
             if (movieDetail.Count > 0)
                 return Ok(movieDetail);
             else
