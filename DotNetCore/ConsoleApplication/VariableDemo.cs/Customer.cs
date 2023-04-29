@@ -53,5 +53,37 @@ namespace VariableDemo
 
             Console.WriteLine(sqlBasicQuery);
         }
+
+        public void Add(int num1, int num2)
+        {
+            int total;
+            total = num1 + num2;
+
+            Console.WriteLine($"First Parameter Value Is {num1} Second Parameter Value Is {num2} and Addition Result is {total}");
+        }
+
+        public void Subtract(int num1, int num2)
+        {
+            int total;
+            total = num1 - num2;
+
+            Console.WriteLine($"First Parameter Value Is {num1} Second Parameter Value Is {num2} and Subtraction Result is {total}");
+        }
+
+        public void Multiply(int num1, int num2)
+        {
+            int total;
+            total = num1 * num2;
+
+            Console.WriteLine($"First Parameter Value Is {num1} Second Parameter Value Is {num2} and Multiplication Result is {total}");
+        }
+
+        public void Division(int num1, int num2)
+        {
+            int total;
+            total = num1 / num2;
+
+            Console.WriteLine($"First Parameter Value Is {num1} Second Parameter Value Is {num2} and Division Result is {total}");
+        }
     }
 }

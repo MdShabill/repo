@@ -59,7 +59,31 @@ namespace VariableDemo
 
             //Console.WriteLine($"My Name Is {firstName} {middleName} {lastName} Thank You");
 
-            customer.GetMoviesDetail("SRK", "ActorName", "DESC");
+            //Console.WriteLine("------------------------------------\n");
+            //
+            //Console.WriteLine("Enter Your Search Key Word");
+            //string searchKeyWord = Console.ReadLine();
+            //
+            //Console.WriteLine("Enter Your Sort Column Name");
+            //string sortColumnName = Console.ReadLine();
+            //
+            //Console.WriteLine("Enter Your Sort Order");
+            //string sortOrder = Console.ReadLine();
+            //
+            //customer.GetMoviesDetail(searchKeyWord, sortColumnName, sortOrder);
+
+            //---------------------------------------------------------------------
+
+            Console.WriteLine("Enter First Number \n");
+            int num1 = Convert.ToInt32(Console.ReadLine());
+
+            Console.WriteLine("Enter Second Number \n");
+            int num2 = Convert.ToInt32(Console.ReadLine());   
+
+            customer.Add(num1,num2);
+            customer.subtract(num1,num2);
+            customer.multiply(num1,num2);
+            customer.division(num1,num2);
 
 
 
