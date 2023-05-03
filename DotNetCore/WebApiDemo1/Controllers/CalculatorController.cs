@@ -11,6 +11,7 @@ namespace WebApiDemo1.Controllers
         [Route("Calculate/{Num1}/{Num2}")]
         public IActionResult Calculate(int num1, int num2) 
         {
+
             CalculateService calculateService = new();
             int addResult = calculateService.Add(num1, num2);
             int subtractResult = calculateService.Subtract(num1, num2);
@@ -57,6 +58,36 @@ namespace WebApiDemo1.Controllers
 
                 return total;
             }
+        }
+
+        [HttpGet]
+        [Route("Calculate/{CalculateType}/{Num1}/{Num2}")]
+        public IActionResult Calculate(string calculateType, int num1, int num2)
+        {
+            CalculateService calculateService = new();
+            
+            int result;
+            switch (calculateType)
+            {
+                case "A":
+                    result = calculateService.Add(num1, num2);
+                    break;
+                case "S":
+                    result = calculateService.Subtract(num1, num2);
+                    break;
+                case "M":
+                    result = calculateService.Multiply(num1, num2);
+                    break;
+                case "D":
+                    result = calculateService.Division(num1, num2);
+                    break;
+                default:
+                    return BadRequest("Invalid Calculate Type");
+            }
+
+            string text = $@"First Parameter Is {num1} And second Parameter {num2} And Calculate Type Is {calculateType} And Result is {result} ";
+
+            return new JsonResult(text);
         }
     }
 }
