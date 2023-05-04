@@ -65,27 +65,71 @@ namespace WebApiDemo1.Controllers
         public IActionResult Calculate(string calculateType, int num1, int num2)
         {
             CalculateService calculateService = new();
-            
+
+            string message;
             int result;
             switch (calculateType)
             {
                 case "A":
                     result = calculateService.Add(num1, num2);
+                    message = "Addition";
                     break;
                 case "S":
                     result = calculateService.Subtract(num1, num2);
+                    message = "Subtraction";
                     break;
                 case "M":
                     result = calculateService.Multiply(num1, num2);
+                    message = "Mutiplication";
                     break;
                 case "D":
                     result = calculateService.Division(num1, num2);
+                    message = "Division";
                     break;
                 default:
                     return BadRequest("Invalid Calculate Type");
             }
 
-            string text = $@"First Parameter Is {num1} And second Parameter {num2} And Calculate Type Is {calculateType} And Result is {result} ";
+            string text = $@"First Parameter Is {num1} And second Parameter {num2} And Calculate Type Is {message} And Result is {result} ";
+
+            return new JsonResult(text);
+        }
+
+        [HttpGet]
+        [Route("Calculate1/{CalculateType}/{Num1}/{Num2}")]
+        public IActionResult Calculate1(string calculateType, int num1, int num2)
+        {
+            CalculateService calculateService = new();
+
+            string message;
+            int result;
+
+            if (calculateType == "A")
+            {
+                message = "Addition";
+                result = calculateService.Add(num1, num2);
+            }
+            else if (calculateType == "S")
+            {
+                message = "Subtraction";
+                result = calculateService.Subtract(num1, num2);
+            }
+            else if (calculateType == "M")
+            {
+                message = "Mutiplication";
+                result = calculateService.Multiply(num1, num2);
+            }
+            else if (calculateType == "D")
+            {
+                message = "Division";
+                result = calculateService.Division(num1, num2);
+            }
+            else
+            {
+                return BadRequest("Invalid Calculate Type");
+            }
+                    
+            string text = $@"First Parameter Is {num1} And second Parameter {num2} And Calculate Type Is {message} And Result is {result} ";
 
             return new JsonResult(text);
         }
