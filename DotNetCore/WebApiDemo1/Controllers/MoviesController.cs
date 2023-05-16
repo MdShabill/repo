@@ -1,36 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using System.Data;
-using WebApiDemo1.DataModel;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
-using Newtonsoft.Json;
 using WebApiDemo1.Repositories;
 
 namespace WebApiDemo1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MovieController : ControllerBase
+    public class MoviesController : ControllerBase
     {
         IMovieRepository _movieRepository;
 
-        public MovieController(IMovieRepository movieRepository)
+        public MoviesController(IMovieRepository movieRepository)
         {
             _movieRepository = movieRepository;
-        }
-
-        [HttpGet]
-        [Route("GetById/{id}")]
-        public IActionResult GetById(int id)
-        {
-            MovieDto movieDto = _movieRepository.GetById(id);
-
-            if (movieDto != null)
-                return Ok(movieDto);
-            else
-                return NotFound();
         }
 
         [HttpGet]
@@ -46,50 +30,52 @@ namespace WebApiDemo1.Controllers
         }
 
         [HttpGet]
-        [Route("GetMovieCount")]
-        public IActionResult GetMovieCount()
+        [Route("GetMoviesCount")]
+        public IActionResult GetMoviesCount() 
         {
-            int movieCount = _movieRepository.GetMovieCount();
-            return Ok (movieCount);
+            int movieCount = _movieRepository.GetMoviesCount();
+            return Ok(movieCount);
+        }
+
+        [HttpGet]
+        [Route("GetMovieById/{Id}")]
+        public IActionResult GetMovieById(int Id)
+        {
+            MovieDto movieDto = _movieRepository.GetMovieById(Id);
+            
+            if (movieDto != null)
+                return Ok(movieDto);
+            else 
+                return NotFound();
         }
 
         [HttpGet]
         [Route("GetMoviesByArtistName/{ArtistName}")]
-        public IActionResult GetMoviesByArtistName(string artistName)
+        public IActionResult GetMoviesByArtistName(string artistName) 
         {
             if (string.IsNullOrEmpty(artistName))
-                return BadRequest("Artist Name can not be blank");
+                return BadRequest("Artist Name Should Not Be Blnk");
 
-            artistName = artistName.Trim();
-            if (artistName.Length < 3)
-                return BadRequest("Artist Name Should be Greater Than 2 Characters");
+            List<MovieDto> movies = _movieRepository.GetMoviesByArtistName(artistName);
 
-            List<MovieDto> celebrity = _movieRepository.GetMoviesByArtistName(artistName);
-            if (celebrity.Count > 0)
-                return Ok(celebrity);
+            if(movies.Count > 0)
+                return Ok(movies);
             else
                 return NotFound();
         }
 
         [HttpGet]
-        [Route("GetMoviesDetail/{SearchKeyWord}/{sortColumnName}/{sortOrder}/{pageSize}")]
-        public IActionResult GetMoviesDetail(string? searchKeyWord, string? sortColumnName, string? sortOrder, int pageSize)
+        [Route("GetMovieDetails/{SearchKeyWord}/{SortColumnName}/{SortOrder}/{PageSize}")]
+        public IActionResult GetMovieDetails(string? searchKeyWord, string? sortColumn, string? sortOrder, int pageSize)
         {
-            List<MovieDto> movieDetail = _movieRepository.GetMoviesDetail(searchKeyWord, sortColumnName, sortOrder, pageSize);
-            if (movieDetail.Count > 0)
-                return Ok(movieDetail);
+            List<MovieDto> movieDetails = _movieRepository.GetMovieDetails(searchKeyWord, sortColumn, sortOrder, pageSize);
+            if(movieDetails.Count > 0)
+                return Ok(movieDetails);
             else
                 return NotFound();
         }
 
-        [HttpGet]
-        [Route("Delete/{Id}")]
-        public IActionResult Delete(int id) 
-        {
-            _movieRepository.Delete(id);
-            return Ok("Record Deleted");
-        }
-        
+
         [HttpPost]
         [Route("Add")]
         public IActionResult Add([FromBody] MovieDto movieDto)
@@ -97,9 +83,9 @@ namespace WebApiDemo1.Controllers
             try
             {
                 string errormessage = validateMovieAddOrUpdate(movieDto);
-                if(!string.IsNullOrEmpty(errormessage)) 
+                if (!string.IsNullOrEmpty(errormessage))
                     return BadRequest(errormessage);
-        
+
                 if (ModelState.IsValid)
                 {
                     movieDto.Id = _movieRepository.Add(movieDto);
@@ -108,16 +94,16 @@ namespace WebApiDemo1.Controllers
                 }
                 return BadRequest();
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", @"Unable to save changes. 
                     Try again, and if the problem persists 
                     see your system administrator.");
-        
+
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-        
+
         [HttpPost]
         [Route("Update")]
         public IActionResult Update([FromBody] MovieDto movieDto)
@@ -127,7 +113,7 @@ namespace WebApiDemo1.Controllers
                 string errormessage = validateMovieAddOrUpdate(movieDto, true);
                 if (!string.IsNullOrEmpty(errormessage))
                     return BadRequest(errormessage);
-        
+
                 if (ModelState.IsValid)
                 {
                     _movieRepository.Update(movieDto);
@@ -139,7 +125,7 @@ namespace WebApiDemo1.Controllers
                 ModelState.AddModelError("", @"Unable to save changes. 
                     Try again, and if the problem persists 
                     see your system administrator.");
-        
+
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -148,7 +134,7 @@ namespace WebApiDemo1.Controllers
         {
             string errorMessage = "";
 
-            if(IsUpdate == true) 
+            if (IsUpdate == true)
             {
                 if (movieDto.Id < 1)
                     errorMessage = "Movie Id Can Not Be Less Then Zero";
@@ -159,19 +145,19 @@ namespace WebApiDemo1.Controllers
             movieDto.Title = movieDto.Title.Trim();
 
             if (string.IsNullOrEmpty(movieDto.ActorName))
-                errorMessage = "Actor Name can not be blank";
+                errorMessage = "Actor Name Can Not Be Blank";
 
             else if (movieDto.ActorName.Length >= 20)
-                errorMessage = "Actor Name should be under 20 characters";
+                errorMessage = "Actor Name Should Be Under 20 Characters";
 
             else if (string.IsNullOrEmpty(movieDto.ActressName))
-                errorMessage = "Actress Name can not be blank";
+                errorMessage = "Actress Name Can Not Be Blank";
 
             else if (movieDto.ActressName.Length >= 20)
-                errorMessage = "Actress Name should be under 20 characters";
+                errorMessage = "Actress Name Should Be Under 20 Characters";
 
             else if (string.IsNullOrEmpty(movieDto.Title))
-                errorMessage = "Title can not be blank";
+                errorMessage = "Title Can Not Be Blank";
 
             else if (!Enum.IsDefined(typeof(MovieTypes), movieDto.MovieType))
                 errorMessage = "Invalid Movie Type";
