@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
+using WebApiDemo1.DataModel;
+using System.Security.Cryptography;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
 using WebApiDemo1.Repositories;
@@ -11,10 +15,19 @@ namespace WebApiDemo1.Controllers
     public class MoviesController : ControllerBase
     {
         IMovieRepository _movieRepository;
+        IMapper _imapper;
 
         public MoviesController(IMovieRepository movieRepository)
         {
             _movieRepository = movieRepository;
+
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<MovieDto, Movie>();
+                cfg.CreateMap<Movie, MovieDto>();
+            });
+
+            _imapper = configuration.CreateMapper();
         }
 
         [HttpGet]
@@ -41,12 +54,34 @@ namespace WebApiDemo1.Controllers
         [Route("GetMovieById/{Id}")]
         public IActionResult GetMovieById(int Id)
         {
-            MovieDto movieDto = _movieRepository.GetMovieById(Id);
-            
-            if (movieDto != null)
-                return Ok(movieDto);
-            else 
-                return NotFound();
+            Movie movies = _movieRepository.GetMovieById(Id);
+
+            //Approach 1 Without AutoMapper
+            MovieDto movieDto = new()
+            {
+                Id = movies.Id,
+                Hero = movies.ActorName,
+                Heroine = movies.ActressName,
+                Title = movies.Title,
+                MovieType = movies.MovieType,
+                ReleaseDate = movies.ReleaseDate,
+            };
+            return Ok(movieDto);
+        }
+
+        [HttpGet]
+        [Route("GetMovieById_AutoMapper/{Id}")]
+        public IActionResult GetMovieById_Automapper(int Id)
+        {
+            Movie movie = _movieRepository.GetMovieById_Automapper(Id);
+
+            //Approach 2 With AutoMapper
+            MovieDto movieDto = _imapper.Map<Movie, MovieDto>(movie);
+
+            movieDto.Hero = movie.ActorName;
+            movieDto.Heroine = movie.ActressName;
+
+            return Ok(movieDto);
         }
 
         [HttpGet]
@@ -80,6 +115,25 @@ namespace WebApiDemo1.Controllers
         [Route("Add")]
         public IActionResult Add([FromBody] MovieDto movieDto)
         {
+            //Approach : 1
+            //Movie movie = new()
+            //{
+            //   Id = movieDto.Id,
+            //   ActorName = movieDto.ActorName,
+            //   ActressName = movieDto.ActressName,
+            //   Title = movieDto.Title,
+            //   MovieType = movieDto.MovieType,
+            //   ReleaseDate = movieDto.ReleaseDate,
+            //};
+
+            //Approach : 2
+            //var configuration = new MapperConfiguration(cfg =>
+            //{
+            //    cfg.CreateMap<MovieDto, Movie>();
+            //});
+            
+            //_imapper = configuration.CreateMapper();
+
             try
             {
                 string errormessage = validateMovieAddOrUpdate(movieDto);
@@ -88,7 +142,8 @@ namespace WebApiDemo1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    movieDto.Id = _movieRepository.Add(movieDto);
+                    Movie movie = _imapper.Map<MovieDto, Movie>(movieDto);
+                    movieDto.Id = _movieRepository.Add(movie);
 
                     return Ok(movieDto.Id);
                 }
@@ -108,6 +163,15 @@ namespace WebApiDemo1.Controllers
         [Route("Update")]
         public IActionResult Update([FromBody] MovieDto movieDto)
         {
+            //Movie movie = new()
+            //{
+            //    Id = movieDto.Id,
+            //    ActorName = movieDto.ActorName,
+            //    ActressName = movieDto.ActressName,
+            //    Title = movieDto.Title,
+            //    MovieType = movieDto.MovieType,
+            //    ReleaseDate = movieDto.ReleaseDate,
+            //};
             try
             {
                 string errormessage = validateMovieAddOrUpdate(movieDto, true);
@@ -116,7 +180,8 @@ namespace WebApiDemo1.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    _movieRepository.Update(movieDto);
+                    Movie movie = _imapper.Map<MovieDto, Movie>(movieDto);
+                    _movieRepository.Update(movie);
                 }
                 return Ok("Record Update");
             }
@@ -140,20 +205,20 @@ namespace WebApiDemo1.Controllers
                     errorMessage = "Movie Id Can Not Be Less Then Zero";
             }
 
-            movieDto.ActorName = movieDto.ActorName.Trim();
-            movieDto.ActressName = movieDto.ActressName.Trim();
+            movieDto.Hero = movieDto.Hero.Trim();
+            movieDto.Heroine = movieDto.Heroine.Trim();
             movieDto.Title = movieDto.Title.Trim();
 
-            if (string.IsNullOrEmpty(movieDto.ActorName))
+            if (string.IsNullOrEmpty(movieDto.Hero))
                 errorMessage = "Actor Name Can Not Be Blank";
 
-            else if (movieDto.ActorName.Length >= 20)
+            else if (movieDto.Hero.Length >= 20)
                 errorMessage = "Actor Name Should Be Under 20 Characters";
 
-            else if (string.IsNullOrEmpty(movieDto.ActressName))
+            else if (string.IsNullOrEmpty(movieDto.Heroine))
                 errorMessage = "Actress Name Can Not Be Blank";
 
-            else if (movieDto.ActressName.Length >= 20)
+            else if (movieDto.Heroine.Length >= 20)
                 errorMessage = "Actress Name Should Be Under 20 Characters";
 
             else if (string.IsNullOrEmpty(movieDto.Title))
