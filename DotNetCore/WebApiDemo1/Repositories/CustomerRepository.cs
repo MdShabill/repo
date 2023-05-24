@@ -21,9 +21,9 @@ namespace WebApiDemo1.Repositories
             _connectionString = connectionString;
         }
 
-        public List<CustomerDto> GetAllCustomersAsList()
+        public List<Customer> GetAllCustomersAsList()
         {
-            List<CustomerDto> customers = new();
+            List<Customer> customers = new();
 
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -46,25 +46,26 @@ namespace WebApiDemo1.Repositories
                     //customers.Add(customerDto);
 
                     ////Approach 2
-                    //CustomerDto customerDto = new()
-                    //{
-                    //     Id = (int)dataTable.Rows[i]["Id"],
-                    //     FullName = (string)dataTable.Rows[i]["Name"],
-                    //     Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
-                    //     Age = (int)dataTable.Rows[i]["Age"],
-                    //     Email = (string)dataTable.Rows[i]["Email"],
-                    //     Password = (string)dataTable.Rows[i]["Password"],
-                    //     MobileNumber = (string)dataTable.Rows[i]["MobileNumber"],
-                    //};
+                    Customer customer = new()
+                    {
+                         Id = (int)dataTable.Rows[i]["Id"],
+                         FirstName = (string)dataTable.Rows[i]["FirstName"],
+                         MiddleName = Convert.ToString(dataTable.Rows[i]["MiddleName"]),
+                         LastName = (string)dataTable.Rows[i]["LastName"],
+                         Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
+                         Age = (int)dataTable.Rows[i]["Age"],
+                         Email = (string)dataTable.Rows[i]["Email"],
+                         MobileNumber = Convert.ToString(dataTable.Rows[i]["MobileNumber"]),
+                    };
 
                     //Approach 3 - Using Constructor
-                    CustomerDto customerDto = new(
-                        (int)dataTable.Rows[i]["Id"], (string)dataTable.Rows[i]["Name"], (GenderTypes)dataTable.Rows[i]["Gender"],
-                        (int)dataTable.Rows[i]["Age"], (string)dataTable.Rows[i]["Email"], (string)dataTable.Rows[i]["Password"],
-                        dataTable.Rows[i]["Mobile"] != DBNull.Value ? (string)dataTable.Rows[i]["Mobile"] : null,
-                        dataTable.Rows[i]["Country"] != DBNull.Value ? (string)dataTable.Rows[i]["Country"] : null);
-
-                    customers.Add(customerDto);
+                    //Customer customer = new(
+                    //    (int)dataTable.Rows[i]["Id"], (string)dataTable.Rows[i]["Name"], (GenderTypes)dataTable.Rows[i]["Gender"],
+                    //    (int)dataTable.Rows[i]["Age"], (string)dataTable.Rows[i]["Email"], (string)dataTable.Rows[i]["Password"],
+                    //    dataTable.Rows[i]["Mobile"] != DBNull.Value ? (string)dataTable.Rows[i]["Mobile"] : null,
+                    //    dataTable.Rows[i]["Country"] != DBNull.Value ? (string)dataTable.Rows[i]["Country"] : null);
+                    //
+                    customers.Add(customer);
                 }
                 return customers;
             }
@@ -83,7 +84,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public CustomerDto GetAllCustomerById(int id)
+        public Customer GetCustomerById(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -107,17 +108,17 @@ namespace WebApiDemo1.Repositories
                     //return customerDto;
 
                     //Approach 2
-                    CustomerDto customerDto = new()
+                    Customer customer = new()
                     {
                         Id = (int)dataTable.Rows[0]["Id"],
-                        FullName = (string)dataTable.Rows[0]["Name"],
+                        FirstName = (string)dataTable.Rows[0]["FirstName"],
+                        MiddleName = (string)dataTable.Rows[0]["MiddleName"],
+                        LastName = (string)dataTable.Rows[0]["LastName"],
                         Gender = (GenderTypes)dataTable.Rows[0]["Gender"],
                         Age = (int)dataTable.Rows[0]["Age"],
                         Email = (string)dataTable.Rows[0]["Email"],
-                        Password = (string)dataTable.Rows[0]["Password"],
-                        MobileNumber = (string)dataTable.Rows[0]["MobileNumber"],
                     };
-                    return customerDto;
+                    return customer;
                 }
                 else
                     return null;
@@ -135,7 +136,7 @@ namespace WebApiDemo1.Repositories
                 string customerFullName = Convert.ToString(sqlCommand.ExecuteScalar());
                 sqlConnection.Close();
                 return customerFullName;
-            }
+            }   
         }
 
         public List<CustomerDto> GetCustomersDetailByGenderByCountry(int gender, string country)
@@ -301,7 +302,7 @@ namespace WebApiDemo1.Repositories
                             VALUES (@FullName, @Gender, @Age, @Email, @Password, @Mobilenumber)
                             Select Scope_Identity()";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
+                sqlCommand.Parameters.AddWithValue("@FullName", customer.FirstName);
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
                 sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
@@ -324,7 +325,7 @@ namespace WebApiDemo1.Repositories
                             WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Id", customer.CustomerId);
-                sqlCommand.Parameters.AddWithValue("@FullName", customer.FullName);
+                sqlCommand.Parameters.AddWithValue("@FullName", customer.FirstName);
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
                 sqlCommand.Parameters.AddWithValue("@Email", customer.Email);

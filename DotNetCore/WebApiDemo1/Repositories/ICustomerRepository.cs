@@ -7,11 +7,11 @@ namespace WebApiDemo1.Repositories
 {
     public interface ICustomerRepository
     {
-        public List<CustomerDto> GetAllCustomersAsList();
+        public List<Customer> GetAllCustomersAsList();
         public int GetCustomersCount();
-        public CustomerDto GetAllCustomerById(int id);
+        public Customer GetCustomerById(int id);
         public string GetCustomerFullNameById(int customerId);
-        public List<CustomerDto> GetCustomersDetailByGenderByCountry(int gender, string country);
+        public List<Customer> GetCustomersDetailByGenderByCountry(int gender, string country);
         public CustomerDto GetCustomerDetailsByEmailAndPassword(string email, byte[] password);        
         public void UpdateOnLoginSuccessfull(string email);
         public void UpdateOnLoginFailed(string email);

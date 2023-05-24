@@ -13,6 +13,7 @@ using WebApiDemo1.DTO.InputDTO;
 using AutoMapper;
 using WebApiDemo1.DataModel;
 using System.Transactions;
+using System.Net;
 
 namespace WebApiDemo1.Controllers
 {
@@ -34,6 +35,7 @@ namespace WebApiDemo1.Controllers
             {
                 cfg.CreateMap<AddressDto, Address>();
                 cfg.CreateMap<CustomerDto, Customer>();
+                cfg.CreateMap<Customer, CustomerDto>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -43,10 +45,17 @@ namespace WebApiDemo1.Controllers
         [Route("GetAllCustomers")]
         public IActionResult GetAllCustomers()
         {
-            List<CustomerDto> customers = _customerRepository.GetAllCustomersAsList();
-
-            if (customers.Count > 0)
-                return Ok(customers);
+            List<Customer> customers = _customerRepository.GetAllCustomersAsList();
+        
+            List<CustomerDto> customerdto = _imapper.Map<List<Customer>, List<CustomerDto>>(customers);
+        
+            for (int i = 0; i < customers.Count; i++)
+            {
+                customerdto[i].FullName = customers[i].FirstName + ", " + customers[i].LastName;
+            }
+        
+            if (customerdto.Count > 0)
+                return Ok(customerdto);
             else
                 return NotFound();
         }
@@ -63,18 +72,30 @@ namespace WebApiDemo1.Controllers
         [Route("GetCustomerById/{id}")]
         public IActionResult GetCustomerById(int id)
         {
-            CustomerDto customer = _customerRepository.GetAllCustomerById(id);
+            Customer customers = _customerRepository.GetCustomerById(id);
 
-            if (customer is not null)
-                return Ok(customer);
-            else
-                return NotFound("No Record Found for given id");
+            //Approach 2 With AutoMapper
+            CustomerDto customerdto = _imapper.Map<Customer, CustomerDto>(customers);
+
+            customerdto.FullName = customers.FirstName + ", " + customers.LastName; 
+            
+            //Approach 1 without automapper
+            //CustomerDto customerdto = new()
+            //{
+            //    Id = customers.Id,
+            //    FullName = customers.FirstName + ", " + customers.LastName,
+            //    Gender = customers.Gender,
+            //    Age = customers.Age,
+            //    Email = customers.Email,
+            //};
+            return Ok(customerdto);
         }
 
         [HttpGet]
         [Route("GetCustomerFullNameById/{CustomerId}")]
         public IActionResult GetCustomerFullNameById(int customerId)
         {
+
             if (customerId < 1)
                 return BadRequest("Customer id should be greater than 0");
 
@@ -203,9 +224,11 @@ namespace WebApiDemo1.Controllers
                             {
                                 Address address = _imapper.Map<AddressDto, Address>(addressDto);
                                 address.CustomerId = customer.Id;
+
+                                //AddressRepository addressRepository = new();
+
                                 _addressRepository.Add(address);
                             }
-
                             transactionScope.Complete();
                             return Ok(customer.Id);
                         }
@@ -261,10 +284,19 @@ namespace WebApiDemo1.Controllers
                     {
                         try
                         {
-                            Address address = _imapper.Map<CustomerDto, Address>(customerDto);
                             Customer customer = _imapper.Map<CustomerDto, Customer>(customerDto);
                             _customerRepository.Update(customer);
-                            _addressRepository.Update(address);
+
+                            foreach (AddressDto addressDto in customerDto.Addresses)
+                            {
+                                if(addressDto != null)
+                                {
+                                    Address address = _imapper.Map<AddressDto, Address>(addressDto);
+                                    address.CustomerId = customer.CustomerId;
+                                    _addressRepository.Add(address);
+                                    _addressRepository.Update(address);
+                                }
+                            }
                             transactionScope.Complete();
                             return Ok("Record updated");
                         }
