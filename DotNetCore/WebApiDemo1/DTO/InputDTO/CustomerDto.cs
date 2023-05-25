@@ -6,6 +6,7 @@ namespace WebApiDemo1.DTO.InputDTO
     public class CustomerDto
     {
         public int Id { get; set; }
+        public int CustomerId { get; set; }
         public string FullName { get; set; }
         public GenderTypes Gender { get; set; }
         public int Age { get; set; }
@@ -19,14 +20,6 @@ namespace WebApiDemo1.DTO.InputDTO
         public byte[]? HashValuePassword { get; set; }
 
         public List<AddressDto> Addresses { get; set; }
-
-        //public int AddressId { get; set; }
-        //public int CustomerId { get; set; }
-        //public string AddressLine1 { get; set; }
-        //public string AddressLine2 { get; set; }
-        //public int PinCode { get; set; }
-        //public string Country { get; set; }
-        //public AddressTypes AddressType { get; set; }
 
         public CustomerDto()
         {

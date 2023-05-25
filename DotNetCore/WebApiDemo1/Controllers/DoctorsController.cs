@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using WebApiDemo1.DataModel;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
 using WebApiDemo1.Repositories;
@@ -12,20 +15,35 @@ namespace WebApiDemo1.Controllers
     public class DoctorsController : ControllerBase
     {
         IDoctorRepository _doctorRepository;
+        IMapper _imapper;
 
         public DoctorsController(IDoctorRepository doctorRepository)
         {
             _doctorRepository = doctorRepository;
+
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Doctor, DoctorDto>();
+            });
+
+            _imapper = configuration.CreateMapper();
         }
 
         [HttpGet]
         [Route("GetAllDoctors")]
         public IActionResult GetAllDoctors()
         {
-            List<DoctorDto> doctors = _doctorRepository.GetAllDoctorsAsList();
+            List<Doctor> doctors = _doctorRepository.GetAllDoctors();
 
-            if (doctors.Count > 0)
-                return Ok(doctors);
+            List<DoctorDto> doctorDto = _imapper.Map<List<Doctor>, List<DoctorDto>>(doctors);
+            
+            for (int i = 0; i < doctors.Count; i++)
+            {
+                doctorDto[i].FullName = doctors[i].FirstName + ", " + doctors[i].LastName;
+            }
+
+            if (doctorDto.Count > 0)
+                return Ok(doctorDto);
             else
                 return NotFound();
         }
@@ -45,12 +63,25 @@ namespace WebApiDemo1.Controllers
             if (doctorId < 1)
                 return BadRequest("Doctor Id should be greater than 0");
 
-            DoctorDto doctor = _doctorRepository.GetDoctorDetailById(doctorId);
+            Doctor doctor = _doctorRepository.GetDoctorDetailById(doctorId);
 
-            if (doctor is not null)
-                return Ok(doctor);
-            else
-                return NotFound("No Record Found for given id");
+            //Approach 2 With AutoMapper
+            DoctorDto doctordto = _imapper.Map<Doctor, DoctorDto>(doctor);
+
+            doctordto.FullName = doctor.FirstName + ", " + doctor.LastName;
+
+            //Approach 1 without AutoMapper
+            //DoctorDto doctordto = new()
+            //{
+            //    Id = doctor.Id,
+            //    FullName = doctor.FirstName + ", " + doctor.LastName,
+            //    Gender = doctor.Gender,
+            //    Email = doctor.Email,
+            //    RegistrationNumber = doctor.RegistrationNumber,
+            //    Department = doctor.Department,
+            //    City = doctor.City,
+            //};
+            return Ok(doctordto);
         }
 
         [HttpGet]

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
+using WebApiDemo1.DataModel;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
 
@@ -14,9 +15,9 @@ namespace WebApiDemo1.Repositories
             _connectionString = connectionString;
         }
 
-        public List<DoctorDto> GetAllDoctorsAsList()
+        public List<Doctor> GetAllDoctors()
         {
-            List<DoctorDto> doctors = new();
+            List<Doctor> doctors = new();
 
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -26,16 +27,18 @@ namespace WebApiDemo1.Repositories
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    DoctorDto doctorDto = new();
-                    doctorDto.Id = (int)dataTable.Rows[i]["Id"];
-                    doctorDto.FullName = (string)dataTable.Rows[i]["FullName"];
-                    doctorDto.Gender = (GenderTypes)dataTable.Rows[i]["Gender"];
-                    doctorDto.Email = (string)dataTable.Rows[i]["Email"];
-                    doctorDto.RegistrationNumber = (int)dataTable.Rows[i]["RegistrationNumber"];
-                    doctorDto.Department = (string)dataTable.Rows[i]["Department"];
-                    doctorDto.City = (string)dataTable.Rows[i]["City"];
+                    Doctor doctor = new();
+                    doctor.Id = (int)dataTable.Rows[i]["Id"];
+                    doctor.FirstName = (string)dataTable.Rows[i]["FirstName"];
+                    doctor.MiddleName = (string)dataTable.Rows[i]["MiddleName"];
+                    doctor.LastName = (string)dataTable.Rows[i]["LastName"];
+                    doctor.Gender = (GenderTypes)dataTable.Rows[i]["Gender"];
+                    doctor.Email = (string)dataTable.Rows[i]["Email"];
+                    doctor.RegistrationNumber = (int)dataTable.Rows[i]["RegistrationNumber"];
+                    doctor.Department = (string)dataTable.Rows[i]["Department"];
+                    doctor.City = (string)dataTable.Rows[i]["City"];
 
-                    doctors.Add(doctorDto);
+                    doctors.Add(doctor);
                 }
                 return doctors;
             }
@@ -54,7 +57,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public DoctorDto GetDoctorDetailById(int doctorId)
+        public Doctor GetDoctorDetailById(int doctorId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -65,15 +68,17 @@ namespace WebApiDemo1.Repositories
 
                 if (dataTable.Rows.Count > 0)
                 {
-                    DoctorDto doctorDto = new();
-                    doctorDto.Id = (int)dataTable.Rows[0]["Id"];
-                    doctorDto.FullName = (string)dataTable.Rows[0]["FullName"];
-                    doctorDto.Gender = (GenderTypes)dataTable.Rows[0]["Gender"];
-                    doctorDto.Email = (string)dataTable.Rows[0]["Email"];
-                    doctorDto.RegistrationNumber = (int)dataTable.Rows[0]["RegistrationNumber"];
-                    doctorDto.Department = (string)dataTable.Rows[0]["Department"];
-                    doctorDto.City = (string)dataTable.Rows[0]["City"];
-                    return doctorDto;
+                    Doctor doctor = new();
+                    doctor.Id = (int)dataTable.Rows[0]["Id"];
+                    doctor.FirstName = (string)dataTable.Rows[0]["FirstName"];
+                    doctor.MiddleName = (string)dataTable.Rows[0]["MiddleName"];
+                    doctor.LastName = (string)dataTable.Rows[0]["LastName"];
+                    doctor.Gender = (GenderTypes)dataTable.Rows[0]["Gender"];
+                    doctor.Email = (string)dataTable.Rows[0]["Email"];
+                    doctor.RegistrationNumber = (int)dataTable.Rows[0]["RegistrationNumber"];
+                    doctor.Department = (string)dataTable.Rows[0]["Department"];
+                    doctor.City = (string)dataTable.Rows[0]["City"];
+                    return doctor;
                 }
                 else
                     return null;
