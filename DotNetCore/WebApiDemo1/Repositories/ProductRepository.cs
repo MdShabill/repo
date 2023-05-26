@@ -1,7 +1,10 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
+using WebApiDemo1.DataModel;
 using WebApiDemo1.DTO.InputDTO;
+using WebApiDemo1.DTO.OutPutDTO;
 using WebApiDemo1.Enums;
 
 namespace WebApiDemo1.Repositories
@@ -15,9 +18,9 @@ namespace WebApiDemo1.Repositories
             _connectionString = connectionString;
         }
 
-        public List<ProductDto> GetAllProductAsList()
+        public List<ProductInputDto> GetAllProductAsList()
         {
-            List<ProductDto> products = new();
+            List<ProductInputDto> products = new();
 
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -27,8 +30,7 @@ namespace WebApiDemo1.Repositories
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    ProductDto productDto = new();
-                    productDto.Id = (int)dataTable.Rows[i]["Id"];
+                    ProductInputDto productDto = new();
                     productDto.ProductName = (string)dataTable.Rows[i]["ProductName"];
                     productDto.BrandName = (string)dataTable.Rows[i]["BrandName"];
                     productDto.Size = (int)dataTable.Rows[i]["Size"];
@@ -71,9 +73,9 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public List<ProductDto> GetProductsDetailByBrandNameByProductName(string brandName, string? productName)
+        public List<ProductInputDto> GetProductsDetailByBrandNameByProductName(string brandName, string? productName)
         {
-            List<ProductDto> products = new();
+            List<ProductInputDto> products = new();
 
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -90,8 +92,7 @@ namespace WebApiDemo1.Repositories
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    ProductDto productDto = new();
-                    productDto.Id = (int)dataTable.Rows[i]["Id"];
+                    ProductInputDto productDto = new();
                     productDto.ProductName = (string)dataTable.Rows[i]["ProductName"];
                     productDto.BrandName = (string)dataTable.Rows[i]["BrandName"];
                     productDto.Size = (int)dataTable.Rows[i]["Size"];
@@ -107,9 +108,9 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public List<ProductDto> GetProductsDetailByBrandNameByPrice(string brandName, int price)
+        public List<ProductInputDto> GetProductsDetailByBrandNameByPrice(string brandName, int price)
         {
-            List<ProductDto> products = new();
+            List<ProductInputDto> products = new();
 
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -122,8 +123,7 @@ namespace WebApiDemo1.Repositories
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    ProductDto productDto = new();
-                    productDto.Id = (int)dataTable.Rows[i]["Id"];
+                    ProductInputDto productDto = new();
                     productDto.ProductName = (string)dataTable.Rows[i]["ProductName"];
                     productDto.BrandName = (string)dataTable.Rows[i]["BrandName"];
                     productDto.Size = (int)dataTable.Rows[i]["Size"];
@@ -139,9 +139,9 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public List<ProductDto> GetProductsByPriceRange(int minimumPrice, int maximumPrice)
+        public List<ProductInputDto> GetProductsByPriceRange(int minimumPrice, int maximumPrice)
         {
-            List<ProductDto> products = new();
+            List<ProductInputDto> products = new();
 
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -155,8 +155,7 @@ namespace WebApiDemo1.Repositories
                 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    ProductDto productDto = new();
-                    productDto.Id = (int)dataTable.Rows[i]["Id"];
+                    ProductInputDto productDto = new();
                     productDto.ProductName = (string)dataTable.Rows[i]["ProductName"];
                     productDto.BrandName = (string)dataTable.Rows[i]["BrandName"];
                     productDto.Size = (int)dataTable.Rows[i]["Size"];
@@ -172,7 +171,103 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public int ProductAdd(ProductDto product)
+        public List<ProductOutputDto> GetFilteredProducts_1(ProductInputDto productInputDto)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"
+                    Select * From Products 
+                    Where 
+                        ProductName = @productName 
+                        And BrandName = @brandName 
+                        And Size = @size 
+                        And Color = @color 
+                        And Fit = @fit 
+                        And Fabric = @fabric
+                        And Category = @category 
+                        And Discount = @discount 
+                        And Price = @price";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productInputDto.ProductName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@brandName", productInputDto.BrandName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@size", productInputDto.Size);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@color", productInputDto.Color);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@fit", productInputDto.Fit);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@fabric", productInputDto.Fabric);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@category", productInputDto.Category);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@discount", productInputDto.Discount);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@price", productInputDto.Price);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<ProductOutputDto> results = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    ProductOutputDto productOutputDto = new()
+                    {
+                        ProductName = (string)dataTable.Rows[i]["ProductName"],
+                        BrandName = (string)dataTable.Rows[i]["BrandName"],
+                        Size = (int)dataTable.Rows[i]["Size"],
+                        Color = (ColorType)dataTable.Rows[i]["Color"],
+                        Fit = (string)dataTable.Rows[i]["Fit"],
+                        Fabric = (string)dataTable.Rows[i]["Fabric"],
+                        Category = (string)dataTable.Rows[i]["Category"],
+                        Discount = (int)dataTable.Rows[i]["Discount"],
+                        Price = (int)dataTable.Rows[i]["Price"],
+                    };
+                    results.Add(productOutputDto);
+                }
+                return results;
+            }
+        }
+
+        public List<Product> GetFilteredProducts(Product products)
+        {
+            List<Product> filteredProducts = new();
+
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"Select * From Products Where ProductName = @productName And 
+                        BrandName = @brandName And Size = @size And Color = @color And Fit = @fit And Fabric = @fabric
+                        And Category = @category And Discount = @discount And Price = @price";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", products.ProductName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@brandName", products.BrandName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@size", products.Size);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@color", products.Color);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@fit", products.Fit);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@fabric", products.Fabric);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@category", products.Category);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@discount", products.Discount);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@price", products.Price);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    Product product = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        ProductName = (string)dataTable.Rows[i]["ProductName"],
+                        BrandName = (string)dataTable.Rows[i]["BrandName"],
+                        Size = (int)dataTable.Rows[i]["Size"],
+                        Color = (ColorType)dataTable.Rows[i]["Color"],
+                        Fit = (string)dataTable.Rows[i]["Fit"],
+                        Fabric = (string)dataTable.Rows[i]["Fabric"],
+                        Category = (string)dataTable.Rows[i]["Category"],
+                        Discount = (int)dataTable.Rows[i]["Discount"],
+                        Price = (int)dataTable.Rows[i]["Price"],
+                    };
+                }    
+                filteredProducts.Add(product);
+            }
+            return filteredProducts;
+        }
+
+        public int Add(ProductInputDto product)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -198,7 +293,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public void Update(ProductDto product)
+        public void Update(ProductInputDto product)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {

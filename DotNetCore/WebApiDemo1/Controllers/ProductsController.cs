@@ -5,6 +5,9 @@ using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Repositories;
 using WebApiDemo1.Enums;
 using System.Reflection;
+using WebApiDemo1.DataModel;
+using AutoMapper;
+using WebApiDemo1.DTO.OutPutDTO;
 
 namespace WebApplication1.Controllers
 {
@@ -13,17 +16,27 @@ namespace WebApplication1.Controllers
     public class ProductsController : ControllerBase
     {
         IProductRepository _productRepository;
+        IMapper _imapper;
 
         public ProductsController(IProductRepository productRepository)
         {
             _productRepository = productRepository;
+
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ProductInputDto, Product>();
+                cfg.CreateMap<Product, ProductInputDto>();
+                cfg.CreateMap<Product, ProductOutputDto>();
+            });
+
+            _imapper = configuration.CreateMapper();
         }
 
         [HttpGet]
         [Route("GetAllProducts")]
         public IActionResult GetAllProducts()
         {
-            List<ProductDto> products = _productRepository.GetAllProductAsList();
+            List<ProductInputDto> products = _productRepository.GetAllProductAsList();
 
             if (products.Count > 0)
                 return Ok(products);
@@ -36,7 +49,7 @@ namespace WebApplication1.Controllers
         public IActionResult GetProductsCount()
         {
             int productCount = _productRepository.GetProductsCount();
-            return Ok(productCount);           
+            return Ok(productCount);
         }
 
         [HttpGet]
@@ -45,7 +58,7 @@ namespace WebApplication1.Controllers
         {
             if (productId < 1)
                 return BadRequest("ProductId should be greater than 0");
-            
+
             string brandName = _productRepository.GetProductDetailById(productId);
             return Ok(brandName);
         }
@@ -54,21 +67,27 @@ namespace WebApplication1.Controllers
         [Route("GetProductsDetailByBrandNameByProductName/{brandName}/{productName?}")]
         public IActionResult GetProductsDetailByBrandNameByProductName(string brandName, string? productName)
         {
-            productName = productName.Trim();
+            if (productName != null)
+                productName = productName.Trim();
 
-            if (string.IsNullOrWhiteSpace(productName))
-                return BadRequest("ProductName can not be blank");
 
-            if (productName.Length < 3 || productName.Length > 20)
-                return BadRequest("ProductName should be between 3 and 20 characters.");
+            //productName = productName != null ? productName.Trim(): productName;
 
-            List<ProductDto> products = _productRepository.GetProductsDetailByBrandNameByProductName(brandName, productName);
+
+            //if (string.IsNullOrWhiteSpace(productName))
+            //    return BadRequest("ProductName can not be blank");
+
+            //if (productName.Length < 3 || productName.Length > 20)
+            //    return BadRequest("ProductName should be between 3 and 20 characters.");
+
+            List<ProductInputDto> products = _productRepository.GetProductsDetailByBrandNameByProductName(brandName, productName);
 
             if (products.Count > 0)
                 return Ok(products);
             else
                 return NotFound();
         }
+
 
         [HttpGet]
         [Route("GetProductsDetailByBrandNameByPrice/{brandName}/{price}")]
@@ -85,7 +104,7 @@ namespace WebApplication1.Controllers
             if (price < 600)
                 return BadRequest("Product price should be greater than 600");
 
-            List<ProductDto> products = _productRepository.GetProductsDetailByBrandNameByPrice(brandName, price);
+            List<ProductInputDto> products = _productRepository.GetProductsDetailByBrandNameByPrice(brandName, price);
 
             if (products.Count > 0)
                 return Ok(products);
@@ -100,7 +119,7 @@ namespace WebApplication1.Controllers
             if (maximumPrice < minimumPrice)
                 return BadRequest("Maximum price cannot be less than minimum price");
 
-            List<ProductDto> products = _productRepository.GetProductsByPriceRange(minimumPrice, maximumPrice);
+            List<ProductInputDto> products = _productRepository.GetProductsByPriceRange(minimumPrice, maximumPrice);
 
             if (products.Count > 0)
                 return Ok(products);
@@ -109,20 +128,70 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
+        [Route("Filter_1")]
+        public IActionResult GetFilteredProducts_1([FromBody] ProductInputDto productInputDto)
+        {
+            try
+            {
+                List<ProductOutputDto> productOutputDto = _productRepository.GetFilteredProducts_1(productInputDto);
+
+                return Ok(productOutputDto);
+            }
+            catch(Exception ex) 
+            {
+                ModelState.AddModelError("", @"Unable to save changes. 
+                    Try again, and if the problem persists 
+                    see your system administrator.");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        [Route("Filter")]
+        public IActionResult GetFilteredProducts([FromBody] ProductInputDto productDto)
+        {
+            Product products = _imapper.Map<ProductInputDto, Product>(productDto);
+
+            try
+            {
+                if (ModelState.IsValid)
+                {
+
+                    List<Product> filteredProducts = _productRepository.GetFilteredProducts(products);
+
+                    List<ProductOutputDto> productDtos = _imapper.Map<List<Product>, List<ProductOutputDto>>(filteredProducts);
+
+                    if (productDtos.Count > 0)
+                        return Ok(productDtos);
+                    else
+                        return NotFound();
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", @"Unable to save changes. 
+                    Try again, and if the problem persists 
+                    see your system administrator.");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost]
         [Route("ProductAdd")]
-        public IActionResult ProductAdd([FromBody] ProductDto product)
+        public IActionResult ProductAdd([FromBody] ProductInputDto product)
         {
             try
             {
                 string errorMessage = validateProductAddOrUpdate(product);
                 if (!string.IsNullOrEmpty(errorMessage))
                     return BadRequest(errorMessage);
-
+        
                 if (ModelState.IsValid)
                 {
-                    int id = _productRepository.ProductAdd(product);
-
-                    return Ok(product.Id);
+                    int id = _productRepository.Add(product);
+        
+                    return Ok(id);
                 }
                 return BadRequest();
             }
@@ -137,7 +206,7 @@ namespace WebApplication1.Controllers
 
         [HttpPost]
         [Route("ProductUpdate")]
-        public IActionResult ProductUpdate([FromBody] ProductDto product)
+        public IActionResult ProductUpdate([FromBody] ProductInputDto product)
         {
             try
             {
@@ -161,7 +230,7 @@ namespace WebApplication1.Controllers
             }
         }
 
-        private string validateProductAddOrUpdate(ProductDto product, bool isUpdate = false)
+        private string validateProductAddOrUpdate(ProductInputDto product, bool isUpdate = false)
         {
             string errorMessage = "";
 
