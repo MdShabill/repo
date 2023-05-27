@@ -225,13 +225,19 @@ namespace WebApiDemo1.Repositories
 
         public List<Product> GetFilteredProducts(Product products)
         {
-            List<Product> filteredProducts = new();
-
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Select * From Products Where ProductName = @productName And 
-                        BrandName = @brandName And Size = @size And Color = @color And Fit = @fit And Fabric = @fabric
-                        And Category = @category And Discount = @discount And Price = @price";
+                string sqlQuery = @"
+                        Select * From Products 
+                        Where ProductName = @productName 
+                        And BrandName = @brandName 
+                        And Size = @size 
+                        And Color = @color 
+                        And Fit = @fit 
+                        And Fabric = @fabric
+                        And Category = @category 
+                        And Discount = @discount 
+                        And Price = @price";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", products.ProductName);
@@ -245,6 +251,8 @@ namespace WebApiDemo1.Repositories
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@price", products.Price);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
+
+                List<Product> Results = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
@@ -261,10 +269,10 @@ namespace WebApiDemo1.Repositories
                         Discount = (int)dataTable.Rows[i]["Discount"],
                         Price = (int)dataTable.Rows[i]["Price"],
                     };
-                }    
-                filteredProducts.Add(product);
+                    Results.Add(product);
+                }
+                return Results;
             }
-            return filteredProducts;
         }
 
         public int Add(ProductInputDto product)

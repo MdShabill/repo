@@ -148,21 +148,21 @@ namespace WebApplication1.Controllers
 
         [HttpPost]
         [Route("Filter")]
-        public IActionResult GetFilteredProducts([FromBody] ProductInputDto productDto)
+        public IActionResult GetFilteredProducts([FromBody] ProductInputDto productInputDto)
         {
-            Product products = _imapper.Map<ProductInputDto, Product>(productDto);
+            Product products = _imapper.Map<ProductInputDto, Product>(productInputDto);
 
             try
             {
                 if (ModelState.IsValid)
                 {
 
-                    List<Product> filteredProducts = _productRepository.GetFilteredProducts(products);
+                    List<Product> filteredresults = _productRepository.GetFilteredProducts(products);
 
-                    List<ProductOutputDto> productDtos = _imapper.Map<List<Product>, List<ProductOutputDto>>(filteredProducts);
+                    List<ProductOutputDto> productOutputDto = _imapper.Map<List<Product>, List<ProductOutputDto>>(filteredresults);
 
-                    if (productDtos.Count > 0)
-                        return Ok(productDtos);
+                    if (productOutputDto.Count > 0)
+                        return Ok(productOutputDto);
                     else
                         return NotFound();
                 }
