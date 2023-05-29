@@ -27,6 +27,8 @@ namespace WebApplication1.Controllers
                 cfg.CreateMap<ProductInputDto, Product>();
                 cfg.CreateMap<Product, ProductInputDto>();
                 cfg.CreateMap<Product, ProductOutputDto>();
+                cfg.CreateMap<Product, ProductOutputDto>();
+                cfg.CreateMap<Product, ProductOutputDto>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -131,50 +133,57 @@ namespace WebApplication1.Controllers
         [Route("Filter_1")]
         public IActionResult GetFilteredProducts_1([FromBody] ProductInputDto productInputDto)
         {
-            try
-            {
-                List<ProductOutputDto> productOutputDto = _productRepository.GetFilteredProducts_1(productInputDto);
+            List<ProductOutputDto> productOutputDto = _productRepository.GetFilteredProducts_1(productInputDto);
 
-                return Ok(productOutputDto);
-            }
-            catch(Exception ex) 
-            {
-                ModelState.AddModelError("", @"Unable to save changes. 
-                    Try again, and if the problem persists 
-                    see your system administrator.");
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            return Ok(productOutputDto);
+        }
+
+        [HttpPost]
+        [Route("Filter_2")]
+        public IActionResult GetFilteredProducts_2([FromBody] ProductInputDto productInputDto)
+        {
+            Product product = _imapper.Map<ProductInputDto, Product>(productInputDto);
+
+            List<Product> filteredresults = _productRepository.GetFilteredProducts_2(product);
+
+            List<ProductOutputDto> productOutputDtos = _imapper.Map<List<Product>, List<ProductOutputDto>>(filteredresults);
+
+            if (productOutputDtos.Count > 0)
+                return Ok(productOutputDtos);
+            else
+                return NotFound();
+        }
+
+        [HttpPost]
+        [Route("Filter_3")]
+        public IActionResult GetFilteredProducts_3([FromBody] ProductInputDto productInputDto)
+        {
+            Product product = _imapper.Map<ProductInputDto, Product>(productInputDto);
+
+            List<Product> filteredresults = _productRepository.GetFilteredProducts_3(product);
+
+            List<ProductOutputDto> productOutputDtos = _imapper.Map<List<Product>, List<ProductOutputDto>>(filteredresults);
+
+            if (productOutputDtos.Count > 0)
+                return Ok(productOutputDtos);
+            else
+                return NotFound();
         }
 
         [HttpPost]
         [Route("Filter")]
         public IActionResult GetFilteredProducts([FromBody] ProductInputDto productInputDto)
         {
-            Product products = _imapper.Map<ProductInputDto, Product>(productInputDto);
+            Product product = _imapper.Map<ProductInputDto, Product>(productInputDto);
 
-            try
-            {
-                if (ModelState.IsValid)
-                {
+            List<Product> filteredresults = _productRepository.GetFilteredProducts(product);
 
-                    List<Product> filteredresults = _productRepository.GetFilteredProducts(products);
+            List<ProductOutputDto> productOutputDtos = _imapper.Map<List<Product>, List<ProductOutputDto>>(filteredresults);
 
-                    List<ProductOutputDto> productOutputDto = _imapper.Map<List<Product>, List<ProductOutputDto>>(filteredresults);
-
-                    if (productOutputDto.Count > 0)
-                        return Ok(productOutputDto);
-                    else
-                        return NotFound();
-                }
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", @"Unable to save changes. 
-                    Try again, and if the problem persists 
-                    see your system administrator.");
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+            if (productOutputDtos.Count > 0)
+                return Ok(productOutputDtos);
+            else
+                return NotFound();
         }
 
         [HttpPost]

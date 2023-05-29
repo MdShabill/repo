@@ -15,7 +15,9 @@ namespace WebApiDemo1.Repositories
         public List<ProductInputDto> GetProductsDetailByBrandNameByProductName(string brandName, string? productName);
         public List<ProductInputDto> GetProductsDetailByBrandNameByPrice(string brandName, int price);
         public List<ProductInputDto> GetProductsByPriceRange(int minimumPrice, int maximumPrice);
-        public List<Product> GetFilteredProducts(Product products);
+        public List<Product> GetFilteredProducts(Product product);
+        public List<Product> GetFilteredProducts_2(Product product);
+        public List<Product> GetFilteredProducts_3(Product product);
         public List<ProductOutputDto> GetFilteredProducts_1(ProductInputDto productInputDto);
         public int Add(ProductInputDto product);
         public void Update(ProductInputDto product);
