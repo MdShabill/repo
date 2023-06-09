@@ -1,0 +1,73 @@
+﻿@model MyWebApp.Models.Customer
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+<hr />
+<html>
+
+<head>
+    <title>Customer View</title>
+</head>
+<style>
+    .heading {
+        background-color: rgb(113, 168, 175);
+        font-family: Verdana;
+    }
+
+    .table {
+        width: 40;
+        height: 25;
+        font-size: large;
+        font-family: sans-serif;
+    }
+</style>
+
+<body>
+    <form>
+        
+        <h2 class="heading">
+            Customer View
+        </h2>
+
+        <table class="table">
+            <tr>
+                <td><b>Full Name:</b></td>
+                <td>@Model.FirstName</td>
+            </tr>
+            <tr>
+                <td><b>Last Name:</b></td>
+                <td>@Model.LastName</td>
+            </tr>
+            <tr>
+                <td><b>Gender:</b></td>
+                <td>@Model.Gender</td>
+            </tr>
+            <tr>
+                <td><b>Email:</b></td>
+                <td><a href="http://localhost:5277/Customer/GetAllCustomers">@Model.Email</a></td>
+            </tr>
+            <tr>
+                <td><b>Age:</b></td>
+                <td>@Model.Age</td>
+            </tr>
+            <tr>
+                <td><b>Mobile:</b></td>
+                <td>@Model.Mobile</td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+        </table>
+            <a href="http://localhost:5277/Customer/GetAllCustomers"> Back Home </a>
+    </form>
+</body>
+
+</html>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

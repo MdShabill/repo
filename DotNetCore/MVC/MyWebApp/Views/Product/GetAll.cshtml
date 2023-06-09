@@ -1,0 +1,82 @@
+﻿@model List<MyWebApp.Models.Product>
+
+@{
+    ViewData["Title"] = "GetAll";
+}
+
+<html>
+<head>
+    <title>Product Table</title>
+</head>
+
+<h2 style="background-color :blueviolet">
+    Product List
+</h2>
+
+
+<style>
+    .heading {
+        background-color: lightsalmon;
+    }
+
+    .table {
+        width: 100%;
+        height: 65%;
+    }
+
+    .table1 {
+        background-color: aliceblue;
+    }
+</style>
+
+<body>
+    <form>
+        <table border="3px" class="table">
+            <tr class="table1">
+                <td><b>Product Name</b></td>
+                <td><b>Brand Name</b></td>
+                <td><b>Size</b></td>
+                <td><b>ColorName</b></td>
+                <td><b>Fit</b></td>
+                <td><b>Fabric</b></td>
+                <td><b>Category</b></td>
+                <td><b>Discount</b></td>
+                <td><b>Price</b></td>
+                <td><b>Action</b></td>
+            </tr>
+
+            @foreach (Product product in Model)
+            {
+                <tr class="table1">
+                    <td><b><a href="http://localhost:5277/Product/View/@product.Id"><b>@product.ProductName</b></a></b></td>
+                    <td><b>@product.BrandName</b></td>
+                    <td><b>@product.SizeName</b></td>
+                    <td><b>@product.ColorName</b></td>
+                    <td><b>@product.Fit</b></td>
+                    <td><b>@product.Fabric</b></td>
+                    <td><b>@product.Category</b></td>
+                    <td><b>@product.Discount</b></td>
+                    <td><b>@product.Price</b></td>
+                    <td>
+                        <b>@Html.ActionLink("Edit", "Edit", new { id = product.Id }) |
+                           @Html.ActionLink("Delete", "Delete", new { id = product.Id })
+                        </b>
+                    </td>
+                </tr>
+            }
+        </table>
+        <b><label>Total Product:</label>  @ViewBag.productCount</b>
+    </form>
+
+</body>
+
+<div>
+    <b><a href="http://localhost:5277/Product/Add"> Add </a></b>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+</html>

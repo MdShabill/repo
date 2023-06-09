@@ -1,0 +1,68 @@
+﻿@model MyWebApp.Models.Customer
+
+@{
+    ViewData["Title"] = "Customer Edit";
+}
+
+<html>
+
+<head>
+    <title>Customer Table</title>
+</head>
+
+<style>
+    .heading {
+        background-color: lightskyblue;
+    }
+
+    .table {
+        width: 65%;
+        height: 25%;
+    }
+
+    .table1 {
+        background-color: rgb(70, 70, 68);
+    }
+</style>
+
+<body>
+
+
+    <h2 class="heading">
+        Customer Edit
+    </h2>
+    <table border="3px" class="table">
+        <tr class="table1"> </tr>
+
+        <form asp-action="Update">
+
+            <label style="visibility:hidden;" for="id">Id:</label><br>
+            <input style="visibility:hidden;" type="text" id="id" name="id" value="@Model.Id"><br>
+
+            <label for="FirstName">First Name:</label><br>
+            <input type="text" id="FirstName" name="FirstName" value="@Model.FirstName"><br>
+
+            <label for="LastName">Last Name:</label><br>
+            <input type="text" id="lastName" name="LastName" value="@Model.LastName"><br>
+
+            <label for="gender">Gender:</label><br>
+            <input type="text" id="gender" name="gender" value="@Model.Gender"><br>
+
+            <label for="Email">Email:</label><br>
+            <input type="text" id="Email" name="Email" value="@Model.Email"><br>
+
+            <label for="Age">Age:</label><br>
+            <input type="text" id="Age" name="Age" value="@Model.Age"><br>
+
+            <label for="Mobile">Mobile:</label><br>
+            <input type="text" id="Mobile" name="Mobile" value="@Model.Mobile"><br><br>
+
+            <input type="submit" value="Submit">
+            <input type="reset">
+        </form>
+
+    </table>
+    </>
+</body>
+
+</html>
