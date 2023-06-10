@@ -1,0 +1,87 @@
+﻿@model MyWebApp.Models.Product
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+<hr />
+<html>
+
+<head>
+    <title>Product View</title>
+</head>
+<style>
+    .heading {
+        background-color: rgb(113, 168, 175);
+        font-family: Verdana;
+    }
+
+    .table {
+        width: 40;
+        height: 25;
+        font-size: large;
+        font-family: sans-serif;
+    }
+</style>
+
+<body>
+    <form>
+
+        <h2 class="heading">
+            Customer View
+        </h2>
+
+        <table class="table">
+            <tr>
+                <td><b>Product Name:</b></td>
+                <td>@Model.ProductName</td>
+            </tr>
+            <tr>
+                <td><b>Brand Name:</b></td>
+                <td>@Model.BrandName</td>
+            </tr>
+            <tr>
+                <td><b>Size:</b></td>
+                <td>@Model.SizeName</td>
+            </tr>
+            <tr>
+                <td><b>Color Name:</b></td>
+                <td>@Model.ColorName</td>
+            </tr>
+            <tr>
+                <td><b>Fit:</b></td>
+                <td>@Model.Fit</td>
+            </tr>
+            <tr>
+                <td><b>Fabric:</b></td>
+                <td>@Model.Fabric</td>
+            </tr>
+            <tr>
+                <td><b>Category:</b></td>
+                <td>@Model.Category</td>
+            </tr>
+            <tr>
+                <td><b>Discount:</b></td>
+                <td>@Model.Discount</td>
+            </tr>
+            <tr>
+                <td><b>Price:</b></td>
+                <td>@Model.Price</td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+        </table>
+        <a href="http://localhost:5277/Product/GetAll"> Back Home </a>
+    </form>
+</body>
+
+</html>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
