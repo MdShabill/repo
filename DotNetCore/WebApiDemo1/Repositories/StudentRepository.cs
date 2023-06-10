@@ -14,7 +14,7 @@ namespace WebApiDemo1.Repositories
             _connectionString = connectionString;
         }
 
-        public StudentDto GetStudentById(int id)
+        public StudentDto GetById(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -91,7 +91,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public string GetStudentFullNameById(int id)
+        public string GetFullNameById(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -105,7 +105,7 @@ namespace WebApiDemo1.Repositories
             }
         }
 
-        public void DeleteStudent(int id)
+        public void Delete(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString)) 
             {

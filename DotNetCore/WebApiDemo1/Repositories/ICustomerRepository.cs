@@ -11,7 +11,7 @@ namespace WebApiDemo1.Repositories
         public int GetCustomersCount();
         public Customer GetCustomerById(int id);
         public string GetCustomerFullNameById(int customerId);
-        public List<Customer> GetCustomersDetailByGenderByCountry(int gender, string country);
+        public List<CustomerDto> GetCustomersDetailByGenderByCountry(int gender, string country);
         public CustomerDto GetCustomerDetailsByEmailAndPassword(string email, byte[] password);        
         public void UpdateOnLoginSuccessfull(string email);
         public void UpdateOnLoginFailed(string email);

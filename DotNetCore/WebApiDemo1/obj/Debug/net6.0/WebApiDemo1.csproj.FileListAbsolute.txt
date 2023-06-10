@@ -124,3 +124,6 @@ D:\Development\C-Sharp\WebApiProject\repo\DotNetCore\WebApiDemo1\obj\Debug\net6.
 D:\Development\C-Sharp\WebApiProject\repo\DotNetCore\WebApiDemo1\obj\Debug\net6.0\WebApiDemo1.pdb
 D:\Development\C-Sharp\WebApiProject\repo\DotNetCore\WebApiDemo1\obj\Debug\net6.0\WebApiDemo1.genruntimeconfig.cache
 D:\Development\C-Sharp\WebApiProject\repo\DotNetCore\WebApiDemo1\obj\Debug\net6.0\ref\WebApiDemo1.dll
+D:\Development\C-Sharp\WebApiProject\repo\DotNetCore\WebApiDemo1\bin\Debug\net6.0\AutoMapper.dll
+D:\Development\C-Sharp\WebApiProject\repo\DotNetCore\WebApiDemo1\bin\Debug\net6.0\AutoMapper.Collection.dll
+D:\Development\C-Sharp\WebApiProject\repo\DotNetCore\WebApiDemo1\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

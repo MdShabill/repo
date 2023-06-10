@@ -8,7 +8,7 @@ using System.Data;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
 using WebApiDemo1.Repositories;
-using WebApplication1.DTO.InputDTO;
+using WebApiDemo1.DTO.InputDTO;
 
 namespace WebApplication1.Controllers
 {

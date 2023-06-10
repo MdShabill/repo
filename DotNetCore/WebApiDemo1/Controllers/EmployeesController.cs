@@ -7,7 +7,8 @@ using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
 using WebApiDemo1.Helpers;
 using WebApiDemo1.Repositories;
-using WebApplication1.DTO.InputDTO;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace WebApplication1.Controllers
 {
@@ -141,7 +142,7 @@ namespace WebApplication1.Controllers
             }
             catch (SqlException ex)
             {
-                if (ex.Number == 2627)
+                if (ex.Number == Constants.UniqueConstraintViolationErrorcode)
                 {
                     if (ex.Message.Contains("UQ_Employees_Email"))
                         return BadRequest("Email already exist");

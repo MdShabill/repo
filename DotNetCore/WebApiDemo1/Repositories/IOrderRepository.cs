@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using WebApiDemo1.DTO.InputDTO;
-using WebApplication1.DTO.InputDTO;
+using WebApiDemo1.DTO.InputDTO;
 
 namespace WebApiDemo1.Repositories
 {

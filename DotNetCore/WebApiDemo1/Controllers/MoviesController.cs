@@ -34,10 +34,18 @@ namespace WebApiDemo1.Controllers
         [Route("GetAllMovies")]
         public IActionResult GetAllMovies()
         {
-            List<MovieDto> movies = _movieRepository.GetAllMovies();
+            List<Movie> movies = _movieRepository.GetAllMovies();
 
-            if (movies.Count > 0)
-                return Ok(movies);
+            List<MovieDto> movieDto = _imapper.Map<List<Movie>, List<MovieDto>>(movies);
+
+            for (int i = 0; i < movies.Count; i++)
+            {
+                movieDto[i].Hero = movies[i].ActorName;
+                movieDto[i].Heroine = movies[i].ActressName;
+            }
+            
+            if (movieDto.Count > 0)
+                return Ok(movieDto);
             else
                 return NotFound();
         }
@@ -54,17 +62,17 @@ namespace WebApiDemo1.Controllers
         [Route("GetMovieById/{Id}")]
         public IActionResult GetMovieById(int Id)
         {
-            Movie movies = _movieRepository.GetMovieById(Id);
+            Movie movie = _movieRepository.GetMovieById(Id);
 
             //Approach 1 Without AutoMapper
             MovieDto movieDto = new()
             {
-                Id = movies.Id,
-                Hero = movies.ActorName,
-                Heroine = movies.ActressName,
-                Title = movies.Title,
-                MovieType = movies.MovieType,
-                ReleaseDate = movies.ReleaseDate,
+                Id = movie.Id,
+                Hero = movie.ActorName,
+                Heroine = movie.ActressName,
+                Title = movie.Title,
+                MovieType = movie.MovieType,
+                ReleaseDate = movie.ReleaseDate,
             };
             return Ok(movieDto);
         }

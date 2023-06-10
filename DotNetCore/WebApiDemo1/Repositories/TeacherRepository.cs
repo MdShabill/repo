@@ -3,7 +3,7 @@ using System.Data;
 using WebApiDemo1.DTO;
 using WebApiDemo1.DTO.InputDTO;
 using WebApiDemo1.Enums;
-using WebApplication1.DTO.InputDTO;
+using WebApiDemo1.DTO.InputDTO;
 
 namespace WebApiDemo1.Repositories
 {

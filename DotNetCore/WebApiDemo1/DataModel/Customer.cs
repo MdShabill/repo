@@ -6,7 +6,9 @@ namespace WebApiDemo1.DataModel
     {
         public int Id { get; set; }
         public int CustomerId { get; set; }
-        public string FullName { get; set; }
+        public string FirstName { get; set; }
+        public string MiddleName { get; set; }
+        public string LastName { get; set; }
         public GenderTypes Gender { get; set; }
         public int Age { get; set; }
         public string Email { get; set; }

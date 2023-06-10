@@ -21,10 +21,10 @@ namespace WebApiDemo1.Controllers
         }
 
         [HttpGet]
-        [Route("GetStudentById/{Id}")]
-        public IActionResult GetStudentById(int id)
+        [Route("GetById/{Id}")]
+        public IActionResult GetById(int id)
         {
-            StudentDto studentDto = _studentRepository.GetStudentById(id);
+            StudentDto studentDto = _studentRepository.GetById(id);
 
             if (studentDto != null)
                 return Ok(studentDto);
@@ -53,21 +53,21 @@ namespace WebApiDemo1.Controllers
         }
 
         [HttpGet]
-        [Route("GetStudentFullNameById/{Id}")]
-        public IActionResult GetStudentFullNameById(int id) 
+        [Route("GetFullNameById/{Id}")]
+        public IActionResult GetFullNameById(int id) 
         {
             if(id < 1)
                 return BadRequest("Student Id Should be greater Than 0");
 
-            string studentFullName = _studentRepository.GetStudentFullNameById(id);
+            string studentFullName = _studentRepository.GetFullNameById(id);
             return Ok(studentFullName);
         }
 
         [HttpGet]
-        [Route("DeleteStudent/{Id}")]
-        public IActionResult DeleteStudent(int id)
+        [Route("Delete/{Id}")]
+        public IActionResult Delete(int id)
         {
-            _studentRepository.DeleteStudent(id);
+            _studentRepository.Delete(id);
             return Ok("Record Deleted");
         }
 

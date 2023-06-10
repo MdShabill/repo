@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApiDemo1.Enums;
 
 namespace WebApiDemo1.Controllers
 {
@@ -90,7 +91,7 @@ namespace WebApiDemo1.Controllers
                     return BadRequest("Invalid Calculate Type");
             }
 
-            string text = $@"First Parameter Is {num1} And second Parameter {num2} And Calculate Type Is {message} And Result is {result} ";
+            string text = $"First Parameter Is {num1} And second Parameter {num2} And Calculate Type Is {message} And Result is {result} ";
 
             return new JsonResult(text);
         }
@@ -129,7 +130,42 @@ namespace WebApiDemo1.Controllers
                 return BadRequest("Invalid Calculate Type");
             }
                     
-            string text = $@"First Parameter Is {num1} And second Parameter {num2} And Calculate Type Is {message} And Result is {result} ";
+            string text = $"First Parameter Is {num1} And second Parameter {num2} And Calculate Type Is {message} And Result is {result} ";
+
+            return new JsonResult(text);
+        }
+
+        [HttpGet]
+        [Route("Calculate2/{CalculateType}/{Num1}/{Num2}")]
+        public IActionResult Calculate2(CalculateTypes calculateType, int num1, int num2)
+        {
+            CalculateService calculateService = new();
+
+            
+            if (!Enum.IsDefined(typeof(CalculateTypes), calculateType))
+            {
+                return BadRequest("Invalid Calculate Type");
+            }
+
+            int result = 0;
+            if (calculateType == CalculateTypes.Add)
+            {
+                result = calculateService.Add(num1, num2);
+            }
+            else if (calculateType == CalculateTypes.Subtract)
+            {
+                result = calculateService.Subtract(num1, num2);
+            }
+            else if (calculateType == CalculateTypes.Multiply)
+            {
+                result = calculateService.Multiply(num1, num2);
+            }
+            else if (calculateType == CalculateTypes.Division)
+            {
+                result = calculateService.Division(num1, num2);
+            }
+            
+            string text = $@"First Parameter Is {num1} And second Parameter {num2} And Calculate Type Is {calculateType.ToString()} And Result is {result} ";
 
             return new JsonResult(text);
         }
