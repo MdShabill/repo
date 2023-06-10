@@ -1,0 +1,18 @@
+.heading {
+    background-color: rgba(151, 175, 113, 0.856);
+}
+
+.tablelist {
+    width: 65%;
+    height: 25%;
+}
+.trheaderlist {
+    background-color: rgb(233, 233, 231);
+}
+
+.table {
+    height: 25%;
+    font-size: large;
+    font-family: sans-serif;
+}
+
