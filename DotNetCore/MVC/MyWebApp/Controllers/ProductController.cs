@@ -5,6 +5,7 @@ using System.Data;
 using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyWebApp.Repositories;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MyWebApp.Controllers
 {
@@ -52,20 +53,47 @@ namespace MyWebApp.Controllers
 
         public IActionResult Add()
         {
-            List<ProductColor> productColors = GetColors();
-            ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
 
-            List<ProductSizes> productSizes = GetSizes();
-            ViewBag.productSizes = new SelectList(productSizes, "Id", "Size");
+            SetSelectListColorAndSize();
 
-            return View("Add");
+            return View();
         }
 
         [HttpPost]
         public IActionResult Add(Product product)
         {
-            _productRepository.Add(product);
-            return View("AddSuccess");
+            try
+            {
+                string errormessage = validateProductAddOrUpdate(product);
+                
+                if (!string.IsNullOrEmpty(errormessage))
+                {
+                    ViewBag.errormessage = errormessage;
+
+                    SetSelectListColorAndSize();                    
+                    return View();
+                }
+
+                product.ProductName = product.ProductName.Trim();
+                product.BrandName = product.BrandName.Trim();
+                product.Fabric = product.Fabric.Trim();
+                product.Category = product.Category.Trim();
+
+                if (ModelState.IsValid)
+                {
+                    _productRepository.Add(product);
+                    return View("AddSuccess");
+                }
+                return BadRequest();
+            }
+            catch (Exception ex) 
+            {
+                ModelState.AddModelError("", @"Unable to save changes. 
+                    Try again, and if the problem persists 
+                    see your system administrator.");
+
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         public IActionResult Update()
@@ -76,8 +104,26 @@ namespace MyWebApp.Controllers
         [HttpPost]
         public IActionResult Update(Product product)
         {
-            _productRepository.Update(product);
-            return View("UpdateSuccess");
+            try
+            {
+                string errormessage = validateProductAddOrUpdate(product, true);
+                if (!string.IsNullOrEmpty(errormessage))
+                    return BadRequest(errormessage);
+
+                if (ModelState.IsValid)
+                {
+                    _productRepository.Update(product);
+                }
+                return View("UpdateSuccess");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", @"Unable to save changes. 
+                    Try again, and if the problem persists 
+                    see your system administrator.");
+
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         private List<ProductSizes> GetSizes()
@@ -90,6 +136,50 @@ namespace MyWebApp.Controllers
         {
             List<ProductColor> productColors = _productRepository.GetcolorDetails();
             return (productColors);
+        }
+
+        private void SetSelectListColorAndSize() 
+        {
+            List<ProductColor> productColors = GetColors();
+            ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
+
+            List<ProductSizes> productSizes = GetSizes();
+            ViewBag.productSizes = new SelectList(productSizes, "Id", "Size");
+
+        }
+
+        private string validateProductAddOrUpdate(Product product, bool IsUpdate = false)
+        {
+            string errorMessage = "";
+
+            if (IsUpdate == true)
+            {
+                if (product.Id < 1)
+                    errorMessage = "Product Id Can Not Be Less Then Zero";
+            }
+
+            if (string.IsNullOrEmpty(product.ProductName))
+                errorMessage = "Product Name Can Not Be Blank";
+
+            else if (product.ProductName.Length >= 15)
+                errorMessage = "Product Name Should Be Under 15 Characters";
+
+            else if (string.IsNullOrEmpty(product.BrandName))
+                errorMessage = "Brand Name Can Not Be Blank";
+
+            else if (product.BrandName.Length >= 15)
+                errorMessage = "Brand Name Should Be Under 15 Characters";
+
+            else if (string.IsNullOrEmpty(product.Fit))
+                errorMessage = "Product Fit Can Not Be Blank";
+
+            else if (string.IsNullOrEmpty(product.Fabric))
+                errorMessage = "Product Fabric Can Not Be Blank";
+
+            else if (string.IsNullOrEmpty(product.Category))
+                errorMessage = "Product Category Can Not Be Blank";
+
+            return errorMessage;
         }
     }
 }
