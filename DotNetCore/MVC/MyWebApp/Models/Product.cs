@@ -3,8 +3,25 @@
     public class Product
     {
         public int Id { get; set; }
-        public string ProductName { get; set; }
-        public string BrandName { get; set; }
+
+        public string ProductName;
+        public string BrandName;
+
+
+        //private string fatherName;
+        //public string FatherName
+        //{
+        //    get { return fatherName.Trim(); }
+
+        //    set
+        //    {
+        //        if (!string.IsNullOrEmpty(value))
+        //        {
+        //            fatherName = value.Trim();
+        //        }
+        //    }
+        //}
+
         public int SizeId { get; set; }
         public int ColorId { get; set; }
         public string Fit { get; set; }

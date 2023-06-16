@@ -18,12 +18,25 @@ namespace MyWebApp.Controllers
             _productRepository = productRepository;
         }
 
-        public IActionResult GetAll()
+        public IActionResult Index()
         {
-            List<Product> products = _productRepository.GetAll();
+            List<Product> products = _productRepository.Index();
+
+            string successMessageForAdd = ViewBag.SuccessMessageForAdd;
+            if(!string.IsNullOrEmpty(successMessageForAdd))
+            {
+                ViewBag.SuccessMessageForAdd = successMessageForAdd;
+            }
+
+            string successMessageForUpdate = ViewBag.SuccessMessageForUpdate;
+            if (!string.IsNullOrEmpty(successMessageForUpdate))
+            {
+                ViewBag.SuccessMessageForUpdate = successMessageForUpdate;
+            }
 
             ViewBag.productCount = products.Count;
-            return View(products);
+
+            return View("Index", products);
         }
 
         public IActionResult View(int id)
@@ -53,10 +66,8 @@ namespace MyWebApp.Controllers
 
         public IActionResult Add()
         {
-
-            SetSelectListColorAndSize();
-
-            return View();
+            SetSelectListColorAndSizeinViewBag();
+            return View("Add");
         }
 
         [HttpPost]
@@ -69,8 +80,7 @@ namespace MyWebApp.Controllers
                 if (!string.IsNullOrEmpty(errormessage))
                 {
                     ViewBag.errormessage = errormessage;
-
-                    SetSelectListColorAndSize();                    
+                    SetSelectListColorAndSizeinViewBag();                    
                     return View();
                 }
 
@@ -79,12 +89,11 @@ namespace MyWebApp.Controllers
                 product.Fabric = product.Fabric.Trim();
                 product.Category = product.Category.Trim();
 
-                if (ModelState.IsValid)
-                {
-                    _productRepository.Add(product);
-                    return View("AddSuccess");
-                }
-                return BadRequest();
+                _productRepository.Add(product);
+
+                ViewBag.SuccessMessageForAdd = "Product Add SuccessFul";
+                List<Product> products = _productRepository.Index();
+                return View("Index", products);
             }
             catch (Exception ex) 
             {
@@ -98,7 +107,8 @@ namespace MyWebApp.Controllers
 
         public IActionResult Update()
         {
-            return View("Update");
+            SetSelectListColorAndSizeinViewBag();
+            return View();
         }
 
         [HttpPost]
@@ -106,15 +116,25 @@ namespace MyWebApp.Controllers
         {
             try
             {
-                string errormessage = validateProductAddOrUpdate(product, true);
-                if (!string.IsNullOrEmpty(errormessage))
-                    return BadRequest(errormessage);
+                string errorMessage = validateProductAddOrUpdate(product, true);
 
-                if (ModelState.IsValid)
+                if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    _productRepository.Update(product);
+                    ViewBag.errorMssage = errorMessage;
+                    SetSelectListColorAndSizeinViewBag();
+                    return View();
                 }
-                return View("UpdateSuccess");
+
+                product.ProductName = product.ProductName.Trim();
+                product.BrandName = product.BrandName.Trim();
+                product.Fabric = product.Fabric.Trim();
+                product.Category = product.Category.Trim();
+ 
+                _productRepository.Update(product);
+
+                ViewBag.SuccessMessageForUpdate = "Product Update SuccessFul";
+                List<Product> products = _productRepository.Index();
+                return View("Index", products);
             }
             catch (Exception ex)
             {
@@ -138,7 +158,7 @@ namespace MyWebApp.Controllers
             return (productColors);
         }
 
-        private void SetSelectListColorAndSize() 
+        private void SetSelectListColorAndSizeinViewBag() 
         {
             List<ProductColor> productColors = GetColors();
             ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");

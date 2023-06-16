@@ -13,7 +13,8 @@ namespace MyWebApp.Repositories
             _connectionString = connectionString;
         }
 
-        public List<Product> GetAll()
+        
+        public List<Product> Index()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -52,7 +53,6 @@ namespace MyWebApp.Repositories
                 return products;
             }
         }
-
 
         public Product Get(int id)
         {
