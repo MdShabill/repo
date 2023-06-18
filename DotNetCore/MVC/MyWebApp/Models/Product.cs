@@ -4,8 +4,8 @@
     {
         public int Id { get; set; }
 
-        public string ProductName;
-        public string BrandName;
+        public string ProductName { get; set; }
+        public string BrandName { get; set; }
 
 
         //private string fatherName;

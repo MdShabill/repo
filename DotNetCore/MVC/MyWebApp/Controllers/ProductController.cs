@@ -105,12 +105,6 @@ namespace MyWebApp.Controllers
             }
         }
 
-        public IActionResult Update()
-        {
-            SetSelectListColorAndSizeinViewBag();
-            return View();
-        }
-
         [HttpPost]
         public IActionResult Update(Product product)
         {
