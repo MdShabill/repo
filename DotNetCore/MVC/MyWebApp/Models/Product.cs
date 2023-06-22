@@ -23,13 +23,23 @@
         //}
 
         public int SizeId { get; set; }
+        public string SizeName { get; set; }
+        
         public int ColorId { get; set; }
+        public string ColorName { get; set; }
+
+        //TODO: it should be of enum type
         public string Fit { get; set; }
-        public string Fabric { get; set; }
-        public string Category { get; set; }
+
+        //Add a master table for fabric and treat it with dropdown
+        public string FabricId { get; set; }
+        public string FabricName { get; set; }
+
+        public string CategoryId { get; set; }
+        public string CategoryName { get; set; }
+
         public int Discount { get; set; }
         public int Price { get; set; }
-        public string SizeName { get; set; }
-        public string ColorName { get; set; }
+        
     }
 }

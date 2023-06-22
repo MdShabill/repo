@@ -14,18 +14,20 @@ namespace MyWebApp.Repositories
         }
 
         
-        public List<Product> Index()
+        public List<Product> GetAll()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
                         SELECT 
                             Products.Id, Products.ProductName, Products.BrandName, Products.Fit, 
-                            Products.Fabric, Products.Category, Products.Discount,Products.Price, 
+                            Productfabrics.FabricName, ProductCategories.CategoryName, Products.Discount, Products.Price, 
                             ProductSizes.Size, ProductColors.ColorName 
                         FROM Products
                         Inner Join ProductSizes On Products.SizeId = ProductSizes.Id
                         Inner Join ProductColors On Products.ColorId = ProductColors.Id
+                        Inner Join ProductFabrics On Products.FabricId = ProductFabrics.Id
+                        Inner Join ProductCategories On Products.CategoryId = ProductCategories.Id
                         ";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 DataTable dataTable = new();
@@ -43,8 +45,8 @@ namespace MyWebApp.Repositories
                         SizeName = (string)dataTable.Rows[i]["Size"],
                         ColorName = (string)dataTable.Rows[i]["ColorName"],
                         Fit = (string)dataTable.Rows[i]["Fit"],
-                        Fabric = (string)dataTable.Rows[i]["Fabric"],
-                        Category = (string)dataTable.Rows[i]["Category"],
+                        FabricName = (string)dataTable.Rows[i]["FabricName"],
+                        CategoryName = (string)dataTable.Rows[i]["CategoryName"],
                         Discount = (int)dataTable.Rows[i]["Discount"],
                         Price = (int)dataTable.Rows[i]["Price"],
                     };
@@ -61,11 +63,13 @@ namespace MyWebApp.Repositories
                 string sqlQuery = $@"
                         SELECT 
                             Products.Id, Products.ProductName, Products.BrandName, Products.Fit, 
-                            Products.Fabric, Products.Category, Products.Discount,Products.Price, 
-                            ProductSizes.Size, ProductColors.ColorName 
+                            Productfabrics.FabricName, ProductCategories.CategoryName, Products.Discount, 
+                            Products.Price, ProductSizes.Size, ProductColors.ColorName 
                         FROM Products
                         Inner Join ProductSizes On Products.SizeId = ProductSizes.Id
                         Inner Join ProductColors On Products.ColorId = ProductColors.Id
+                        Inner Join ProductFabrics On Products.FabricId = ProductFabrics.Id
+                        Inner Join ProductCategories On Products.CategoryId = ProductCategories.Id
                         Where 
                             Products.Id = @id";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
@@ -81,8 +85,8 @@ namespace MyWebApp.Repositories
                     SizeName = (string)dataTable.Rows[0]["Size"],
                     ColorName = (string)dataTable.Rows[0]["ColorName"],
                     Fit = (string)dataTable.Rows[0]["Fit"],
-                    Fabric = (string)dataTable.Rows[0]["Fabric"],
-                    Category = (string)dataTable.Rows[0]["Category"],
+                    FabricName = (string)dataTable.Rows[0]["FabricName"],
+                    CategoryName = (string)dataTable.Rows[0]["CategoryName"],
                     Discount = (int)dataTable.Rows[0]["Discount"],
                     Price = (int)dataTable.Rows[0]["Price"],
                 };
@@ -90,7 +94,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<ProductSizes> GetSizesDetails()
+        public List<ProductSizes> GetSizes()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -114,7 +118,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        List<ProductColor> IProductRepository.GetcolorDetails()
+        List<ProductColor> IProductRepository.GetColor()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -138,6 +142,54 @@ namespace MyWebApp.Repositories
             }
         }
 
+        public List<ProductFabric> GetFabric()
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = "SELECT Id, FabricName FROM ProductFabrics";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<ProductFabric> productFabrics = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    ProductFabric productFabric = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        FabricName = (string)dataTable.Rows[i]["FabricName"]
+                    };
+                    productFabrics.Add(productFabric);
+                }
+                return productFabrics;
+            }
+        }
+
+        public List<ProductCategory> GetCategory()
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = "SELECT Id, CategoryName FROM ProductCategories";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<ProductCategory> ProductCategories = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    ProductCategory ProductCategory = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        CategoryName = (string)dataTable.Rows[i]["CategoryName"]
+                    };
+                    ProductCategories.Add(ProductCategory);
+                }
+                return ProductCategories;
+            }
+        }
+
         public void Delete(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
@@ -157,18 +209,18 @@ namespace MyWebApp.Repositories
             {
                 string sqlQuery = @"INSERT INTO Products
                     (ProductName, BrandName, SizeId, ColorId, 
-                     Fit, Fabric, Category, Discount, Price)
+                     Fit, FabricId, CategoryId, Discount, Price)
                      VALUES 
                     (@ProductName, @BrandName, @SizeId, @ColorId, 
-                     @Fit, @Fabric, @Category, @Discount, @Price) ";
+                     @Fit, @FabricId, @CategoryId, @Discount, @Price) ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@ProductName", product.ProductName);
                 sqlCommand.Parameters.AddWithValue("@BrandName", product.BrandName);
                 sqlCommand.Parameters.AddWithValue("@SizeId", product.SizeId);
                 sqlCommand.Parameters.AddWithValue("@ColorId", product.ColorId);
                 sqlCommand.Parameters.AddWithValue("@Fit", product.Fit);
-                sqlCommand.Parameters.AddWithValue("@Fabric", product.Fabric);
-                sqlCommand.Parameters.AddWithValue("@Category", product.Category);
+                sqlCommand.Parameters.AddWithValue("@FabricId", product.FabricId);
+                sqlCommand.Parameters.AddWithValue("@CategoryId", product.CategoryId);
                 sqlCommand.Parameters.AddWithValue("@Discount", product.Discount);
                 sqlCommand.Parameters.AddWithValue("@Price", product.Price);
                 sqlConnection.Open();
@@ -184,7 +236,7 @@ namespace MyWebApp.Repositories
                 string sqlQuery = @" UPDATE Products Set 
                    ProductName = @ProductName, BrandName = @BrandName,
                    SizeId = @SizeId, ColorId = @ColorId, Fit = @Fit, 
-                   Fabric = @Fabric, Category = @Category,
+                   FabricId = @FabricId, CategoryId = @CategoryId,
                    Discount = @Discount, Price = @Price
                    WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
@@ -194,8 +246,8 @@ namespace MyWebApp.Repositories
                 sqlCommand.Parameters.AddWithValue("@SizeId", product.SizeId);
                 sqlCommand.Parameters.AddWithValue("@ColorId", product.ColorId);
                 sqlCommand.Parameters.AddWithValue("@Fit", product.Fit);
-                sqlCommand.Parameters.AddWithValue("@Fabric", product.Fabric);
-                sqlCommand.Parameters.AddWithValue("@Category", product.Category);
+                sqlCommand.Parameters.AddWithValue("@FabricId", product.FabricId);
+                sqlCommand.Parameters.AddWithValue("@CategoryId", product.CategoryId);
                 sqlCommand.Parameters.AddWithValue("@Discount", product.Discount);
                 sqlCommand.Parameters.AddWithValue("@Price", product.Price);
                 sqlConnection.Open();

@@ -8,16 +8,23 @@ var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .Build();
 
+
 string ECommerceDBConnectionString = configuration.GetConnectionString("ECommerceDBConnection");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
 builder.Services.AddTransient<IProductRepository>((svc) =>
 {
     return new ProductRepository(ECommerceDBConnectionString);
 });
 
-var app = builder.Build();
+builder.Services.AddTransient<ICustomerRepository>((svc) =>
+{
+    return new CustomerRepository(ECommerceDBConnectionString);
+});
+
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

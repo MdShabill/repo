@@ -2,161 +2,142 @@
 using MyWebApp.Models;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using Microsoft.Identity.Client;
+using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using MyWebApp.Repositories;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MyWebApp.Controllers
 {
     public class CustomerController : Controller
     {
-        public readonly IConfiguration _Configuration;
-        SqlConnection sqlConnection;
+        ICustomerRepository _customerRepository;
 
-        public CustomerController(IConfiguration configuration)
+        public CustomerController(ICustomerRepository customerRepository)
         {
-            _Configuration = configuration;
-            sqlConnection = new(_Configuration.GetConnectionString("EcommerceDBConnection").ToString());
+            _customerRepository = customerRepository;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
+            List<Customer> customers = _customerRepository.GetAll();
+
+            string successMessageForAdd = ViewBag.SuccessMessageForAdd;
+            if (!string.IsNullOrEmpty(successMessageForAdd))
+            {
+                ViewBag.SuccessMessageForAdd = successMessageForAdd;
+            }
+
+            string successMessageForUpdate = ViewBag.SuccessMessageForUpdate;
+            if (!string.IsNullOrEmpty(successMessageForAdd))
+            {
+                ViewBag.SuccessMessageForUpdate = successMessageForUpdate;
+            }
+
+            ViewBag.customerCount = customers.Count;
+            return View("Index", customers);
+        }
+
+        [HttpGet]
+        public IActionResult View(int Id)
+        {
+            Customer customer = _customerRepository.Get(Id);
+            return View(customer);
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int Id)
+        {
+            Customer Customer = _customerRepository.Get(Id);
+            return View(Customer);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            _customerRepository.Delete(id);
             return View();
         }
 
         [HttpGet]
         public IActionResult Register()
         {
-            return View("Register");
+            return View();
         }
 
         [HttpPost]
         public IActionResult Register(Customer customer)
         {
-            string sqlQuery = @"INSERT INTO Customers
-                   (FirstName, LastName, Gender, 
-                    Email, Age, Mobile)
-                    VALUES 
-                   (@FirstName, @LastName, @Gender, 
-                    @Email, @Age, @Mobile)";
-            SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@FirstName", customer.FirstName);
-            sqlCommand.Parameters.AddWithValue("@LastName", customer.LastName);
-            sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
-            sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
-            sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
-            sqlCommand.Parameters.AddWithValue("@Mobile", customer.Mobile);
-            sqlConnection.Open();
-            sqlCommand.ExecuteNonQuery();
-            sqlConnection.Close();
+            string errorMessage = validateCustomerRegisterOrUpdate(customer, true);
 
-            return View("RegisterSuccess");
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                ViewBag.errorMssage = errorMessage;
+            }
+
+            _customerRepository.Register(customer);
+
+            ViewBag.SuccessMessageForAdd = "Customer Register SuccessFul";
+            List<Customer> customers = _customerRepository.GetAll();
+            return View("Index", customers);
         }
 
         [HttpPost]
-        public IActionResult Update(Customer customer) 
+        public IActionResult Update(Customer customer)
         {
-            string sqlQuery = @" UPDATE Customers SET 
-                   FirstName = @FirstName, 
-                   LastName = @LastName, 
-                   Gender = @Gender, 
-                   Email = @Email, 
-                   Age = @Age, 
-                   Mobile = @Mobile
-                   WHERE Id = @Id ";
-            SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@Id", customer.Id);
-            sqlCommand.Parameters.AddWithValue("@FirstName", customer.FirstName);
-            sqlCommand.Parameters.AddWithValue("@LastName", customer.LastName);
-            sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
-            sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
-            sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
-            sqlCommand.Parameters.AddWithValue("@Mobile", customer.Mobile);
-            sqlConnection.Open();
-            sqlCommand.ExecuteNonQuery();
-            sqlConnection.Close();
-            
-            return View("UpdateSuccess");
-        }
+            string errorMessage = validateCustomerRegisterOrUpdate(customer, true);
 
-        [HttpGet]
-        public IActionResult GetAllCustomers() 
-        {
-            SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Customers", sqlConnection);
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
-            
-            List<Customer> customers = new();
-            
-            for (int i = 0; i < dataTable.Rows.Count; i++)
+            if (!string.IsNullOrEmpty(errorMessage))
             {
-                Customer customer = new()
-                {
-                    Id = (int)dataTable.Rows[i]["Id"],
-                    FirstName = (string)dataTable.Rows[i]["FirstName"],
-                    LastName = (string)dataTable.Rows[i]["LastName"],
-                    Gender = (int)dataTable.Rows[i]["Gender"],
-                    Email = (string)dataTable.Rows[i]["Email"],
-                    Age = (int)dataTable.Rows[i]["Age"],
-                    Mobile = Convert.ToString(dataTable.Rows[i]["Mobile"]),
-                };
-                customers.Add(customer);
+                ViewBag.errorMssage = errorMessage;
             }
-            ViewBag.customerCount = customers.Count;
-            return View("GetAllCustomers", customers);
+
+            _customerRepository.Update(customer);
+
+            ViewBag.SuccessMessageForUpdate = "Customer Update SuccessFul";
+            List<Customer> customers = _customerRepository.GetAll();
+            return View("Index", customers);
         }
 
-        [HttpGet]
-        public IActionResult View(int Id)
+        private string validateCustomerRegisterOrUpdate(Customer customer, bool IsUpdate = false)
         {
-            SqlDataAdapter sqlDataAdapter = new($"SELECT * FROM Customers Where Id = @id", sqlConnection);
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@Id", Id);
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
+            string errorMessage = "";
 
-            Customer customer = new()
+            if (IsUpdate == true)
             {
-                Id = (int)dataTable.Rows[0]["Id"],
-                FirstName = (string)dataTable.Rows[0]["FirstName"],
-                LastName = (string)dataTable.Rows[0]["LastName"],
-                Gender = (int)dataTable.Rows[0]["Gender"],
-                Email = (string)dataTable.Rows[0]["Email"],
-                Age = (int)dataTable.Rows[0]["Age"],
-                Mobile = (string)dataTable.Rows[0]["Mobile"],
-            };
-            return View("View", customer);
-        }
+                if (customer.Id < 1)
+                    errorMessage = "Customer Id Can Not Be Less Then Zero";
+            }
 
-        [HttpGet]
-        public IActionResult Edit(int Id)
-        {
-            SqlDataAdapter sqlDataAdapter = new($"SELECT * FROM Customers Where Id = @id", sqlConnection);
-            sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@Id", Id);
-            DataTable dataTable = new();
-            sqlDataAdapter.Fill(dataTable);
+            if (string.IsNullOrEmpty(customer.FirstName))
+                errorMessage = "Customer First Name Can Not Be Blank";
 
-            Customer customer = new()
-            {
-                Id = (int)dataTable.Rows[0]["Id"],
-                FirstName = (string)dataTable.Rows[0]["FirstName"],
-                LastName = (string)dataTable.Rows[0]["LastName"],
-                Gender = (int)dataTable.Rows[0]["Gender"],
-                Email = (string)dataTable.Rows[0]["Email"],
-                Age = (int)dataTable.Rows[0]["Age"],
-                Mobile = (string)dataTable.Rows[0]["Mobile"],
-            };
-            return View("Edit", customer);
-        }
+            else if (customer.FirstName.Length >= 15)
+                errorMessage = "Customer First Name Should Be Under 15 Characters";
 
-        [HttpGet]
-        public IActionResult Delete(int id) 
-        {
-            string deleteQuery = "Delete From Customers Where Id = @Id";
-            SqlCommand sqlCommand = new(deleteQuery, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@Id", id);
-            sqlConnection.Open();
-            sqlCommand.ExecuteNonQuery();
-            sqlConnection.Close();
-        
-            return View ("DeleteSuccess");
+            else if (string.IsNullOrEmpty(customer.LastName))
+                errorMessage = "customer Last Name Can Not Be Blank";
+
+            else if (customer.LastName.Length >= 15)
+                errorMessage = "Customer Last Name Should Be Under 15 Characters";
+
+            else if (customer.Gender == 0)
+                errorMessage = "Customer Gender Can Not Be Zero";
+
+            else if (string.IsNullOrEmpty(customer.Email))
+                errorMessage = "Customer Email Can Not Be Blank";
+
+            else if (customer.Age > 18)
+                errorMessage = "Customer Age Should Be Above 18 years";
+
+            else if (string.IsNullOrEmpty(customer.Mobile))
+                errorMessage = "customer Mobile Can Not Be Blank";
+
+            else if (customer.Mobile.Length != 10)
+                errorMessage = "Customer Mobile Number must Be Exactly 10 Digits";
+
+            return errorMessage;
         }
-    }  
+    }    
 }

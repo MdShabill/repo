@@ -13,6 +13,9 @@
         <form asp-action="Register">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+            <span class="text-danger"><b>@ViewBag.errormessage</b></span>
+            <br /><br />
+
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
@@ -51,7 +54,7 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
                 
-                <a href="http://localhost:5277/Customer/GetAllCustomers"> Cancel </a>
+                <a href="http://localhost:5277/Customer/Index"> Cancel </a>
             </div>
         </form>
     </div>

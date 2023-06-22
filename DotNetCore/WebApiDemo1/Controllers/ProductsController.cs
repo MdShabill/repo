@@ -100,7 +100,7 @@ namespace WebApplication1.Controllers
             if (string.IsNullOrWhiteSpace(brandName))
                 return BadRequest("BrandName can not be blank");
 
-            if (brandName.Length < 3 || brandName.Length > 30)
+            if (brandName.Length != 10)
                 return BadRequest("BrandName should be between 3 and 30 characters.");
 
             if (price < 600)

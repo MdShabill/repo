@@ -1,0 +1,177 @@
+﻿@model List<MyWebApp.Models.Customer>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<html>
+<head>
+    <title>Customer Table</title>
+</head>
+<br />
+<h1><span class="blue">&lt;</span>Customer<span class="blue">&gt;</span> <span class="yellow">Table</pan></h1>
+<br />
+<br />
+<span class="text-success"> <b> @ViewBag.SuccessMessageForAdd </b> </span>
+<br />
+<span class="text-success"> <b> @ViewBag.SuccessMessageForUpdate </b> </span>
+<br />
+<div>
+    <a href="http://localhost:5277/Customer/Register"> Register </a>
+</div>
+<br/>
+<label>Total Customers:</label>  @ViewBag.customerCount
+<br/>
+<style>
+    body {
+        font-family: 'Open Sans', sans-serif;
+        font-weight: 300;
+        line-height: 1.42em;
+        color: #A7A1AE;
+        background-color: aliceblue;
+    }
+
+    h1 {
+        font-size: 3em;
+        font-weight: 300;
+        line-height: 1em;
+        text-align: center;
+        color: #4DC3FA;
+    }
+
+    h2 {
+        font-size: 1em;
+        font-weight: 300;
+        text-align: center;
+        display: block;
+        line-height: 1em;
+        padding-bottom: 2em;
+        color: #FB667A;
+    }
+
+        h2 a {
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #FB667A;
+            text-decoration: none;
+        }
+
+    .blue {
+        color: #185875;
+    }
+
+    .yellow {
+        color: #FFF842;
+    }
+
+    .container th h1 {
+        font-weight: bold;
+        font-size: 1em;
+        text-align: left;
+        color: #185875;
+    }
+
+    .container td {
+        font-weight: normal;
+        font-size: 1em;
+        -webkit-box-shadow: 0 2px 2px -2px #0E1119;
+        -moz-box-shadow: 0 2px 2px -2px #0E1119;
+        box-shadow: 0 2px 2px -2px #0E1119;
+    }
+
+    .container {
+        text-align: left;
+        overflow: hidden;
+        width: 80%;
+        margin: 0 auto;
+        display: table;
+        padding: 0 0 8em 0;
+    }
+
+        .container td, .container th {
+            padding-bottom: 2%;
+            padding-top: 2%;
+            padding-left: 2%;
+        }
+
+    / Background-color of the odd rows /
+    .container tr:nth-child(odd) {
+        background-color: aliceblue;
+    }
+
+    / Background-color of the even rows /
+    .container tr:nth-child(even) {
+        background-color: aliceblue;
+    }
+
+    .container th {
+        background-color: aliceblue;
+    }
+
+    .container td:first-child {
+        color: #FB667A;
+    }
+
+    .container tr:hover {
+        background-color: aliceblue;
+        -webkit-box-shadow: 0 6px 6px -6px #0E1119;
+        -moz-box-shadow: 0 6px 6px -6px #0E1119;
+        box-shadow: 0 6px 6px -6px #0E1119;
+    }
+
+    .container td:hover {
+        background-color: #FFF842;
+        color: #403E10;
+        font-weight: bold;
+        box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px;
+        transform: translate3d(6px, -6px, 0);
+        transition-delay: 0s;
+        transition-duration: 0.4s;
+        transition-property: all;
+        transition-timing-function: line;
+    }
+
+    media (max-width: 800px) {
+        .container td:nth-child(4), .container th:nth-child(4)
+
+    {
+        display: none;
+    }
+
+    }
+</style>
+
+<body>
+    <form>
+        <table border="3px" class="table">
+            <tr class="table1">
+                <td><b>First Name</b></td>
+                <td><b>Last Name</b></td>
+                <td><b>Gender</b></td>
+                <td><b>Email</b></td>
+                <td><b>Age</b></td>
+                <td><b>Mobile</b></td>
+                <td><b>Actions</b></td>
+            </tr> 
+    
+            @foreach(Customer customer in Model)
+            {
+                <tr class="table1">
+                    <td><a href="http://localhost:5277/Customer/View/@customer.Id"><b>@customer.FirstName</b></a></td>
+                            <td><b>@customer.LastName</b></td>
+                            <td><b>@customer.Gender</b></td>
+                            <td><b>@customer.Email</b></td>
+                            <td><b>@customer.Age</b></td>
+                            <td><b>@customer.Mobile</b></td>
+                            <td> @Html.ActionLink("Please Edit", "Edit", new { id = customer.Id }) |
+                            @Html.ActionLink("Delete Me", "Delete", new { id = customer.Id }) </td>
+                </tr>
+            }
+        </table>
+    </form>
+</body>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+</html>

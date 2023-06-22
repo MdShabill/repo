@@ -20,7 +20,7 @@ namespace MyWebApp.Controllers
 
         public IActionResult Index()
         {
-            List<Product> products = _productRepository.Index();
+            List<Product> products = _productRepository.GetAll();
 
             string successMessageForAdd = ViewBag.SuccessMessageForAdd;
             if(!string.IsNullOrEmpty(successMessageForAdd))
@@ -41,6 +41,12 @@ namespace MyWebApp.Controllers
 
         public IActionResult View(int id)
         {
+            //ProductRepository productRepository = new();
+
+            //var productRepository1 = new ProductRepository();
+
+            //productRepository1.Get()
+
             Product product = _productRepository.Get(id);
             return View(product);
         }
@@ -49,11 +55,17 @@ namespace MyWebApp.Controllers
         {
             Product product = _productRepository.Get(id);
 
-            List<ProductSizes> productSizes = GetSizes();
-            ViewBag.productSizes = new SelectList(productSizes, "Id", "Size");
+            //List<ProductSizes> productSizes = GetSizes();
+            ViewBag.productSizes = new SelectList(GetSizes(), "Id", "Size");
 
-            List<ProductColor> productColors = GetColors();
-            ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
+            //List<ProductColor> productColors = GetColors();
+            ViewBag.ProductColors = new SelectList(GetColors(), "Id", "ColorName");
+
+            //List<ProductFabric> productFabrics = GetFabric();
+            ViewBag.ProductFabrics = new SelectList(GetFabric(), "Id", "FabricName");
+
+            //List<ProductCategory> ProductCategories = GetCategory();
+            ViewBag.ProductCategories = new SelectList(GetCategory(), "Id", "CategoryName");
 
             return View(product);
         }
@@ -61,12 +73,12 @@ namespace MyWebApp.Controllers
         public IActionResult Delete(int id)
         {
             _productRepository.Delete(id);
-            return View("DeleteSuccess");
+            return View();
         }
 
         public IActionResult Add()
         {
-            SetSelectListColorAndSizeinViewBag();
+            SetAllDropdownItemsInViewBag();
             return View("Add");
         }
 
@@ -80,19 +92,17 @@ namespace MyWebApp.Controllers
                 if (!string.IsNullOrEmpty(errormessage))
                 {
                     ViewBag.errormessage = errormessage;
-                    SetSelectListColorAndSizeinViewBag();                    
+                    SetAllDropdownItemsInViewBag();                    
                     return View();
                 }
 
                 product.ProductName = product.ProductName.Trim();
                 product.BrandName = product.BrandName.Trim();
-                product.Fabric = product.Fabric.Trim();
-                product.Category = product.Category.Trim();
 
                 _productRepository.Add(product);
 
-                ViewBag.SuccessMessageForAdd = "Product Add SuccessFul";
-                List<Product> products = _productRepository.Index();
+                ViewBag.SuccessMessageForAdd = "Product Add Successful";
+                List<Product> products = _productRepository.GetAll  ();
                 return View("Index", products);
             }
             catch (Exception ex) 
@@ -100,7 +110,6 @@ namespace MyWebApp.Controllers
                 ModelState.AddModelError("", @"Unable to save changes. 
                     Try again, and if the problem persists 
                     see your system administrator.");
-
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -115,19 +124,17 @@ namespace MyWebApp.Controllers
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
                     ViewBag.errorMssage = errorMessage;
-                    SetSelectListColorAndSizeinViewBag();
+                    SetAllDropdownItemsInViewBag();
                     return View();
                 }
 
                 product.ProductName = product.ProductName.Trim();
                 product.BrandName = product.BrandName.Trim();
-                product.Fabric = product.Fabric.Trim();
-                product.Category = product.Category.Trim();
- 
+                
                 _productRepository.Update(product);
 
                 ViewBag.SuccessMessageForUpdate = "Product Update SuccessFul";
-                List<Product> products = _productRepository.Index();
+                List<Product> products = _productRepository.GetAll();
                 return View("Index", products);
             }
             catch (Exception ex)
@@ -142,24 +149,41 @@ namespace MyWebApp.Controllers
 
         private List<ProductSizes> GetSizes()
         {
-            List<ProductSizes> productSizes = _productRepository.GetSizesDetails();
+            List<ProductSizes> productSizes = _productRepository.GetSizes();
             return (productSizes);
         }
 
         private List<ProductColor> GetColors()
         {
-            List<ProductColor> productColors = _productRepository.GetcolorDetails();
+            List<ProductColor> productColors = _productRepository.GetColor();
             return (productColors);
         }
 
-        private void SetSelectListColorAndSizeinViewBag() 
+        private List<ProductFabric> GetFabric()
         {
-            List<ProductColor> productColors = GetColors();
-            ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
+            List<ProductFabric> productFabrics = _productRepository.GetFabric();
+            return (productFabrics);
+        }
 
-            List<ProductSizes> productSizes = GetSizes();
-            ViewBag.productSizes = new SelectList(productSizes, "Id", "Size");
+        private List<ProductCategory> GetCategory()
+        {
+            List<ProductCategory> ProductCategories = _productRepository.GetCategory();
+            return (ProductCategories);
+        }
 
+        private void SetAllDropdownItemsInViewBag() 
+        {
+            //List<ProductColor> productColors = GetColors();
+            ViewBag.ProductColors = new SelectList(GetColors(), "Id", "ColorName");
+
+            //List<ProductSizes> productSizes = GetSizes();
+            ViewBag.productSizes = new SelectList(GetSizes(), "Id", "Size");
+
+            //List<ProductFabric> productFabrics = GetFabric();
+            ViewBag.ProductFabrics = new SelectList(GetFabric(), "Id", "FabricName");
+
+            //List<ProductCategory> ProductCategories = GetCategory();
+            ViewBag.ProductCategories = new SelectList(GetCategory(), "Id", "CategoryName");
         }
 
         private string validateProductAddOrUpdate(Product product, bool IsUpdate = false)
@@ -186,12 +210,6 @@ namespace MyWebApp.Controllers
 
             else if (string.IsNullOrEmpty(product.Fit))
                 errorMessage = "Product Fit Can Not Be Blank";
-
-            else if (string.IsNullOrEmpty(product.Fabric))
-                errorMessage = "Product Fabric Can Not Be Blank";
-
-            else if (string.IsNullOrEmpty(product.Category))
-                errorMessage = "Product Category Can Not Be Blank";
 
             return errorMessage;
         }
