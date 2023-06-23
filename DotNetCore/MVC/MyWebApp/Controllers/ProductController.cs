@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyWebApp.Repositories;
 using Microsoft.IdentityModel.Tokens;
+using MyWebApp.Enums;
 
 namespace MyWebApp.Controllers
 {
@@ -32,6 +33,12 @@ namespace MyWebApp.Controllers
             if (!string.IsNullOrEmpty(successMessageForUpdate))
             {
                 ViewBag.SuccessMessageForUpdate = successMessageForUpdate;
+            }
+
+            string successMessageForDelete = ViewBag.SuccessMessageForDelete;
+            if (!string.IsNullOrEmpty(successMessageForDelete))
+            {
+                ViewBag.SuccessMessageForDelete = successMessageForDelete;
             }
 
             ViewBag.productCount = products.Count;
@@ -73,7 +80,10 @@ namespace MyWebApp.Controllers
         public IActionResult Delete(int id)
         {
             _productRepository.Delete(id);
-            return View();
+
+            ViewBag.SuccessMessageForDelete = "Product Delete Successful";
+            List<Product> products = _productRepository.GetAll();
+            return View("Index", products);
         }
 
         public IActionResult Add()
@@ -208,8 +218,8 @@ namespace MyWebApp.Controllers
             else if (product.BrandName.Length >= 15)
                 errorMessage = "Brand Name Should Be Under 15 Characters";
 
-            else if (string.IsNullOrEmpty(product.Fit))
-                errorMessage = "Product Fit Can Not Be Blank";
+            else if (!Enum.IsDefined(typeof(FitType), product.Fit))
+                errorMessage = "Invalid Product Fiting";
 
             return errorMessage;
         }

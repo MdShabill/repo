@@ -35,6 +35,12 @@ namespace MyWebApp.Controllers
                 ViewBag.SuccessMessageForUpdate = successMessageForUpdate;
             }
 
+            string successMessageForDelete = ViewBag.SuccessMessageForDelete;
+            if (!string.IsNullOrEmpty(successMessageForDelete))
+            {
+                ViewBag.SuccessMessageForDelete = successMessageForDelete;
+            }
+
             ViewBag.customerCount = customers.Count;
             return View("Index", customers);
         }
@@ -57,7 +63,10 @@ namespace MyWebApp.Controllers
         public IActionResult Delete(int id)
         {
             _customerRepository.Delete(id);
-            return View();
+
+            ViewBag.SuccessMessageForDelete = "Customer Delete SuccessFul";
+            List<Customer> customers = _customerRepository.GetAll();
+            return View("Index", customers);
         }
 
         [HttpGet]

@@ -1,6 +1,7 @@
 ﻿using MyWebApp.Models;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using MyWebApp.Enums;
 
 namespace MyWebApp.Repositories
 {
@@ -44,7 +45,7 @@ namespace MyWebApp.Repositories
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         SizeName = (string)dataTable.Rows[i]["Size"],
                         ColorName = (string)dataTable.Rows[i]["ColorName"],
-                        Fit = (string)dataTable.Rows[i]["Fit"],
+                        Fit = (FitType)dataTable.Rows[i]["Fit"],
                         FabricName = (string)dataTable.Rows[i]["FabricName"],
                         CategoryName = (string)dataTable.Rows[i]["CategoryName"],
                         Discount = (int)dataTable.Rows[i]["Discount"],
@@ -84,7 +85,7 @@ namespace MyWebApp.Repositories
                     BrandName = (string)dataTable.Rows[0]["BrandName"],
                     SizeName = (string)dataTable.Rows[0]["Size"],
                     ColorName = (string)dataTable.Rows[0]["ColorName"],
-                    Fit = (string)dataTable.Rows[0]["Fit"],
+                    Fit = (FitType)dataTable.Rows[0]["Fit"],
                     FabricName = (string)dataTable.Rows[0]["FabricName"],
                     CategoryName = (string)dataTable.Rows[0]["CategoryName"],
                     Discount = (int)dataTable.Rows[0]["Discount"],

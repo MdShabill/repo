@@ -1,4 +1,6 @@
-﻿namespace MyWebApp.Models
+﻿using MyWebApp.Enums;
+
+namespace MyWebApp.Models
 {
     public class Product
     {
@@ -29,7 +31,7 @@
         public string ColorName { get; set; }
 
         //TODO: it should be of enum type
-        public string Fit { get; set; }
+        public FitType Fit { get; set; }
 
         //Add a master table for fabric and treat it with dropdown
         public string FabricId { get; set; }
