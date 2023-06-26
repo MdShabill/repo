@@ -24,6 +24,11 @@ builder.Services.AddTransient<ICustomerRepository>((svc) =>
     return new CustomerRepository(ECommerceDBConnectionString);
 });
 
+builder.Services.AddTransient<IEmployeeRepository>((svc) =>
+{
+    return new EmployeeRepository(ECommerceDBConnectionString);
+});
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.

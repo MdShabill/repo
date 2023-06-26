@@ -1,0 +1,40 @@
+﻿@model MyWebApp.Models.Employee
+
+<h4>Employee</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Add">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                
+                <label for="FullName" class="control-label">Full Name</label>
+                <input type="Text" id="FullName" name="FullName" class="form-control" new { required="required" } />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            
+            </div>
+            
+        </br>
+            
+            <div class="form-group">
+
+                <label for="FatherName" class="control-label">Father's Name</label>
+                <input type="Text" id="FatherName" name="FatherName" class="form-control" new { required="required" } />
+                <span asp-validation-for="FatherName" class="text-danger"></span>
+
+            </div>
+
+        </br>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back To Home</a>
+</div>
+

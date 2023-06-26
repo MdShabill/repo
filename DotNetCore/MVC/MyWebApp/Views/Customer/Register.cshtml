@@ -27,13 +27,18 @@
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
-
+            <br/>
             <div class="form-group">
-                <label asp-for="Gender" class="control-label"></label>
-                <input asp-for="Gender" class="form-control" />
-                <span asp-validation-for="Gender" class="text-danger"></span>
+            <label>
+                Gender:
+            </label><br />
+                @Html.RadioButtonFor(model => model.Gender, "Male") Male
+                @Html.RadioButtonFor(model => model.Gender, "Female") Female
+                @Html.RadioButtonFor(model => model.Gender, "Transgender") Transgender
+                @Html.RadioButtonFor(model => model.Gender, "Others") Others
+                @Html.ValidationMessageFor(model => model.Gender)
             </div>
-
+            <br/>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
