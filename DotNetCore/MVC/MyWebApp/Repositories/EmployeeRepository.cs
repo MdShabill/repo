@@ -18,12 +18,13 @@ namespace MyWebApp.Repositories
             using(SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"INSERT INTO Employees1
-                    (FullName, FatherName)
+                    (FullName, FatherName, Email)
                      VALUES 
-                    (@FullName, @FatherName) ";
+                    (@FullName, @FatherName, @Email) ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@FullName", employee.FullName);
                 sqlCommand.Parameters.AddWithValue("@FatherName", employee.FatherName);
+                sqlCommand.Parameters.AddWithValue("@Email", employee.Email);
                 sqlConnection.Open();
                 sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
