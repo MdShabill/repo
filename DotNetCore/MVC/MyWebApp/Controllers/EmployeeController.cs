@@ -13,28 +13,34 @@ namespace MyWebApp.Controllers
             _employeeRepository = employeeRepository;
         }
 
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
+        public IActionResult Index()
+        {
+            List<Employee> employees = _employeeRepository.GetAll();
+
+            string successMessageForAdd = ViewBag.SuccessMessageForAdd;
+            if (!string.IsNullOrEmpty(successMessageForAdd))
+            {
+                ViewBag.SuccessMessageForAdd = successMessageForAdd;
+            }
+
+            return View("Index", employees);
+        }
 
         public IActionResult Add()
         {
+            //ViewBag
             return View();
         }
 
         [HttpPost]
         public IActionResult Add(Employee employee) 
         {
+            _employeeRepository.Add(employee);
 
-            if (ModelState.IsValid)
-            {
-                _employeeRepository.Add(employee);
+            ViewBag.SuccessMessageForAdd = "Employee Add Successful";
+            List<Employee> employees = _employeeRepository.GetAll();
 
-                return View();
-
-            }
-            return View();
+            return View("index", employees);
         }
     }
 }

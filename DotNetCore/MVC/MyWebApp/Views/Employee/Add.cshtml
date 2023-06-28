@@ -9,7 +9,7 @@
 
             <div class="form-group">
                 
-                <label for="FullName" class="control-label">Full Name</label>
+                <label class="control-label">Full Name</label>
                 <input type="Text" id="FullName" name="FullName" class="form-control" new { required="required" } />
                 <span asp-validation-for="FullName" class="text-danger"></span>
             
@@ -37,6 +37,30 @@
         </br>
 
             <div class="form-group">
+
+                <tr>
+                    <td><b>Country:</b></td>
+                    <td>  
+                        @*Country dropdown hard coded approach*@
+                        <select id="CountryId" name="CountryId">
+                            <option> Select </option>
+                            <option value="1">India</option>
+                            <option value="2">Canada</option>
+                            <option value="3">Japan</option>
+                            <option value="4">Australia</option>
+                            <option value="5">Pakistan</option>
+                            <option value="6">Afghanistan</option>
+                            <option value="7">United State</option>
+                            <option value="8">United Kingdom</option>
+                        </select>
+                    </td>
+                </tr>
+
+            </div>
+
+        </br>
+
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
@@ -44,6 +68,6 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back To Home</a>
+    <a href="http://localhost:5277/Employee/Index"> <b>Back To Home</b> </a>
 </div>
 

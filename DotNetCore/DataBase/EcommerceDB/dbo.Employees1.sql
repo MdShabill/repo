@@ -1,8 +1,9 @@
 CREATE TABLE Employees1
 (
 	Id int IDENTITY(1,1) NOT NULL,
-	FullName NVarchar(200) NOT NULL,
-	FatherName NVarchar(200) NOT NULL,
-	Email NVarchar(200) Not NULL,
+	FullName nvarchar(200) NOT NULL,
+	FatherName nvarchar(200) NOT NULL,
+	Email nvarchar(200) NULL,
+	CountryId int NULL,
     PRIMARY KEY (Id)
 )
