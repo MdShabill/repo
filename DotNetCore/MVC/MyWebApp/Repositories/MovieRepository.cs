@@ -57,7 +57,7 @@ namespace MyWebApp.Repositories
                 sqlCommand.Parameters.AddWithValue("@DirectorName", movie.DirectorName);
                 sqlCommand.Parameters.AddWithValue("@ActorId", movie.ActorId);
                 sqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
+                int effectedRecordCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
             }
         }

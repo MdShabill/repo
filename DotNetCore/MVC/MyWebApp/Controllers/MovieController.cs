@@ -18,11 +18,6 @@ namespace MyWebApp.Controllers
         {
             List<Movie> movies = _movieRepository.GetAll();
 
-            string successMessageForAdd = ViewBag.SuccessMessageForAdd;
-            if (!string.IsNullOrEmpty(successMessageForAdd))
-            {
-                ViewBag.SuccessMessageForAdd = successMessageForAdd;
-            }
             return View("Index", movies);
         }
 
@@ -39,10 +34,10 @@ namespace MyWebApp.Controllers
         {
             _movieRepository.Add(movie);
 
-            ViewBag.SuccessMessageForAdd = "Movie Add Successful";
-            List<Movie> movies = _movieRepository.GetAll();
-
-            return View("Index", movies);
+            //ViewBag.SuccessMessageForAdd = "Movie Add Successful";
+            TempData["SuccessMessageForAdd"] = "Movie Add Successful";
+            
+            return RedirectToAction("Index");
         }
     }
 }
