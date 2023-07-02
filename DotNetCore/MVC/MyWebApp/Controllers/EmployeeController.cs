@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MyWebApp.Models;
 using MyWebApp.Repositories;
 
@@ -28,7 +29,10 @@ namespace MyWebApp.Controllers
 
         public IActionResult Add()
         {
-            //ViewBag
+            List<Qualification> qualifications = _employeeRepository.GetQualification();
+
+            ViewBag.Qualification = new SelectList(qualifications, "Id", "QualificationName");
+           
             return View();
         }
 
@@ -42,5 +46,6 @@ namespace MyWebApp.Controllers
 
             return View("index", employees);
         }
+
     }
 }

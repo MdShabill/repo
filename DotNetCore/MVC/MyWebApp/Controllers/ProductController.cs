@@ -112,7 +112,7 @@ namespace MyWebApp.Controllers
                 _productRepository.Add(product);
 
                 ViewBag.SuccessMessageForAdd = "Product Add Successful";
-                List<Product> products = _productRepository.GetAll  ();
+                List<Product> products = _productRepository.GetAll();
                 return View("Index", products);
             }
             catch (Exception ex) 
@@ -183,8 +183,8 @@ namespace MyWebApp.Controllers
 
         private void SetAllDropdownItemsInViewBag() 
         {
-            //List<ProductColor> productColors = GetColors();
-            ViewBag.ProductColors = new SelectList(GetColors(), "Id", "ColorName");
+            List<ProductColor> productColors = GetColors();
+            ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
 
             //List<ProductSizes> productSizes = GetSizes();
             ViewBag.productSizes = new SelectList(GetSizes(), "Id", "Size");

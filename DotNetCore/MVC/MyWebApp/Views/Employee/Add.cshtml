@@ -61,6 +61,16 @@
         </br>
 
             <div class="form-group">
+                @*Static Approach On Qualification Dropdown *@
+                <label class="control-label">Qualification Name</label>
+                
+                @Html.DropDownListFor(model => model.QualificationId, ViewBag.Qualification as SelectList, "-- Select --", new { @class = "form-control" })
+                
+                @Html.ValidationMessageFor(model => model.QualificationId, "", new { @class = "text-danger" })
+            </div>
+
+        </br>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>

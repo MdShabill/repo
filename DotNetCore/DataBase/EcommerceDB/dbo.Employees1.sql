@@ -7,3 +7,18 @@ CREATE TABLE Employees1
 	CountryId int NULL,
     PRIMARY KEY (Id)
 )
+
+Alter Table Employees1
+Add QualificationId int
+
+
+ALTER TABLE Employees1
+ADD FOREIGN KEY(QualificationId) REFERENCES Qualifications(Id)
+
+
+
+
+
+
+
+

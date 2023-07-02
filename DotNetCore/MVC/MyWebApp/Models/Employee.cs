@@ -10,5 +10,8 @@ namespace MyWebApp.Models
         public string FatherName { get; set; }
         public string Email { get; set; }
         public int CountryId { get; set; }
+
+        public int QualificationId { get; set; }
+        public string QualificationName { get; set; }
     }
 }

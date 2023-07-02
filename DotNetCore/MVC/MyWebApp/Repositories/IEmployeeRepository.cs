@@ -6,5 +6,6 @@ namespace MyWebApp.Repositories
     {
         public List<Employee> GetAll();
         public void Add(Employee employee);
+        public List<Qualification> GetQualification();
     }
 }
