@@ -47,13 +47,10 @@ namespace MyWebApp.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Select 
-                                   Movies.Id, Movies.MovieName, Movies.DirectorName,
-                                   Movies.ActorId, Actors.ActorName
-                                   From Movies
-                                   Inner Join Actors On Movies.ActorId = Actors.Id 
-                                   Where 
-                                   Movies.Id = @Id";
+                string sqlQuery = @"
+                        Select Id, MovieName, DirectorName, ActorId
+                        From Movies
+                        Where Movies.Id = @Id";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
                 DataTable dataTable = new();
@@ -64,7 +61,7 @@ namespace MyWebApp.Repositories
                     Id = (int)dataTable.Rows[0]["Id"],
                     MovieName = (string)dataTable.Rows[0]["MovieName"],
                     DirectorName = (string)dataTable.Rows[0]["DirectorName"],
-                    ActorName = (string)dataTable.Rows[0]["ActorName"],
+                    ActorId = (int)dataTable.Rows[0]["ActorId"],
                 };
                 return movie;
             }
@@ -124,6 +121,27 @@ namespace MyWebApp.Repositories
                 int affectedRecordCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
                 return affectedRecordCount;
+            }
+        }
+
+        public int Update(Movie movie)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @" UPDATE Movies Set 
+                                  MovieName = @MovieName, 
+                                  DirectorName = @DirectorName,
+                                  ActorId = @ActorId
+                                  WHERE Id = @Id ";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@Id", movie.Id);
+                sqlCommand.Parameters.AddWithValue("@MovieName", movie.MovieName);
+                sqlCommand.Parameters.AddWithValue("@DirectorName", movie.DirectorName);
+                sqlCommand.Parameters.AddWithValue("@ActorId", movie.ActorId);
+                sqlConnection.Open();
+                int affectedRowCount = sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+                return affectedRowCount;
             }
         }
 

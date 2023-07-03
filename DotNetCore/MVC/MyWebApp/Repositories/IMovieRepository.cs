@@ -10,6 +10,7 @@ namespace MyWebApp.Repositories
         public List<Actors> GetAllActors();
         public int Delete(int id);
         public int Add(Movie movie);
+        public int Update(Movie movie);
         public List<Actors> GetActorDetails();
     }
 }

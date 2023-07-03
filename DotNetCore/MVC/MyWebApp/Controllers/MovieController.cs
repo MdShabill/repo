@@ -21,24 +21,6 @@ namespace MyWebApp.Controllers
             return View("Index", movies);
         }
 
-        public IActionResult Delete(int id)
-        {
-            int deletedRow = _movieRepository.Delete(id);
-            if (deletedRow > 0)
-            {
-                TempData["SuccessMessageForDelete"] = "Movie Record Delete Successful";
-            }
-            return RedirectToAction("Index");
-        }
-
-        public IActionResult Edit(int id)
-        {
-            Movie movie = _movieRepository.Get(id);
-
-            ViewBag.actors = new SelectList(GetAllActors(), "Id", "ActorName");
-            return View(movie);
-        }
-
         public IActionResult Add() 
         {
             ViewBag.actors = new SelectList(GetAllActors(), "Id", "ActorName");
@@ -53,6 +35,36 @@ namespace MyWebApp.Controllers
             if(affectedRecordCount > 0) 
             {
                 TempData["SuccessMessageForAdd"] = "Movie Add Successful";
+            }
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Edit(int id)
+        {
+            Movie movie = _movieRepository.Get(id);
+
+            ViewBag.actors = new SelectList(GetAllActors(), "Id", "ActorName");
+            return View(movie);
+        }
+
+        [HttpPost]
+        public IActionResult Update(Movie movie) 
+        {
+            int affectedRowCount = _movieRepository.Update(movie);
+
+            if(affectedRowCount > 0) 
+            {
+                TempData["SuccessMessageForUpdate"] = "Movie Update Successful";
+            }
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            int deletedRow = _movieRepository.Delete(id);
+            if (deletedRow > 0)
+            {
+                TempData["SuccessMessageForDelete"] = "Movie Record Delete Successful";
             }
             return RedirectToAction("Index");
         }
