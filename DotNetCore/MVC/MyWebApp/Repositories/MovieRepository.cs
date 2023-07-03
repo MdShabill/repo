@@ -44,7 +44,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public void Add(Movie movie)
+        public int Add(Movie movie)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
@@ -57,8 +57,9 @@ namespace MyWebApp.Repositories
                 sqlCommand.Parameters.AddWithValue("@DirectorName", movie.DirectorName);
                 sqlCommand.Parameters.AddWithValue("@ActorId", movie.ActorId);
                 sqlConnection.Open();
-                int effectedRecordCount = sqlCommand.ExecuteNonQuery();
+                int affectedRecordCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
+                return affectedRecordCount;
             }
         }
 

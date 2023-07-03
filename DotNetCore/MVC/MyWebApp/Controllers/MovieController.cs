@@ -32,11 +32,12 @@ namespace MyWebApp.Controllers
         [HttpPost]
         public IActionResult Add(Movie movie)
         {
-            _movieRepository.Add(movie);
+            int affectedRecordCount =_movieRepository.Add(movie);
 
-            //ViewBag.SuccessMessageForAdd = "Movie Add Successful";
-            TempData["SuccessMessageForAdd"] = "Movie Add Successful";
-            
+            if(affectedRecordCount > 0) 
+            {
+                TempData["SuccessMessageForAdd"] = "Movie Add Successful";
+            }
             return RedirectToAction("Index");
         }
     }
