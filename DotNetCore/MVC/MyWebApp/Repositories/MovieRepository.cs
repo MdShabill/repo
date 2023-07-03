@@ -35,12 +35,76 @@ namespace MyWebApp.Repositories
                         Id = (int)dataTable.Rows[i]["Id"],
                         MovieName = (string)dataTable.Rows[i]["MovieName"],
                         DirectorName = (string)dataTable.Rows[i]["DirectorName"],
-                        ActorId = (int)dataTable.Rows[i]["ActorId"],
                         ActorName = (string)dataTable.Rows[i]["ActorName"],
                     };
                     movies.Add(movie);
                 }
                 return movies;
+            }
+        }
+
+        public Movie Get(int id)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"Select 
+                                   Movies.Id, Movies.MovieName, Movies.DirectorName,
+                                   Movies.ActorId, Actors.ActorName
+                                   From Movies
+                                   Inner Join Actors On Movies.ActorId = Actors.Id 
+                                   Where 
+                                   Movies.Id = @Id";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                Movie movie = new()
+                {
+                    Id = (int)dataTable.Rows[0]["Id"],
+                    MovieName = (string)dataTable.Rows[0]["MovieName"],
+                    DirectorName = (string)dataTable.Rows[0]["DirectorName"],
+                    ActorName = (string)dataTable.Rows[0]["ActorName"],
+                };
+                return movie;
+            }
+        }
+
+        public List<Actors> GetAllActors()
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = "SELECT Id, ActorName FROM Actors";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<Actors> actors = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    Actors actor = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        ActorName = (string)dataTable.Rows[i]["ActorName"]
+                    };
+                    actors.Add(actor);
+                }
+                return actors;
+            }
+        }
+
+        public int Delete(int id)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string deleteQuery = "Delete From Movies Where Id = @id";
+                SqlCommand sqlCommand = new(deleteQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                sqlConnection.Open();
+                int affectedRowCount = sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+                return affectedRowCount;
             }
         }
 

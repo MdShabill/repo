@@ -21,11 +21,27 @@ namespace MyWebApp.Controllers
             return View("Index", movies);
         }
 
+        public IActionResult Delete(int id)
+        {
+            int deletedRow = _movieRepository.Delete(id);
+            if (deletedRow > 0)
+            {
+                TempData["SuccessMessageForDelete"] = "Movie Record Delete Successful";
+            }
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Edit(int id)
+        {
+            Movie movie = _movieRepository.Get(id);
+
+            ViewBag.actors = new SelectList(GetAllActors(), "Id", "ActorName");
+            return View(movie);
+        }
+
         public IActionResult Add() 
         {
-            List<Actors> actors = _movieRepository.GetActorDetails();
-
-            ViewBag.actors = new SelectList(actors, "Id", "ActorName");
+            ViewBag.actors = new SelectList(GetAllActors(), "Id", "ActorName");
             return View();
         }
 
@@ -39,6 +55,12 @@ namespace MyWebApp.Controllers
                 TempData["SuccessMessageForAdd"] = "Movie Add Successful";
             }
             return RedirectToAction("Index");
+        }
+
+        private List<Actors> GetAllActors()
+        {
+            List<Actors> actors = _movieRepository.GetAllActors();
+            return actors;
         }
     }
 }

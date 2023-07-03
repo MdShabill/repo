@@ -11,6 +11,8 @@
 </br>
 @*<span class="text-success"> <b> @ViewBag.SuccessMessageForAdd </b> </span>*@
 <span class="text-success"> <b> @TempData["SuccessMessageForAdd"] </b> </span>
+
+<span class="text-success"> <b> @TempData["SuccessMessageForDelete"] </b> </span>
 <br />
 <div>
     <a href="http://localhost:5277/Movie/Add"> <b>Add</b> </a>
@@ -22,7 +24,8 @@
             <tr class="table1">
                 <td><b>Movie Name</b></td>
                 <td><b>Director Name</b></td>
-                <td><b>Actor Id</b></td>
+                <td><b>Actor Name</b></td>
+                <td><b>Action</b></td>
             </tr>
 
             @foreach (Movie movie in Model)
@@ -30,7 +33,9 @@
                 <tr class="table1">
                     <td><b>@movie.MovieName</b></td>
                     <td><b>@movie.DirectorName</b></td>
-                    <td><b>@movie.ActorId</b></td>
+                    <td><b>@movie.ActorName</b></td>
+                    <td> @Html.ActionLink("Edit", "Edit", new { id = movie.Id })
+                         @Html.ActionLink("Delete", "Delete", new { id = movie.Id }) </td>
                 </tr>
             }
         </table>
