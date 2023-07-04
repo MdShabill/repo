@@ -17,11 +17,12 @@ namespace MyWebApp.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Select 
-                                   Movies.Id, Movies.MovieName, Movies.DirectorName,
-                                   Movies.ActorId, Actors.ActorName
-                                   From Movies
-                                   Inner Join Actors On Movies.ActorId = Actors.Id ";
+                string sqlQuery = @"
+                          Select Movies.Id,
+                          Movies.MovieName, Movies.DirectorName,
+                          Movies.ActorId, Actors.ActorName
+                          From Movies
+                          Inner Join Actors On Movies.ActorId = Actors.Id ";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -48,9 +49,13 @@ namespace MyWebApp.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
-                        Select Id, MovieName, DirectorName, ActorId
-                        From Movies
-                        Where Movies.Id = @Id";
+                            Select Movies.Id,
+                            Movies.MovieName, Movies.DirectorName,
+                            Movies.ActorId, Actors.ActorName
+                            From Movies
+                            Inner Join Actors On Movies.ActorId = Actors.Id
+                            Where 
+                            Movies.Id = @Id";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
                 DataTable dataTable = new();
@@ -62,6 +67,7 @@ namespace MyWebApp.Repositories
                     MovieName = (string)dataTable.Rows[0]["MovieName"],
                     DirectorName = (string)dataTable.Rows[0]["DirectorName"],
                     ActorId = (int)dataTable.Rows[0]["ActorId"],
+                    ActorName = (string)dataTable.Rows[0]["ActorName"],
                 };
                 return movie;
             }
@@ -109,10 +115,11 @@ namespace MyWebApp.Repositories
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"INSERT INTO Movies
-                    (MovieName, DirectorName, ActorId)
-                     VALUES 
-                    (@MovieName, @DirectorName, @ActorId) ";
+                string sqlQuery = @"
+                       INSERT INTO Movies
+                       (MovieName, DirectorName, ActorId)
+                       VALUES 
+                       (@MovieName, @DirectorName, @ActorId) ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@MovieName", movie.MovieName);
                 sqlCommand.Parameters.AddWithValue("@DirectorName", movie.DirectorName);
@@ -128,11 +135,12 @@ namespace MyWebApp.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @" UPDATE Movies Set 
-                                  MovieName = @MovieName, 
-                                  DirectorName = @DirectorName,
-                                  ActorId = @ActorId
-                                  WHERE Id = @Id ";
+                string sqlQuery = @" 
+                          UPDATE Movies Set 
+                          MovieName = @MovieName, 
+                          DirectorName = @DirectorName,
+                          ActorId = @ActorId
+                          WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Id", movie.Id);
                 sqlCommand.Parameters.AddWithValue("@MovieName", movie.MovieName);

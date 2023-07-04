@@ -39,6 +39,12 @@ namespace MyWebApp.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult View(int id)
+        {
+            Movie movie = _movieRepository.Get(id);
+            return View(movie);
+        }
+
         public IActionResult Edit(int id)
         {
             Movie movie = _movieRepository.Get(id);

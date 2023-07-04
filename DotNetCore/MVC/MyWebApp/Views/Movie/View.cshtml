@@ -1,0 +1,55 @@
+﻿@model MyWebApp.Models.Movie
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<html>
+
+<head>
+    <title>Movie View</title>
+</head>
+<style>
+    .heading {
+        background-color: rgb(113, 168, 175);
+        font-family: Verdana;
+    }
+
+    .table {
+        width: 40;
+        height: 25;
+        font-size: large;
+        font-family: sans-serif;
+    }
+</style>
+
+<body>
+    <form>
+
+        <h2 class="heading">
+            Movie View
+        </h2>
+
+        <table class="table">
+            <tr>
+                <td><b>Movie Name:</b></td>
+                <td>@Model.MovieName</td>
+            </tr>
+            </br>
+            <tr>
+                <td><b>Director Name:</b></td>
+                <td>@Model.DirectorName</td>
+            </tr>
+            </br>
+            <tr>
+                <td><b>Actor Name:</b></td>
+                <td>@Model.ActorName</td>
+            </tr>
+            </br>
+        </table>
+        <b><a href="http://localhost:5277/Movie/Index"> Back To Home </a></b>
+    </form>
+</body>
+
+</html>
+
