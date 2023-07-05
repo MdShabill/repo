@@ -1,0 +1,27 @@
+﻿@model MyWebApp.Models.Product1
+
+<div>
+<h4>Product1</h4>
+<hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="ProductSearchResult">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"> </div>
+            <div class="form-group">
+                <label class="control-label">Product Name</label>
+                <input type="Text" id="ProductName" name="ProductName" class="form-control" new { required="required" } />
+                <span asp-validation-for="ProductName" class="text-danger"></span>
+            </div>
+            </br>
+            <div class="form-group">
+                <input type="submit" value="Search" class="btn btn-primary" />
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+</br>
+<div>
+    <b>Back To Home</b>
+</div>

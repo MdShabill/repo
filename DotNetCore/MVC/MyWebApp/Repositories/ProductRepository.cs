@@ -14,7 +14,6 @@ namespace MyWebApp.Repositories
             _connectionString = connectionString;
         }
 
-        
         public List<Product> GetAll()
         {
             using (SqlConnection sqlConnection = new(_connectionString))

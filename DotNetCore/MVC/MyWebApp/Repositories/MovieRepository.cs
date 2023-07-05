@@ -44,6 +44,7 @@ namespace MyWebApp.Repositories
             }
         }
 
+        //TODO: Refactor this query and make Join dynamic
         public Movie Get(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))

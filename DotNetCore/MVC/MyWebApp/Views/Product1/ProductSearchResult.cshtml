@@ -1,0 +1,35 @@
+﻿@model List<MyWebApp.Models.Product1>
+
+@{
+    ViewData["Title"] = "ProductSearchResult";
+}
+
+<html>
+<head>
+    <title>Product Table</title>
+</head>
+<br />
+<body>
+    <form>
+        <table border="3px" class="table">
+            <tr class="table1">
+                <td><b>Product Name</b></td>
+                <td><b>Action</b></td>
+            </tr>
+
+            @foreach (Product1 product1 in Model)
+            {
+                <tr class="table1">
+                    <td><b>@product1.ProductName</b></td>
+                    <td>
+                        <b>
+                            @Html.ActionLink("Edit", "Edit", new { id = product1.Id }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = product1.Id })
+                        </b>
+                    </td>
+                </tr>
+            }
+        </table>
+    </form>
+</body>
+</html>
