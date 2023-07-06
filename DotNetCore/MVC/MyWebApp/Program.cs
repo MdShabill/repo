@@ -34,11 +34,6 @@ builder.Services.AddTransient<IMovieRepository>((svc) =>
     return new MovieRepository(ECommerceDBConnectionString);
 });
 
-builder.Services.AddTransient<IProduct1Repository>((svc) =>
-{
-    return new Product1Repository(ECommerceDBConnectionString);
-});
-
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.

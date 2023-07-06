@@ -94,6 +94,37 @@ namespace MyWebApp.Repositories
             }
         }
 
+        public List<Product> GetProducts(string productName)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"
+                        Select Id, BrandName, Price From Products 
+                        Where 
+                        ProductName LIKE '%' + @productName + '%'";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@ProductName", productName);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<Product> products = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    Product product = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        ProductName = (string)dataTable.Rows[i]["ProductName"],
+                        BrandName = (string)dataTable.Rows[i]["BrandName"],
+                        Price = (int)dataTable.Rows[i]["Price"]
+                    };
+                    products.Add(product);
+                }
+                return products;
+            }
+        }
+
         public List<ProductSizes> GetSizes()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
@@ -255,5 +286,6 @@ namespace MyWebApp.Repositories
                 sqlConnection.Close();
             }
         }
+
     }
 }

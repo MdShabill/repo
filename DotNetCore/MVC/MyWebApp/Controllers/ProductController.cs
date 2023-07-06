@@ -77,14 +77,23 @@ namespace MyWebApp.Controllers
             return View(product);
         }
 
-        public IActionResult Delete(int id)
+        public IActionResult ProductSearch()
         {
-            _productRepository.Delete(id);
-
-            ViewBag.SuccessMessageForDelete = "Product Delete Successful";
-            List<Product> products = _productRepository.GetAll();
-            return View("Index", products);
+            return View();
         }
+
+        public IActionResult ProductSearchResult(string productName)
+        {
+            List<Product> products = _productRepository.GetProducts(productName);
+            return View("ProductSearchResult", products);
+        }
+
+        //List<Product> products = new List<Product>();
+        //products.Add(new Product { ProductName = "Jacket", BrandName="Levis", Price = 1000 });
+        //products.Add(new Product { ProductName = "Belt", BrandName = "Levis", Price =100 });
+        //products.Add(new Product { ProductName = "Belt", BrandName = "Bata", Price = 200 });
+
+        //products = products.Where(x=>x.ProductName == productName).ToList();
 
         public IActionResult Add()
         {
@@ -155,6 +164,15 @@ namespace MyWebApp.Controllers
 
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+        }
+
+        public IActionResult Delete(int id)
+        {
+            _productRepository.Delete(id);
+
+            ViewBag.SuccessMessageForDelete = "Product Delete Successful";
+            List<Product> products = _productRepository.GetAll();
+            return View("Index", products);
         }
 
         private List<ProductSizes> GetSizes()

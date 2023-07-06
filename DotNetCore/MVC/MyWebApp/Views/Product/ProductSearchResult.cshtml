@@ -1,4 +1,4 @@
-﻿@model List<MyWebApp.Models.Product1>
+﻿@model List<MyWebApp.Models.Product>
 
 @{
     ViewData["Title"] = "ProductSearchResult";
@@ -14,17 +14,21 @@
         <table border="3px" class="table">
             <tr class="table1">
                 <td><b>Product Name</b></td>
+                <td><b>Brand Name</b></td>
+                <td><b>Price</b></td>
                 <td><b>Action</b></td>
             </tr>
 
-            @foreach (Product1 product1 in Model)
+            @foreach (Product product in Model)
             {
                 <tr class="table1">
-                    <td><b>@product1.ProductName</b></td>
+                    <td><b>@product.ProductName</b></td>
+                    <td><b>@product.BrandName</b></td>
+                    <td><b>@product.Price</b></td>
                     <td>
                         <b>
-                            @Html.ActionLink("Edit", "Edit", new { id = product1.Id }) |
-                            @Html.ActionLink("Delete", "Delete", new { id = product1.Id })
+                            @Html.ActionLink("Edit", "Edit", new { id = product.Id }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = product.Id })
                         </b>
                     </td>
                 </tr>
