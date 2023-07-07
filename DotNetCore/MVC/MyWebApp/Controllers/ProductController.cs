@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MyWebApp.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using MyWebApp.Enums;
+using System.Drawing;
 
 namespace MyWebApp.Controllers
 {
@@ -79,12 +80,13 @@ namespace MyWebApp.Controllers
 
         public IActionResult ProductSearch()
         {
+            ViewBag.ProductColors = new SelectList(GetColors(), "Id", "ColorName");
             return View();
         }
 
-        public IActionResult ProductSearchResult(string productName)
+        public IActionResult ProductSearchResult(Product productFilter)
         {
-            List<Product> products = _productRepository.GetProducts(productName);
+            List<Product> products = _productRepository.GetProducts(productFilter.ProductName);
             return View("ProductSearchResult", products);
         }
 

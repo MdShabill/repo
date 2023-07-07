@@ -99,7 +99,7 @@ namespace MyWebApp.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
-                        Select Id, BrandName, Price From Products 
+                        Select Id, ProductName, BrandName, Price From Products 
                         Where 
                         ProductName LIKE '%' + @productName + '%'";
 

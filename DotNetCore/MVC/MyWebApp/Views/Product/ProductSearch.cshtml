@@ -13,7 +13,13 @@
                     <input type="Text" id="ProductName" name="ProductName" class="form-control" new { required="required" } />
                     <span asp-validation-for="ProductName" class="text-danger"></span>
                 </div>
-                </br>
+                <br />
+                <div class="form-group">
+                    <label>Product Color</label>
+                    @Html.DropDownListFor(model => model.ColorId, ViewBag.ProductColors as SelectList, "-- Select --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ColorId, "", new { @class = "text-danger" })
+                </div>
+                <br />
                 <div class="form-group">
                     <input type="submit" value="Search" class="btn btn-primary" />
                 </div>
