@@ -17,6 +17,8 @@
                 <td><b>Brand Name</b></td>
                 <td><b>Price</b></td>
                 <td><b>Color Name</b></td>
+                <tb><b>Size Name</b></tb>
+                <tb><b>Fabric Name</b></tb>
                 <td><b>Action</b></td>
             </tr>
 
@@ -27,6 +29,8 @@
                     <td><b>@product.BrandName</b></td>
                     <td><b>@product.Price</b></td>
                     <td><b>@product.ColorName</b></td>
+                    <td><b>@product.SizeName</b></td>
+                    <td><b>@product.FabricName</b></td>
                     <td>
                         <b>
                             @Html.ActionLink("Edit", "Edit", new { id = product.Id }) |

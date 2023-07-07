@@ -21,6 +21,18 @@
                 </div>
                 <br />
                 <div class="form-group">
+                    <label> Product Size </label>
+                    @Html.DropDownListFor(model => model.SizeId, ViewBag.ProductSizes as SelectList, "-- Select --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SizeId, "", new { @class = "text-danger" })
+                </div>
+                <br />
+                <div class="form-group">
+                    <label>Product Febric</label>
+                    @Html.DropDownListFor(model => model.FabricId, ViewBag.ProductFabrics as SelectList, "-- Select --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.FabricId, "", new { @class = "text-danger"})
+                </div>
+                </br>
+                <div class="form-group">
                     <input type="submit" value="Search" class="btn btn-primary" />
                 </div>
             </form>

@@ -81,6 +81,11 @@ namespace MyWebApp.Controllers
         public IActionResult ProductSearch()
         {
             ViewBag.ProductColors = new SelectList(GetColors(), "Id", "ColorName");
+
+            ViewBag.ProductSizes = new SelectList(GetSizes(), "Id", "Size");
+
+            ViewBag.ProductFabrics = new SelectList(GetFabric(), "Id", "FabricName");
+
             return View();
         }
 
