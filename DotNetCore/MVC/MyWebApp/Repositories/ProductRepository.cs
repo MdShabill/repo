@@ -94,17 +94,25 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<Product> GetProducts(string productName)
+        public List<Product> GetProducts(string productName, int colorId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
-                        Select Id, ProductName, BrandName, Price From Products 
+                        Select Products.Id, 
+                        Products.ProductName, Products.BrandName,   
+                        ProductColors.ColorName, Products.Price 
+                        From Products 
+                        Inner Join ProductColors On Products.ColorId = ProductColors.Id
                         Where 
-                        ProductName LIKE '%' + @productName + '%'";
+                        Products.ProductName LIKE '%' + @productName + '%' and 
+                        Products.ColorId = @colorId ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@ProductName", productName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@colorId", colorId);
+                
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
@@ -117,6 +125,7 @@ namespace MyWebApp.Repositories
                         Id = (int)dataTable.Rows[i]["Id"],
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
+                        ColorName = (string)dataTable.Rows[i]["ColorName"],
                         Price = (int)dataTable.Rows[i]["Price"]
                     };
                     products.Add(product);

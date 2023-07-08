@@ -5,12 +5,12 @@
     <hr />
     <div class="row">
         <div class="col-md-4">
-            <form asp-action="ProductSearchResult">
+            <form asp-action="ProductSearchResult"> 
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"> </div>
                 <div class="form-group">
                     <label class="control-label">Product Name</label>
-                    <input type="Text" id="ProductName" name="ProductName" class="form-control" new { required="required" } />
+                    <input type="Text" id="ProductName" name="ProductName" value="jacket" class="form-control" new { required="required" } />
                     <span asp-validation-for="ProductName" class="text-danger"></span>
                 </div>
                 <br />
@@ -27,7 +27,7 @@
                 </div>
                 <br />
                 <div class="form-group">
-                    <label>Product Febric</label>
+                    <label> Product Fabric </label>
                     @Html.DropDownListFor(model => model.FabricId, ViewBag.ProductFabrics as SelectList, "-- Select --", new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.FabricId, "", new { @class = "text-danger"})
                 </div>
