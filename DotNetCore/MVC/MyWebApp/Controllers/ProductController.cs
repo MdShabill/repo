@@ -91,7 +91,8 @@ namespace MyWebApp.Controllers
 
         public IActionResult ProductSearchResult(Product productFilter)
         {
-            List<Product> products = _productRepository.GetProducts(productFilter.ProductName, productFilter.ColorId, productFilter.SizeId, productFilter.Price);
+            List<Product> products = _productRepository.GetProducts(productFilter.ProductName, productFilter.ColorId, 
+                                    productFilter.SizeId, productFilter.MinPrice, productFilter.MaxPrice);
             return View("ProductSearchResult", products);
         }
 

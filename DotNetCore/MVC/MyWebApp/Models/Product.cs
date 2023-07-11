@@ -43,8 +43,8 @@ namespace MyWebApp.Models
         public int Discount { get; set; }
 
         public int Price { get; set; }
-        public int Min { get; set; }
-        public int Max { get; set; }
+        public int MinPrice { get; set; }
+        public int MaxPrice { get; set; }
         
     }
 }

@@ -94,7 +94,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<Product> GetProducts(string productName, int colorId, int sizeId, int price)
+        public List<Product> GetProducts(string productName, int colorId, int sizeId, int minPrice, int maxPrice)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -102,22 +102,23 @@ namespace MyWebApp.Repositories
                         Select 
                         Products.Id, Products.ProductName, 
                         Products.BrandName, ProductColors.ColorName,
-                        ProductSizes.Size,Products.Price 
+                        ProductSizes.Size
                         From Products 
                         Inner Join ProductColors On Products.ColorId = ProductColors.Id
                         Inner Join ProductSizes On Products.SizeId = ProductSizes.Id
                         Where 
                         Products.ProductName LIKE '%' + @productName + '%' And 
-                        Products.ColorId = @colorId And 
+                        Products.ColorId = @myColorId And 
                         Products.SizeId = @sizeId And
-                        Products.Price Between 1000 and 20000";
+                        Products.Price Between @minPrice And @maxPrice ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productName);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@colorId", colorId);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@myColorId", colorId);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sizeId", sizeId);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@price", price);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minPrice", minPrice);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maxPrice", maxPrice);
                 
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -132,8 +133,7 @@ namespace MyWebApp.Repositories
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         ColorName = (string)dataTable.Rows[i]["ColorName"],
-                        SizeName = (string)dataTable.Rows[i]["Size"],
-                        Price = (int)dataTable.Rows[i]["Price"]
+                        SizeName = (string)dataTable.Rows[i]["Size"]
                     };
                     products.Add(product);
                 }
