@@ -12,12 +12,11 @@
 <h1><span class="blue">&lt;</span>Customer<span class="blue">&gt;</span> <span class="yellow">Table</pan></h1>
 <br />
 <br />
-<span class="text-success"> <b> @ViewBag.SuccessMessageForAdd </b> </span>
-<br />
-<span class="text-success"> <b> @ViewBag.SuccessMessageForUpdate </b> </span>
-<br />
-<br />
-<span class="text-success"> <b> @ViewBag.SuccessMessageForDelete </b> </span>
+<span class="text-success"> <b> @TempData["SuccessMessageForRegister"] </b> </span>
+
+<span class="text-success"> <b> @TempData["SuccessMessageForDelete"] </b> </span>
+
+<span class="text-success"> <b> @TempData["SuccessMessageForUpdate"] </b> </span>
 <br />
 <div>
     <a href="http://localhost:5277/Customer/Register"> Register </a>
@@ -152,7 +151,7 @@
                 <td><b>Last Name</b></td>
                 <td><b>Gender</b></td>
                 <td><b>Email</b></td>
-                <td><b>Age</b></td>
+                <td><b>Date Of Birth</b></td>
                 <td><b>Mobile</b></td>
                 <td><b>Actions</b></td>
             </tr> 
@@ -164,7 +163,7 @@
                             <td><b>@customer.LastName</b></td>
                             <td><b>@customer.Gender</b></td>
                             <td><b>@customer.Email</b></td>
-                            <td><b>@customer.Age</b></td>
+                            <td><b>@customer.DateOfBirth</b></td>
                             <td><b>@customer.Mobile</b></td>
                             <td> @Html.ActionLink("Please Edit", "Edit", new { id = customer.Id }) |
                             @Html.ActionLink("Delete Me", "Delete", new { id = customer.Id }) </td>

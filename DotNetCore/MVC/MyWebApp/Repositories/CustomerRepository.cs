@@ -32,7 +32,7 @@ namespace MyWebApp.Repositories
                         LastName = (string)dataTable.Rows[i]["LastName"],
                         Gender = (int)dataTable.Rows[i]["Gender"],
                         Email = (string)dataTable.Rows[i]["Email"],
-                        Age = (int)dataTable.Rows[i]["Age"],
+                        DateOfBirth = (DateTime)dataTable.Rows[i]["DateOfBirth"],
                         Mobile = Convert.ToString(dataTable.Rows[i]["Mobile"]),
                     };
                     customers.Add(customer);
@@ -57,14 +57,14 @@ namespace MyWebApp.Repositories
                     LastName = (string)dataTable.Rows[0]["LastName"],
                     Gender = (int)dataTable.Rows[0]["Gender"],
                     Email = (string)dataTable.Rows[0]["Email"],
-                    Age = (int)dataTable.Rows[0]["Age"],
+                    DateOfBirth = (DateTime)dataTable.Rows[0]["DateOfBirth"],
                     Mobile = (string)dataTable.Rows[0]["Mobile"],
                 };
                 return customer;
             }
         }
 
-        public void Delete(int id)
+        public int Delete(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -72,35 +72,37 @@ namespace MyWebApp.Repositories
                 SqlCommand sqlCommand = new(deleteQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Id", id);
                 sqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
+                int affectedRowCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
+                return affectedRowCount;
             }
         }
 
-        public void Register(Customer customer)
+        public int Register(Customer customer)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"INSERT INTO Customers
                    (FirstName, LastName, Gender, 
-                    Email, Age, Mobile)
+                    Email, DateOfBirth, Mobile)
                     VALUES 
                    (@FirstName, @LastName, @Gender, 
-                    @Email, @Age, @Mobile)";
+                    @Email, @DateOfBirth, @Mobile)";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@FirstName", customer.FirstName);
                 sqlCommand.Parameters.AddWithValue("@LastName", customer.LastName);
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
-                sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
+                sqlCommand.Parameters.AddWithValue("@DateOfBirth", customer.DateOfBirth);
                 sqlCommand.Parameters.AddWithValue("@Mobile", customer.Mobile);
                 sqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
+                int affectedRowCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
+                return affectedRowCount;
             }
         }
 
-        public void Update(Customer customer)
+        public int Update(Customer customer)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -109,7 +111,7 @@ namespace MyWebApp.Repositories
                    LastName = @LastName, 
                    Gender = @Gender, 
                    Email = @Email, 
-                   Age = @Age, 
+                   DateOfBirth = @DateOfBirth, 
                    Mobile = @Mobile
                    WHERE Id = @Id ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
@@ -118,11 +120,12 @@ namespace MyWebApp.Repositories
                 sqlCommand.Parameters.AddWithValue("@LastName", customer.LastName);
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
-                sqlCommand.Parameters.AddWithValue("@Age", customer.Age);
+                sqlCommand.Parameters.AddWithValue("@DateOfBirth", customer.DateOfBirth);
                 sqlCommand.Parameters.AddWithValue("@Mobile", customer.Mobile);
                 sqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
+                int affectedRowCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
+                return affectedRowCount;
             }
         }
     }

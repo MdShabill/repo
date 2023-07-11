@@ -6,8 +6,8 @@ namespace MyWebApp.Repositories
     {
         public List<Customer> GetAll();
         public Customer Get(int id);
-        public void Delete(int id);
-        public void Register(Customer customer);
-        public void Update(Customer customer);
+        public int Delete(int id);
+        public int Register(Customer customer);
+        public int Update(Customer customer);
     }
 }

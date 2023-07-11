@@ -23,24 +23,6 @@ namespace MyWebApp.Controllers
         {
             List<Customer> customers = _customerRepository.GetAll();
 
-            string successMessageForAdd = ViewBag.SuccessMessageForAdd;
-            if (!string.IsNullOrEmpty(successMessageForAdd))
-            {
-                ViewBag.SuccessMessageForAdd = successMessageForAdd;
-            }
-
-            string successMessageForUpdate = ViewBag.SuccessMessageForUpdate;
-            if (!string.IsNullOrEmpty(successMessageForAdd))
-            {
-                ViewBag.SuccessMessageForUpdate = successMessageForUpdate;
-            }
-
-            string successMessageForDelete = ViewBag.SuccessMessageForDelete;
-            if (!string.IsNullOrEmpty(successMessageForDelete))
-            {
-                ViewBag.SuccessMessageForDelete = successMessageForDelete;
-            }
-
             ViewBag.customerCount = customers.Count;
             return View("Index", customers);
         }
@@ -62,11 +44,12 @@ namespace MyWebApp.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            _customerRepository.Delete(id);
-
-            ViewBag.SuccessMessageForDelete = "Customer Delete SuccessFul";
-            List<Customer> customers = _customerRepository.GetAll();
-            return View("Index", customers);
+            int deletedRow = _customerRepository.Delete(id);
+            if (deletedRow > 0)
+            {
+                TempData["SuccessMessageForDelete"] = "Customer Record Delete Successful";
+            }
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -85,11 +68,13 @@ namespace MyWebApp.Controllers
                 ViewBag.errorMssage = errorMessage;
             }
 
-            _customerRepository.Register(customer);
+            int affectedRowCount = _customerRepository.Register(customer);
 
-            ViewBag.SuccessMessageForAdd = "Customer Register SuccessFul";
-            List<Customer> customers = _customerRepository.GetAll();
-            return View("Index", customers);
+            if (affectedRowCount > 0)
+            {
+                TempData["SuccessMessageForRegister"] = "Customer Register Successful";
+            }
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -102,11 +87,13 @@ namespace MyWebApp.Controllers
                 ViewBag.errorMssage = errorMessage;
             }
 
-            _customerRepository.Update(customer);
+            int affectedRowCount = _customerRepository.Update(customer);
 
-            ViewBag.SuccessMessageForUpdate = "Customer Update SuccessFul";
-            List<Customer> customers = _customerRepository.GetAll();
-            return View("Index", customers);
+            if (affectedRowCount > 0)
+            {
+                TempData["SuccessMessageForUpdate"] = "Customer Update Successful";
+            }
+            return RedirectToAction("Index");
         }
 
         private string validateCustomerRegisterOrUpdate(Customer customer, bool IsUpdate = false)
@@ -136,9 +123,6 @@ namespace MyWebApp.Controllers
 
             else if (string.IsNullOrEmpty(customer.Email))
                 errorMessage = "Customer Email Can Not Be Blank";
-
-            else if (customer.Age > 18)
-                errorMessage = "Customer Age Should Be Above 18 years";
 
             else if (string.IsNullOrEmpty(customer.Mobile))
                 errorMessage = "customer Mobile Can Not Be Blank";
