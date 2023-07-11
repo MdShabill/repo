@@ -6,7 +6,7 @@ namespace MyWebApp.Repositories
     {
         public List<Product> GetAll();
         public Product Get(int id);
-        public List<Product> GetProducts(string productName, int colorId);
+        public List<Product> GetProducts(string productName, int colorId, int sizeId, int price);
         public List<ProductSizes> GetSizes();
         public List<ProductColor> GetColor();
         public List<ProductFabric> GetFabric();

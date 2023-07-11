@@ -74,16 +74,16 @@ namespace VariableDemo
 
             //---------------------------------------------------------------------
 
-            Console.WriteLine("Enter First Number \n");
-            int num1 = Convert.ToInt32(Console.ReadLine());
-
-            Console.WriteLine("Enter Second Number \n");
-            int num2 = Convert.ToInt32(Console.ReadLine());   
-
-            customer.Add(num1,num2);
-            customer.subtract(num1,num2);
-            customer.multiply(num1,num2);
-            customer.division(num1,num2);
+            //Console.WriteLine("Enter First Number \n");
+            //int num1 = Convert.ToInt32(Console.ReadLine());
+            //
+            //Console.WriteLine("Enter Second Number \n");
+            //int num2 = Convert.ToInt32(Console.ReadLine());   
+            //
+            //customer.Add(num1,num2);
+            //customer.subtract(num1,num2);
+            //customer.multiply(num1,num2);
+            //customer.division(num1,num2);
 
 
 

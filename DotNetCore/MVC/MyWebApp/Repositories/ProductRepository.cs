@@ -94,24 +94,30 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<Product> GetProducts(string productName, int colorId)
+        public List<Product> GetProducts(string productName, int colorId, int sizeId, int price)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
-                        Select Products.Id, 
-                        Products.ProductName, Products.BrandName,   
-                        ProductColors.ColorName, Products.Price 
+                        Select 
+                        Products.Id, Products.ProductName, 
+                        Products.BrandName, ProductColors.ColorName,
+                        ProductSizes.Size,Products.Price 
                         From Products 
                         Inner Join ProductColors On Products.ColorId = ProductColors.Id
+                        Inner Join ProductSizes On Products.SizeId = ProductSizes.Id
                         Where 
-                        Products.ProductName LIKE '%' + @productName + '%' and 
-                        Products.ColorId = @colorId ";
+                        Products.ProductName LIKE '%' + @productName + '%' And 
+                        Products.ColorId = @colorId And 
+                        Products.SizeId = @sizeId And
+                        Products.Price Between 1000 and 20000";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@ProductName", productName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productName);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@colorId", colorId);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sizeId", sizeId);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@price", price);
                 
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -126,6 +132,7 @@ namespace MyWebApp.Repositories
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         ColorName = (string)dataTable.Rows[i]["ColorName"],
+                        SizeName = (string)dataTable.Rows[i]["Size"],
                         Price = (int)dataTable.Rows[i]["Price"]
                     };
                     products.Add(product);

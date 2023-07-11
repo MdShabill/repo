@@ -34,14 +34,17 @@ namespace MyWebApp.Models
         public FitType Fit { get; set; }
 
         //Add a master table for fabric and treat it with dropdown
-        public string FabricId { get; set; }
+        public int FabricId { get; set; }
         public string FabricName { get; set; }
 
-        public string CategoryId { get; set; }
+        public int CategoryId { get; set; }
         public string CategoryName { get; set; }
 
         public int Discount { get; set; }
+
         public int Price { get; set; }
+        public int Min { get; set; }
+        public int Max { get; set; }
         
     }
 }

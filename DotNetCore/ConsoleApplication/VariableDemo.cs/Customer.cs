@@ -47,7 +47,9 @@ namespace VariableDemo
             string sqlBasicQuery = "Select * From Movies ";
 
             if (!string.IsNullOrWhiteSpace(searchKeyWord))
-                sqlBasicQuery += "Where ActorName LIKE '%' + @search + '%' Or ActressName LIKE '%' + @search + '%' Or Title Like '%' + @search + '%' ";
+                sqlBasicQuery += @"Where ActorName LIKE '%' + @search + '%' 
+                                    Or ActressName LIKE '%' + @search + '%' 
+                                    Or Title Like '%' + @search + '%' ";
 
             sqlBasicQuery += $"Order By {sortColumnName} {sortOrder}";
 
