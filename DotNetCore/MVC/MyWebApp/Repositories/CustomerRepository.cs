@@ -18,7 +18,14 @@ namespace MyWebApp.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Customers", sqlConnection);
+                string sql = @"Select Id, FirstName, LastName, Email, DateOfBirth, Mobile,
+                                Case
+	                                When Gender = 1 Then 'Male'
+	                                When Gender = 2 Then 'Female'
+                                End As Gender
+                                from Customers ";
+
+                SqlDataAdapter sqlDataAdapter = new(sql, sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
@@ -31,7 +38,7 @@ namespace MyWebApp.Repositories
                         Id = (int)dataTable.Rows[i]["Id"],
                         FirstName = (string)dataTable.Rows[i]["FirstName"],
                         LastName = (string)dataTable.Rows[i]["LastName"],
-                        Gender = (GenderType)dataTable.Rows[i]["Gender"],
+                        Gender = (string)dataTable.Rows[i]["Gender"],
                         Email = (string)dataTable.Rows[i]["Email"],
                         DateOfBirth = (DateTime)dataTable.Rows[i]["DateOfBirth"],
                         Mobile = Convert.ToString(dataTable.Rows[i]["Mobile"]),
@@ -56,7 +63,7 @@ namespace MyWebApp.Repositories
                     Id = (int)dataTable.Rows[0]["Id"],
                     FirstName = (string)dataTable.Rows[0]["FirstName"],
                     LastName = (string)dataTable.Rows[0]["LastName"],
-                    Gender = (GenderType)dataTable.Rows[0]["Gender"],
+                    Gender = (string)dataTable.Rows[0]["Gender"],
                     Email = (string)dataTable.Rows[0]["Email"],
                     DateOfBirth = (DateTime)dataTable.Rows[0]["DateOfBirth"],
                     Mobile = (string)dataTable.Rows[0]["Mobile"],
