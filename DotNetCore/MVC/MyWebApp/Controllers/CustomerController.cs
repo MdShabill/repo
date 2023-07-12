@@ -118,9 +118,6 @@ namespace MyWebApp.Controllers
             else if (customer.LastName.Length >= 15)
                 errorMessage = "Customer Last Name Should Be Under 15 Characters";
 
-            else if (customer.Gender == 0)
-                errorMessage = "Customer Gender Can Not Be Zero";
-
             else if (string.IsNullOrEmpty(customer.Email))
                 errorMessage = "Customer Email Can Not Be Blank";
 

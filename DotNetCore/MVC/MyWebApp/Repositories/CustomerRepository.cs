@@ -1,6 +1,7 @@
 ﻿using MyWebApp.Models;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using MyWebApp.Enums;
 
 namespace MyWebApp.Repositories
 {
@@ -17,7 +18,7 @@ namespace MyWebApp.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SqlDataAdapter sqlDataAdapter = new("SELECT * FROM Customers", sqlConnection);
+                SqlDataAdapter sqlDataAdapter = new(@"SELECT * FROM Customers", sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
@@ -30,7 +31,7 @@ namespace MyWebApp.Repositories
                         Id = (int)dataTable.Rows[i]["Id"],
                         FirstName = (string)dataTable.Rows[i]["FirstName"],
                         LastName = (string)dataTable.Rows[i]["LastName"],
-                        Gender = (int)dataTable.Rows[i]["Gender"],
+                        Gender = (GenderType)dataTable.Rows[i]["Gender"],
                         Email = (string)dataTable.Rows[i]["Email"],
                         DateOfBirth = (DateTime)dataTable.Rows[i]["DateOfBirth"],
                         Mobile = Convert.ToString(dataTable.Rows[i]["Mobile"]),
@@ -55,7 +56,7 @@ namespace MyWebApp.Repositories
                     Id = (int)dataTable.Rows[0]["Id"],
                     FirstName = (string)dataTable.Rows[0]["FirstName"],
                     LastName = (string)dataTable.Rows[0]["LastName"],
-                    Gender = (int)dataTable.Rows[0]["Gender"],
+                    Gender = (GenderType)dataTable.Rows[0]["Gender"],
                     Email = (string)dataTable.Rows[0]["Email"],
                     DateOfBirth = (DateTime)dataTable.Rows[0]["DateOfBirth"],
                     Mobile = (string)dataTable.Rows[0]["Mobile"],
