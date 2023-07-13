@@ -41,6 +41,18 @@ namespace MyWebApp.Controllers
             return View(Customer);
         }
 
+        public IActionResult CustomerSearch()
+        {
+            return View();
+        }
+
+        public IActionResult CustomerSearchResult(Customer customerFilter)
+        {
+            List<Customer> customers = _customerRepository.GetCustomers(customerFilter.FirstName, customerFilter.LastName, 
+                                                                     (int)customerFilter.Gender);
+            return View("CustomerSearchResult", customers);
+        }
+
         [HttpGet]
         public IActionResult Delete(int id)
         {

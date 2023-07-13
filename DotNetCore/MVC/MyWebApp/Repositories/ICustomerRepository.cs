@@ -1,4 +1,5 @@
-﻿using MyWebApp.Models;
+﻿using MyWebApp.Enums;
+using MyWebApp.Models;
 
 namespace MyWebApp.Repositories
 {
@@ -7,6 +8,7 @@ namespace MyWebApp.Repositories
         public List<Customer> GetAll();
         public Customer Get(int id);
         public int Delete(int id);
+        public List<Customer> GetCustomers(string firstName, string lastName, int gender);
         public int Register(Customer customer);
         public int Update(Customer customer);
     }

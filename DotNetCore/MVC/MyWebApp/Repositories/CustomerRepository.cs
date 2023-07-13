@@ -18,14 +18,9 @@ namespace MyWebApp.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sql = @"Select Id, FirstName, LastName, Email, DateOfBirth, Mobile,
-                                Case
-	                                When Gender = 1 Then 'Male'
-	                                When Gender = 2 Then 'Female'
-                                End As Gender
-                                from Customers ";
+                string sqlQuery = "Select * from Customers ";
 
-                SqlDataAdapter sqlDataAdapter = new(sql, sqlConnection);
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
@@ -38,7 +33,7 @@ namespace MyWebApp.Repositories
                         Id = (int)dataTable.Rows[i]["Id"],
                         FirstName = (string)dataTable.Rows[i]["FirstName"],
                         LastName = (string)dataTable.Rows[i]["LastName"],
-                        Gender = (string)dataTable.Rows[i]["Gender"],
+                        Gender = (GenderType)dataTable.Rows[i]["Gender"],
                         Email = (string)dataTable.Rows[i]["Email"],
                         DateOfBirth = (DateTime)dataTable.Rows[i]["DateOfBirth"],
                         Mobile = Convert.ToString(dataTable.Rows[i]["Mobile"]),
@@ -53,7 +48,9 @@ namespace MyWebApp.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                SqlDataAdapter sqlDataAdapter = new($"SELECT * FROM Customers Where Id = @id", sqlConnection);
+                string sqlQuery = $"SELECT * FROM Customers Where Id = @id ";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@Id", id);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -63,7 +60,7 @@ namespace MyWebApp.Repositories
                     Id = (int)dataTable.Rows[0]["Id"],
                     FirstName = (string)dataTable.Rows[0]["FirstName"],
                     LastName = (string)dataTable.Rows[0]["LastName"],
-                    Gender = (string)dataTable.Rows[0]["Gender"],
+                    Gender = (GenderType)dataTable.Rows[0]["Gender"],
                     Email = (string)dataTable.Rows[0]["Email"],
                     DateOfBirth = (DateTime)dataTable.Rows[0]["DateOfBirth"],
                     Mobile = (string)dataTable.Rows[0]["Mobile"],
@@ -83,6 +80,43 @@ namespace MyWebApp.Repositories
                 int affectedRowCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
                 return affectedRowCount;
+            }
+        }
+
+        public List<Customer> GetCustomers(string firstName, string lastName, int gender)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"Select * From Customers
+                                    Where FirstName Like '%' + @firstName + '%' And
+                                    LastName Like '%' + @lastName + '%' And
+                                    Gender = @gender ";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@firstName", firstName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@lastName", lastName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
+                
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<Customer> customers = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    Customer customer = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        FirstName = (string)dataTable.Rows[i]["FirstName"],
+                        LastName = (string)dataTable.Rows[i]["LastName"],
+                        Gender = (GenderType)dataTable.Rows[i]["Gender"],
+                        Email = (string)dataTable.Rows[i]["Email"],
+                        DateOfBirth = (DateTime)dataTable.Rows[i]["DateOfBirth"],
+                        Mobile = Convert.ToString(dataTable.Rows[i]["Mobile"]),
+                    };
+                    customers.Add(customer);
+                }
+                return customers;
             }
         }
 

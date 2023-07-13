@@ -1,0 +1,39 @@
+﻿@model List<MyWebApp.Models.Customer>
+
+@{
+    ViewData["Title"] = "CustomerSearchResult";
+}
+
+<html>
+<head>
+    <title>Customer Table</title>
+</head>
+<br />
+<body>
+    <form>
+        <table border="3px" class="table">
+            <tr>
+                <td><b>First Name</b></td>
+                <td><b>Last Name</b></td>
+                <td><b>Gender</b></td>
+                <td><b>Action</b></td>
+            </tr>
+
+            @foreach (Customer customer in Model)
+            {
+                <tr>
+                    <td><b>@customer.FirstName</b></td>
+                    <td><b>@customer.LastName</b></td>
+                    <td><b>@customer.Gender</b></td>
+                    <td>
+                        <b>
+                            @Html.ActionLink("Edit", "Edit", new { id = customer.Id }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = customer.Id })
+                        </b>
+                    </td>
+                </tr>
+            }
+        </table>
+    </form>
+</body>
+</html>
