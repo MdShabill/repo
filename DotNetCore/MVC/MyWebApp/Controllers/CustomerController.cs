@@ -53,6 +53,17 @@ namespace MyWebApp.Controllers
             return View("CustomerSearchResult", customers);
         }
 
+        public IActionResult CustomerSearchOption()
+        {
+            return View();
+        }
+
+        public IActionResult CustomerSearchResultOption()
+        {
+            
+            return View();
+        }
+
         [HttpGet]
         public IActionResult Delete(int id)
         {
