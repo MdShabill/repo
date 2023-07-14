@@ -1,0 +1,37 @@
+﻿@model MyWebApp.Models.Customer
+
+<div>
+    <h4>Customer</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="CustomerSearchResultOptional">
+
+                @*<div asp-validation-summary="ModelOnly" class="text-danger"></div>*@
+                <div class="form-group">
+                    <label class="control-lable"> <b>First Name</b> </label>
+                    <input type="text" id="FirstName" name="FirstName" class="form-control" new { required="required" } />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+                </br>
+                <div class="form-group">
+                    <label class="control-lable"> <b>Last Name</b> </label>
+                    <input type="text" id="lastName" name="lastName" class="form-control" new { required="required" } />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                </br>
+                <p><b>Gender</b></p>
+                <input type="radio" id="Gender" name="Gender" value="Male" >&nbsp;
+                <lable><b>Male</b></lable></br>
+
+                <input type="radio" id="Gender" name="Gender" value="Female" >&nbsp;
+                <lable><b>Female</b></lable></br>
+
+                <input type="radio" id="Gender" name="Gender" value="Other" >&nbsp;
+                <lable><b>Others</b></lable></br>
+                </br>
+                <input type="submit" value="Search" class="btn btn-primary" />
+            </form>
+        </div>
+    </div>
+</div>

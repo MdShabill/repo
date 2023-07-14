@@ -53,12 +53,12 @@ namespace MyWebApp.Controllers
             return View("CustomerSearchResult", customers);
         }
 
-        public IActionResult CustomerSearchOption()
+        public IActionResult CustomerSearchOptional()
         {
             return View();
         }
 
-        public IActionResult CustomerSearchResultOption()
+        public IActionResult CustomerSearchResultOptional()
         {
             
             return View();
