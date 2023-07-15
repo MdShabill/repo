@@ -9,7 +9,7 @@ namespace MyWebApp.Repositories
         public Customer Get(int id);
         public int Delete(int id);
         public List<Customer> GetCustomers(string firstName, string lastName, int gender);
-        public List<Customer> GetCustomersOptional(string? firstName);
+        public List<Customer> GetCustomersOptional(string? firstName, string? lastName);
         public int Register(Customer customer);
         public int Update(Customer customer);
     }

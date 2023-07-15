@@ -120,19 +120,26 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<Customer> GetCustomersOptional(string? firstName)
+        public List<Customer> GetCustomersOptional(string? firstName, string? lastName)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "Select * From Customers ";
+                string sqlQuery = "Select * From Customers Where 1=1 ";
+
 
                 if (!string.IsNullOrEmpty(firstName))
-                    sqlQuery += "Where FirstName Like '%' + @firstName + '%' ";
+                    sqlQuery += " And FirstName Like '%' + @firstName + '%' ";
+
+                if (!string.IsNullOrEmpty(lastName))
+                    sqlQuery += $" And LastName Like '%{lastName}%' ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
 
                 if(!string.IsNullOrEmpty(firstName))
                     sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@firstName", firstName);
+
+                if (!string.IsNullOrEmpty(lastName))
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@lastName", lastName);
 
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
