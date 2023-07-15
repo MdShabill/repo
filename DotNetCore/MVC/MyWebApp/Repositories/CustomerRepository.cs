@@ -120,6 +120,43 @@ namespace MyWebApp.Repositories
             }
         }
 
+        public List<Customer> GetCustomersOptional(string? firstName)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = "Select * From Customers ";
+
+                if (!string.IsNullOrEmpty(firstName))
+                    sqlQuery += "Where FirstName Like '%' + @firstName + '%' ";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+
+                if(!string.IsNullOrEmpty(firstName))
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@firstName", firstName);
+
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<Customer> customers = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    Customer customer = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        FirstName = (string)dataTable.Rows[i]["FirstName"],
+                        LastName = (string)dataTable.Rows[i]["LastName"],
+                        Gender = (GenderType)dataTable.Rows[i]["Gender"],
+                        Email = (string)dataTable.Rows[i]["Email"],
+                        DateOfBirth = (DateTime)dataTable.Rows[i]["DateOfBirth"],
+                        Mobile = Convert.ToString(dataTable.Rows[i]["Mobile"]),
+                    };
+                    customers.Add(customer);
+                }
+                return customers;
+            }
+        }
+
         public int Register(Customer customer)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
@@ -170,5 +207,6 @@ namespace MyWebApp.Repositories
                 return affectedRowCount;
             }
         }
+
     }
 }

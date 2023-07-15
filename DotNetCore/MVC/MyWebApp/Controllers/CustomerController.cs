@@ -58,10 +58,10 @@ namespace MyWebApp.Controllers
             return View();
         }
 
-        public IActionResult CustomerSearchResultOptional()
+        public IActionResult CustomerSearchResultOptional(Customer? customerFilter)
         {
-            
-            return View();
+            List<Customer> customers = _customerRepository.GetCustomersOptional(customerFilter.FirstName);
+            return View("CustomerSearchResultOptional", customers);
         }
 
         [HttpGet]
