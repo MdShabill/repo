@@ -60,7 +60,8 @@ namespace MyWebApp.Controllers
 
         public IActionResult CustomerSearchResultOptional(Customer? customerFilter)
         {
-            List<Customer> customers = _customerRepository.GetCustomersOptional(customerFilter.FirstName, customerFilter.LastName);
+            List<Customer> customers = _customerRepository.GetCustomersOptional(customerFilter.FirstName, 
+                                        customerFilter.LastName, (int)customerFilter.Gender);
             return View("CustomerSearchResultOptional", customers);
         }
 

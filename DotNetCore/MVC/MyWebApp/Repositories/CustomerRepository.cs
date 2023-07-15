@@ -120,7 +120,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<Customer> GetCustomersOptional(string? firstName, string? lastName)
+        public List<Customer> GetCustomersOptional(string? firstName, string? lastName, int? gender)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -133,6 +133,10 @@ namespace MyWebApp.Repositories
                 if (!string.IsNullOrEmpty(lastName))
                     sqlQuery += $" And LastName Like '%{lastName}%' ";
 
+                if (gender != 0)
+                    sqlQuery += $" And Gender = {gender} ";
+                    
+
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
 
                 if(!string.IsNullOrEmpty(firstName))
@@ -140,6 +144,9 @@ namespace MyWebApp.Repositories
 
                 if (!string.IsNullOrEmpty(lastName))
                     sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@lastName", lastName);
+
+                if (gender != 0)
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
 
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
