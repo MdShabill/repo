@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyWebApp.Models;
+using MyWebApp.ViewModels;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using Microsoft.CodeAnalysis;

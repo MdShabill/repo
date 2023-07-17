@@ -1,4 +1,4 @@
-﻿using MyWebApp.Models;
+﻿using MyWebApp.ViewModels;
 using System.Composition.Convention;
 
 namespace MyWebApp.Repositories

@@ -1,4 +1,4 @@
-﻿using MyWebApp.Models;
+﻿using MyWebApp.ViewModels;
 
 namespace MyWebApp.Repositories
 {

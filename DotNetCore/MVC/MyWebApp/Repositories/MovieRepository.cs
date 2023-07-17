@@ -1,5 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
-using MyWebApp.Models;
+using MyWebApp.ViewModels;
 using System.Data;
 
 namespace MyWebApp.Repositories

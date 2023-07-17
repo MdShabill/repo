@@ -1,4 +1,4 @@
-﻿using MyWebApp.Models;
+﻿using MyWebApp.ViewModels;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using MyWebApp.Enums;

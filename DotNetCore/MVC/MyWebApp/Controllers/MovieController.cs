@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using MyWebApp.Models;
+using MyWebApp.ViewModels;
 using MyWebApp.Repositories;
 
 namespace MyWebApp.Controllers

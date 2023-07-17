@@ -1,8 +1,9 @@
-﻿using MyWebApp.Models;
+﻿using MyWebApp.ViewModels;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using MyWebApp.Enums;
 using MyWebApp.DataModel;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MyWebApp.Repositories
 {
@@ -84,7 +85,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<Customer> GetCustomers(string firstName, string lastName, int gender)
+        public List<Customer> GetCustomers(CustomerSearch searchFilter)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -94,9 +95,9 @@ namespace MyWebApp.Repositories
                                     Gender = @gender ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@firstName", firstName);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@lastName", lastName);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@firstName", searchFilter.FirstName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@lastName", searchFilter.LastName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", searchFilter.Gender);
                 
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -121,33 +122,33 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<Customer> GetCustomersOptional(string? firstName, string? lastName, int? gender)
+        public List<Customer> GetCustomersOptional(CustomerSearchOptional optionalFilter)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = "Select * From Customers Where 1=1 ";
 
 
-                if (!string.IsNullOrEmpty(firstName))
+                if (!string.IsNullOrEmpty(optionalFilter.FirstName))
                     sqlQuery += " And FirstName Like '%' + @firstName + '%' ";
 
-                if (!string.IsNullOrEmpty(lastName))
-                    sqlQuery += $" And LastName Like '%{lastName}%' ";
+                if (!string.IsNullOrEmpty(optionalFilter.LastName))
+                    sqlQuery += $" And LastName Like '%' + @lastName + '%'";
 
-                if (gender != 0)
-                    sqlQuery += $" And Gender = {gender} ";
+                if (optionalFilter.Gender != 0)
+                    sqlQuery += $" And Gender = {optionalFilter.Gender} ";
                     
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
 
-                if(!string.IsNullOrEmpty(firstName))
-                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@firstName", firstName);
+                if(!string.IsNullOrEmpty(optionalFilter.FirstName))
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@firstName", optionalFilter.FirstName);
 
-                if (!string.IsNullOrEmpty(lastName))
-                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@lastName", lastName);
+                if (!string.IsNullOrEmpty(optionalFilter.LastName))
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@lastName", optionalFilter.LastName);
 
-                if (gender != 0)
-                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", gender);
+                if (optionalFilter.Gender != 0)
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@gender", optionalFilter.Gender);
 
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);

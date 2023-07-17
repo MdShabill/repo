@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyWebApp.Models;
+using MyWebApp.ViewModels;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using Microsoft.CodeAnalysis;
@@ -24,7 +24,10 @@ namespace MyWebApp.Controllers
             {
                 cfg.CreateMap<Customer, CustomerVm>();
                 cfg.CreateMap<CustomerVm, Customer>();
+                cfg.CreateMap<CustomerSearchVm, CustomerSearch>();
                 cfg.CreateMap<Customer, CustomerSearchVm>();
+                cfg.CreateMap<CustomerSearchOptionalVm, CustomerSearchOptional>();
+                cfg.CreateMap<Customer, CustomerSearchOptionalVm>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -66,11 +69,27 @@ namespace MyWebApp.Controllers
 
         public IActionResult CustomerSearchResult(CustomerSearchVm vmFilter)
         {
-            List<Customer> customers = _customerRepository.GetCustomers(vmFilter.FirstName, vmFilter.LastName, 
-                                                                     (int)vmFilter.Gender);
+            //App #1
+            //List<Customer> customers = _customerRepository.GetCustomers(vmFilter.FirstName, vmFilter.LastName, 
+            //                                                         (int)vmFilter.Gender);
 
-            List<CustomerSearchVm> vmfilter = _imapper.Map<List<Customer>, List<CustomerSearchVm>>(customers);
-            return View("CustomerSearchResult", vmfilter);
+            //App #2
+            //List<Customer> customers = _customerRepository.GetCustomers(vmFilter);
+
+
+            //App #3
+            //CustomerSearch customerSearch = new CustomerSearch();
+            //customerSearch.FirstName = vmFilter.FirstName;
+            //customerSearch.LastName = vmFilter.LastName;
+            //customerSearch.Gender= vmFilter.Gender;
+
+            CustomerSearch customerSearch = _imapper.Map <CustomerSearchVm, CustomerSearch>(vmFilter);
+            List<Customer> customers = _customerRepository.GetCustomers(customerSearch);
+
+            List<CustomerSearchVm> vmFilterResult = _imapper.Map<List<Customer>, List<CustomerSearchVm>>(customers);
+
+            //List<CustomerSearchVm> vmfilter = _imapper.Map<List<Customer>, List<CustomerSearchVm>>(customers);
+            return View("CustomerSearchResult", vmFilterResult);
         }
 
         public IActionResult CustomerSearchOptional()
@@ -78,11 +97,17 @@ namespace MyWebApp.Controllers
             return View();
         }
 
-        public IActionResult CustomerSearchResultOptional(Customer? customerFilter)
+        public IActionResult CustomerSearchResultOptional(CustomerSearchOptionalVm vmOptionalFilter)
         {
-            List<Customer> customers = _customerRepository.GetCustomersOptional(customerFilter.FirstName, 
-                                        customerFilter.LastName, (int)customerFilter.Gender);
-            return View("CustomerSearchResultOptional", customers);
+            CustomerSearchOptional optionalFilter = _imapper.Map<CustomerSearchOptionalVm, 
+                                                    CustomerSearchOptional>(vmOptionalFilter);
+            
+            List<Customer> customers = _customerRepository.GetCustomersOptional(optionalFilter);
+
+            List<CustomerSearchOptionalVm> vmOptionalFilterResult = _imapper.Map <List<Customer>, 
+                                                                    List<CustomerSearchOptionalVm>>(customers);
+
+            return View("CustomerSearchResultOptional", vmOptionalFilterResult);
         }
 
         [HttpGet]
