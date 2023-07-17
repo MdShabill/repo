@@ -1,4 +1,4 @@
-﻿@model List<MyWebApp.Models.Customer>
+﻿@model List<MyWebApp.Models.CustomerVm>
 
 @{
     ViewData["Title"] = "Index";
@@ -156,7 +156,7 @@
                 <td><b>Actions</b></td>
             </tr> 
     
-            @foreach(Customer customer in Model)
+            @foreach(CustomerVm customer in Model)
             {
                 <tr class="table1">
                     <td><a href="http://localhost:5277/Customer/View/@customer.Id"><b>@customer.FirstName</b></a></td>

@@ -1,4 +1,4 @@
-﻿@model List<MyWebApp.Models.Customer>
+﻿@model List<MyWebApp.Models.CustomerVm>
 
 @{
     ViewData["Title"] = "CustomerSearchResultOptional";
@@ -19,7 +19,7 @@
                 <td><b>Action</b></td>
             </tr>
 
-            @foreach (Customer customer in Model)
+            @foreach (CustomerVm customer in Model)
             {
                 <tr>
                     <td><b>@customer.FirstName</b></td>

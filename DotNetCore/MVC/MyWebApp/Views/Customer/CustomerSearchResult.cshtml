@@ -1,4 +1,4 @@
-﻿@model List<MyWebApp.Models.Customer>
+﻿@model List<MyWebApp.Models.CustomerSearchVm>
 
 @{
     ViewData["Title"] = "CustomerSearchResult";
@@ -19,16 +19,16 @@
                 <td><b>Action</b></td>
             </tr>
 
-            @foreach (Customer customer in Model)
+            @foreach (CustomerSearchVm vmFilter in Model)
             {
                 <tr>
-                    <td><b>@customer.FirstName</b></td>
-                    <td><b>@customer.LastName</b></td>
-                    <td><b>@customer.Gender</b></td>
+                    <td><b>@vmFilter.FirstName</b></td>
+                    <td><b>@vmFilter.LastName</b></td>
+                    <td><b>@vmFilter.Gender</b></td>
                     <td>
                         <b>
-                            @Html.ActionLink("Edit", "Edit", new { id = customer.Id }) |
-                            @Html.ActionLink("Delete", "Delete", new { id = customer.Id })
+                            @Html.ActionLink("Edit", "Edit", new { id = vmFilter.Id }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = vmFilter.Id })
                         </b>
                     </td>
                 </tr>

@@ -2,6 +2,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 using MyWebApp.Enums;
+using MyWebApp.DataModel;
 
 namespace MyWebApp.Repositories
 {
@@ -11,7 +12,7 @@ namespace MyWebApp.Repositories
 
         public CustomerRepository(string connectionString)
         {
-            _connectionString = connectionString;
+            _connectionString = connectionString;   
         }
 
         public List<Customer> GetAll()

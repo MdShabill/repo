@@ -1,4 +1,5 @@
-﻿using MyWebApp.Enums;
+﻿using MyWebApp.DataModel;
+using MyWebApp.Enums;
 using MyWebApp.Models;
 
 namespace MyWebApp.Repositories

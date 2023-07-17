@@ -5,17 +5,29 @@ using System.Data;
 using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyWebApp.Repositories;
+using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
+using MyWebApp.DataModel;
 
 namespace MyWebApp.Controllers
 {
     public class CustomerController : Controller
     {
         ICustomerRepository _customerRepository;
+        IMapper _imapper;
 
         public CustomerController(ICustomerRepository customerRepository)
         {
             _customerRepository = customerRepository;
+
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Customer, CustomerVm>();
+                cfg.CreateMap<CustomerVm, Customer>();
+                cfg.CreateMap<Customer, CustomerSearchVm>();
+            });
+
+            _imapper = configuration.CreateMapper();
         }
 
         [HttpGet]
@@ -23,22 +35,28 @@ namespace MyWebApp.Controllers
         {
             List<Customer> customers = _customerRepository.GetAll();
 
+            List<CustomerVm> customerVm = _imapper.Map<List<Customer>, List<CustomerVm>>(customers);
+
             ViewBag.customerCount = customers.Count;
-            return View("Index", customers);
+            return View("Index", customerVm);
         }
 
         [HttpGet]
-        public IActionResult View(int Id)
+        public IActionResult View(int id)
         {
-            Customer customer = _customerRepository.Get(Id);
-            return View(customer);
+            Customer customer = _customerRepository.Get(id);
+
+            CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
+            return View(customerVm);
         }
 
         [HttpGet]
         public IActionResult Edit(int Id)
         {
             Customer Customer = _customerRepository.Get(Id);
-            return View(Customer);
+
+            CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(Customer);
+            return View(customerVm);
         }
 
         public IActionResult CustomerSearch()
@@ -46,11 +64,13 @@ namespace MyWebApp.Controllers
             return View();
         }
 
-        public IActionResult CustomerSearchResult(Customer customerFilter)
+        public IActionResult CustomerSearchResult(CustomerSearchVm vmFilter)
         {
-            List<Customer> customers = _customerRepository.GetCustomers(customerFilter.FirstName, customerFilter.LastName, 
-                                                                     (int)customerFilter.Gender);
-            return View("CustomerSearchResult", customers);
+            List<Customer> customers = _customerRepository.GetCustomers(vmFilter.FirstName, vmFilter.LastName, 
+                                                                     (int)vmFilter.Gender);
+
+            List<CustomerSearchVm> vmfilter = _imapper.Map<List<Customer>, List<CustomerSearchVm>>(customers);
+            return View("CustomerSearchResult", vmfilter);
         }
 
         public IActionResult CustomerSearchOptional()
@@ -83,17 +103,18 @@ namespace MyWebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(Customer customer)
+        public IActionResult Register([FromBody] CustomerVm customerVm)
         {
-            string errorMessage = validateCustomerRegisterOrUpdate(customer, true);
+            string errorMessage = validateCustomerRegisterOrUpdate(customerVm, true);
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 ViewBag.errorMssage = errorMessage;
             }
 
-            int affectedRowCount = _customerRepository.Register(customer);
+            Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
 
+            int affectedRowCount = _customerRepository.Register(customer);
             if (affectedRowCount > 0)
             {
                 TempData["SuccessMessageForRegister"] = "Customer Register Successful";
@@ -102,17 +123,18 @@ namespace MyWebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(Customer customer)
+        public IActionResult Update(CustomerVm customerVm)
         {
-            string errorMessage = validateCustomerRegisterOrUpdate(customer, true);
+            string errorMessage = validateCustomerRegisterOrUpdate(customerVm, true);
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 ViewBag.errorMssage = errorMessage;
             }
 
-            int affectedRowCount = _customerRepository.Update(customer);
+            Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
 
+            int affectedRowCount = _customerRepository.Update(customer);
             if (affectedRowCount > 0)
             {
                 TempData["SuccessMessageForUpdate"] = "Customer Update Successful";
@@ -120,35 +142,35 @@ namespace MyWebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        private string validateCustomerRegisterOrUpdate(Customer customer, bool IsUpdate = false)
+        private string validateCustomerRegisterOrUpdate(CustomerVm customerVm, bool IsUpdate = false)
         {
             string errorMessage = "";
 
             if (IsUpdate == true)
             {
-                if (customer.Id < 1)
+                if (customerVm.Id < 1)
                     errorMessage = "Customer Id Can Not Be Less Then Zero";
             }
 
-            if (string.IsNullOrEmpty(customer.FirstName))
+            if (string.IsNullOrEmpty(customerVm.FirstName))
                 errorMessage = "Customer First Name Can Not Be Blank";
 
-            else if (customer.FirstName.Length >= 15)
+            else if (customerVm.FirstName.Length >= 15)
                 errorMessage = "Customer First Name Should Be Under 15 Characters";
 
-            else if (string.IsNullOrEmpty(customer.LastName))
+            else if (string.IsNullOrEmpty(customerVm.LastName))
                 errorMessage = "customer Last Name Can Not Be Blank";
 
-            else if (customer.LastName.Length >= 15)
+            else if (customerVm.LastName.Length >= 15)
                 errorMessage = "Customer Last Name Should Be Under 15 Characters";
 
-            else if (string.IsNullOrEmpty(customer.Email))
+            else if (string.IsNullOrEmpty(customerVm.Email))
                 errorMessage = "Customer Email Can Not Be Blank";
 
-            else if (string.IsNullOrEmpty(customer.Mobile))
+            else if (string.IsNullOrEmpty(customerVm.Mobile))
                 errorMessage = "customer Mobile Can Not Be Blank";
 
-            else if (customer.Mobile.Length != 10)
+            else if (customerVm.Mobile.Length != 10)
                 errorMessage = "Customer Mobile Number must Be Exactly 10 Digits";
 
             return errorMessage;
