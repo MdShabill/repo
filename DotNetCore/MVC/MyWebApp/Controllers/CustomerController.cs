@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyWebApp.ViewModels;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using Microsoft.CodeAnalysis;
@@ -8,6 +7,7 @@ using MyWebApp.Repositories;
 using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
 using MyWebApp.DataModel;
+using MyWebApp.ViewModels;
 
 namespace MyWebApp.Controllers
 {
@@ -76,7 +76,6 @@ namespace MyWebApp.Controllers
             //App #2
             //List<Customer> customers = _customerRepository.GetCustomers(vmFilter);
 
-
             //App #3
             //CustomerSearch customerSearch = new CustomerSearch();
             //customerSearch.FirstName = vmFilter.FirstName;
@@ -89,7 +88,7 @@ namespace MyWebApp.Controllers
             List<CustomerSearchVm> vmFilterResult = _imapper.Map<List<Customer>, List<CustomerSearchVm>>(customers);
 
             //List<CustomerSearchVm> vmfilter = _imapper.Map<List<Customer>, List<CustomerSearchVm>>(customers);
-            return View("CustomerSearchResult", vmFilterResult);
+            return View(vmFilterResult);
         }
 
         public IActionResult CustomerSearchOptional()
@@ -107,7 +106,7 @@ namespace MyWebApp.Controllers
             List<CustomerSearchOptionalVm> vmOptionalFilterResult = _imapper.Map <List<Customer>, 
                                                                     List<CustomerSearchOptionalVm>>(customers);
 
-            return View("CustomerSearchResultOptional", vmOptionalFilterResult);
+            return View(vmOptionalFilterResult);
         }
 
         [HttpGet]

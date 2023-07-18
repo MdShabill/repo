@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using MyWebApp.DataModel;
 using MyWebApp.ViewModels;
 using System.Data;
 
@@ -112,7 +113,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public int Add(Movie movie)
+        public int Add(MovieVm movie)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
@@ -132,7 +133,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public int Update(Movie movie)
+        public int Update(MovieVm movie)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {

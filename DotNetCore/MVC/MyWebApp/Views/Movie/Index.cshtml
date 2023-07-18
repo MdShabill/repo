@@ -1,4 +1,4 @@
-﻿@model List<MyWebApp.ViewModels.Movie>
+﻿@model List<MyWebApp.ViewModels.MovieVm>
 
 @{
     ViewData["Title"] = "Index";
@@ -150,7 +150,7 @@
                 <td><b>Action</b></td>
             </tr>
 
-            @foreach (Movie movie in Model)
+            @foreach (MovieVm movie in Model)
             {
                 <tr class="table1">
                     <td><b><a href="http://localhost:5277/Movie/View/@movie.Id"><b>@movie.MovieName</b></a></b></td>

@@ -1,4 +1,5 @@
-﻿using MyWebApp.ViewModels;
+﻿using MyWebApp.DataModel;
+using MyWebApp.ViewModels;
 using System.Composition.Convention;
 
 namespace MyWebApp.Repositories
@@ -9,8 +10,8 @@ namespace MyWebApp.Repositories
         public Movie Get(int id);
         public List<Actors> GetAllActors();
         public int Delete(int id);
-        public int Add(Movie movie);
-        public int Update(Movie movie);
+        public int Add(MovieVm movie);
+        public int Update(MovieVm movie);
         public List<Actors> GetActorDetails();
     }
 }

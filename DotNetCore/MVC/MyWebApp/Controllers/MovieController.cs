@@ -2,23 +2,36 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyWebApp.ViewModels;
 using MyWebApp.Repositories;
+using MyWebApp.DataModel;
+using AutoMapper;
 
 namespace MyWebApp.Controllers
 {
     public class MovieController : Controller
     {
         IMovieRepository _movieRepository;
+        IMapper _imapper;
 
         public MovieController(IMovieRepository movieRepository)
         {
             _movieRepository = movieRepository;
+
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Actors, ActorsVm>();
+                cfg.CreateMap<Movie, MovieVm>();
+            });
+
+            _imapper = configuration.CreateMapper();
         }
         
         public IActionResult Index()
         {
             List<Movie> movies = _movieRepository.GetAll();
 
-            return View("Index", movies);
+            List<MovieVm> movieResult = _imapper.Map<List<Movie>, List<MovieVm>>(movies);
+
+            return View(movieResult);
         }
 
         public IActionResult Add() 
@@ -28,9 +41,9 @@ namespace MyWebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(Movie movie)
+        public IActionResult Add(MovieVm movie)
         {
-            int affectedRecordCount =_movieRepository.Add(movie);
+            int affectedRecordCount = _movieRepository.Add(movie);
 
             if(affectedRecordCount > 0) 
             {
@@ -42,19 +55,24 @@ namespace MyWebApp.Controllers
         public IActionResult View(int id)
         {
             Movie movie = _movieRepository.Get(id);
-            return View(movie);
+
+            MovieVm movieResult = _imapper.Map<Movie, MovieVm>(movie);
+
+            return View(movieResult);
         }
 
         public IActionResult Edit(int id)
         {
             Movie movie = _movieRepository.Get(id);
 
+            MovieVm movieResult = _imapper.Map<Movie, MovieVm>(movie);
+
             ViewBag.actors = new SelectList(GetAllActors(), "Id", "ActorName");
-            return View(movie);
+            return View(movieResult);
         }
 
         [HttpPost]
-        public IActionResult Update(Movie movie) 
+        public IActionResult Update(MovieVm movie) 
         {
             int affectedRowCount = _movieRepository.Update(movie);
 
@@ -75,10 +93,12 @@ namespace MyWebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        private List<Actors> GetAllActors()
+        private List<ActorsVm> GetAllActors()
         {
             List<Actors> actors = _movieRepository.GetAllActors();
-            return actors;
+
+            List<ActorsVm> actorResult = _imapper.Map<List<Actors>, List<ActorsVm>>(actors);
+            return actorResult;
         }
     }
 }

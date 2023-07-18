@@ -136,7 +136,7 @@ namespace MyWebApp.Repositories
                     sqlQuery += $" And LastName Like '%' + @lastName + '%'";
 
                 if (optionalFilter.Gender != 0)
-                    sqlQuery += $" And Gender = {optionalFilter.Gender} ";
+                    sqlQuery += $" And Gender = @gender ";
                     
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);

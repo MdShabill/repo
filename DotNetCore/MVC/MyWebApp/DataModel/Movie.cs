@@ -1,4 +1,4 @@
-﻿namespace MyWebApp.ViewModels
+﻿namespace MyWebApp.DataModel
 {
     public class Movie
     {
