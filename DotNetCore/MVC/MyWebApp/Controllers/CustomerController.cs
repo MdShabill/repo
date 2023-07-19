@@ -24,8 +24,10 @@ namespace MyWebApp.Controllers
             {
                 cfg.CreateMap<Customer, CustomerVm>();
                 cfg.CreateMap<CustomerVm, Customer>();
+
                 cfg.CreateMap<CustomerSearchVm, CustomerSearch>();
                 cfg.CreateMap<Customer, CustomerSearchVm>();
+
                 cfg.CreateMap<CustomerSearchOptionalVm, CustomerSearchOptional>();
                 cfg.CreateMap<Customer, CustomerSearchOptionalVm>();
             });

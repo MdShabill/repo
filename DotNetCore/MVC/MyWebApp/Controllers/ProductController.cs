@@ -114,15 +114,6 @@ namespace MyWebApp.Controllers
         {
             try
             {
-                string errormessage = validateProductAddOrUpdate(product);
-                
-                if (!string.IsNullOrEmpty(errormessage))
-                {
-                    ViewBag.errormessage = errormessage;
-                    SetAllDropdownItemsInViewBag();                    
-                    return View();
-                }
-
                 product.ProductName = product.ProductName.Trim();
                 product.BrandName = product.BrandName.Trim();
 
@@ -146,15 +137,6 @@ namespace MyWebApp.Controllers
         {
             try
             {
-                string errorMessage = validateProductAddOrUpdate(product, true);
-
-                if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    ViewBag.errorMssage = errorMessage;
-                    SetAllDropdownItemsInViewBag();
-                    return View();
-                }
-
                 product.ProductName = product.ProductName.Trim();
                 product.BrandName = product.BrandName.Trim();
                 
@@ -222,32 +204,6 @@ namespace MyWebApp.Controllers
             ViewBag.ProductCategories = new SelectList(GetCategory(), "Id", "CategoryName");
         }
 
-        private string validateProductAddOrUpdate(Product product, bool IsUpdate = false)
-        {
-            string errorMessage = "";
-
-            if (IsUpdate == true)
-            {
-                if (product.Id < 1)
-                    errorMessage = "Product Id Can Not Be Less Then Zero";
-            }
-
-            if (string.IsNullOrEmpty(product.ProductName))
-                errorMessage = "Product Name Can Not Be Blank";
-
-            else if (product.ProductName.Length >= 15)
-                errorMessage = "Product Name Should Be Under 15 Characters";
-
-            else if (string.IsNullOrEmpty(product.BrandName))
-                errorMessage = "Brand Name Can Not Be Blank";
-
-            else if (product.BrandName.Length >= 15)
-                errorMessage = "Brand Name Should Be Under 15 Characters";
-
-            else if (!Enum.IsDefined(typeof(FitType), product.Fit))
-                errorMessage = "Invalid Product Fiting";
-
-            return errorMessage;
-        }
+       
     }
 }
