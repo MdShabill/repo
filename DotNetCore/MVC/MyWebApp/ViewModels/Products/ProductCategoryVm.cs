@@ -1,6 +1,6 @@
-﻿namespace MyWebApp.ViewModels
+﻿namespace MyWebApp.ViewModels.Products
 {
-    public class ProductCategory
+    public class ProductCategoryVm
     {
         public int Id { get; set; }
         public string CategoryName { get; set; }

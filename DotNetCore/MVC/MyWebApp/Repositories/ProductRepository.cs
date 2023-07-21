@@ -1,7 +1,8 @@
-﻿using MyWebApp.ViewModels;
-using System.Data;
+﻿using System.Data;
 using Microsoft.Data.SqlClient;
 using MyWebApp.Enums;
+using MyWebApp.DataModel;
+using MyWebApp.ViewModels.Products;
 
 namespace MyWebApp.Repositories
 {
@@ -56,7 +57,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public Product Get(int id)
+        public ProductVm Get(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -77,7 +78,7 @@ namespace MyWebApp.Repositories
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
         
-                Product product = new()
+                ProductVm product = new()
                 {
                     Id = (int)dataTable.Rows[0]["Id"],
                     ProductName = (string)dataTable.Rows[0]["ProductName"],
@@ -94,7 +95,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<Product> GetProducts(string productName, int colorId, int sizeId, int minPrice, int maxPrice)
+        public List<ProductVm> GetProducts(string productName, int colorId, int sizeId, int minPrice, int maxPrice)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -123,11 +124,11 @@ namespace MyWebApp.Repositories
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<Product> products = new();
+                List<ProductVm> products = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    Product product = new()
+                    ProductVm product = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
@@ -141,7 +142,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<ProductSizes> GetSizes()
+        public List<ProductSizesVm> GetSizes()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -150,11 +151,11 @@ namespace MyWebApp.Repositories
                 DataTable dataTable1 = new();
                 sqlDataAdapter1.Fill(dataTable1);
 
-                List<ProductSizes> productSizes = new();
+                List<ProductSizesVm> productSizes = new();
 
                 for (int i = 0; i < dataTable1.Rows.Count; i++)
                 {
-                    ProductSizes productSize = new()
+                    ProductSizesVm productSize = new()
                     {
                         Id = (int)dataTable1.Rows[i]["Id"],
                         Size = (string)dataTable1.Rows[i]["Size"]
@@ -165,7 +166,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        List<ProductColor> IProductRepository.GetColor()
+        public List<ProductColorVm> GetColors()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -174,11 +175,11 @@ namespace MyWebApp.Repositories
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<ProductColor> productColors = new();
+                List<ProductColorVm> productColors = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    ProductColor productColor = new()
+                    ProductColorVm productColor = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
                         ColorName = (string)dataTable.Rows[i]["ColorName"]
@@ -189,7 +190,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<ProductFabric> GetFabric()
+        public List<ProductFabricVm> GetFabric()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -198,11 +199,11 @@ namespace MyWebApp.Repositories
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<ProductFabric> productFabrics = new();
+                List<ProductFabricVm> productFabrics = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    ProductFabric productFabric = new()
+                    ProductFabricVm productFabric = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
                         FabricName = (string)dataTable.Rows[i]["FabricName"]
@@ -213,7 +214,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<ProductCategory> GetCategory()
+        public List<ProductCategoryVm> GetCategory()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -222,11 +223,11 @@ namespace MyWebApp.Repositories
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<ProductCategory> ProductCategories = new();
+                List<ProductCategoryVm> ProductCategories = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    ProductCategory ProductCategory = new()
+                    ProductCategoryVm ProductCategory = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
                         CategoryName = (string)dataTable.Rows[i]["CategoryName"]
@@ -237,7 +238,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public void Delete(int id)
+        public int Delete(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -245,12 +246,13 @@ namespace MyWebApp.Repositories
                 SqlCommand sqlCommand = new(deleteQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Id", id);
                 sqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
+                int affectedRowCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
+                return affectedRowCount;
             }
         }
 
-        public void Add(Product product)
+        public int Add(Product product)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -271,12 +273,13 @@ namespace MyWebApp.Repositories
                 sqlCommand.Parameters.AddWithValue("@Discount", product.Discount);
                 sqlCommand.Parameters.AddWithValue("@Price", product.Price);
                 sqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
+                int affectedRowCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
+                return affectedRowCount;
             }
         }
 
-        public void Update(Product product)
+        public int Update(Product product)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -298,8 +301,9 @@ namespace MyWebApp.Repositories
                 sqlCommand.Parameters.AddWithValue("@Discount", product.Discount);
                 sqlCommand.Parameters.AddWithValue("@Price", product.Price);
                 sqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
+                int affectedRowCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
+                return affectedRowCount;
             }
         }
 

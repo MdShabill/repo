@@ -1,5 +1,3 @@
-------------------------------------------- MVC Notes-----------------------------------------------------------
-
 * What is better patriarchy or matriarchy?
 
 * Matriarchy is essentially a woman-oriented society, wherein all the leadership and 
@@ -12,7 +10,7 @@
 * What is the use of @modle in view page?
 
 * @model is a contract based model used in the view page on top 
-  who invoke your action, make sure your action and @model hold same deffination
+  who invoke your action, make sure your action and @model hold same definition
 * For Example: 
 			  we have define list of products in action make sure @model hold same define in view page.
 			  then we pass list of product in return with view.
@@ -23,7 +21,7 @@
 * How to work 'Form asp-action' in html?
 
 * The asp-action attribute value Invoke the action name, 
-  in Ui when we click on input type sumbit button then after form asp action invoke action 
+  in Ui when we click on input type submit button then after form asp action invoke action 
   
   <form asp-action="Update"> 
 
@@ -61,7 +59,7 @@
 * If input data not reach in controller parameter what we Should do?
 -> Check View page and match model name same or not,
 -> Check in view page Form asp-action name same or not where you mention your view name
--> Chect in view page whatever you create for UI like text box, dropdown, radio button, check box etc 
+-> Check in view page whatever you create for UI like text box, dropdown, radio button, check box etc 
    but you have to insure your model property name and your control name is must be same.
 
 --------------------------
@@ -75,7 +73,7 @@
   and then enter file name] if error not found code will run or execute.
   
 * How can you provide file path to command prompt?
-  The easiest way to provide file path to commant prompt is go where you can save your file and go on top previous location 
+  The easiest way to provide file path to command prompt is go where you can save your file and go on top previous location 
   box and type cmd then enter command prompt fetch your file path and then csc (space) fileName enter and fileName without(.cs).
 
 --------------------------
@@ -83,41 +81,35 @@
 * How to work input parameter and output result in c-sharp?
 
 * Input parameter used only for where clause in query and input parameter must implement in parameter.add with value
-  and you have choose diffrent name in parameter and sql column name, and if you choose three column then 
-  you must declare in loop or modle class and your output is on your requirment it is not compulsory you have three input parameter then your output also three, your output based on your requirment.
+  and you have choose different name in parameter and sql column name, and if you choose three column then 
+  you must declare in loop or model class and your output is on your requirement it is not compulsory you have three input parameter then your output also three, your output based on your requirement.
   
 ----------------------------
 
 * How to work with incremental approach in code?
 
-* You have to listen carefully what is actual requirment, then you need to understood given requirment
-  and freeze your requirment then start working on it step by step based on your requirment, never ever 
+* You have to listen and understood given requirement carefully and freeze your requirement 
+  Discuss and understand it with few use cases or scenario
+
+then start working on it step by step based on your requirement, never ever 
   complete your whole task without run your code.
   
   For Example: 
-			your requirment is create a two text box and one dropdown and one radio button in html
-  here first you need to ask what we should take name for text box dropdown or radio button and freezde your 
-  requirment, then working on it step by step first create only one text box and then check properly this 
+			your requirement is create a two text box and one dropdown and one radio button in html
+  here first you need to ask what we should take name for text box dropdown or radio button and freeze your 
+  requirement, then working on it step by step first create only one text box and then check properly this 
   text box working good or not end to end then go forward for next work. 
 
 -----------------------------
 
+* Why we need viewModel and DataModel?
+
+= ViewModel represent the ui only, viewModel contains only those properties 
+	that have been exposed in the Ui.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+= Datamodel is used for data access layer(repository), we can use properties
+   of datamodel and viewmodel can be   separated and maintained separately,
+  -- this is true for both input and output
+  
+= Auto mapper Match only same property between datamodel and viewmodel

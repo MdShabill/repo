@@ -1,8 +1,8 @@
 ﻿using MyWebApp.Enums;
 
-namespace MyWebApp.ViewModels
+namespace MyWebApp.ViewModels.Products
 {
-    public class Product
+    public class ProductVm
     {
         public int Id { get; set; }
 
@@ -26,7 +26,7 @@ namespace MyWebApp.ViewModels
 
         public int SizeId { get; set; }
         public string SizeName { get; set; }
-        
+
         public int ColorId { get; set; }
         public string ColorName { get; set; }
 
@@ -45,6 +45,6 @@ namespace MyWebApp.ViewModels
         public int Price { get; set; }
         public int MinPrice { get; set; }
         public int MaxPrice { get; set; }
-        
+
     }
 }

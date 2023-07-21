@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyWebApp.ViewModels;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using Microsoft.CodeAnalysis;
@@ -8,43 +7,39 @@ using MyWebApp.Repositories;
 using Microsoft.IdentityModel.Tokens;
 using MyWebApp.Enums;
 using System.Drawing;
+using MyWebApp.DataModel;
+using AutoMapper;
+using MyWebApp.ViewModels.Products;
 
 namespace MyWebApp.Controllers
 {
     public class ProductController : Controller
     {
         IProductRepository _productRepository;
-        
+        IMapper _imapper;
+
         public ProductController(IProductRepository productRepository)
         {
             _productRepository = productRepository;
+
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ProductAddVm, Product>();
+                cfg.CreateMap<Product, ProductVm>();
+            });
+
+            _imapper = configuration.CreateMapper();
         }
 
         public IActionResult Index()
         {
             List<Product> products = _productRepository.GetAll();
 
-            string successMessageForAdd = ViewBag.SuccessMessageForAdd;
-            if(!string.IsNullOrEmpty(successMessageForAdd))
-            {
-                ViewBag.SuccessMessageForAdd = successMessageForAdd;
-            }
+            List<ProductVm> productVm = _imapper.Map<List<Product>, List<ProductVm>>(products);
 
-            string successMessageForUpdate = ViewBag.SuccessMessageForUpdate;
-            if (!string.IsNullOrEmpty(successMessageForUpdate))
-            {
-                ViewBag.SuccessMessageForUpdate = successMessageForUpdate;
-            }
+            ViewBag.productCount = productVm.Count;
 
-            string successMessageForDelete = ViewBag.SuccessMessageForDelete;
-            if (!string.IsNullOrEmpty(successMessageForDelete))
-            {
-                ViewBag.SuccessMessageForDelete = successMessageForDelete;
-            }
-
-            ViewBag.productCount = products.Count;
-
-            return View("Index", products);
+            return View(productVm);
         }
 
         public IActionResult View(int id)
@@ -55,13 +50,13 @@ namespace MyWebApp.Controllers
 
             //productRepository1.Get()
 
-            Product product = _productRepository.Get(id);
+            ProductVm product = _productRepository.Get(id);
             return View(product);
         }
 
         public IActionResult Edit(int id)
         {
-            Product product = _productRepository.Get(id);
+            ProductVm product = _productRepository.Get(id);
 
             //List<ProductSizes> productSizes = GetSizes();
             ViewBag.productSizes = new SelectList(GetSizes(), "Id", "Size");
@@ -89,9 +84,9 @@ namespace MyWebApp.Controllers
             return View();
         }
 
-        public IActionResult ProductSearchResult(Product productFilter)
+        public IActionResult ProductSearchResult(ProductVm productFilter)
         {
-            List<Product> products = _productRepository.GetProducts(productFilter.ProductName, productFilter.ColorId, 
+            List<ProductVm> products = _productRepository.GetProducts(productFilter.ProductName, productFilter.ColorId, 
                                     productFilter.SizeId, productFilter.MinPrice, productFilter.MaxPrice);
             return View("ProductSearchResult", products);
         }
@@ -106,22 +101,23 @@ namespace MyWebApp.Controllers
         public IActionResult Add()
         {
             SetAllDropdownItemsInViewBag();
-            return View("Add");
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Add(Product product)
+        public IActionResult Add(ProductAddVm productAddVm)
         {
             try
             {
-                product.ProductName = product.ProductName.Trim();
-                product.BrandName = product.BrandName.Trim();
+                Product product = _imapper.Map<ProductAddVm, Product>(productAddVm);
 
-                _productRepository.Add(product);
+                int affectedRowCount = _productRepository.Add(product);
 
-                ViewBag.SuccessMessageForAdd = "Product Add Successful";
-                List<Product> products = _productRepository.GetAll();
-                return View("Index", products);
+                if (affectedRowCount > 0)
+                {
+                    TempData["SuccessMessageForAdd"] = "Product Add Successful";
+                }
+                return RedirectToAction("Index");
             }
             catch (Exception ex) 
             {
@@ -133,18 +129,19 @@ namespace MyWebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Update(Product product)
+        public IActionResult Update(ProductVm productVm)
         {
             try
             {
-                product.ProductName = product.ProductName.Trim();
-                product.BrandName = product.BrandName.Trim();
-                
-                _productRepository.Update(product);
+                Product product = _imapper.Map<ProductVm, Product>(productVm);
 
-                ViewBag.SuccessMessageForUpdate = "Product Update SuccessFul";
-                List<Product> products = _productRepository.GetAll();
-                return View("Index", products);
+                int affectedRowCount = _productRepository.Update(product);
+
+                if (affectedRowCount > 0)
+                {
+                    TempData["SuccessMessageForUpdate"] = "Product Update Successful";
+                }
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
@@ -158,40 +155,42 @@ namespace MyWebApp.Controllers
 
         public IActionResult Delete(int id)
         {
-            _productRepository.Delete(id);
+            int deleteRow = _productRepository.Delete(id);
 
-            ViewBag.SuccessMessageForDelete = "Product Delete Successful";
-            List<Product> products = _productRepository.GetAll();
-            return View("Index", products);
+            if (deleteRow > 0)
+            {
+                TempData["SuccessMessageForDelete"] = "Product Record Delete Successful";
+            }
+            return RedirectToAction("Index");
         }
 
-        private List<ProductSizes> GetSizes()
+        private List<ProductSizesVm> GetSizes()
         {
-            List<ProductSizes> productSizes = _productRepository.GetSizes();
+            List<ProductSizesVm> productSizes = _productRepository.GetSizes();
             return (productSizes);
         }
 
-        private List<ProductColor> GetColors()
+        private List<ProductColorVm> GetColors()
         {
-            List<ProductColor> productColors = _productRepository.GetColor();
-            return (productColors);
+            List<ProductColorVm> productColorsVm = _productRepository.GetColors();
+            return (productColorsVm);
         }
 
-        private List<ProductFabric> GetFabric()
-        {
-            List<ProductFabric> productFabrics = _productRepository.GetFabric();
+        private List<ProductFabricVm> GetFabric()
+        {                                       
+            List<ProductFabricVm> productFabrics = _productRepository.GetFabric();
             return (productFabrics);
         }
 
-        private List<ProductCategory> GetCategory()
+        private List<ProductCategoryVm> GetCategory()
         {
-            List<ProductCategory> ProductCategories = _productRepository.GetCategory();
+            List<ProductCategoryVm> ProductCategories = _productRepository.GetCategory();
             return (ProductCategories);
         }
 
         private void SetAllDropdownItemsInViewBag() 
         {
-            List<ProductColor> productColors = GetColors();
+            List<ProductColorVm> productColors = GetColors();
             ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
 
             //List<ProductSizes> productSizes = GetSizes();
@@ -203,7 +202,5 @@ namespace MyWebApp.Controllers
             //List<ProductCategory> ProductCategories = GetCategory();
             ViewBag.ProductCategories = new SelectList(GetCategory(), "Id", "CategoryName");
         }
-
-       
     }
 }

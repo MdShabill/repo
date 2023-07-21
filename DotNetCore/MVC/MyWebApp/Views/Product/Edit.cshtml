@@ -1,4 +1,4 @@
-﻿@model MyWebApp.ViewModels.Product
+﻿@model MyWebApp.ViewModels.Products.ProductVm
 
 <h4>Product</h4>
 <hr />
@@ -7,7 +7,7 @@
         <form asp-action="Update">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <span class="text-danger"><b>@ViewBag.errormessage</b></span>
+            @*<span class="text-danger"><b>@ViewBag.errormessage</b></span>*@
             <br /><br />
 
             <div class="form-group">

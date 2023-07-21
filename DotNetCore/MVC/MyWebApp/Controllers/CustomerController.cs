@@ -40,10 +40,11 @@ namespace MyWebApp.Controllers
         {
             List<Customer> customers = _customerRepository.GetAll();
 
-            List<CustomerVm> customerVm = _imapper.Map<List<Customer>, List<CustomerVm>>(customers);
+            List<CustomerVm> customersVm = _imapper.Map<List<Customer>, List<CustomerVm>>(customers);
 
-            ViewBag.customerCount = customers.Count;
-            return View("Index", customerVm);
+            ViewBag.customerCount = customersVm.Count;
+            
+            return View("Index", customersVm);
         }
 
         [HttpGet]
