@@ -1,6 +1,6 @@
-﻿namespace MyWebApp.ViewModels.Products
+﻿namespace MyWebApp.DataModel
 {
-    public class ProductFabricVm
+    public class ProductFabric
     {
         public int Id { get; set; }
         public string FabricName { get; set; }

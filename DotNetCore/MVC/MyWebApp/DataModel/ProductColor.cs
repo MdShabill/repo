@@ -1,6 +1,6 @@
-﻿namespace MyWebApp.ViewModels.Products
+﻿namespace MyWebApp.DataModel
 {
-    public class ProductColorVm
+    public class ProductColor
     {
         public int Id { get; set; }
         public string ColorName { get; set; }

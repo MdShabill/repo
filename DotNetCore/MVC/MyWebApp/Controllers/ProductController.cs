@@ -54,35 +54,31 @@ namespace MyWebApp.Controllers
             return View(product);
         }
 
-        public IActionResult Edit(int id)
-        {
-            ProductVm product = _productRepository.Get(id);
+        //public IActionResult Edit(int id)
+        //{
+        //    ProductVm product = _productRepository.Get(id);
 
-            //List<ProductSizes> productSizes = GetSizes();
-            ViewBag.productSizes = new SelectList(GetSizes(), "Id", "Size");
+        //    ViewBag.productSizes = new SelectList(GetSizes(), "Id", "Size");
 
-            //List<ProductColor> productColors = GetColors();
-            ViewBag.ProductColors = new SelectList(GetColors(), "Id", "ColorName");
+        //    ViewBag.ProductColors = new SelectList(GetColors(), "Id", "ColorName");
 
-            //List<ProductFabric> productFabrics = GetFabric();
-            ViewBag.ProductFabrics = new SelectList(GetFabric(), "Id", "FabricName");
+        //    ViewBag.ProductFabrics = new SelectList(GetFabric(), "Id", "FabricName");
 
-            //List<ProductCategory> ProductCategories = GetCategory();
-            ViewBag.ProductCategories = new SelectList(GetCategory(), "Id", "CategoryName");
+        //    ViewBag.ProductCategories = new SelectList(GetCategory(), "Id", "CategoryName");
 
-            return View(product);
-        }
+        //    return View(product);
+        //}
 
-        public IActionResult ProductSearch()
-        {
-            ViewBag.ProductColors = new SelectList(GetColors(), "Id", "ColorName");
+        //public IActionResult ProductSearch()
+        //{
+        //    ViewBag.ProductColors = new SelectList(GetColors(), "Id", "ColorName");
 
-            ViewBag.ProductSizes = new SelectList(GetSizes(), "Id", "Size");
+        //    ViewBag.ProductSizes = new SelectList(GetSizes(), "Id", "Size");
 
-            ViewBag.ProductFabrics = new SelectList(GetFabric(), "Id", "FabricName");
+        //    ViewBag.ProductFabrics = new SelectList(GetFabric(), "Id", "FabricName");
 
-            return View();
-        }
+        //    return View();
+        //}
 
         public IActionResult ProductSearchResult(ProductVm productFilter)
         {
@@ -100,7 +96,18 @@ namespace MyWebApp.Controllers
 
         public IActionResult Add()
         {
-            SetAllDropdownItemsInViewBag();
+            List<ProductColor> productColors = _productRepository.GetColors();
+            ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
+
+            List<ProductSize> productSizes = _productRepository.GetSizes();
+            ViewBag.productSizes = new SelectList(productSizes, "Id", "Size");
+
+            List<ProductFabric> productFabrics = _productRepository.GetFabric();
+            ViewBag.ProductFabrics = new SelectList(productFabrics, "Id", "FabricName");
+
+            List<ProductCategory> ProductCategories = _productRepository.GetCategory();
+            ViewBag.ProductCategories = new SelectList(ProductCategories, "Id", "CategoryName");
+
             return View();
         }
 
@@ -164,43 +171,43 @@ namespace MyWebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        private List<ProductSizesVm> GetSizes()
-        {
-            List<ProductSizesVm> productSizes = _productRepository.GetSizes();
-            return (productSizes);
-        }
+        //private List<ProductSizesVm> GetSizes()
+        //{
+        //    List<ProductSizesVm> productSizes = _productRepository.GetSizes();
+        //    return productSizes;
+        //}
 
-        private List<ProductColorVm> GetColors()
-        {
-            List<ProductColorVm> productColorsVm = _productRepository.GetColors();
-            return (productColorsVm);
-        }
+        //private List<ProductColorVm> GetColors()
+        //{
+        //    List<ProductColorVm> productColorsVm = _productRepository.GetColors();
+        //    return productColorsVm;
+        //}
 
-        private List<ProductFabricVm> GetFabric()
-        {                                       
-            List<ProductFabricVm> productFabrics = _productRepository.GetFabric();
-            return (productFabrics);
-        }
+        //private List<ProductFabricVm> GetFabric()
+        //{                                       
+        //    List<ProductFabricVm> productFabrics = _productRepository.GetFabric();
+        //    return productFabrics;
+        //}
 
-        private List<ProductCategoryVm> GetCategory()
-        {
-            List<ProductCategoryVm> ProductCategories = _productRepository.GetCategory();
-            return (ProductCategories);
-        }
+        //private List<ProductCategoryVm> GetCategory()
+        //{
+        //    List<ProductCategoryVm> ProductCategories = _productRepository.GetCategory();
+        //    return ProductCategories;
+        //}
 
-        private void SetAllDropdownItemsInViewBag() 
-        {
-            List<ProductColorVm> productColors = GetColors();
-            ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
+        //private void SetAllDropdownItemsInViewBag() 
+        //{
+        //    List<ProductColorVm> productColors = GetColors();
+        //    ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
 
-            //List<ProductSizes> productSizes = GetSizes();
-            ViewBag.productSizes = new SelectList(GetSizes(), "Id", "Size");
+        //    //List<ProductSizes> productSizes = GetSizes();
+        //    ViewBag.productSizes = new SelectList(GetSizes(), "Id", "Size");
 
-            //List<ProductFabric> productFabrics = GetFabric();
-            ViewBag.ProductFabrics = new SelectList(GetFabric(), "Id", "FabricName");
+        //    //List<ProductFabric> productFabrics = GetFabric();
+        //    ViewBag.ProductFabrics = new SelectList(GetFabric(), "Id", "FabricName");
 
-            //List<ProductCategory> ProductCategories = GetCategory();
-            ViewBag.ProductCategories = new SelectList(GetCategory(), "Id", "CategoryName");
-        }
+        //    //List<ProductCategory> ProductCategories = GetCategory();
+        //    ViewBag.ProductCategories = new SelectList(GetCategory(), "Id", "CategoryName");
+        //}
     }
 }
