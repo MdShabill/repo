@@ -26,6 +26,9 @@ namespace MyWebApp.Controllers
             {
                 cfg.CreateMap<ProductAddVm, Product>();
                 cfg.CreateMap<Product, ProductVm>();
+
+                cfg.CreateMap<ProductFilterVm, ProductFilter>();
+                cfg.CreateMap<ProductResult, ProductResultOutput>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -50,13 +53,13 @@ namespace MyWebApp.Controllers
 
             //productRepository1.Get()
 
-            ProductVm product = _productRepository.Get(id);
+            Product product = _productRepository.Get(id);
             return View(product);
         }
 
         //public IActionResult Edit(int id)
         //{
-        //    ProductVm product = _productRepository.Get(id);
+        //    Product product = _productRepository.Get(id);
 
         //    ViewBag.productSizes = new SelectList(GetSizes(), "Id", "Size");
 
@@ -69,22 +72,30 @@ namespace MyWebApp.Controllers
         //    return View(product);
         //}
 
-        //public IActionResult ProductSearch()
-        //{
-        //    ViewBag.ProductColors = new SelectList(GetColors(), "Id", "ColorName");
-
-        //    ViewBag.ProductSizes = new SelectList(GetSizes(), "Id", "Size");
-
-        //    ViewBag.ProductFabrics = new SelectList(GetFabric(), "Id", "FabricName");
-
-        //    return View();
-        //}
-
-        public IActionResult ProductSearchResult(ProductVm productFilter)
+        public IActionResult ProductSearch()
         {
-            List<ProductVm> products = _productRepository.GetProducts(productFilter.ProductName, productFilter.ColorId, 
-                                    productFilter.SizeId, productFilter.MinPrice, productFilter.MaxPrice);
-            return View("ProductSearchResult", products);
+            List<ProductColor> productColors = _productRepository.GetColors();
+            ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
+
+            List<ProductSize> productSizes = _productRepository.GetSizes();
+            ViewBag.productSizes = new SelectList(productSizes, "Id", "Size");
+
+            List<ProductFabric> productFabrics = _productRepository.GetFabric();
+
+            ViewBag.ProductFabrics = new SelectList(productFabrics, "Id", "FabricName");
+
+            return View();
+        }
+
+        public IActionResult ProductSearchResult(ProductFilterVm productFilterVm)
+        {
+            ProductFilter productFilter = _imapper.Map<ProductFilterVm, ProductFilter>(productFilterVm);
+
+            List<ProductResult> ProductsResult = _productRepository.GetProducts(productFilter);
+
+            List<ProductResultOutput> productResultsOutPut = _imapper.Map<List<ProductResult>, List<ProductResultOutput>>(ProductsResult);
+
+            return View("ProductSearchResult", productResultsOutPut);
         }
 
         //List<Product> products = new List<Product>();

@@ -6,8 +6,8 @@ namespace MyWebApp.Repositories
     public interface IProductRepository
     {
         public List<Product> GetAll();
-        public ProductVm Get(int id);
-        public List<ProductVm> GetProducts(string productName, int colorId, int sizeId, int minPrice, int maxPrice);
+        public Product Get(int id);
+        public List<ProductResult> GetProducts(ProductFilter ProductsResult);
         public List<ProductSize> GetSizes();
         public List<ProductColor> GetColors();
         public List<ProductFabric> GetFabric();

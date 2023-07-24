@@ -57,7 +57,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public ProductVm Get(int id)
+        public Product Get(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -78,7 +78,7 @@ namespace MyWebApp.Repositories
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
         
-                ProductVm product = new()
+                Product product = new()
                 {
                     Id = (int)dataTable.Rows[0]["Id"],
                     ProductName = (string)dataTable.Rows[0]["ProductName"],
@@ -95,7 +95,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<ProductVm> GetProducts(string productName, int colorId, int sizeId, int minPrice, int maxPrice)
+        public List<ProductResult> GetProducts(ProductFilter ProductsResult)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -115,20 +115,20 @@ namespace MyWebApp.Repositories
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productName);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@myColorId", colorId);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sizeId", sizeId);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minPrice", minPrice);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maxPrice", maxPrice);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", ProductsResult.ProductName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@myColorId", ProductsResult.ColorId);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sizeId", ProductsResult.SizeId);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minPrice", ProductsResult.Min);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maxPrice", ProductsResult.Max);
                 
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<ProductVm> products = new();
+                List<ProductResult> products = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    ProductVm product = new()
+                    ProductResult product = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
                         ProductName = (string)dataTable.Rows[i]["ProductName"],

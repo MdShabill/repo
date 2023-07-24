@@ -1,0 +1,38 @@
+﻿@model List<MyWebApp.ViewModels.Products.ProductResultOutput>
+
+@{
+    ViewData["Title"] = "ProductSearchResult";
+}
+
+<html>
+<head>
+    <title>Product Table</title>
+</head>
+<br />
+<body>
+    <form>
+        <table border="3px" class="table">
+            <tr>
+                <td><b>Product Name</b></td>
+                <td><b>Color Name</b></td>
+                <td><b>Size Name</b></td>
+                <td><b>Fabric Name</b></td>
+                <td><b>Min</b></td>
+                <td><b>Max</b></td>
+            </tr>
+
+            @foreach (MyWebApp.ViewModels.Products.ProductResultOutput productResultOutput in Model)
+            {
+                <tr>
+                    <td><b>@productResultOutput.ProductName</b></td>
+                    <td><b>@productResultOutput.ColorName</b></td>
+                    <td><b>@productResultOutput.SizeName</b></td>
+                    <td><b>@productResultOutput.FabricName</b></td>
+                    <td><b>@productResultOutput.Min</b></td>
+                    <td><b>@productResultOutput.Max</b></td>
+                </tr>
+            }
+        </table>
+    </form>
+</body>
+</html>
