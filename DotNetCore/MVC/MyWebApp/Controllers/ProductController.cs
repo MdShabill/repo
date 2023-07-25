@@ -28,7 +28,7 @@ namespace MyWebApp.Controllers
                 cfg.CreateMap<Product, ProductVm>();
 
                 cfg.CreateMap<ProductFilterVm, ProductFilter>();
-                cfg.CreateMap<ProductResult, ProductResultOutput>();
+                cfg.CreateMap<ProductResult, ProductResultVm>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -93,7 +93,7 @@ namespace MyWebApp.Controllers
 
             List<ProductResult> ProductsResult = _productRepository.GetProducts(productFilter);
 
-            List<ProductResultOutput> productResultsOutPut = _imapper.Map<List<ProductResult>, List<ProductResultOutput>>(ProductsResult);
+            List<ProductResultVm> productResultsOutPut = _imapper.Map<List<ProductResult>, List<ProductResultVm>>(ProductsResult);
 
             return View("ProductSearchResult", productResultsOutPut);
         }

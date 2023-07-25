@@ -1,4 +1,4 @@
-﻿@model List<MyWebApp.ViewModels.Products.ProductResultOutput>
+﻿@model List<MyWebApp.ViewModels.Products.ProductResultVm>
 
 @{
     ViewData["Title"] = "ProductSearchResult";
@@ -17,19 +17,15 @@
                 <td><b>Color Name</b></td>
                 <td><b>Size Name</b></td>
                 <td><b>Fabric Name</b></td>
-                <td><b>Min</b></td>
-                <td><b>Max</b></td>
             </tr>
 
-            @foreach (MyWebApp.ViewModels.Products.ProductResultOutput productResultOutput in Model)
+            @foreach (MyWebApp.ViewModels.Products.ProductResultVm productResultOutput in Model)
             {
                 <tr>
                     <td><b>@productResultOutput.ProductName</b></td>
                     <td><b>@productResultOutput.ColorName</b></td>
                     <td><b>@productResultOutput.SizeName</b></td>
                     <td><b>@productResultOutput.FabricName</b></td>
-                    <td><b>@productResultOutput.Min</b></td>
-                    <td><b>@productResultOutput.Max</b></td>
                 </tr>
             }
         </table>
