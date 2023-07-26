@@ -142,23 +142,90 @@ namespace MyWebApp.Repositories
             }
         }
 
+        public List<ProductResultOptional> GetProductsResult(ProductFilterOptional optionalFilter)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"
+                        Select  
+                        Products.ProductName, Products.BrandName,
+                        ProductColors.ColorName, ProductSizes.Size,
+                        Products.Price
+                        From Products 
+                        Inner Join ProductColors On Products.ColorId = ProductColors.Id
+                        Inner Join ProductSizes On Products.SizeId = ProductSizes.Id
+                        Where 1=1 ";
+
+                if (!string.IsNullOrEmpty(optionalFilter.ProductName))
+                    sqlQuery += " And Products.ProductName Like '%' + @productName + '%' ";
+
+                if (!string.IsNullOrEmpty(optionalFilter.BrandName))
+                    sqlQuery += " And Products.BrandName Like '%' + @brandName + '%'";
+
+                if (optionalFilter.SizeId != 0)
+                    sqlQuery += " And Products.SizeId = @sizeId ";
+
+                if (optionalFilter.ColorId != 0)
+                    sqlQuery += " And Products.ColorId = @colorId";
+
+                if (optionalFilter.Price != 0)
+                    sqlQuery += " And Products.Price = @price";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+
+                if (!string.IsNullOrEmpty(optionalFilter.ProductName))
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", optionalFilter.ProductName);
+
+                if (!string.IsNullOrEmpty(optionalFilter.BrandName))
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@brandName", optionalFilter.BrandName);
+
+                if (optionalFilter.SizeId != 0)
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sizeId", optionalFilter.SizeId);
+
+                if (optionalFilter.ColorId != 0)
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@colorId", optionalFilter.ColorId);
+
+                if (optionalFilter.Price != 0)
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@price", optionalFilter.Price);
+
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<ProductResultOptional> productsResults = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    ProductResultOptional productResult = new()
+                    {
+                        ProductName = (string)dataTable.Rows[i]["ProductName"],
+                        BrandName = (string)dataTable.Rows[i]["BrandName"],
+                        ColorName = (string)dataTable.Rows[i]["ColorName"],
+                        SizeName = (string)dataTable.Rows[i]["Size"],
+                        Price = (int)dataTable.Rows[i]["Price"]
+                    };
+                    productsResults.Add(productResult);
+                }
+                return productsResults;
+            }
+        }
+
         public List<ProductSize> GetSizes()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery1 = "SELECT Id, Size FROM ProductSizes";
-                SqlDataAdapter sqlDataAdapter1 = new(sqlQuery1, sqlConnection);
-                DataTable dataTable1 = new();
-                sqlDataAdapter1.Fill(dataTable1);
+                string sqlQuery = "SELECT Id, Size FROM ProductSizes";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
 
                 List<ProductSize> productSizes = new();
 
-                for (int i = 0; i < dataTable1.Rows.Count; i++)
+                for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
                     ProductSize productSize = new()
                     {
-                        Id = (int)dataTable1.Rows[i]["Id"],
-                        Size = (string)dataTable1.Rows[i]["Size"]
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        Size = (string)dataTable.Rows[i]["Size"]
                     };
                     productSizes.Add(productSize);
                 }
@@ -306,6 +373,5 @@ namespace MyWebApp.Repositories
                 return affectedRowCount;
             }
         }
-
     }
 }

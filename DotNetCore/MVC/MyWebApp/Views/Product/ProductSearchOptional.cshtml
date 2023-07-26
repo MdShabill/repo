@@ -1,0 +1,51 @@
+﻿@model MyWebApp.ViewModels.Products.ProductFilterOptionalVm
+
+<div>
+    <h4>Product</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="GetProductResultOptional">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"> </div>
+                <div class="form-group">
+                    <label class="control-label">Product Name</label>
+                    <input type="Text" id="ProductName" name="ProductName" class="form-control" />
+                    <span asp-validation-for="ProductName" class="text-danger"></span>
+                </div>
+                </br>
+                <div class="form-group">
+                    <label class="control-label">Brand Name</label>
+                    <input type="Text" id="BrandName" name="BrandName" class="form-control" />
+                    <span asp-validation-for="BrandName" class="text-danger"></span>
+                </div>
+                </br>
+                <div class="form-group">
+                    <label>Product Color</label>
+                    @Html.DropDownListFor(model => model.ColorId, ViewBag.ProductColors as SelectList, "-- Select --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ColorId, "", new { @class = "text-danger" })
+                </div>
+                </br>
+                <div class="form-group">
+                    <label> Product Size </label>
+                    @Html.DropDownListFor(model => model.SizeId, ViewBag.ProductSizes as SelectList, "-- Select --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SizeId, "", new { @class = "text-danger" })
+                </div>
+                </br>
+                <div class="form-group">
+                    <label class="control-label">Price</label>
+                    <input type="Text" id="Price" name="Price" class="form-control" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                </br>
+                <div class="form-group">
+                    <input type="submit" value="Search" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</br>
+<div>
+    <b>Back To Home</b>
+</div>

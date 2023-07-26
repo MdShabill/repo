@@ -29,6 +29,9 @@ namespace MyWebApp.Controllers
 
                 cfg.CreateMap<ProductFilterVm, ProductFilter>();
                 cfg.CreateMap<ProductResult, ProductResultVm>();
+
+                cfg.CreateMap<ProductFilterOptionalVm, ProductFilterOptional>();
+                cfg.CreateMap<ProductResultOptional, ProductResultOptionalVm>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -96,6 +99,29 @@ namespace MyWebApp.Controllers
             List<ProductResultVm> productResultsOutPut = _imapper.Map<List<ProductResult>, List<ProductResultVm>>(ProductsResult);
 
             return View("ProductSearchResult", productResultsOutPut);
+        }
+
+        public IActionResult ProductSearchOptional()
+        {
+            List<ProductColor> productColors = _productRepository.GetColors();
+            ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
+
+            List<ProductSize> productSizes = _productRepository.GetSizes();
+            ViewBag.productSizes = new SelectList(productSizes, "Id", "Size");
+
+            return View();
+        }
+
+        public IActionResult GetProductResultOptional(ProductFilterOptionalVm optionalFilterVm)
+        {
+            ProductFilterOptional optionalFilter = _imapper.Map<ProductFilterOptionalVm, 
+                                                ProductFilterOptional>(optionalFilterVm);
+
+            List<ProductResultOptional> optionalResult = _productRepository.GetProductsResult(optionalFilter);
+
+            List<ProductResultOptionalVm> optionalResultVm = _imapper.Map<List<ProductResultOptional>, 
+                                                        List<ProductResultOptionalVm>>(optionalResult);
+            return View("GetProductResultOptional", optionalResultVm);
         }
 
         //List<Product> products = new List<Product>();
