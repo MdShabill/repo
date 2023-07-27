@@ -1,8 +1,6 @@
-﻿using MyWebApp.Enums;
-
-namespace MyWebApp.DataModel
+﻿namespace MyWebApp.ViewModels.Products
 {
-    public class ProductResultOptional
+    public class ProductResultsOptionalVm
     {
         public string ProductName { get; set; }
 

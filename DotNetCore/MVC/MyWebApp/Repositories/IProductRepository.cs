@@ -8,7 +8,7 @@ namespace MyWebApp.Repositories
         public List<Product> GetAll();
         public Product Get(int id);
         public List<ProductResult> GetProducts(ProductFilter ProductsResult);
-        public List<ProductResultOptional> GetProductsResult(ProductFilterOptional productFilterOptional);
+        public List<ProductResultsOptional> GetProductsResult(ProductFilterOptional productFilterOptional);
         public List<ProductSize> GetSizes();
         public List<ProductColor> GetColors();
         public List<ProductFabric> GetFabric();

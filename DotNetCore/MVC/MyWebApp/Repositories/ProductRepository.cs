@@ -142,7 +142,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<ProductResultOptional> GetProductsResult(ProductFilterOptional optionalFilter)
+        public List<ProductResultsOptional> GetProductsResult(ProductFilterOptional optionalFilter)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -169,7 +169,7 @@ namespace MyWebApp.Repositories
                     sqlQuery += " And Products.ColorId = @colorId";
 
                 if (optionalFilter.Price != 0)
-                    sqlQuery += " And Products.Price = @price";
+                    sqlQuery += " And Products.Price <= 10000";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
 
@@ -191,11 +191,11 @@ namespace MyWebApp.Repositories
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<ProductResultOptional> productsResults = new();
+                List<ProductResultsOptional> productsResults = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    ProductResultOptional productResult = new()
+                    ProductResultsOptional productResult = new()
                     {
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
