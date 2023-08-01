@@ -8,6 +8,7 @@ using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
 using MyWebApp.DataModel;
 using MyWebApp.ViewModels;
+using MyWebApp.Enums;
 
 namespace MyWebApp.Controllers
 {
@@ -107,7 +108,7 @@ namespace MyWebApp.Controllers
             List<Customer> customers = _customerRepository.GetCustomersOptional(optionalFilter);
 
             List<CustomerSearchOptionalVm> vmOptionalFilterResult = _imapper.Map <List<Customer>, 
-                                                                    List<CustomerSearchOptionalVm>>(customers);
+                                                         List<CustomerSearchOptionalVm>>(customers);
 
             return View(vmOptionalFilterResult);
         }
@@ -132,14 +133,31 @@ namespace MyWebApp.Controllers
         [HttpPost]
         public IActionResult Register([FromBody] CustomerVm customerVm)
         {
-            string errorMessage = validateCustomerRegisterOrUpdate(customerVm, true);
-
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                ViewBag.errorMssage = errorMessage;
-            }
-
             Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
+
+            if(!string.IsNullOrWhiteSpace(customerVm.FirstName))
+                return BadRequest("Customer First Name Can Not Be Balnk");
+
+            if (customerVm.FirstName.Length <= 20)
+                return BadRequest("Customer First Name Should Be 20 Characters");
+
+            if (!string.IsNullOrWhiteSpace(customerVm.LastName))
+                return BadRequest("Customer Last Name Can Not Be Blank");
+
+            if (customerVm.LastName.Length <= 15)
+                return BadRequest("Customer Last Name Should be 15 Characters");
+
+            if (!Enum.IsDefined(typeof(GenderType), customerVm.Gender))
+                return BadRequest("Customer Gender Invalid");
+
+            if (!string.IsNullOrWhiteSpace(customerVm.Email))
+                return BadRequest("Customer Email Can Not Be Blank");
+
+            if (customerVm.DateOfBirth.Year <= 22)
+                return BadRequest("Customer Date Of Birth Should Be 22 Above");
+
+            if (!string.IsNullOrWhiteSpace(customerVm.Mobile))
+                return BadRequest("Customer Mobile Number Can Not Be Blank");
 
             int affectedRowCount = _customerRepository.Register(customer);
             if (affectedRowCount > 0)
@@ -152,13 +170,6 @@ namespace MyWebApp.Controllers
         [HttpPost]
         public IActionResult Update(CustomerVm customerVm)
         {
-            string errorMessage = validateCustomerRegisterOrUpdate(customerVm, true);
-
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                ViewBag.errorMssage = errorMessage;
-            }
-
             Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
 
             int affectedRowCount = _customerRepository.Update(customer);
@@ -167,40 +178,6 @@ namespace MyWebApp.Controllers
                 TempData["SuccessMessageForUpdate"] = "Customer Update Successful";
             }
             return RedirectToAction("Index");
-        }
-
-        private string validateCustomerRegisterOrUpdate(CustomerVm customerVm, bool IsUpdate = false)
-        {
-            string errorMessage = "";
-
-            if (IsUpdate == true)
-            {
-                if (customerVm.Id < 1)
-                    errorMessage = "Customer Id Can Not Be Less Then Zero";
-            }
-
-            if (string.IsNullOrEmpty(customerVm.FirstName))
-                errorMessage = "Customer First Name Can Not Be Blank";
-
-            else if (customerVm.FirstName.Length >= 15)
-                errorMessage = "Customer First Name Should Be Under 15 Characters";
-
-            else if (string.IsNullOrEmpty(customerVm.LastName))
-                errorMessage = "customer Last Name Can Not Be Blank";
-
-            else if (customerVm.LastName.Length >= 15)
-                errorMessage = "Customer Last Name Should Be Under 15 Characters";
-
-            else if (string.IsNullOrEmpty(customerVm.Email))
-                errorMessage = "Customer Email Can Not Be Blank";
-
-            else if (string.IsNullOrEmpty(customerVm.Mobile))
-                errorMessage = "customer Mobile Can Not Be Blank";
-
-            else if (customerVm.Mobile.Length != 10)
-                errorMessage = "Customer Mobile Number must Be Exactly 10 Digits";
-
-            return errorMessage;
         }
     }    
 }
