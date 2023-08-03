@@ -131,11 +131,78 @@ namespace MyWebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register([FromBody] CustomerVm customerVm)
+        public IActionResult Register(CustomerVm customerVm)
         {
             Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
 
-            if(!string.IsNullOrWhiteSpace(customerVm.FirstName))
+            if (string.IsNullOrWhiteSpace(customerVm.FirstName))
+            {
+                ViewBag.ErrorMessage = "First Name Can Not Be Balnk";
+                return View();
+            }
+
+            if (customerVm.FirstName.Length <= 20)
+            {
+                ViewBag.ErrorMessage = "First Name Should Be Less than 20 Characters";
+                return View();
+            }
+
+            if (string.IsNullOrWhiteSpace(customerVm.LastName))
+            {
+                ViewBag.ErrorMessage = "Last Name Can Not Be Blank";
+                return View();
+            }
+
+            if (customerVm.LastName.Length <= 15)
+            {
+                ViewBag.ErrorMessage = "Last Name Should Be Less Than 15 Characters";
+                return View();
+            }
+
+            if (!Enum.IsDefined(typeof(GenderType), customerVm.Gender))
+            {
+                ViewBag.ErrorMessage = "Customer Gender Invalid";
+                return View();
+            }
+
+            if (string.IsNullOrWhiteSpace(customerVm.Email))
+            {
+                ViewBag.ErrorMessage = "Email Can Not Be Blank";
+                return View();
+            }
+
+            if (customerVm.DateOfBirth.Year <= 22)
+            {
+                ViewBag.ErrorMessage = "Date Of Birth Should Be 22 Above";
+                return View();
+            }
+
+            if (string.IsNullOrWhiteSpace(customerVm.Mobile))
+            {
+                ViewBag.ErrorMessage = "Mobile Number Can Not Be Blank";
+                return View();
+            }
+
+            if (ModelState.IsValid)
+            {
+                int affectedRowCount = _customerRepository.Register(customer);
+                if (affectedRowCount > 0)
+                {
+                    TempData["SuccessMessageForRegister"] = "Customer Register Successful";
+                }
+            }
+            return RedirectToAction("Index", customerVm);
+        }
+
+        [HttpPost]
+        public IActionResult Update(CustomerVm customerVm)
+        {
+            Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
+
+            if (customerVm.Id < 1)
+                return BadRequest("Customer Id Can Not Be Less Than Zero");
+
+            if (!string.IsNullOrWhiteSpace(customerVm.FirstName))
                 return BadRequest("Customer First Name Can Not Be Balnk");
 
             if (customerVm.FirstName.Length <= 20)
@@ -158,19 +225,6 @@ namespace MyWebApp.Controllers
 
             if (!string.IsNullOrWhiteSpace(customerVm.Mobile))
                 return BadRequest("Customer Mobile Number Can Not Be Blank");
-
-            int affectedRowCount = _customerRepository.Register(customer);
-            if (affectedRowCount > 0)
-            {
-                TempData["SuccessMessageForRegister"] = "Customer Register Successful";
-            }
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public IActionResult Update(CustomerVm customerVm)
-        {
-            Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
 
             int affectedRowCount = _customerRepository.Update(customer);
             if (affectedRowCount > 0)

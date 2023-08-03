@@ -113,3 +113,17 @@ then start working on it step by step based on your requirement, never ever
   -- this is true for both input and output
   
 = Auto mapper Match only same property between datamodel and viewmodel
+
+--------------------------------------
+
+- Two ways to pass data from action to view
+
+1. you can paas action name in cshtml with @model make sure your action name same in both place 
+   and pass class object with return view 
+   
+2. sec
+
+---------------------------------------
+
+- What is meaning of 'class' in html?
+. Class represent css(Cascading Style Sheets) in html.
