@@ -200,31 +200,58 @@ namespace MyWebApp.Controllers
             Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
 
             if (customerVm.Id < 1)
-                return BadRequest("Customer Id Can Not Be Less Than Zero");
+            {
+                ViewBag.ErrorMessage = "Id Can Not Be Less Than Zero";
+                return View();
+            }
 
-            if (!string.IsNullOrWhiteSpace(customerVm.FirstName))
-                return BadRequest("Customer First Name Can Not Be Balnk");
+            if (string.IsNullOrWhiteSpace(customerVm.FirstName))
+            {
+                ViewBag.ErrorMessage = "First Name Can Not Be Balnk";
+                return View();
+            }
 
             if (customerVm.FirstName.Length <= 20)
-                return BadRequest("Customer First Name Should Be 20 Characters");
+            {
+                ViewBag.ErrorMessage = "First Name Should Be Less than 20 Characters";
+                return View();
+            }
 
-            if (!string.IsNullOrWhiteSpace(customerVm.LastName))
-                return BadRequest("Customer Last Name Can Not Be Blank");
+            if (string.IsNullOrWhiteSpace(customerVm.LastName))
+            {
+                ViewBag.ErrorMessage = "Last Name Can Not Be Blank";
+                return View();
+            }
 
             if (customerVm.LastName.Length <= 15)
-                return BadRequest("Customer Last Name Should be 15 Characters");
+            {
+                ViewBag.ErrorMessage = "Last Name Should Be Less Than 15 Characters";
+                return View();
+            }
 
             if (!Enum.IsDefined(typeof(GenderType), customerVm.Gender))
-                return BadRequest("Customer Gender Invalid");
+            {
+                ViewBag.ErrorMessage = "Customer Gender Invalid";
+                return View();
+            }
 
-            if (!string.IsNullOrWhiteSpace(customerVm.Email))
-                return BadRequest("Customer Email Can Not Be Blank");
+            if (string.IsNullOrWhiteSpace(customerVm.Email))
+            {
+                ViewBag.ErrorMessage = "Email Can Not Be Blank";
+                return View();
+            }
 
             if (customerVm.DateOfBirth.Year <= 22)
-                return BadRequest("Customer Date Of Birth Should Be 22 Above");
+            {
+                ViewBag.ErrorMessage = "Date Of Birth Should Be 22 Above";
+                return View();
+            }
 
-            if (!string.IsNullOrWhiteSpace(customerVm.Mobile))
-                return BadRequest("Customer Mobile Number Can Not Be Blank");
+            if (string.IsNullOrWhiteSpace(customerVm.Mobile))
+            {
+                ViewBag.ErrorMessage = "Mobile Number Can Not Be Blank";
+                return View();
+            }
 
             int affectedRowCount = _customerRepository.Update(customer);
             if (affectedRowCount > 0)
