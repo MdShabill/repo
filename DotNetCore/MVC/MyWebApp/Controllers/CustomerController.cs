@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using MyWebApp.DataModel;
 using MyWebApp.ViewModels;
 using MyWebApp.Enums;
+using System.Text.RegularExpressions;
 
 namespace MyWebApp.Controllers
 {
@@ -54,15 +55,6 @@ namespace MyWebApp.Controllers
             Customer customer = _customerRepository.Get(id);
 
             CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
-            return View(customerVm);
-        }
-
-        [HttpGet]
-        public IActionResult Edit(int Id)
-        {
-            Customer Customer = _customerRepository.Get(Id);
-
-            CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(Customer);
             return View(customerVm);
         }
 
@@ -141,11 +133,11 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            if (customerVm.FirstName.Length <= 20)
+            if (customerVm.FirstName.Length < 3 || customerVm.FirstName.Length > 20)
             {
-                ViewBag.ErrorMessage = "First Name Should Be Less than 20 Characters";
+                ViewBag.ErrorMessage = "First Name Should Be Between 3 And 20 Characters";
                 return View();
-            }
+            }   
 
             if (string.IsNullOrWhiteSpace(customerVm.LastName))
             {
@@ -153,9 +145,9 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            if (customerVm.LastName.Length <= 15)
+            if (customerVm.LastName.Length < 3 || customerVm.LastName.Length > 15)
             {
-                ViewBag.ErrorMessage = "Last Name Should Be Less Than 15 Characters";
+                ViewBag.ErrorMessage = "Last Name Should Be Between 3 And 15 Characters";
                 return View();
             }
 
@@ -165,15 +157,20 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            if (string.IsNullOrWhiteSpace(customerVm.Email))
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regex.Match(customerVm.Email);
+            if (!match.Success)
             {
-                ViewBag.ErrorMessage = "Email Can Not Be Blank";
+                ViewBag.ErrorMessage = "Email is Invalid";
                 return View();
             }
 
-            if (customerVm.DateOfBirth.Year <= 22)
+            int currentYear = DateTime.Now.Year;
+            int birthYear = customerVm.DateOfBirth.Year;
+            int age = currentYear - birthYear;
+            if (age < 22)
             {
-                ViewBag.ErrorMessage = "Date Of Birth Should Be 22 Above";
+                ViewBag.ErrorMessage = "Invalid Date Of Birth, Age Should Be 22 Above";
                 return View();
             }
 
@@ -194,6 +191,15 @@ namespace MyWebApp.Controllers
             return RedirectToAction("Index", customerVm);
         }
 
+        [HttpGet]
+        public IActionResult Edit(int Id)
+        {
+            Customer Customer = _customerRepository.Get(Id);
+
+            CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(Customer);
+            return View(customerVm);
+        }
+
         [HttpPost]
         public IActionResult Update(CustomerVm customerVm)
         {
@@ -211,9 +217,9 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            if (customerVm.FirstName.Length <= 20)
+            if (customerVm.FirstName.Length < 3 || customerVm.FirstName.Length > 20)
             {
-                ViewBag.ErrorMessage = "First Name Should Be Less than 20 Characters";
+                ViewBag.ErrorMessage = "First Name Should Be Between 3 And 20 Characters";
                 return View();
             }
 
@@ -223,9 +229,9 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            if (customerVm.LastName.Length <= 15)
+            if (customerVm.LastName.Length < 3 || customerVm.LastName.Length > 15)
             {
-                ViewBag.ErrorMessage = "Last Name Should Be Less Than 15 Characters";
+                ViewBag.ErrorMessage = "Last Name Should Be Between 3 And 15 Characters";
                 return View();
             }
 
@@ -235,15 +241,20 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            if (string.IsNullOrWhiteSpace(customerVm.Email))
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regex.Match(customerVm.Email);
+            if (!match.Success)
             {
-                ViewBag.ErrorMessage = "Email Can Not Be Blank";
+                ViewBag.ErrorMessage = "Email is Invalid";
                 return View();
             }
 
-            if (customerVm.DateOfBirth.Year <= 22)
+            int currentYear = DateTime.Now.Year;
+            int birthYear = customerVm.DateOfBirth.Year;
+            int age = currentYear - birthYear;
+            if (age < 22)
             {
-                ViewBag.ErrorMessage = "Date Of Birth Should Be 22 Above";
+                ViewBag.ErrorMessage = "Invalid Date Of Birth, Age Should Be 22 Above";
                 return View();
             }
 
@@ -258,7 +269,7 @@ namespace MyWebApp.Controllers
             {
                 TempData["SuccessMessageForUpdate"] = "Customer Update Successful";
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", customerVm);
         }
     }    
 }

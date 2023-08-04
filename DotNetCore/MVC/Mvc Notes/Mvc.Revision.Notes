@@ -127,3 +127,20 @@ then start working on it step by step based on your requirement, never ever
 
 - What is meaning of 'class' in html?
 . Class represent css(Cascading Style Sheets) in html.
+
+---------------------------------------
+
+- What is the meaning of this exclamation mark (!) in c#
+. In C# and many other programming languages, the exclamation mark (!) is used as a 
+  logical NOT operator. Its primary purpose is to invert the value of a Boolean 
+  expression or to perform negation.
+
+- Here's how it works:
+
+.  For Boolean variables: If you have a Boolean variable boolValue, 
+   the expression !boolValue will return the opposite of boolValue. 
+   If boolValue is true, !boolValue will be false, and if boolValue is false, !boolValue will be true.
+
+.  For expressions: If you have any expression that evaluates to a Boolean
+   value (either true or false), the ! operator will negate the result. 
+   For example, if you have if (!(x > y)), it means "if x is not greater than y."
