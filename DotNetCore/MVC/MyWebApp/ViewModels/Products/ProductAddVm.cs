@@ -8,7 +8,7 @@ namespace MyWebApp.ViewModels.Products
 
         public string BrandName { get; set; }
 
-        public int SizeId { get; set; }
+        public int? SizeId { get; set; }
         
         public int ColorId { get; set; }
         

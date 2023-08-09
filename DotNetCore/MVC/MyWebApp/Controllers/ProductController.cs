@@ -188,15 +188,15 @@ namespace MyWebApp.Controllers
                     return View();
                 }
 
-                if (productAddVm.SizeId > 8)
+                if (productAddVm.SizeId <= 0)
                 {
-                    ViewBag.ErrorMessage = "Size should be 8 or less ";
+                    ViewBag.ErrorMessage = "Please select a valid product size ";
                     return View();
                 }
 
-                if (productAddVm.ColorId > 9)
+                if (productAddVm.ColorId <= 0)
                 {
-                    ViewBag.ErrorMessage = "Color should be 9 or less ";
+                    ViewBag.ErrorMessage = "Please select a valid product color ";
                     return View();
                 }
 
@@ -206,15 +206,15 @@ namespace MyWebApp.Controllers
                     return View();
                 }
 
-                if (productAddVm.FabricId > 9)
+                if (productAddVm.FabricId <= 0)
                 {
-                    ViewBag.ErrorMessage = "Fabric should be 9 or less ";
+                    ViewBag.ErrorMessage = "Please select a valid product fabric ";
                     return View();
                 }
 
-                if (productAddVm.CategoryId > 6)
+                if (productAddVm.CategoryId <= 0)
                 {
-                    ViewBag.ErrorMessage = "Category should be 6 or less ";
+                    ViewBag.ErrorMessage = "Please select a valid product category ";
                     return View();
                 }
 
