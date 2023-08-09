@@ -133,9 +133,9 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            if (customerVm.FirstName.Length < 3 || customerVm.FirstName.Length > 20)
+            if (customerVm.FirstName.Length > 20)
             {
-                ViewBag.ErrorMessage = "First Name Should Be Between 3 And 20 Characters";
+                ViewBag.ErrorMessage = "First Name Should Be 20 Characters or Less";
                 return View();
             }   
 
@@ -145,13 +145,13 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            if (customerVm.LastName.Length < 3 || customerVm.LastName.Length > 15)
+            if (customerVm.LastName.Length > 20)
             {
-                ViewBag.ErrorMessage = "Last Name Should Be Between 3 And 15 Characters";
+                ViewBag.ErrorMessage = "Last Name Should Be Between 20 Characters or Less";
                 return View();
             }
 
-            if (!Enum.IsDefined(typeof(GenderType), customerVm.Gender))
+            if (!Enum.IsDefined(typeof(GenderType), customerVm.Gender ))
             {
                 ViewBag.ErrorMessage = "Customer Gender Invalid";
                 return View();
@@ -217,9 +217,9 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            if (customerVm.FirstName.Length < 3 || customerVm.FirstName.Length > 20)
+            if (customerVm.FirstName.Length > 20)
             {
-                ViewBag.ErrorMessage = "First Name Should Be Between 3 And 20 Characters";
+                ViewBag.ErrorMessage = "First Name Should Be 20 Characters or less";
                 return View();
             }
 
@@ -229,9 +229,9 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            if (customerVm.LastName.Length < 3 || customerVm.LastName.Length > 15)
+            if (customerVm.LastName.Length > 20)
             {
-                ViewBag.ErrorMessage = "Last Name Should Be Between 3 And 15 Characters";
+                ViewBag.ErrorMessage = "Last Name Should Be 20 Characters or less";
                 return View();
             }
 

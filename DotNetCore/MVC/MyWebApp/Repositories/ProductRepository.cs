@@ -332,11 +332,11 @@ namespace MyWebApp.Repositories
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@ProductName", product.ProductName);
                 sqlCommand.Parameters.AddWithValue("@BrandName", product.BrandName);
-                sqlCommand.Parameters.AddWithValue("@SizeId", product.SizeName);
-                sqlCommand.Parameters.AddWithValue("@ColorId", product.ColorName);
+                sqlCommand.Parameters.AddWithValue("@SizeId", product.SizeId);
+                sqlCommand.Parameters.AddWithValue("@ColorId", product.ColorId);
                 sqlCommand.Parameters.AddWithValue("@Fit", product.Fit);
-                sqlCommand.Parameters.AddWithValue("@FabricId", product.FabricName);
-                sqlCommand.Parameters.AddWithValue("@CategoryId", product.CategoryName);
+                sqlCommand.Parameters.AddWithValue("@FabricId", product.FabricId);
+                sqlCommand.Parameters.AddWithValue("@CategoryId", product.CategoryId);
                 sqlCommand.Parameters.AddWithValue("@Discount", product.Discount);
                 sqlCommand.Parameters.AddWithValue("@Price", product.Price);
                 sqlConnection.Open();

@@ -10,6 +10,7 @@ using System.Drawing;
 using MyWebApp.DataModel;
 using AutoMapper;
 using MyWebApp.ViewModels.Products;
+using MyWebApp.ViewModels;
 
 namespace MyWebApp.Controllers
 {
@@ -32,6 +33,11 @@ namespace MyWebApp.Controllers
 
                 cfg.CreateMap<ProductFilterOptionalVm, ProductFilterOptional>();
                 cfg.CreateMap<ProductResultsOptional, ProductResultsOptionalVm>();
+
+                cfg.CreateMap<ProductSize, ProductSizesVm>();
+                cfg.CreateMap<ProductColor, ProductColorVm>();
+                cfg.CreateMap<ProductFabric, ProductFabricVm>();
+                cfg.CreateMap<ProductCategory, ProductCategoryVm>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -157,10 +163,77 @@ namespace MyWebApp.Controllers
         {
             try
             {
+                
+                if (string.IsNullOrWhiteSpace(productAddVm.ProductName))
+                {
+                    ViewBag.ErrorMessage = "Product Name should not be blank ";
+                    return View();
+                }
+
+                if (productAddVm.ProductName.Length > 20)
+                {
+                    ViewBag.ErrorMessage = "Product Name should be 20 characters or less";
+                    return View();
+                }
+
+                if (string.IsNullOrWhiteSpace(productAddVm.BrandName))
+                {
+                    ViewBag.ErrorMessage = "Brand Name should not be blank ";
+                    return View();
+                }
+
+                if (productAddVm.BrandName.Length > 20)
+                {
+                    ViewBag.ErrorMessage = "Brand Name should be 20 characters or less ";
+                    return View();
+                }
+
+                if (productAddVm.SizeId > 8)
+                {
+                    ViewBag.ErrorMessage = "Size should be 8 or less ";
+                    return View();
+                }
+
+                if (productAddVm.ColorId > 9)
+                {
+                    ViewBag.ErrorMessage = "Color should be 9 or less ";
+                    return View();
+                }
+
+                if (!Enum.IsDefined(typeof(FitType), productAddVm.Fit))
+                {
+                    ViewBag.ErrorMessage = "Product fit invalid ";
+                    return View();
+                }
+
+                if (productAddVm.FabricId > 9)
+                {
+                    ViewBag.ErrorMessage = "Fabric should be 9 or less ";
+                    return View();
+                }
+
+                if (productAddVm.CategoryId > 6)
+                {
+                    ViewBag.ErrorMessage = "Category should be 6 or less ";
+                    return View();
+                }
+
+                if (productAddVm.Discount > 70)
+                {
+                    ViewBag.ErrorMessage = "Product discount should be 70% or less ";
+                    return View();
+                }
+
+                if (productAddVm.Price > 20000)
+                {
+                    ViewBag.ErrorMessage = "Product price should be 20000 or less ";
+                    return View();
+                }
+
+
                 Product product = _imapper.Map<ProductAddVm, Product>(productAddVm);
 
                 int affectedRowCount = _productRepository.Add(product);
-
                 if (affectedRowCount > 0)
                 {
                     TempData["SuccessMessageForAdd"] = "Product Add Successful";
@@ -213,29 +286,41 @@ namespace MyWebApp.Controllers
             return RedirectToAction("Index");
         }
 
-        //private List<ProductSizesVm> GetSizes()
-        //{
-        //    List<ProductSizesVm> productSizes = _productRepository.GetSizes();
-        //    return productSizes;
-        //}
+        private List<ProductSizesVm> GetSizes()
+        {
+            List<ProductSize> productSizes = _productRepository.GetSizes();
 
-        //private List<ProductColorVm> GetColors()
-        //{
-        //    List<ProductColorVm> productColorsVm = _productRepository.GetColors();
-        //    return productColorsVm;
-        //}
+            List<ProductSizesVm> productSizesVm = _imapper.Map<List<ProductSize>, List<ProductSizesVm>>(productSizes);
 
-        //private List<ProductFabricVm> GetFabric()
-        //{                                       
-        //    List<ProductFabricVm> productFabrics = _productRepository.GetFabric();
-        //    return productFabrics;
-        //}
+            return productSizesVm;
+        }
 
-        //private List<ProductCategoryVm> GetCategory()
-        //{
-        //    List<ProductCategoryVm> ProductCategories = _productRepository.GetCategory();
-        //    return ProductCategories;
-        //}
+        private List<ProductColorVm> GetColors()
+        {
+            List<ProductColor> productColors = _productRepository.GetColors();
+
+            List<ProductColorVm> productSizesVm = _imapper.Map<List<ProductColor>, List<ProductColorVm>>(productColors);
+
+            return productSizesVm;
+        }
+
+        private List<ProductFabricVm> GetFabric()
+        {
+            List<ProductFabric> productFabrics = _productRepository.GetFabric();
+
+            List<ProductFabricVm> productFabricsVm = _imapper.Map<List<ProductFabric>, List<ProductFabricVm>>(productFabrics);
+
+            return productFabricsVm;
+        }
+
+        private List<ProductCategoryVm> GetCategory()
+        {
+            List<ProductCategory> ProductCategories = _productRepository.GetCategory();
+
+            List<ProductCategoryVm> productCategoryVm = _imapper.Map<List<ProductCategory>, List<ProductCategoryVm>>(ProductCategories);
+
+            return productCategoryVm;
+        }
 
         //private void SetAllDropdownItemsInViewBag() 
         //{
