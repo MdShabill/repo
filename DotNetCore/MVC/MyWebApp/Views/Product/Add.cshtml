@@ -21,7 +21,7 @@
                 <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
             }
             <br /><br />
-
+            
             <div class="form-group">
                 <label asp-for="ProductName" class="control-label">Product Name</label>
                 <input asp-for="ProductName" class="form-control" />
@@ -35,13 +35,13 @@
             </div>
             <br/>
             <div class="form-group">
-                <label for="ProductId">Product Size</label>
+                <label for="SizeId">Product Size</label>
                 @Html.DropDownListFor(model => model.SizeId, ViewBag.ProductSizes as SelectList, "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.SizeId, "", new { @class = "text-danger" })
             </div>
             <br/>
             <div class="form-group">
-                <label for="ProductId">Product Color</label>
+                <label asp-for="ColorId">Product Color</label>
                 @Html.DropDownListFor(model => model.ColorId, ViewBag.ProductColors as SelectList, "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.ColorId, "", new { @class = "text-danger" })
             </div>
@@ -52,13 +52,13 @@
                 <span asp-validation-for="Fit" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FabricId" class="control-label">Fabric Name</label>
+                <label asp-for="FabricId" class="control-label">Product Fabric</label>
                 @Html.DropDownListFor(model => model.FabricId, ViewBag.ProductFabrics as SelectList, "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.FabricId, "", new { @class = "text-danger" })
             </div>
             <br/>
             <div class="form-group">
-                <label asp-for="CategoryId" class="control-label">Category Name</label>
+                <label asp-for="CategoryId" class="control-label">Product Category</label>
                 @Html.DropDownListFor(model => model.CategoryId, ViewBag.ProductCategories as SelectList, "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
             </div>

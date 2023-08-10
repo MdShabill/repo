@@ -339,7 +339,7 @@ namespace MyWebApp.Controllers
                 {
                     TempData["SuccessMessageForUpdate"] = "Product Update Successful";
                 }
-                return RedirectToAction("Index", productUpdateVm);
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
