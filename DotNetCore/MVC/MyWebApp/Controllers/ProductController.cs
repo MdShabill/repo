@@ -25,8 +25,10 @@ namespace MyWebApp.Controllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<ProductAddVm, Product>();
                 cfg.CreateMap<Product, ProductVm>();
+                cfg.CreateMap<ProductAddVm, Product>();
+                cfg.CreateMap<ProductUpdateVm, Product>();
+                cfg.CreateMap<Product, ProductUpdateVm>();
 
                 cfg.CreateMap<ProductFilterVm, ProductFilter>();
                 cfg.CreateMap<ProductResult, ProductResultVm>();
@@ -66,24 +68,26 @@ namespace MyWebApp.Controllers
             return View(product);
         }
 
-        //public IActionResult Edit(int id)
-        //{
-        //    Product product = _productRepository.Get(id);
+        public IActionResult Edit(int id)
+        {
+            Product product = _productRepository.Get(id);
 
-        //    List<ProductColor> productColors = _productRepository.GetColors();
-        //    ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
+            ProductUpdateVm productUpdateVm = _imapper.Map<Product, ProductUpdateVm>(product);
 
-        //    List<ProductSize> productSizes = _productRepository.GetSizes();
-        //    ViewBag.productSizes = new SelectList(productSizes, "Id", "Size");
+            List<ProductColor> productColors = _productRepository.GetColors();
+            ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
 
-        //    List<ProductFabric> productFabrics = _productRepository.GetFabric();
-        //    ViewBag.ProductFabrics = new SelectList(productFabrics, "Id", "FabricName");
+            List<ProductSize> productSizes = _productRepository.GetSizes();
+            ViewBag.productSizes = new SelectList(productSizes, "Id", "Size");
 
-        //    List<ProductCategory> ProductCategories = _productRepository.GetCategory();
-        //    ViewBag.ProductCategories = new SelectList(ProductCategories, "Id", "CategoryName");
+            List<ProductFabric> productFabrics = _productRepository.GetFabric();
+            ViewBag.ProductFabrics = new SelectList(productFabrics, "Id", "FabricName");
 
-        //    return View(product);
-        //}
+            List<ProductCategory> ProductCategories = _productRepository.GetCategory();
+            ViewBag.ProductCategories = new SelectList(ProductCategories, "Id", "CategoryName");
+
+            return View(productUpdateVm);
+        }
 
         public IActionResult ProductSearch()
         {
@@ -251,11 +255,83 @@ namespace MyWebApp.Controllers
 
 
         [HttpPost]
-        public IActionResult Update(ProductVm productVm)
+        public IActionResult Update(ProductUpdateVm productUpdateVm)
         {
             try
             {
-                Product product = _imapper.Map<ProductVm, Product>(productVm);
+                if (productUpdateVm.Id < 1)
+                {
+                    ViewBag.ErrorMessage = "Id Can Not Be Less Than Zero";
+                    return View();
+                }
+
+                if (string.IsNullOrWhiteSpace(productUpdateVm.ProductName))
+                {
+                    ViewBag.ErrorMessage = "Product Name should not be blank ";
+                    return View();
+                }
+
+                if (productUpdateVm.ProductName.Length > 20)
+                {
+                    ViewBag.ErrorMessage = "Product Name should be 20 characters or less";
+                    return View();
+                }
+
+                if (string.IsNullOrWhiteSpace(productUpdateVm.BrandName))
+                {
+                    ViewBag.ErrorMessage = "Brand Name should not be blank ";
+                    return View();
+                }
+
+                if (productUpdateVm.BrandName.Length > 20)
+                {
+                    ViewBag.ErrorMessage = "Brand Name should be 20 characters or less ";
+                    return View();
+                }
+
+                if (productUpdateVm.SizeId <= 0)
+                {
+                    ViewBag.ErrorMessage = "Please select a valid product size ";
+                    return View();
+                }
+
+                if (productUpdateVm.ColorId <= 0)
+                {
+                    ViewBag.ErrorMessage = "Please select a valid product color ";
+                    return View();
+                }
+
+                if (!Enum.IsDefined(typeof(FitType), productUpdateVm.Fit))
+                {
+                    ViewBag.ErrorMessage = "Product fit invalid ";
+                    return View();
+                }
+
+                if (productUpdateVm.FabricId <= 0)
+                {
+                    ViewBag.ErrorMessage = "Please select a valid product fabric ";
+                    return View();
+                }
+
+                if (productUpdateVm.CategoryId <= 0)
+                {
+                    ViewBag.ErrorMessage = "Please select a valid product category ";
+                    return View();
+                }
+
+                if (productUpdateVm.Discount > 70)
+                {
+                    ViewBag.ErrorMessage = "Product discount should be 70% or less ";
+                    return View();
+                }
+
+                if (productUpdateVm.Price > 20000)
+                {
+                    ViewBag.ErrorMessage = "Product price should be 20000 or less ";
+                    return View();
+                }
+
+                Product product = _imapper.Map<ProductUpdateVm, Product>(productUpdateVm);
 
                 int affectedRowCount = _productRepository.Update(product);
 
@@ -263,7 +339,7 @@ namespace MyWebApp.Controllers
                 {
                     TempData["SuccessMessageForUpdate"] = "Product Update Successful";
                 }
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", productUpdateVm);
             }
             catch (Exception ex)
             {
