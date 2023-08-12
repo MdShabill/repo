@@ -56,7 +56,7 @@
 
 -------------------------
 
-* If input data not reach in controller parameter what we Should do?
+*  If input data not reach in controller parameter what we Should do?
 -> Check View page and match model name same or not,
 -> Check in view page Form asp-action name same or not where you mention your view name
 -> Check in view page whatever you create for UI like text box, dropdown, radio button, check box etc 
@@ -144,3 +144,25 @@ then start working on it step by step based on your requirement, never ever
 .  For expressions: If you have any expression that evaluates to a Boolean
    value (either true or false), the ! operator will negate the result. 
    For example, if you have if (!(x > y)), it means "if x is not greater than y."
+  
+------------------------------------------
+
+- What is a dropdown and the purpose of a dropdown in MVC?
+
+  A dropdown, also known as a dropdown list or a select list, can be used on the 'UI' (User Interface). 
+  You can create a dropdown with the help of the Controller, View, and Model in MVC.  
+  On the 'UI', a user can select only one option from the dropdown list.
+  Dropdowns provide a user-friendly experience, similar to a user providing input through a single selection.
+  
+------------------------------------------
+
+- How to bind data in a dropdown for the 'UI' in MVC?
+
+  First, you need to create a model class for the data you want to fill in the dropdown.
+
+  Next, create an action where you can bind data that comes from the database through the repository layer.
+  This data can then be bound in the ViewBag, which is used to transfer data from the controller to the view.
+
+  Finally, create a view page (cshtml) where you can access and utilize the data stored in the ViewBag. Importantly, write code to generate the dropdown element for the 'UI' and populate it with the data from the ViewBag.  
+  
+  

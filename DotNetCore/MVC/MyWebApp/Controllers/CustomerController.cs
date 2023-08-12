@@ -125,8 +125,7 @@ namespace MyWebApp.Controllers
         [HttpPost]
         public IActionResult Register(CustomerVm customerVm)
         {
-            Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
-
+            
             if (string.IsNullOrWhiteSpace(customerVm.FirstName))
             {
                 ViewBag.ErrorMessage = "First Name Can Not Be Balnk";
@@ -165,6 +164,11 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
+            if(string.IsNullOrWhiteSpace(customerVm.Password))
+            {
+                ViewBag.ErrorMessage = "Password Can Not Be Blank ";
+            }
+
             int currentYear = DateTime.Now.Year;
             int birthYear = customerVm.DateOfBirth.Year;
             int age = currentYear - birthYear;
@@ -180,15 +184,14 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            if (ModelState.IsValid)
+            Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
+
+            int affectedRowCount = _customerRepository.Register(customer);
+            if (affectedRowCount > 0)
             {
-                int affectedRowCount = _customerRepository.Register(customer);
-                if (affectedRowCount > 0)
-                {
-                    TempData["SuccessMessageForRegister"] = "Customer Register Successful";
-                }
+                TempData["SuccessMessageForRegister"] = "Customer Register Successful";
             }
-            return RedirectToAction("Index", customerVm);
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -203,7 +206,6 @@ namespace MyWebApp.Controllers
         [HttpPost]
         public IActionResult Update(CustomerVm customerVm)
         {
-            Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
 
             if (customerVm.Id < 1)
             {
@@ -249,6 +251,11 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
+            if (string.IsNullOrWhiteSpace(customerVm.Password))
+            {
+                ViewBag.ErrorMessage = "Password Can Not Be Blank ";
+            }
+
             int currentYear = DateTime.Now.Year;
             int birthYear = customerVm.DateOfBirth.Year;
             int age = currentYear - birthYear;
@@ -264,12 +271,14 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
+            Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
+
             int affectedRowCount = _customerRepository.Update(customer);
             if (affectedRowCount > 0)
             {
                 TempData["SuccessMessageForUpdate"] = "Customer Update Successful";
             }
-            return RedirectToAction("Index", customerVm);
+            return RedirectToAction("Index");
         }
     }    
 }

@@ -37,6 +37,7 @@ namespace MyWebApp.Repositories
                         LastName = (string)dataTable.Rows[i]["LastName"],
                         Gender = (GenderType)dataTable.Rows[i]["Gender"],
                         Email = (string)dataTable.Rows[i]["Email"],
+                        Password = (string)dataTable.Rows[i]["Password"],
                         DateOfBirth = (DateTime)dataTable.Rows[i]["DateOfBirth"],
                         Mobile = Convert.ToString(dataTable.Rows[i]["Mobile"]),
                     };
@@ -64,6 +65,7 @@ namespace MyWebApp.Repositories
                     LastName = (string)dataTable.Rows[0]["LastName"],
                     Gender = (GenderType)dataTable.Rows[0]["Gender"],
                     Email = (string)dataTable.Rows[0]["Email"],
+                    Password = (string)dataTable.Rows[0]["Password"],
                     DateOfBirth = (DateTime)dataTable.Rows[0]["DateOfBirth"],
                     Mobile = (string)dataTable.Rows[0]["Mobile"],
                 };
@@ -113,6 +115,7 @@ namespace MyWebApp.Repositories
                         LastName = (string)dataTable.Rows[i]["LastName"],
                         Gender = (GenderType)dataTable.Rows[i]["Gender"],
                         Email = (string)dataTable.Rows[i]["Email"],
+                        Password = (string)dataTable.Rows[i]["Password"],
                         DateOfBirth = (DateTime)dataTable.Rows[i]["DateOfBirth"],
                         Mobile = Convert.ToString(dataTable.Rows[i]["Mobile"]),
                     };
@@ -164,6 +167,7 @@ namespace MyWebApp.Repositories
                         LastName = (string)dataTable.Rows[i]["LastName"],
                         Gender = (GenderType)dataTable.Rows[i]["Gender"],
                         Email = (string)dataTable.Rows[i]["Email"],
+                        Password = (string)dataTable.Rows[i]["Password"],
                         DateOfBirth = (DateTime)dataTable.Rows[i]["DateOfBirth"],
                         Mobile = Convert.ToString(dataTable.Rows[i]["Mobile"]),
                     };
@@ -179,15 +183,16 @@ namespace MyWebApp.Repositories
             {
                 string sqlQuery = @"INSERT INTO Customers
                    (FirstName, LastName, Gender, 
-                    Email, DateOfBirth, Mobile)
+                    Email, Password, DateOfBirth, Mobile)
                     VALUES 
                    (@FirstName, @LastName, @Gender, 
-                    @Email, @DateOfBirth, @Mobile)";
+                    @Email, @Password, @DateOfBirth, @Mobile)";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@FirstName", customer.FirstName);
                 sqlCommand.Parameters.AddWithValue("@LastName", customer.LastName);
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
+                sqlCommand.Parameters.AddWithValue("@Password", customer.Password);
                 sqlCommand.Parameters.AddWithValue("@DateOfBirth", customer.DateOfBirth);
                 sqlCommand.Parameters.AddWithValue("@Mobile", customer.Mobile);
                 sqlConnection.Open();
@@ -206,6 +211,7 @@ namespace MyWebApp.Repositories
                    LastName = @LastName, 
                    Gender = @Gender, 
                    Email = @Email, 
+                   Password = @Password, 
                    DateOfBirth = @DateOfBirth, 
                    Mobile = @Mobile
                    WHERE Id = @Id ";
@@ -215,6 +221,7 @@ namespace MyWebApp.Repositories
                 sqlCommand.Parameters.AddWithValue("@LastName", customer.LastName);
                 sqlCommand.Parameters.AddWithValue("@Gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@Email", customer.Email);
+                sqlCommand.Parameters.AddWithValue("@Password", customer.Password);
                 sqlCommand.Parameters.AddWithValue("@DateOfBirth", customer.DateOfBirth);
                 sqlCommand.Parameters.AddWithValue("@Mobile", customer.Mobile);
                 sqlConnection.Open();

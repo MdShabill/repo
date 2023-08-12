@@ -49,6 +49,12 @@
             </div>
             <br />
             <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                @*<span asp-validation-for="Password" class="text-danger"></span>*@
+            </div>
+            <br/>
+            <div class="form-group">
                 <label asp-for="DateOfBirth" class="control-label">Date Of Birth</label>
                 <input asp-for="DateOfBirth" class="form-control" />
                 @*<span asp-validation-for="DateOfBirth" class="text-danger"></span>*@
