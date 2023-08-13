@@ -10,6 +10,8 @@ using MyWebApp.DataModel;
 using MyWebApp.ViewModels;
 using MyWebApp.Enums;
 using System.Text.RegularExpressions;
+using System.Transactions;
+using MyWebApp.Helpers;
 
 namespace MyWebApp.Controllers
 {
@@ -167,6 +169,7 @@ namespace MyWebApp.Controllers
             if(string.IsNullOrWhiteSpace(customerVm.Password))
             {
                 ViewBag.ErrorMessage = "Password Can Not Be Blank ";
+                return View();
             }
 
             int currentYear = DateTime.Now.Year;
@@ -184,14 +187,38 @@ namespace MyWebApp.Controllers
                 return View();
             }
 
-            Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
-
-            int affectedRowCount = _customerRepository.Register(customer);
-            if (affectedRowCount > 0)
+            try
             {
-                TempData["SuccessMessageForRegister"] = "Customer Register Successful";
+                Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
+
+                int affectedRowCount = _customerRepository.Register(customer);
+                if (affectedRowCount > 0)
+                {
+                    TempData["SuccessMessageForRegister"] = "Customer Register Successful";
+                }
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            catch (SqlException ex)
+            {
+                if (ex.Number == Constants.UniqueConstraintViolationErrorcode)
+                {
+                    if (ex.Message.Contains("UQ_Customers_Email"))
+                    {
+                        ViewBag.ErrorMessage = "Email already exist";
+                        return View();
+                    }
+                    else
+                    {
+                        ViewBag.ErrorMessage = "Some error at database side";
+                        return View();
+                    }
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "Some error at database side";
+                    return View();
+                }
+            }
         }
 
         [HttpGet]

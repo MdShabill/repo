@@ -214,11 +214,11 @@ namespace WebApiDemo1.Controllers
                             //Approach #1
                             //for(int i = 0; i < customerDto.Addresses.Count; i++)
                             //{
-                            //    Address address = _imapper.Map<AddressDto, Address>(customerDto.Addresses[i]);
+                            //    Address address = _imapp
+                            //    er.Map<AddressDto, Address>(customerDto.Addresses[i]);
                             //    address.CustomerId = customer.Id;
                             //    _addressRepository.Add(address);
                             //}
-
                             //Approach #2
                             foreach (AddressDto addressDto in customerDto.Addresses)
                             {
@@ -254,7 +254,7 @@ namespace WebApiDemo1.Controllers
                         return BadRequest("Some error at database side");
                 }
                 else
-                    return BadRequest("Some error at database side");
+                        return BadRequest("Some error at database side");
             }
             catch (Exception ex)
             {
