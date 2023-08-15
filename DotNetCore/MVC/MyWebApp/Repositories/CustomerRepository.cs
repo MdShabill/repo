@@ -177,6 +177,23 @@ namespace MyWebApp.Repositories
             }
         }
 
+        
+
+        public void UpdateOnLoginSuccessfull(string email)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                DateTime lastSucccessfulLoginDate = DateTime.Now;
+                string sqlQuery = @"UPDATE Customers SET LastSuccessfulLoginDate = getdate(), LoginFailedCount = 0
+                                    WHERE Email = @email";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@email", email);
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+            }
+        }
+
         public int Register(Customer customer)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
