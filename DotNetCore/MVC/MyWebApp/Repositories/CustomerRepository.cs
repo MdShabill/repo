@@ -177,20 +177,38 @@ namespace MyWebApp.Repositories
             }
         }
 
-        
-
-        public void UpdateOnLoginSuccessfull(string email)
+        public Customer GetCustomerDetailsByEmailAndPassword(string email, string password)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                DateTime lastSucccessfulLoginDate = DateTime.Now;
-                string sqlQuery = @"UPDATE Customers SET LastSuccessfulLoginDate = getdate(), LoginFailedCount = 0
-                                    WHERE Email = @email";
-                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@email", email);
-                sqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
-                sqlConnection.Close();
+                string sqlQuery = @"
+                        SELECT * FROM Customers
+                        WHERE 
+                        Email = @email AND 
+                        Password = @password ";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@email", email);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@password", password);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                if (dataTable.Rows.Count > 0)
+                {
+                    Customer customers = new()
+                    {
+                        Id = (int)dataTable.Rows[0]["Id"],
+                        FirstName = (string)dataTable.Rows[0]["FirstName"],
+                        LastName = (string)dataTable.Rows[0]["LastName"],
+                        Gender = (GenderType)dataTable.Rows[0]["Gender"],
+                        Email = (string)dataTable.Rows[0]["Email"],
+                        Password = (string)dataTable.Rows[0]["Password"],
+                        DateOfBirth = (DateTime)dataTable.Rows[0]["DateOfBirth"],
+                        Mobile = Convert.ToString(dataTable.Rows[0]["Mobile"]),
+                    };
+                    return customers;
+                }
+                return null;
             }
         }
 

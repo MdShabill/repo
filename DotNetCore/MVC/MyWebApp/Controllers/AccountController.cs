@@ -17,18 +17,17 @@ namespace MyWebApp.Controllers
 {
     public class AccountController : Controller
     {
-        IAccountRepository _accountRepository;
+        ICustomerRepository _customerRepository;
         IMapper _imapper;
 
-        public AccountController(IAccountRepository accountRepository)
+        public AccountController(ICustomerRepository customerRepository)
         {
-            _accountRepository = accountRepository;
+            _customerRepository = customerRepository;
 
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Customer, CustomerVm>();
             });
-
             _imapper = configuration.CreateMapper();
         }
 
@@ -40,7 +39,7 @@ namespace MyWebApp.Controllers
         [HttpPost]
         public IActionResult Login(string email, string password) 
         {
-            Customer customer = _accountRepository.GetCustomerDetailsByEmailAndPassword(email, password);
+            Customer customer = _customerRepository.GetCustomerDetailsByEmailAndPassword(email, password);
             CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
             if (customer is null)
             {
@@ -50,7 +49,6 @@ namespace MyWebApp.Controllers
             else
             {
                 ViewBag.ErrorMessage = "Login Successful ";
-                //return View("View", customerVm);
             }
             return View("View",customerVm);
         }
