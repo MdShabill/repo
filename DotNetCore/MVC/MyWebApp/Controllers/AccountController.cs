@@ -44,13 +44,9 @@ namespace MyWebApp.Controllers
             if (customer is null)
             {
                 ViewBag.ErrorMessage = "Invalid Email and Password ";
-
+                return View();
             }
-            else
-            {
-                ViewBag.ErrorMessage = "Login Successful ";
-            }
-            return View("View",customerVm);
+            return RedirectToAction("ProductSearchOptional", "Product");
         }
     }
 }

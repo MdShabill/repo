@@ -147,7 +147,7 @@ namespace MyWebApp.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
-                        Select  
+                        Select Products.Id, 
                         Products.ProductName, Products.BrandName,
                         ProductColors.ColorName, ProductSizes.Size,
                         Products.Price
@@ -197,6 +197,7 @@ namespace MyWebApp.Repositories
                 {
                     ProductResultsOptional productResult = new()
                     {
+                        Id = (int)dataTable.Rows[i]["Id"],
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         ColorName = (string)dataTable.Rows[i]["ColorName"],

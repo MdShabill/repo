@@ -65,7 +65,8 @@ namespace MyWebApp.Controllers
             //productRepository1.Get()
 
             Product product = _productRepository.Get(id);
-            return View(product);
+            ProductVm productVm = _imapper.Map<Product, ProductVm>(product);
+            return View(productVm);
         }
 
         public IActionResult Edit(int id)

@@ -23,7 +23,7 @@
             @foreach (MyWebApp.ViewModels.Products.ProductResultsOptionalVm productResultVm in Model)
             {
                 <tr>
-                    <td><b>@productResultVm.ProductName</b></td>
+                    <td><a href="http://localhost:5277/Product/View/@productResultVm.Id"><b>@productResultVm.ProductName</b></a></td>
                     <td><b>@productResultVm.BrandName</b></td>
                     <td><b>@productResultVm.ColorName</b></td>
                     <td><b>@productResultVm.SizeName</b></td>
