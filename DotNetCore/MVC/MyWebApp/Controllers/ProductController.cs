@@ -17,11 +17,13 @@ namespace MyWebApp.Controllers
     public class ProductController : Controller
     {
         IProductRepository _productRepository;
+        IOrderRepository _orderRepository;
         IMapper _imapper;
 
-        public ProductController(IProductRepository productRepository)
+        public ProductController(IProductRepository productRepository, IOrderRepository orderRepository)
         {
             _productRepository = productRepository;
+            _orderRepository = orderRepository;
 
             var configuration = new MapperConfiguration(cfg =>
             {
@@ -151,8 +153,8 @@ namespace MyWebApp.Controllers
         public IActionResult OrderPlace(OrderVm orderVm)
         {
             orderVm.CustomerId = 1;
-            Order buyNow = _imapper.Map<OrderVm, Order>(orderVm);
-            int affectedRowCount = _productRepository.PlaceOrder(buyNow);
+            Order order = _imapper.Map<OrderVm, Order>(orderVm);
+            int affectedRowCount = _orderRepository.PlaceOrder(order);
             if (affectedRowCount > 0)
             {
                 TempData["SuccessMessageForBuyNow"] = "Buy now Successful";

@@ -14,7 +14,6 @@ namespace MyWebApp.Repositories
         public List<ProductFabric> GetFabric();
         public List<ProductCategory> GetCategory();
         public int Delete(int id);
-        public int PlaceOrder(Order order);
         public int Add(Product product);
         public int Update(Product product);
     }
