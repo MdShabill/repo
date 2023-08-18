@@ -320,6 +320,27 @@ namespace MyWebApp.Repositories
             }
         }
 
+        public int BuyNow(BuyNow buyNow)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"Insert Into Orders
+                        (Productid, CustomerId, OrderDate, Price, Quantity)
+                        Values
+                        (@ProductId, @CustomerId, GetDate(), @Price, @Quantity) ";
+
+                SqlCommand sqlCommand= new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@ProductId", buyNow.ProductId);
+                sqlCommand.Parameters.AddWithValue("@CustomerId", buyNow.CustomerId);
+                sqlCommand.Parameters.AddWithValue("@Price", buyNow.Price);
+                sqlCommand.Parameters.AddWithValue("@Quantity", buyNow.Quantity);
+                sqlConnection.Open();
+                int affectedRowCount = sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+                return affectedRowCount;
+            }
+        }
+
         public int Add(Product product)
         {
             using (SqlConnection sqlConnection = new(_connectionString))

@@ -27,13 +27,19 @@
 </style>
 
 <body>
-    <form>
+    <form asp-action="BuyNow">
 
         <h2 class="heading">
-            Customer View
+            Product View
         </h2>
 
         <table class="table">
+            <tr>
+                <td>
+                    @Model.ProductId
+                    <input type="hidden" name="ProductId" value="@Model.ProductId" id="ProductId" />
+                </td>
+            </tr>
             <tr>
                 <td><b>Product Name:</b></td>
                 <td>@Model.ProductName</td>
@@ -66,10 +72,15 @@
                 <td><b>Discount:</b></td>
                 <td>@Model.Discount</td>
             </tr>
+
             <tr>
                 <td><b>Price:</b></td>
-                <td>@Model.Price</td>
+                <td>
+                    @Model.Price 
+                    <input type="hidden" name="Price" value="@Model.Price" id="Price" />
+                </td>
             </tr>
+
             <td>
                 <b>Enter Quantity:</b>
             </td>
@@ -82,7 +93,7 @@
                 </td>
                 <td>
                     <div class="form-group" >
-                        <input type="submit" value="Buy Now" class="btn btn-primary" />
+                        <input type="submit" value="Buy Now" class="btn btn-primary" 
                     </div>
                 </td>
             </tr>

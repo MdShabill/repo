@@ -26,6 +26,7 @@ namespace MyWebApp.Controllers
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Product, ProductVm>();
+                cfg.CreateMap<BuyNowVm, BuyNow>();
                 cfg.CreateMap<ProductAddVm, Product>();
                 cfg.CreateMap<ProductUpdateVm, Product>();
                 cfg.CreateMap<Product, ProductUpdateVm>();
@@ -66,7 +67,7 @@ namespace MyWebApp.Controllers
 
             Product product = _productRepository.Get(id);
             ProductVm productVm = _imapper.Map<Product, ProductVm>(product);
-            return View(productVm);
+            return  View(productVm);
         }
 
         public IActionResult Edit(int id)
@@ -145,6 +146,19 @@ namespace MyWebApp.Controllers
         //products.Add(new Product { ProductName = "Belt", BrandName = "Bata", Price = 200 });
 
         //products = products.Where(x=>x.ProductName == productName).ToList();
+
+        [HttpPost]
+        public IActionResult BuyNow(BuyNowVm buyNowVm)
+        {
+            buyNowVm.CustomerId = 1;
+            BuyNow buyNow = _imapper.Map<BuyNowVm, BuyNow>(buyNowVm);
+            int affectedRowCount = _productRepository.BuyNow(buyNow);
+            if (affectedRowCount > 0)
+            {
+                TempData["SuccessMessageForBuyNow"] = "Buy now Successful";
+            }
+            return RedirectToAction("Index");
+        }
 
         public IActionResult Add()
         {
