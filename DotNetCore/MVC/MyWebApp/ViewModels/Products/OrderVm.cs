@@ -1,6 +1,6 @@
 ﻿namespace MyWebApp.ViewModels.Products
 {
-    public class BuyNowVm
+    public class OrderVm
     {
         public int ProductId { get; set; }
         public int CustomerId { get; set; }

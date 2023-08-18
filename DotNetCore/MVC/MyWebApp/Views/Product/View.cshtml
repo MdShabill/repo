@@ -27,7 +27,7 @@
 </style>
 
 <body>
-    <form asp-action="BuyNow">
+    <form asp-action="OrderPlace">
 
         <h2 class="heading">
             Product View
@@ -36,8 +36,7 @@
         <table class="table">
             <tr>
                 <td>
-                    @Model.ProductId
-                    <input type="hidden" name="ProductId" value="@Model.ProductId" id="ProductId" />
+                    <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
                 </td>
             </tr>
             <tr>

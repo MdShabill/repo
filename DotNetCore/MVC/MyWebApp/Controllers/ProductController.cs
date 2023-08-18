@@ -26,7 +26,7 @@ namespace MyWebApp.Controllers
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Product, ProductVm>();
-                cfg.CreateMap<BuyNowVm, BuyNow>();
+                cfg.CreateMap<OrderVm, Order>();
                 cfg.CreateMap<ProductAddVm, Product>();
                 cfg.CreateMap<ProductUpdateVm, Product>();
                 cfg.CreateMap<Product, ProductUpdateVm>();
@@ -148,11 +148,11 @@ namespace MyWebApp.Controllers
         //products = products.Where(x=>x.ProductName == productName).ToList();
 
         [HttpPost]
-        public IActionResult BuyNow(BuyNowVm buyNowVm)
+        public IActionResult OrderPlace(OrderVm orderVm)
         {
-            buyNowVm.CustomerId = 1;
-            BuyNow buyNow = _imapper.Map<BuyNowVm, BuyNow>(buyNowVm);
-            int affectedRowCount = _productRepository.BuyNow(buyNow);
+            orderVm.CustomerId = 1;
+            Order buyNow = _imapper.Map<OrderVm, Order>(orderVm);
+            int affectedRowCount = _productRepository.PlaceOrder(buyNow);
             if (affectedRowCount > 0)
             {
                 TempData["SuccessMessageForBuyNow"] = "Buy now Successful";

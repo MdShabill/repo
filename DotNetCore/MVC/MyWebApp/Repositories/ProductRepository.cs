@@ -320,7 +320,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public int BuyNow(BuyNow buyNow)
+        public int PlaceOrder(Order order)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -330,10 +330,10 @@ namespace MyWebApp.Repositories
                         (@ProductId, @CustomerId, GetDate(), @Price, @Quantity) ";
 
                 SqlCommand sqlCommand= new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@ProductId", buyNow.ProductId);
-                sqlCommand.Parameters.AddWithValue("@CustomerId", buyNow.CustomerId);
-                sqlCommand.Parameters.AddWithValue("@Price", buyNow.Price);
-                sqlCommand.Parameters.AddWithValue("@Quantity", buyNow.Quantity);
+                sqlCommand.Parameters.AddWithValue("@ProductId", order.ProductId);
+                sqlCommand.Parameters.AddWithValue("@CustomerId", order.CustomerId);
+                sqlCommand.Parameters.AddWithValue("@Price", order.Price);
+                sqlCommand.Parameters.AddWithValue("@Quantity", order.Quantity);
                 sqlConnection.Open();
                 int affectedRowCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
