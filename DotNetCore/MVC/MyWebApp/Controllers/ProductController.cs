@@ -17,18 +17,15 @@ namespace MyWebApp.Controllers
     public class ProductController : Controller
     {
         IProductRepository _productRepository;
-        IOrderRepository _orderRepository;
         IMapper _imapper;
 
-        public ProductController(IProductRepository productRepository, IOrderRepository orderRepository)
+        public ProductController(IProductRepository productRepository)
         {
             _productRepository = productRepository;
-            _orderRepository = orderRepository;
 
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Product, ProductVm>();
-                cfg.CreateMap<OrderVm, Order>();
                 cfg.CreateMap<ProductAddVm, Product>();
                 cfg.CreateMap<ProductUpdateVm, Product>();
                 cfg.CreateMap<Product, ProductUpdateVm>();
@@ -148,19 +145,6 @@ namespace MyWebApp.Controllers
         //products.Add(new Product { ProductName = "Belt", BrandName = "Bata", Price = 200 });
 
         //products = products.Where(x=>x.ProductName == productName).ToList();
-
-        [HttpPost]
-        public IActionResult OrderPlace(OrderVm orderVm)
-        {
-            orderVm.CustomerId = 1;
-            Order order = _imapper.Map<OrderVm, Order>(orderVm);
-            int affectedRowCount = _orderRepository.PlaceOrder(order);
-            if (affectedRowCount > 0)
-            {
-                TempData["SuccessMessageForBuyNow"] = "Buy now Successful";
-            }
-            return RedirectToAction("Index");
-        }
 
         public IActionResult Add()
         {
