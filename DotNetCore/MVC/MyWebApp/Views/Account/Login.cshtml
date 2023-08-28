@@ -1,11 +1,13 @@
 ﻿@model MyWebApp.ViewModels.CustomerVm
 
-<div class="row">
+<div class="row">   
     <div class="col-md-4">
         <form asp-action="Login">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
+
+            <span class="text-danger"><b>@ViewBag.SuccessMessage</b></span>
             <br/>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"><b>Email</b></label>

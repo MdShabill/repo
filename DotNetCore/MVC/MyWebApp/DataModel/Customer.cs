@@ -13,5 +13,6 @@ namespace MyWebApp.DataModel
         public string Password { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Mobile { get; set; }
+        public DateTime LastSucccessfulLoginDate { get; set; }
     }
 }

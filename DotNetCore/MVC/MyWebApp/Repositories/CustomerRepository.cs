@@ -212,6 +212,21 @@ namespace MyWebApp.Repositories
             }
         }
 
+        public void UpdateOnLoginSuccessful(int id)
+        {
+            using(SqlConnection sqlconnection = new(_connectionString))
+            {
+                string sqlQuery = @"Update Customers 
+                                  Set LastSucccessfulLoginDate = getDate()
+                                  Where Id = @id ";
+                SqlCommand sqlCommand = new(sqlQuery, sqlconnection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                sqlconnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlconnection.Close();
+            }
+        }
+
         public int Register(Customer customer)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
