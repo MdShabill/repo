@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MyWebApp.DataModel;
 using MyWebApp.Repositories;
+using MyWebApp.ViewModels;
 using MyWebApp.ViewModels.Products;
 
 namespace MyWebApp.Controllers
@@ -23,15 +24,19 @@ namespace MyWebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult OrderPlace(OrderVm orderVm)
+        public IActionResult PlaceOrder(OrderVm orderVm)
         {
-            orderVm.CustomerId = 1;
+            orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("LoggedInCustomerId"));
+           
             Order order = _imapper.Map<OrderVm, Order>(orderVm);
+            
             int affectedRowCount = _orderRepository.PlaceOrder(order);
+            
             if (affectedRowCount > 0)
             {
                 TempData["SuccessMessageForBuyNow"] = "Buy now Successful";
             }
+
             return RedirectToAction("Index", "Product");
         }
     }

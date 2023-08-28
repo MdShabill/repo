@@ -12,6 +12,8 @@ using MyWebApp.Enums;
 using System.Text.RegularExpressions;
 using System.Transactions;
 using MyWebApp.Helpers;
+using System.Web.Providers.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace MyWebApp.Controllers
 {
@@ -46,6 +48,13 @@ namespace MyWebApp.Controllers
                 ViewBag.ErrorMessage = "Invalid Email and Password ";
                 return View(customerVm);
             }
+
+            HttpContext.Session.SetInt32("LoggedInCustomerId", customerVm.Id);
+            HttpContext.Session.SetString("LoggedInCustomerEmail", customerVm.Email);
+            HttpContext.Session.SetString("LoggedInCustomerFirstName", customerVm.FirstName);
+            HttpContext.Session.SetString("LoggedInCustomerLastName", customerVm.LastName);
+            HttpContext.Session.SetString("LoggedInCustomerMobile", customerVm.Mobile);
+
             return RedirectToAction("ProductSearchOptional", "Product");
         }
     }

@@ -58,11 +58,15 @@ namespace MyWebApp.Controllers
 
         public IActionResult View(int id)
         {
+
             //ProductRepository productRepository = new();
 
             //var productRepository1 = new ProductRepository();
 
             //productRepository1.Get()
+
+            ViewBag.LoggedInCustomerFirstName = HttpContext.Session.GetString("LoggedInCustomerFirstName");
+            ViewBag.LoggedInCustomerLastName = HttpContext.Session.GetString("LoggedInCustomerLastName");
 
             Product product = _productRepository.Get(id);
             ProductVm productVm = _imapper.Map<Product, ProductVm>(product);
@@ -118,6 +122,8 @@ namespace MyWebApp.Controllers
 
         public IActionResult ProductSearchOptional()
         {
+            ViewBag.LoggedInCustomerFirstName = HttpContext.Session.GetString("LoggedInCustomerFirstName");
+           
             List<ProductColor> productColors = _productRepository.GetColors();
             ViewBag.ProductColors = new SelectList(productColors, "Id", "ColorName");
 

@@ -19,6 +19,7 @@ namespace MyWebApp.Repositories
         public List<Customer> GetCustomersOptional(CustomerSearchOptional optionalFilter);
 
         public Customer GetCustomerDetailsByEmailAndPassword(string email, string password);
+        public void UpdateOnLoginSuccessful(string email);
         public int Register(Customer customer);
         public int Update(Customer customer);
     }
