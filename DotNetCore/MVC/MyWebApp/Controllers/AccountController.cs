@@ -14,6 +14,7 @@ using System.Transactions;
 using MyWebApp.Helpers;
 using System.Web.Providers.Entities;
 using Microsoft.AspNetCore.Http;
+using MyWebApp.ViewModels.Products;
 
 namespace MyWebApp.Controllers
 {
@@ -48,6 +49,9 @@ namespace MyWebApp.Controllers
                 ViewBag.ErrorMessage = "Invalid Email and Password ";
                 return View(customerVm);
             }
+
+            _customerRepository.UpdateOnLoginSuccessful(customerVm.Id);
+            ViewBag.Successmessage = Convert.ToInt32(HttpContext.Session.GetInt32("Update Login Successful"));
 
             HttpContext.Session.SetInt32("LoggedInCustomerId", customerVm.Id);
             HttpContext.Session.SetString("LoggedInCustomerEmail", customerVm.Email);
