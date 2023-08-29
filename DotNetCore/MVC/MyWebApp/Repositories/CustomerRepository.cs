@@ -212,18 +212,33 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public void UpdateOnLoginSuccessful(int id)
+        public void UpdateOnLoginSuccessful(string email)
         {
             using(SqlConnection sqlconnection = new(_connectionString))
             {
                 string sqlQuery = @"Update Customers 
                                   Set LastSucccessfulLoginDate = getDate()
-                                  Where Id = @id ";
+                                  Where Email = @email ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlconnection);
-                sqlCommand.Parameters.AddWithValue("@id", id);
+                sqlCommand.Parameters.AddWithValue("@email", email);
                 sqlconnection.Open();
                 sqlCommand.ExecuteNonQuery();
-                sqlconnection.Close();
+                sqlconnection.Close();  
+            }
+        }
+
+        public void UpdateOnLoginFailed(string email)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"Update Customers
+                                    Set LastFailedLoginDate = GetDate()
+                                    Where Email = @email ";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@Email", email);
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
             }
         }
 
@@ -245,9 +260,11 @@ namespace MyWebApp.Repositories
                 sqlCommand.Parameters.AddWithValue("@Password", customer.Password);
                 sqlCommand.Parameters.AddWithValue("@DateOfBirth", customer.DateOfBirth);
                 sqlCommand.Parameters.AddWithValue("@Mobile", customer.Mobile);
+                
                 sqlConnection.Open();
                 int affectedRowCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
+
                 return affectedRowCount;
             }
         }

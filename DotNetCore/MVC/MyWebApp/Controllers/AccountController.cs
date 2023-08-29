@@ -46,13 +46,14 @@ namespace MyWebApp.Controllers
             CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
             if (customer is null)
             {
+                _customerRepository.UpdateOnLoginFailed(email);
+
                 ViewBag.ErrorMessage = "Invalid Email and Password ";
                 return View(customerVm);
             }
-
-            _customerRepository.UpdateOnLoginSuccessful(customerVm.Id);
-            ViewBag.Successmessage = Convert.ToInt32(HttpContext.Session.GetInt32("Update Login Successful"));
-
+            
+            _customerRepository.UpdateOnLoginSuccessful(email);
+            
             HttpContext.Session.SetInt32("LoggedInCustomerId", customerVm.Id);
             HttpContext.Session.SetString("LoggedInCustomerEmail", customerVm.Email);
             HttpContext.Session.SetString("LoggedInCustomerFirstName", customerVm.FirstName);

@@ -20,7 +20,8 @@ namespace MyWebApp.Repositories
 
         public Customer GetCustomerDetailsByEmailAndPassword(string email, string password);
 
-        public void UpdateOnLoginSuccessful(int id);
+        public void UpdateOnLoginSuccessful(string email);
+        public void UpdateOnLoginFailed(string email);
 
         public int Register(Customer customer);
         public int Update(Customer customer);
