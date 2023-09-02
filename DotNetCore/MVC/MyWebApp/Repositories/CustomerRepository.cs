@@ -206,6 +206,7 @@ namespace MyWebApp.Repositories
                         Password = (string)dataTable.Rows[0]["Password"],
                         DateOfBirth = (DateTime)dataTable.Rows[0]["DateOfBirth"],
                         Mobile = Convert.ToString(dataTable.Rows[0]["Mobile"]),
+                        IsLocked = dataTable.Rows[0]["IsLocked"] != DBNull.Value ? (bool)dataTable.Rows[0]["IsLocked"]:false
                     };
                     return customers;
                 }
@@ -215,10 +216,10 @@ namespace MyWebApp.Repositories
 
         public void UpdateOnLoginSuccessful(string email)
         {
-            using(SqlConnection sqlconnection = new(_connectionString))
+            using (SqlConnection sqlconnection = new(_connectionString))
             {
                 string sqlQuery = @"Update Customers 
-                                  Set LastSucccessfulLoginDate = getDate()
+                                  Set LastSuccessfulLoginDate = getDate()
                                   Where Email = @email ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlconnection);
                 sqlCommand.Parameters.AddWithValue("@email", email);
@@ -228,16 +229,36 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public void UpdateOnLoginFailed(string email)
+        public int UpdateOnLoginFailed(string email)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Update Customers
-                                    Set LoginFailedCount = IsNull(LoginFailedCount, 0) + 1,
-                                    LastFailedLoginDate = GetDate()
-                                    Where Email = @email ";
+                string sqlQuery = @"UPDATE Customers
+                                    SET LoginFailedCount = ISNULL(LoginFailedCount, 0) + 1,
+                                    LastFailedLoginDate = GETDATE()
+                                    OUTPUT INSERTED.LoginFailedCount AS LoginFailedCount
+                                    WHERE Email = @email ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Email", email);
+                sqlConnection.Open();
+                int loginFailedCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                sqlConnection.Close();
+
+                return loginFailedCount;
+            }
+        }
+
+        public void UpdateIsLocked(string email, bool isLocked)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"Update Customers 
+                                    Set Islocked = @isLocked
+                                    Where Email = @email";
+                SqlCommand sqlCommand = new (sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@email", email);
+                sqlCommand.Parameters.AddWithValue("@isLocked", isLocked);
+
                 sqlConnection.Open();
                 sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();

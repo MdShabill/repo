@@ -13,8 +13,9 @@ namespace MyWebApp.DataModel
         public string Password { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Mobile { get; set; }
-        public DateTime LastSucccessfulLoginDate { get; set; }
+        public DateTime LastSuccessfulLoginDate { get; set; }
         public DateTime LastFailedLoginDate { get; set; }
         public int LoginFailedCount { get; set; }
+        public bool IsLocked { get; set; }
     }
 }
