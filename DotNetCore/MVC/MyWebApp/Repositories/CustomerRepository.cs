@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using MyWebApp.Enums;
 using MyWebApp.DataModel;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 
 namespace MyWebApp.Repositories
 {
@@ -232,7 +233,8 @@ namespace MyWebApp.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Update Customers
-                                    Set LastFailedLoginDate = GetDate()
+                                    Set LoginFailedCount = IsNull(LoginFailedCount, 0) + 1,
+                                    LastFailedLoginDate = GetDate()
                                     Where Email = @email ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@Email", email);
