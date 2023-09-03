@@ -21,7 +21,7 @@ namespace MyWebApp.Repositories
         public Customer GetCustomerDetailsByEmailAndPassword(string email, string password);
 
         public void UpdateOnLoginSuccessful(string email);
-        public int UpdateOnLoginFailed(string email);
+        public void UpdateOnLoginFailed(string email);
         public void UpdateIsLocked(string email, bool isLocked = true);   
         
         public int Register(Customer customer);

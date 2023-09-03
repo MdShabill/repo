@@ -46,20 +46,20 @@ namespace MyWebApp.Controllers
             CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
             if (customer is null)
             {
-                int loginfailedCount = _customerRepository.UpdateOnLoginFailed(email);
+                _customerRepository.UpdateOnLoginFailed(email);
 
-                if (loginfailedCount > 2)
-                {
-                    _customerRepository.UpdateIsLocked(email);
-                }
-
+                _customerRepository.UpdateIsLocked(email);
+                
                 ViewBag.ErrorMessage = "Invalid Email and Password ";
                 return View(customerVm);
             }
-            if(customer.IsLocked)
+            if(customer.LoginFailedCount > 2) 
             {
-                ViewBag.LockedErrorMessage = "Your Account Has Been Locked, Kindly Contact Administrator ";
-                return View();
+                if (customer.IsLocked)
+                {
+                    ViewBag.LockedErrorMessage = "Your Account Has Been Locked, Kindly Contact Administrator ";
+                    return View();
+                }
             }
 
             _customerRepository.UpdateOnLoginSuccessful(email);
