@@ -178,19 +178,17 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public Customer GetCustomerDetailsByEmailAndPassword(string email, string password)
+        public Customer GetCustomerDetailsByEmail(string email)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
                         SELECT * FROM Customers
                         WHERE 
-                        Email = @email AND 
-                        Password = @password ";
+                        Email = @email ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@email", email);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@password", password);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
@@ -203,7 +201,7 @@ namespace MyWebApp.Repositories
                         LastName = (string)dataTable.Rows[0]["LastName"],
                         Gender = (GenderType)dataTable.Rows[0]["Gender"],
                         Email = (string)dataTable.Rows[0]["Email"],
-                        Password = (string)dataTable.Rows[0]["Password"],
+                        Password = dataTable.Rows[0]["Password"] != DBNull.Value ? (string)dataTable.Rows[0]["Password"] : null,
                         DateOfBirth = (DateTime)dataTable.Rows[0]["DateOfBirth"],
                         Mobile = Convert.ToString(dataTable.Rows[0]["Mobile"]),
                         LoginFailedCount = dataTable.Rows[0]["LoginFailedCount"] != DBNull.Value ? (int)dataTable.Rows[0]["LoginFailedCount"] : null,

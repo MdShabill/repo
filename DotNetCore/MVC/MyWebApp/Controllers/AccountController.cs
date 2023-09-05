@@ -42,24 +42,32 @@ namespace MyWebApp.Controllers
         [HttpPost]
         public IActionResult Login(string email, string password) 
         {
-            Customer customer = _customerRepository.GetCustomerDetailsByEmailAndPassword(email, password);
+            Customer customer = _customerRepository.GetCustomerDetailsByEmail(email);
             CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
+
             if (customer is null)
+            {
+                ViewBag.ErrorMessage = "Invalid Email Or Password ";
+                return View();
+            }
+
+            if (customer != null && customer.IsLocked)
+            {
+                ViewBag.LockedErrorMessage = "Your Account Has Been Locked, Kindly Contact Administrator ";
+                return View();
+            }
+            
+            if (customer.Password != password)
             {
                 _customerRepository.UpdateOnLoginFailed(email);
 
-                _customerRepository.UpdateIsLocked(email);
-                
-                ViewBag.ErrorMessage = "Invalid Email and Password ";
-                return View(customerVm);
-            }
-            if(customer.LoginFailedCount > 2) 
-            {
-                if (customer.IsLocked)
+                if(customer.LoginFailedCount > 1)
                 {
-                    ViewBag.LockedErrorMessage = "Your Account Has Been Locked, Kindly Contact Administrator ";
-                    return View();
+                    _customerRepository.UpdateIsLocked(email);
                 }
+                
+                ViewBag.ErrorMessage = "Invalid Email Or Password ";
+                return View(customerVm);
             }
 
             _customerRepository.UpdateOnLoginSuccessful(email);

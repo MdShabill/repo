@@ -18,7 +18,7 @@ namespace MyWebApp.Repositories
         //public List<Customer> GetCustomersOptional(string firstName, string lastName, int gender);
         public List<Customer> GetCustomersOptional(CustomerSearchOptional optionalFilter);
 
-        public Customer GetCustomerDetailsByEmailAndPassword(string email, string password);
+        public Customer GetCustomerDetailsByEmail(string email);
 
         public void UpdateOnLoginSuccessful(string email);
         public void UpdateOnLoginFailed(string email);
