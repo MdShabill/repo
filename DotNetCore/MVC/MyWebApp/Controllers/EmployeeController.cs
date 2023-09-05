@@ -16,6 +16,12 @@ namespace MyWebApp.Controllers
 
         public IActionResult Index()
         {
+            int employeesCount = _employeeRepository.GetAllEmployeesCount();
+            if (employeesCount > 0)
+            {
+                ViewBag.EmployeeCount = employeesCount;
+            }
+
             List<Employee> employees = _employeeRepository.GetAll();
 
             string successMessageForAdd = ViewBag.SuccessMessageForAdd;

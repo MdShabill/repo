@@ -49,6 +49,24 @@ namespace MyWebApp.Repositories
             }
         }
 
+        public int GetAllEmployeesCount()
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @" Select Count(*) 
+                                    as EmployeeCount
+							        From Employees1 ";
+
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+
+                sqlConnection.Open();
+                int employeesCount = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                sqlConnection.Close();
+
+                return employeesCount;
+            }
+        }
+
         public void Add(Employee employee)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
