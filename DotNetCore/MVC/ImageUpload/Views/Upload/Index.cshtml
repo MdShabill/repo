@@ -1,0 +1,30 @@
+﻿
+<div class="content d-flex flex-column flex-column-fluid">
+    @* <abp-page-subheader title="@("FileUpload")"> *@
+    @*  </abp-page-subheader> *@
+
+    @* <div class="@(await GetContainerClass())"> *@
+    <div class="card card-custom gutter-b">
+        <div class="card-body">
+            <form asp-action="Index" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="ProductName">Product Name</label>
+                    <input class="form-control" type="text" id="ProductName" name="ProductName" required>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label for="Description">Description</label>
+                    <input class="form-control" type="text" id="Description" name="Description" required>
+                </div>
+                <br />
+                <div class="form-group">
+                    <label for="ImageName">Image</label>
+                    <input class="form-control" type="file" id="ImageName" name="ImageName" required>
+                </div>
+                <br />
+                <input type="submit" value="Upload" class="btn btn-primary" />
+            </form>
+        </div>
+    </div>
+    @* </div> *@
+</div>
