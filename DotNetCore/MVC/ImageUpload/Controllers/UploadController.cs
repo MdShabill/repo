@@ -10,10 +10,10 @@ namespace UploadFile.Controllers
     public class UploadController : Controller
     {
         IUploadRepository _uploadRepository;
-        private readonly IHostEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         IMapper _imapper;
 
-        public UploadController(IHostEnvironment env, IUploadRepository uploadRepository)
+        public UploadController(IWebHostEnvironment env, IUploadRepository uploadRepository)
         {
             _env = env;
             _uploadRepository = uploadRepository;
@@ -21,12 +21,15 @@ namespace UploadFile.Controllers
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<ProductImageVm, ProductImage>();
+                cfg.CreateMap<ProductImage, ProductImageVm>();
             });
 
             _imapper = configuration.CreateMapper();
         }
 
-        public IActionResult Index()
+
+
+		public IActionResult Index()
         {
             return View();
         }
@@ -34,36 +37,52 @@ namespace UploadFile.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(ProductImageVm productImageVm)
         {
-            //upload image in folder
-            string uniqueFileName = GetUniqueFileName(productImageVm.ImageName.FileName);
-            string dir = Path.Combine(_env.ContentRootPath, "UploadFile.Demo");
+			//upload image in folder
+			
+            string dir = Path.Combine(_env.WebRootPath, "UploadedFiles");
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
+
+			string uniqueFileName = GetUniqueFileName(productImageVm.ImageFile.FileName);
+			string filePath = Path.Combine(dir, uniqueFileName);
             
-            string filePath = Path.Combine(dir, uniqueFileName);
-            
-            await productImageVm.ImageName.CopyToAsync(new FileStream(filePath, FileMode.Create));
+            await productImageVm.ImageFile.CopyToAsync(new FileStream(filePath, FileMode.Create));
 
             // now call repo method to insert data in table
+            AddImage(productImageVm, uniqueFileName);
+
+			return View();
+		}
+
+        private void AddImage(ProductImageVm productImageVm, string uniqueFileName)
+        {
             ProductImage productImage = _imapper.Map<ProductImageVm, ProductImage>(productImageVm);
             productImage.ImageName = uniqueFileName;
             int affectedRowsCount = _uploadRepository.AddImage(productImage);
-            if(affectedRowsCount > 0)
+            if (affectedRowsCount > 0)
             {
 
             }
-            return View();
         }
 
         private string GetUniqueFileName(string fileName)
-        {
+        {                                   
             fileName = Path.GetFileName(fileName);
             return Path.GetFileNameWithoutExtension(fileName)
                    + "_"
                    + Guid.NewGuid().ToString().Substring(0, 4)
                    + Path.GetExtension(fileName);
+        }
+
+        public IActionResult View(int id)
+        {
+            ProductImage productImage = _uploadRepository.GetImageById(id);
+
+            ProductImageVm productImageVm = _imapper.Map<ProductImage, ProductImageVm>(productImage);
+
+            return View(productImageVm);
         }
     }
 }

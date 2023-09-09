@@ -1,0 +1,34 @@
+﻿@model UploadFile.ViewModels.ProductImageVm
+
+@{
+	ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+<html>
+<body>
+	<form asp-action="View" enctype="multipart/form-data">
+		<table>
+			<tr>
+				<td>
+					<input type="hidden" name="Id" value="@Model.Id" id="Id" />
+				</td>
+			</tr>
+			<tr>
+				<td><b>Product Name:</b></td>
+				<td>@Model.ProductName</td>
+			</tr>
+
+			<tr>
+				<td> <b> Description: </b> </td>
+				<td>@Model.Description </td>
+			</tr>
+
+			<tr>
+				<td> <b> Image: </b> </td>
+				<td> <img src="/UploadedFiles/@Model.ImageName" width="60" height="60" /> </td>
+		</table>
+	</form>
+</body>
+</html>
