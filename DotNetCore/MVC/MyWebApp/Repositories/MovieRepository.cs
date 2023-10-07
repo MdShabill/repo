@@ -19,11 +19,13 @@ namespace MyWebApp.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
-                          Select Movies.Id,
-                          Movies.MovieName, Movies.DirectorName,
-                          Movies.ActorId, Actors.ActorName
+                          Select Movies.Id, Movies.MovieName,
+	                      Movies.DirectorName, Actors.Id as ActorId,
+	                      Actors.ActorName, Actress.Id as ActressId,
+	                      Actress.ActorName as ActressName
                           From Movies
-                          Inner Join Actors On Movies.ActorId = Actors.Id ";
+                          inner Join Actors as Actors On Movies.ActorId = Actors.Id
+                          inner Join Actors as Actress On Movies.ActressId = Actress.Id ";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -38,6 +40,7 @@ namespace MyWebApp.Repositories
                         MovieName = (string)dataTable.Rows[i]["MovieName"],
                         DirectorName = (string)dataTable.Rows[i]["DirectorName"],
                         ActorName = (string)dataTable.Rows[i]["ActorName"],
+                        ActressName = (string)dataTable.Rows[i]["ActressName"],
                     };
                     movies.Add(movie);
                 }
@@ -75,51 +78,51 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public List<Actors> GetAllActors()
+        public List<Actors> GetActor()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "SELECT Id, ActorName FROM Actors";
+                string sqlQuery = "SELECT Id, ActorName FROM Actors Where Gender = 'Male' ";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<Actors> actors = new();
+                List<Actors> maleActors = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
                     Actors actor = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
-                        ActorName = (string)dataTable.Rows[i]["ActorName"]
+                        ActorName = (string)dataTable.Rows[i]["ActorName"],
                     };
-                    actors.Add(actor);
+                    maleActors.Add(actor);
                 }
-                return actors;
+                return maleActors;
             }
         }
 
-        public List<Actress> GetAllActresses()
+        public List<Actors> GetActress()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "SELECT Id, ActressName FROM Actresses";
+                string sqlQuery = "SELECT Id, ActorName FROM Actors Where Gender = 'Female' ";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<Actress> actresses = new();
+                List<Actors> femaleActresses = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    Actress actress = new()
+                    Actors actors = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
-                        ActressName = (string)dataTable.Rows[i]["ActressName"]
+                        ActorName = (string)dataTable.Rows[i]["ActorName"],
                     };
-                    actresses.Add(actress);
+                    femaleActresses.Add(actors);
                 }
-                return actresses;
+                return femaleActresses;
             }
         }
 
@@ -137,7 +140,7 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public int Add(Add add)
+        public int Add(Movie movie)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
@@ -147,10 +150,10 @@ namespace MyWebApp.Repositories
                        VALUES 
                        (@MovieName, @DirectorName, @ActorId, @ActressId) ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@MovieName", add.MovieName);
-                sqlCommand.Parameters.AddWithValue("@DirectorName", add.DirectorName);
-                sqlCommand.Parameters.AddWithValue("@ActorId", add.ActorId);
-                sqlCommand.Parameters.AddWithValue("@ActressId", add.ActressId);
+                sqlCommand.Parameters.AddWithValue("@MovieName", movie.MovieName);
+                sqlCommand.Parameters.AddWithValue("@DirectorName", movie.DirectorName);
+                sqlCommand.Parameters.AddWithValue("@ActorId", movie.ActorId);
+                sqlCommand.Parameters.AddWithValue("@ActressId", movie.ActressId);
                 sqlConnection.Open();
                 int affectedRecordCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();

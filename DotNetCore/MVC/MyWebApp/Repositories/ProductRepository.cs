@@ -49,7 +49,7 @@ namespace MyWebApp.Repositories
                         FabricName = (string)dataTable.Rows[i]["FabricName"],
                         CategoryName = (string)dataTable.Rows[i]["CategoryName"],
                         Discount = (int)dataTable.Rows[i]["Discount"],
-                        Price = (int)dataTable.Rows[i]["Price"],
+                        Price = Convert.ToInt32(dataTable.Rows[i]["Price"]),
                     };
                     products.Add(product);
                 }
@@ -89,7 +89,7 @@ namespace MyWebApp.Repositories
                     FabricName = (string)dataTable.Rows[0]["FabricName"],
                     CategoryName = (string)dataTable.Rows[0]["CategoryName"],
                     Discount = (int)dataTable.Rows[0]["Discount"],
-                    Price = (int)dataTable.Rows[0]["Price"],
+                    Price = Convert.ToInt32(dataTable.Rows[0]["Price"]),
                 };
                 return product;
             }
@@ -202,7 +202,7 @@ namespace MyWebApp.Repositories
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         ColorName = (string)dataTable.Rows[i]["ColorName"],
                         SizeName = (string)dataTable.Rows[i]["Size"],
-                        Price = (int)dataTable.Rows[i]["Price"]
+                        Price = Convert.ToInt32(dataTable.Rows[i]["Price"])
                     };
                     productsResults.Add(productResult);
                 }
@@ -328,12 +328,12 @@ namespace MyWebApp.Repositories
                     (ProductName, BrandName, SizeId, ColorId, 
                      Fit, FabricId, CategoryId, Discount, Price)
                      VALUES 
-                    (@ProductName, @BrandName, @SizeId, @ColorId, 
+                    (@ProductName, @BrandName, @MyId, @ColorId, 
                      @Fit, @FabricId, @CategoryId, @Discount, @Price) ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@ProductName", product.ProductName);
                 sqlCommand.Parameters.AddWithValue("@BrandName", product.BrandName);
-                sqlCommand.Parameters.AddWithValue("@SizeId", product.SizeId);
+                sqlCommand.Parameters.AddWithValue("@MyId", product.MyId);
                 sqlCommand.Parameters.AddWithValue("@ColorId", product.ColorId);
                 sqlCommand.Parameters.AddWithValue("@Fit", product.Fit);
                 sqlCommand.Parameters.AddWithValue("@FabricId", product.FabricId);
@@ -353,7 +353,7 @@ namespace MyWebApp.Repositories
             {
                 string sqlQuery = @" UPDATE Products Set 
                    ProductName = @ProductName, BrandName = @BrandName,
-                   SizeId = @SizeId, ColorId = @ColorId, Fit = @Fit, 
+                   SizeId = @MyId, ColorId = @ColorId, Fit = @Fit, 
                    FabricId = @FabricId, CategoryId = @CategoryId,
                    Discount = @Discount, Price = @Price
                    WHERE Id = @Id ";
@@ -361,7 +361,7 @@ namespace MyWebApp.Repositories
                 sqlCommand.Parameters.AddWithValue("@Id", product.Id);
                 sqlCommand.Parameters.AddWithValue("@ProductName", product.ProductName);
                 sqlCommand.Parameters.AddWithValue("@BrandName", product.BrandName);
-                sqlCommand.Parameters.AddWithValue("@SizeId", product.SizeId);
+                sqlCommand.Parameters.AddWithValue("@MyId", product.MyId);
                 sqlCommand.Parameters.AddWithValue("@ColorId", product.ColorId);
                 sqlCommand.Parameters.AddWithValue("@Fit", product.Fit);
                 sqlCommand.Parameters.AddWithValue("@FabricId", product.FabricId);

@@ -10,7 +10,7 @@ namespace MyWebApp.DataModel
 
         public string BrandName { get; set; }
 
-        public string SizeId { get; set; }
+        public string MyId { get; set; }
         public string SizeName { get; set; }
 
         public int ColorId { get; set; }

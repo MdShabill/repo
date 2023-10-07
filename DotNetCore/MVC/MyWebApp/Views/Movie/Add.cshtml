@@ -1,4 +1,4 @@
-﻿@model MyWebApp.ViewModels.AddVm
+﻿@model MyWebApp.ViewModels.MovieAddVm
 
 <h4>Movie</h4>
 <hr />
@@ -20,19 +20,19 @@
             </br>
             <div class="form-group">
                 <label class="control-label"><b>Actor Name</b></label>
-                @Html.DropDownListFor(model => model.ActorId, ViewBag.actors as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.ActorId, ViewBag.Actors as SelectList,    "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.ActorId, "", new { @class = "text-danger" })
             </div>
             </br>
             <div class="form-group">
                 <label class="control-label"><b>Actress Name</b></label>
-                @Html.DropDownListFor(model => model.ActressId, ViewBag.actresses as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.ActressId, ViewBag.Actresses as SelectList, "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.ActressId, "", new { @class = "text-danger" })
             </div>
             </br>
             <div class="form-group">
                 <input type="submit" value="Add" class="btn btn-primary" />
-            </div
+            </div>
         </form>
     </div>
 </div>

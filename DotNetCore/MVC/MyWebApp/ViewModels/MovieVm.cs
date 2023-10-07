@@ -10,6 +10,7 @@
         public string ActorName { get; set; }
 
         public int ActressId { get; set; }
-        public string ActressName {  get; set; }
+        public string ActressName { get; set; }
+
     }
 }

@@ -1,9 +1,5 @@
 ﻿@model MyWebApp.ViewModels.Products.ProductAddVm
 
-@{
-    ViewData["Title"] = "Add";
-}
-
 <h1>Add</h1>
 
 <h4>Product</h4>
@@ -23,54 +19,61 @@
             <br /><br />
             
             <div class="form-group">
-                <label asp-for="ProductName" class="control-label">Product Name</label>
+                <label asp-for="ProductName" class="control-label"><b>Product Name</b></label>
                 <input asp-for="ProductName" class="form-control" />
                 <span asp-validation-for="ProductName" class="text-danger"></span>
             </div>
             <br/>
             <div class="form-group">
-                <label asp-for="BrandName" class="control-label">Brand Name</label>
+                <label asp-for="BrandName" class="control-label"><b>Brand Name</b></label>
                 <input asp-for="BrandName" class="form-control" />
                 <span asp-validation-for="BrandName" class="text-danger"></span>
             </div>
+            <br/>   
+            
+            
+            
+            <div class="form-group">
+                <label for="MyId"><b>Product Size</b></label>
+                
+                @Html.DropDownListFor(model => model.MyId, ViewBag.ProductSizes as SelectList, "-- Select --", new { @class = "form-control" })
+                
+            </div>  
+
+
+
             <br/>
             <div class="form-group">
-                <label for="SizeId">Product Size</label>
-                @Html.DropDownListFor(model => model.SizeId, ViewBag.ProductSizes as SelectList, "-- Select --", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.SizeId, "", new { @class = "text-danger" })
-            </div>
-            <br/>
-            <div class="form-group">
-                <label asp-for="ColorId">Product Color</label>
+                <label asp-for="ColorId"><b>Product Color</b></label>
                 @Html.DropDownListFor(model => model.ColorId, ViewBag.ProductColors as SelectList, "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.ColorId, "", new { @class = "text-danger" })
             </div>
             <br/>
             <div class="form-group">
-                <label asp-for="Fit" class="control-label"></label>
+                <label asp-for="Fit" class="control-label"><b>Fit</b></label>
                 <input asp-for="Fit" class="form-control" />
                 <span asp-validation-for="Fit" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FabricId" class="control-label">Product Fabric</label>
+                <label asp-for="FabricId" class="control-label"><b>Product Fabric</b></label>
                 @Html.DropDownListFor(model => model.FabricId, ViewBag.ProductFabrics as SelectList, "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.FabricId, "", new { @class = "text-danger" })
             </div>
             <br/>
             <div class="form-group">
-                <label asp-for="CategoryId" class="control-label">Product Category</label>
+                <label asp-for="CategoryId" class="control-label"><b>Product Category</b></label>
                 @Html.DropDownListFor(model => model.CategoryId, ViewBag.ProductCategories as SelectList, "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
             </div>
             <br/>
             <div class="form-group">
-                <label asp-for="Discount" class="control-label"></label>
+                <label asp-for="Discount" class="control-label"><b>Discount</b></label>
                 <input asp-for="Discount" class="form-control" />
                 <span asp-validation-for="Discount" class="text-danger"></span>
             </div>
             <br/>
             <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
+                <label asp-for="Price" class="control-label"><b>Price</b></label>
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>

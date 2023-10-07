@@ -16,9 +16,9 @@
             @if (ViewBag.ErrorMessage != null)
             {
                 <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
-            }     
+            }
             <br />
-            
+
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label">First Name</label>
                 <input asp-for="FirstName" class="form-control" />
@@ -30,18 +30,18 @@
                 <input asp-for="LastName" class="form-control" />
                 @*<span asp-validation-for="LastName" class="text-danger"></span>*@
             </div>
-            <br/>
+            <br />
             <div class="form-group">
-            <label>
-                Gender:
-            </label><br />
+                <label>
+                    Gender:
+                </label><br />
                 @Html.RadioButtonFor(model => model.Gender, "Male") Male
                 @Html.RadioButtonFor(model => model.Gender, "Female") Female
                 @Html.RadioButtonFor(model => model.Gender, "Transgender") Transgender
                 @Html.RadioButtonFor(model => model.Gender, "Others") Others
                 @*@Html.ValidationMessageFor(model => model.Gender)*@
             </div>
-            <br/>
+            <br />
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
@@ -53,13 +53,13 @@
                 <input asp-for="Password" class="form-control" />
                 @*<span asp-validation-for="Password" class="text-danger"></span>*@
             </div>
-            <br/>
+            <br />
             <div class="form-group">
                 <label asp-for="DateOfBirth" class="control-label">Date Of Birth</label>
                 <input asp-for="DateOfBirth" class="form-control" />
                 @*<span asp-validation-for="DateOfBirth" class="text-danger"></span>*@
             </div>
-            <br/>
+            <br />
             <div class="form-group">
                 <label asp-for="Mobile" class="control-label"></label>
                 <input asp-for="Mobile" class="form-control" />
@@ -68,7 +68,7 @@
             <br />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
-                
+
                 <a href="http://localhost:5277/Customer/Index"> Cancel </a>
             </div>
         </form>
@@ -76,5 +76,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

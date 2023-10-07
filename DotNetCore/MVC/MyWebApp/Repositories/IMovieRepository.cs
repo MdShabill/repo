@@ -8,10 +8,10 @@ namespace MyWebApp.Repositories
     {
         public List<Movie> GetAll();
         public Movie Get(int id);
-        public List<Actors> GetAllActors();
-        public List<Actress> GetAllActresses();
+        public List<Actors> GetActor();
+        public List<Actors> GetActress();
         public int Delete(int id);
-        public int Add(Add add);
+        public int Add(Movie movie);
         public int Update(MovieVm movie);
         public List<Actors> GetActorDetails();
     }

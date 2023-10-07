@@ -19,8 +19,7 @@ namespace MyWebApp.Controllers
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Actors, ActorsVm>();
-                cfg.CreateMap<Actress, ActressVm>();
-                cfg.CreateMap<AddVm, Add>();
+                cfg.CreateMap<MovieAddVm, Movie>();
                 cfg.CreateMap<Movie, MovieVm>();
             });
 
@@ -45,15 +44,15 @@ namespace MyWebApp.Controllers
             return View(movieResult);
         }
 
-        public IActionResult Edit(int id)
-        {
-            Movie movie = _movieRepository.Get(id);
+        //public IActionResult Edit(int id)
+        //{
+        //    Movie movie = _movieRepository.Get(id);
 
-            MovieVm movieResult = _imapper.Map<Movie, MovieVm>(movie);
+        //    MovieVm movieResult = _imapper.Map<Movie, MovieVm>(movie);
 
-            ViewBag.actors = new SelectList(GetAllActors(), "Id", "ActorName");
-            return View(movieResult);
-        }
+        //    ViewBag.actors = new SelectList(GetAllActors(), "Id", "ActorName");
+        //    return View(movieResult);
+        //}
 
         [HttpPost]
         public IActionResult Update(MovieVm movie) 
@@ -79,42 +78,40 @@ namespace MyWebApp.Controllers
 
         public IActionResult Add()
         {
-            List<Actors> actors = _movieRepository.GetAllActors();
-            ViewBag.actors = new SelectList(actors, "Id", "ActorName");
+            List<Actors> actors = _movieRepository.GetActor();
+            ViewBag.Actors = new SelectList(actors, "Id", "ActorName");
 
-            List<Actress> actresses = _movieRepository.GetAllActresses();
-            ViewBag.actresses = new SelectList(actresses, "Id", "ActressName");
+            List<Actors> actresses = _movieRepository.GetActress();
+            ViewBag.Actresses = new SelectList(actresses, "Id", "ActorName");
 
             return View();
         }
 
         [HttpPost]
-        public IActionResult Add(AddVm addVm)
+        public IActionResult Add(MovieAddVm movieAddVm)
         {
-            Add add = _imapper.Map<AddVm, Add>(addVm);
+            Movie add = _imapper.Map<MovieAddVm, Movie>(movieAddVm);
             int affectedRecordCount = _movieRepository.Add(add);
 
             if (affectedRecordCount > 0)
             {
                 TempData["SuccessMessageForAdd"] = "Movie Add Successful";
             }
-            return RedirectToAction("Index", addVm);
+            return RedirectToAction("Index", movieAddVm);
         }
 
-        private List<ActorsVm> GetAllActors()
+        private List<ActorsVm> GetMaleActor()
         {
-            List<Actors> actors = _movieRepository.GetAllActors();
-
-            List<ActorsVm> actorResult = _imapper.Map<List<Actors>, List<ActorsVm>>(actors);
-            return actorResult;
+            List<Actors> maleActors = _movieRepository.GetActor();
+            List<ActorsVm> maleActorsVm = _imapper.Map<List<Actors>, List<ActorsVm>>(maleActors);
+            return maleActorsVm;
         }
 
-        private List<ActressVm> GetAllActresses()
+        private List<ActorsVm> GetFemaleActress()
         {
-            List<Actress> actresses = _movieRepository.GetAllActresses();
-
-            List<ActressVm> actressResult = _imapper.Map<List<Actress>, List<ActressVm>>(actresses);
-            return actressResult;
+            List<Actors> femaleActresses = _movieRepository.GetActress();
+            List<ActorsVm> femaleActressesVm = _imapper.Map<List<Actors>, List<ActorsVm>>(femaleActresses);
+            return femaleActressesVm;
         }
     }
 }

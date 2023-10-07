@@ -8,5 +8,8 @@
 
         public int ActorId { get; set; }
         public string ActorName { get; set; }
+
+        public int ActressId { get; set; }
+        public string ActressName { get; set; }
     }
 }

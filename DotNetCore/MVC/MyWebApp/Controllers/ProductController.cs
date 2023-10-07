@@ -69,7 +69,9 @@ namespace MyWebApp.Controllers
             ViewBag.LoggedInCustomerLastName = HttpContext.Session.GetString("LoggedInCustomerLastName");
 
             Product product = _productRepository.Get(id);
+            
             ProductVm productVm = _imapper.Map<Product, ProductVm>(product);
+            
             return  View(productVm);
         }
 
@@ -106,7 +108,7 @@ namespace MyWebApp.Controllers
 
             ViewBag.ProductFabrics = new SelectList(productFabrics, "Id", "FabricName");
 
-            return View();
+            return View("ProductSearch");
         }
 
         public IActionResult ProductSearchResult(ProductFilterVm productFilterVm)
@@ -199,7 +201,7 @@ namespace MyWebApp.Controllers
                     return View();
                 }
 
-                if (productAddVm.SizeId <= 0)
+                if (productAddVm.MyId <= 0)
                 {
                     ViewBag.ErrorMessage = "Please select a valid product size ";
                     return View();
@@ -296,7 +298,7 @@ namespace MyWebApp.Controllers
                     return View();
                 }
 
-                if (productUpdateVm.SizeId <= 0)
+                if (productUpdateVm.MyId <= 0)
                 {
                     ViewBag.ErrorMessage = "Please select a valid product size ";
                     return View();

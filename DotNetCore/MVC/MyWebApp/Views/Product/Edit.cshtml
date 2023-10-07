@@ -31,9 +31,9 @@
             </div>
             <br />
             <div class="form-group">
-                <label asp-for="SizeId">Product Size </label>
-                @Html.DropDownListFor(model => model.SizeId, ViewBag.ProductSizes as SelectList, "-- Select --", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.SizeId, "", new { @class = "text-danger" })
+                <label asp-for="MyId">Product Size </label>
+                @Html.DropDownListFor(model => model.MyId, ViewBag.ProductSizes as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.MyId, "", new { @class = "text-danger" })
             </div>
             <br />
             <div class="form-group">
