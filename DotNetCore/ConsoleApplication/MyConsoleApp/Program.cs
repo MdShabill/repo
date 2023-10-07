@@ -1,27 +1,53 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System;
+﻿using System;
 
-Console.WriteLine("Hello, World!");
+//Console.WriteLine("Hello, World!");
+//
+////---- Check whether that number exists in array or not -----
+//
+//int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+//
+//Console.Write("Enter Number: ");
+//
+//int inputNumber = int.Parse(Console.ReadLine());
+//
+////bool exists = false;
+//
+//for (int i = 0; i < numbers.Length; i++)
+//{
+//    if (numbers[i] == inputNumber)
+//    {
+//        //exists = true;
+//        Console.WriteLine($"{inputNumber} exist in the array.");
+//        return;
+//    }
+//}
+//
+//Console.WriteLine($"{inputNumber} does not exist in the array.");
 
-//---- Check whether that number exists in array or not -----
+//---Array - Print the first occurrence index of that number----   
 
-int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+int[] numbers = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 10 };
 
-Console.Write("Enter Number: ");
-
+Console.Write("Enter the number: ");
 int inputNumber = int.Parse(Console.ReadLine());
-
-//bool exists = false;
 
 for (int i = 0; i < numbers.Length; i++)
 {
     if (numbers[i] == inputNumber)
     {
-        //exists = true;
-        Console.WriteLine($"{inputNumber} exist in the array.");
+        Console.WriteLine($"{inputNumber} exist in the index {i}");
         return;
     }
 }
 
 Console.WriteLine($"{inputNumber} does not exist in the array.");
+
+
+
+
+
+
+
+
+
 
