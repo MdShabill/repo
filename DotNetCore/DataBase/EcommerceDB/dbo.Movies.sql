@@ -1,15 +1,17 @@
-Create Table Movies
+
+CREATE TABLE Movies
 (
-	Id int Identity(1,1),
-	MovieName NVarchar(200) Not Null,
-	DirectorName Nvarchar (200) Not Null,
-	ActorId int Not Null,
-	Primary Key (Id),
-	FOREIGN KEY (ActorId) REFERENCES Actors (Id)
+	Id int IDENTITY(1,1) NOT NULL,
+	MovieName nvarchar (200) NOT NULL,
+	DirectorName nvarchar (200) NOT NULL,
+	ActorId int NOT NULL,
+	ActressId int Not Null,
+    PRIMARY KEY (Id),
+	
 )
 
+Alter Table Movies
+Add FOREIGN KEY (ActorId) REFERENCES Actors (Id)
 
-
-
-
-
+Alter Table Movies
+Add FOREIGN KEY (ActressId) REFERENCES Actresses (Id)

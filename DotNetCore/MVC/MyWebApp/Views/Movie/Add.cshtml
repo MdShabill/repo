@@ -1,32 +1,38 @@
-﻿@model MyWebApp.ViewModels.MovieVm
+﻿@model MyWebApp.ViewModels.AddVm
 
 <h4>Movie</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Add">
-            <d  iv asp-validation-summary="ModelOnly" class="text-danger"></d>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label class="control-label">Movie Name</label>
+                <label class="control-label"><b>Movie Name</b></label>
                 <input type="Text" id="MovieName" name="MovieName" class="form-control" new { required="required" } />
                 <span asp-validation-for="MovieName" class="text-danger"></span>
             </div>
+            </br>
             <div class="form-group">
-                <label class="control-label">Director Name</label>
+                <label class="control-label"><b>Director Name</b></label>
                 <input type="Text" id="DirectorName" name="DirectorName" class="form-control" new { required="required" } />
                 <span asp-validation-for="DirectorName" class="text-danger"></span>
             </div>
+            </br>
             <div class="form-group">
-                <label class="control-label">Actor Name</label>
-
+                <label class="control-label"><b>Actor Name</b></label>
                 @Html.DropDownListFor(model => model.ActorId, ViewBag.actors as SelectList, "-- Select --", new { @class = "form-control" })
-
                 @Html.ValidationMessageFor(model => model.ActorId, "", new { @class = "text-danger" })
             </div>
             </br>
             <div class="form-group">
-                <input type="submit" value="Add" class="btn btn-primary" />
+                <label class="control-label"><b>Actress Name</b></label>
+                @Html.DropDownListFor(model => model.ActressId, ViewBag.actresses as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ActressId, "", new { @class = "text-danger" })
             </div>
+            </br>
+            <div class="form-group">
+                <input type="submit" value="Add" class="btn btn-primary" />
+            </div
         </form>
     </div>
 </div>

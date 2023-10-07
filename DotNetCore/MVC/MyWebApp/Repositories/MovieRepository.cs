@@ -99,6 +99,30 @@ namespace MyWebApp.Repositories
             }
         }
 
+        public List<Actress> GetAllActresses()
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = "SELECT Id, ActressName FROM Actresses";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<Actress> actresses = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    Actress actress = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        ActressName = (string)dataTable.Rows[i]["ActressName"]
+                    };
+                    actresses.Add(actress);
+                }
+                return actresses;
+            }
+        }
+
         public int Delete(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
@@ -113,19 +137,20 @@ namespace MyWebApp.Repositories
             }
         }
 
-        public int Add(MovieVm movie)
+        public int Add(Add add)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
                        INSERT INTO Movies
-                       (MovieName, DirectorName, ActorId)
+                       (MovieName, DirectorName, ActorId, ActressId)
                        VALUES 
-                       (@MovieName, @DirectorName, @ActorId) ";
+                       (@MovieName, @DirectorName, @ActorId, @ActressId) ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@MovieName", movie.MovieName);
-                sqlCommand.Parameters.AddWithValue("@DirectorName", movie.DirectorName);
-                sqlCommand.Parameters.AddWithValue("@ActorId", movie.ActorId);
+                sqlCommand.Parameters.AddWithValue("@MovieName", add.MovieName);
+                sqlCommand.Parameters.AddWithValue("@DirectorName", add.DirectorName);
+                sqlCommand.Parameters.AddWithValue("@ActorId", add.ActorId);
+                sqlCommand.Parameters.AddWithValue("@ActressId", add.ActressId);
                 sqlConnection.Open();
                 int affectedRecordCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();

@@ -19,6 +19,8 @@ namespace MyWebApp.Controllers
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Actors, ActorsVm>();
+                cfg.CreateMap<Actress, ActressVm>();
+                cfg.CreateMap<AddVm, Add>();
                 cfg.CreateMap<Movie, MovieVm>();
             });
 
@@ -32,24 +34,6 @@ namespace MyWebApp.Controllers
             List<MovieVm> movieResult = _imapper.Map<List<Movie>, List<MovieVm>>(movies);
 
             return View(movieResult);
-        }
-
-        public IActionResult Add() 
-        {
-            ViewBag.actors = new SelectList(GetAllActors(), "Id", "ActorName");
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Add(MovieVm movie)
-        {
-            int affectedRecordCount = _movieRepository.Add(movie);
-
-            if(affectedRecordCount > 0) 
-            {
-                TempData["SuccessMessageForAdd"] = "Movie Add Successful";
-            }
-            return RedirectToAction("Index");
         }
 
         public IActionResult View(int id)
@@ -93,12 +77,44 @@ namespace MyWebApp.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult Add()
+        {
+            List<Actors> actors = _movieRepository.GetAllActors();
+            ViewBag.actors = new SelectList(actors, "Id", "ActorName");
+
+            List<Actress> actresses = _movieRepository.GetAllActresses();
+            ViewBag.actresses = new SelectList(actresses, "Id", "ActressName");
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Add(AddVm addVm)
+        {
+            Add add = _imapper.Map<AddVm, Add>(addVm);
+            int affectedRecordCount = _movieRepository.Add(add);
+
+            if (affectedRecordCount > 0)
+            {
+                TempData["SuccessMessageForAdd"] = "Movie Add Successful";
+            }
+            return RedirectToAction("Index", addVm);
+        }
+
         private List<ActorsVm> GetAllActors()
         {
             List<Actors> actors = _movieRepository.GetAllActors();
 
             List<ActorsVm> actorResult = _imapper.Map<List<Actors>, List<ActorsVm>>(actors);
             return actorResult;
+        }
+
+        private List<ActressVm> GetAllActresses()
+        {
+            List<Actress> actresses = _movieRepository.GetAllActresses();
+
+            List<ActressVm> actressResult = _imapper.Map<List<Actress>, List<ActressVm>>(actresses);
+            return actressResult;
         }
     }
 }

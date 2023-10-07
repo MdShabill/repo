@@ -147,6 +147,7 @@
                 <td><b>Movie Name</b></td>
                 <td><b>Director Name</b></td>
                 <td><b>Actor Name</b></td>
+                <td><b>Actress Name</b></td>
                 <td><b>Action</b></td>
             </tr>
 
@@ -156,6 +157,7 @@
                     <td><b><a href="http://localhost:5277/Movie/View/@movie.Id"><b>@movie.MovieName</b></a></b></td>
                     <td><b>@movie.DirectorName</b></td>
                     <td><b>@movie.ActorName</b></td>
+                    <td><b>@movie.ActressName</b></td>
                     <td><b> 
                         @Html.ActionLink("Edit", "Edit", new { id = movie.Id })
                         @Html.ActionLink("Delete", "Delete", new { id = movie.Id })
