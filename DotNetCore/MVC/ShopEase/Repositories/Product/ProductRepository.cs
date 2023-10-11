@@ -1,0 +1,150 @@
+﻿using ShopEase.DataModels.Product;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace ShopEase.Repositories.Product
+{
+    public class ProductRepository : IProductRepository
+    {
+        private readonly string _connectionString;
+
+        public ProductRepository(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        public List<Products> GetAll()
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"
+                        SELECT 
+                            Products.Id, Products.ProductName, Brands.BrandName, Products.Price, 
+                            Products.Discount, Categories.CategoryName, Suppliers.SupplierName 
+                        FROM Products
+                        Inner Join Brands On Products.BrandId = Brands.Id
+                        Inner Join Categories On Products.CategoryId = Categories.Id
+                        Inner Join Suppliers On Products.SupplierId = Suppliers.Id
+                        ";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<Products> products = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    Products product = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        ProductName = (string)dataTable.Rows[i]["ProductName"],
+                        BrandName = (string)dataTable.Rows[i]["BrandName"],
+                        Discount = Convert.ToInt32(dataTable.Rows[i]["Discount"]),
+                        Price = Convert.ToInt32(dataTable.Rows[i]["Price"]),
+                        CategoryName = (string)dataTable.Rows[i]["CategoryName"],
+                        SupplierName = (string)dataTable.Rows[i]["SupplierName"],
+                    };
+                    products.Add(product);
+                }
+                return products;
+            }
+        }
+
+        public int Add(ProductAdd productAdd)
+        {
+            using(SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"Insert Into Products
+                       (ProductName, BrandId, Price, Discount, CategoryId, SupplierId)
+                       Values
+                       (@ProductName, @BrandId, @Price, @Discount, @CategoryId, @SupplierId)";
+
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@ProductName", productAdd.ProductName);
+                sqlCommand.Parameters.AddWithValue("@BrandId", productAdd.BrandId);
+                sqlCommand.Parameters.AddWithValue("@Price", productAdd.Price);
+                sqlCommand.Parameters.AddWithValue("@Discount", productAdd.Discount);
+                sqlCommand.Parameters.AddWithValue("@CategoryId", productAdd.CategoryId);
+                sqlCommand.Parameters.AddWithValue("@SupplierId", productAdd.SupplierId);
+
+                sqlConnection.Open();
+                int affectedRowCount = sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+
+                return affectedRowCount;
+            }
+        }
+
+        public List<Brand> GetBrands()
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = "Select Id, BrandName From Brands";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<Brand> productBrands = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    Brand productBrand = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        BrandName = (string)dataTable.Rows[i]["BrandName"]
+                    };
+                    productBrands.Add(productBrand);
+                }
+                return productBrands;
+            }
+        }
+
+        public List<Category> GetCategories()
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = "Select Id, CategoryName From Categories";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<Category> productCategories = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    Category productCategory = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        CategoryName = (string)dataTable.Rows[i]["CategoryName"]
+                    };
+                    productCategories.Add(productCategory);
+                }
+                return productCategories;
+            }
+        }
+
+        public List<Supplier> GetSuppliers()
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = "Select Id, SupplierName From Suppliers";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<Supplier> productSuppliers = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    Supplier productSupplier = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        SupplierName = (string)dataTable.Rows[i]["SupplierName"]
+                    };
+                    productSuppliers.Add(productSupplier);
+                }
+                return productSuppliers;
+            }
+        }
+    }
+}

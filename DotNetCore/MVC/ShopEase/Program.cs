@@ -1,9 +1,26 @@
+using Microsoft.AspNetCore.DataProtection.Repositories;
+using ShopEase.Repositories.Product;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Get the configuration
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+
+string ShopEaseDBConnectionString = configuration.GetConnectionString("ShopEaseDBConnection");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
+builder.Services.AddTransient<IProductRepository>((svc) =>
+{
+    return new ProductRepository(ShopEaseDBConnectionString);
+});
+
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

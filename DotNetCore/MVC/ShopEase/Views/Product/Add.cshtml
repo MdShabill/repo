@@ -1,0 +1,63 @@
+﻿@model ShopEase.ViewModels.Product.ProductAddVm
+<h1>Add</h1>
+
+<h4>ProductAddVm</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Add">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <span class="text-success-msg"><b>@ViewBag.SuccessMessage</b></span>
+
+            <div class="form-group">
+                <label asp-for="ProductName" class="control-label"><b>Product Name</b></label>
+                <input asp-for="ProductName" class="form-control" />
+                <span asp-validation-for="ProductName" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="BrandId"><b>Brand Name</b></label>
+                @Html.DropDownListFor(model => model.BrandId, ViewBag.Brands as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.BrandId, "", new { @class = "text-danger" })
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"><b>Price</b></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Discount" class="control-label"><b>Discount</b></label>
+                <input asp-for="Discount" class="form-control" />
+                <span asp-validation-for="Discount" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="CategoryId"><b>Product Category</b></label>
+                @Html.DropDownListFor(model => model.CategoryId, ViewBag.Categories as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="SupplierId"><b>Product Supplier</b></label>
+                @Html.DropDownListFor(model => model.SupplierId, ViewBag.Suppliers as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SupplierId, "", new { @class = "text-danger" })
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Add" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@* <div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+ *@
