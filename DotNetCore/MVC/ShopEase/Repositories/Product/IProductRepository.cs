@@ -6,8 +6,5 @@ namespace ShopEase.Repositories.Product
     {
         public List<Products> GetAll();
         public int Add(ProductAdd productAdd);
-        public List<Brand> GetBrands();
-        public List<Category> GetCategories();
-        public List<Supplier> GetSuppliers();
     }
 }

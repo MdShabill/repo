@@ -4,25 +4,35 @@ using ShopEase.ViewModels.Product;
 using AutoMapper;
 using ShopEase.DataModels.Product;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ShopEase.Repositories;
 
 namespace ShopEase.Controllers
 {
     public class ProductController : Controller
     {
         IProductRepository _productRepository;
+        IProductBrandRepository _prductBrandRepository;
+        IProductCategoryReopsitory _productCategoryReopsitory;
+        IProductSupplierRepository _productSupplierRepository;
         IMapper _imapper;
 
-        public ProductController(IProductRepository productRepository)
+        public ProductController(IProductRepository productRepository, 
+                                 IProductBrandRepository prductBrandRepository,
+                                 IProductCategoryReopsitory productCategoryReopsitory,
+                                 IProductSupplierRepository productSupplierRepository)
         {
             _productRepository = productRepository;
+            _prductBrandRepository = prductBrandRepository;
+            _productCategoryReopsitory = productCategoryReopsitory;
+            _productSupplierRepository = productSupplierRepository;
 
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Products, ProductVm>();
                 cfg.CreateMap<ProductAddVm, ProductAdd>();
-                cfg.CreateMap<Brand, BrandVm>();
-                cfg.CreateMap<Category, CategoryVm>();
-                cfg.CreateMap<Supplier, SupplierVm>();
+                cfg.CreateMap<ProductBrand, ProductBrandVm>();
+                cfg.CreateMap<ProductCategory, ProductCategoryVm>();
+                cfg.CreateMap<ProductSupplier, ProductSupplierVm>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -31,21 +41,19 @@ namespace ShopEase.Controllers
         public IActionResult Index()
         {
             List<Products> products = _productRepository.GetAll();
-
             List<ProductVm> productsVm = _imapper.Map<List<Products>, List<ProductVm>>(products);
-
             return View(productsVm);
         }
 
         public IActionResult Add()
         {
-            List<Brand> productBrands = _productRepository.GetBrands();
+            List<ProductBrand> productBrands = _prductBrandRepository.GetBrands();
             ViewBag.Brands = new SelectList(productBrands, "Id", "BrandName");
 
-            List<Category> categories = _productRepository.GetCategories();
+            List<ProductCategory> categories = _productCategoryReopsitory.GetCategories();
             ViewBag.Categories = new SelectList(categories, "Id", "CategoryName");
 
-            List<Supplier> productSuppliers = _productRepository.GetSuppliers();
+            List<ProductSupplier> productSuppliers = _productSupplierRepository.GetSuppliers();
             ViewBag.Suppliers = new SelectList(productSuppliers, "Id", "SupplierName");
 
             return View();
@@ -63,30 +71,24 @@ namespace ShopEase.Controllers
             return RedirectToAction("Index");
         }
 
-        private List<BrandVm> GetBrands() 
+        private List<ProductBrandVm> GetBrands() 
         {
-            List<Brand> productBrands = _productRepository.GetBrands();
-
-            List<BrandVm> productBrandsVm = _imapper.Map<List<Brand>, List<BrandVm>>(productBrands);
-
+            List<ProductBrand> productBrands = _prductBrandRepository.GetBrands();
+            List<ProductBrandVm> productBrandsVm = _imapper.Map<List<ProductBrand>, List<ProductBrandVm>>(productBrands);
             return productBrandsVm;
         }
 
-        private List<CategoryVm> GetCategories() 
+        private List<ProductCategoryVm> GetCategories() 
         {
-            List<Category> categories = _productRepository.GetCategories();
-
-            List<CategoryVm> ProductCategoriesVm = _imapper.Map<List<Category>, List<CategoryVm>>(categories);
-
+            List<ProductCategory> productCategories = _productCategoryReopsitory.GetCategories();
+            List<ProductCategoryVm> ProductCategoriesVm = _imapper.Map<List<ProductCategory>, List<ProductCategoryVm>>(productCategories);
             return ProductCategoriesVm;
         }
 
-        private List<SupplierVm> GetSupplier() 
+        private List<ProductSupplierVm> GetSupplier() 
         {
-            List<Supplier> productSuppliers = _productRepository.GetSuppliers();
-
-            List<SupplierVm> productSuppliersVm = _imapper.Map<List<Supplier>, List<SupplierVm>>(productSuppliers);
-
+            List<ProductSupplier> productSuppliers = _productSupplierRepository.GetSuppliers();
+            List<ProductSupplierVm> productSuppliersVm = _imapper.Map<List<ProductSupplier>, List<ProductSupplierVm>>(productSuppliers);
             return productSuppliersVm;
         }
     }
