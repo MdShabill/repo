@@ -131,26 +131,5 @@ namespace ShopEase.Controllers
             List<ProductSupplier> productSuppliers = _productSupplierRepository.GetSuppliers();
             ViewBag.Suppliers = new SelectList(productSuppliers, "Id", "SupplierName");
         }
-
-        private List<ProductBrandVm> GetBrands() 
-        {
-            List<ProductBrand> productBrands = _productBrandRepository.GetBrands();
-            List<ProductBrandVm> productBrandsVm = _imapper.Map<List<ProductBrand>, List<ProductBrandVm>>(productBrands);
-            return productBrandsVm;
-        }
-
-        private List<ProductCategoryVm> GetCategories() 
-        {
-            List<ProductCategory> productCategories = _productCategoryReopsitory.GetCategories();
-            List<ProductCategoryVm> ProductCategoriesVm = _imapper.Map<List<ProductCategory>, List<ProductCategoryVm>>(productCategories);
-            return ProductCategoriesVm;
-        }
-
-        private List<ProductSupplierVm> GetSupplier() 
-        {
-            List<ProductSupplier> productSuppliers = _productSupplierRepository.GetSuppliers();
-            List<ProductSupplierVm> productSuppliersVm = _imapper.Map<List<ProductSupplier>, List<ProductSupplierVm>>(productSuppliers);
-            return productSuppliersVm;
-        }
     }
 }
