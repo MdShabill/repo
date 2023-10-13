@@ -39,10 +39,22 @@ namespace ShopEase.Controllers
             _imapper = configuration.CreateMapper();
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string sortColumnName, string sortOrder, int pageSize)
         {
-            List<Products> products = _productRepository.GetAll();
+            List<Products> products;
+
+            if (!string.IsNullOrEmpty(sortColumnName) && !string.IsNullOrEmpty(sortOrder))
+            {
+                products = _productRepository.GetSortedProducts(sortColumnName, sortOrder, pageSize);
+            }
+            else
+            {
+                products = _productRepository.GetAll();
+            }
             List<ProductVm> productsVm = _imapper.Map<List<Products>, List<ProductVm>>(products);
+
+            ViewBag.productsCount = productsVm.Count;
+
             return View(productsVm);
         }
 
@@ -65,7 +77,7 @@ namespace ShopEase.Controllers
 
             if (productAddVm.ProductName.Length > 20)
             {
-                ViewBag.ErrorMessage = "Product Name should be 20 characters or less";
+                ViewBag.ErrorMessage = "Product Name should be 20 characters or less ";
                 return View();
             }
 
