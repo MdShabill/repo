@@ -39,13 +39,13 @@ namespace ShopEase.Controllers
             _imapper = configuration.CreateMapper();
         }
 
-        public IActionResult Index(string sortColumnName, string sortOrder, int pageSize)
+        public IActionResult Index(string sortColumnName, string sortOrder)
         {
             List<Products> products;
 
             if (!string.IsNullOrEmpty(sortColumnName) && !string.IsNullOrEmpty(sortOrder))
             {
-                products = _productRepository.GetSortedProducts(sortColumnName, sortOrder, pageSize);
+                products = _productRepository.GetSortedProducts(sortColumnName, sortOrder);
             }
             else
             {

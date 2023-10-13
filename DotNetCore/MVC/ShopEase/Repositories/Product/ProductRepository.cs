@@ -50,7 +50,7 @@ namespace ShopEase.Repositories.Product
             }
         }
 
-        public List<Products> GetSortedProducts(string? sortColumnName, string? sortOrder, int pageSize)
+        public List<Products> GetSortedProducts(string? sortColumnName, string? sortOrder)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -60,14 +60,10 @@ namespace ShopEase.Repositories.Product
                 if (string.IsNullOrEmpty(sortOrder))
                     sortOrder = "ASC";
 
-                if (pageSize == 0)
-                    pageSize = 5;
-
-                string sqlQuery = @$"SELECT TOP {pageSize}
-                         Products.Id, Products.ProductName, 
-                         Brands.BrandName, Products.Price,
-                         Products.Discount, Categories.CategoryName, 
-                         Suppliers.SupplierName 
+                string sqlQuery = @"SELECT Products.Id,
+                         Products.ProductName, Brands.BrandName,
+                         Products.Price, Products.Discount,
+                         Categories.CategoryName, Suppliers.SupplierName 
                          FROM Products
                          Inner Join Brands On Products.BrandId = Brands.Id                
                          Inner Join Categories On Products.CategoryId = Categories.Id                    
