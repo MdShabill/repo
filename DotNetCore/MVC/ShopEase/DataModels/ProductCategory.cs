@@ -1,4 +1,4 @@
-﻿namespace ShopEase.DataModels.Product
+﻿namespace ShopEase.DataModels
 {
     public class ProductCategory
     {

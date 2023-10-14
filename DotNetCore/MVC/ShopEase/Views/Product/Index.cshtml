@@ -1,4 +1,4 @@
-﻿@model List<ShopEase.ViewModels.Product.ProductVm>
+﻿@model List<ShopEase.ViewModels.ProductVm>
 
 <h1>Product Table</h1>
 
@@ -27,7 +27,7 @@
                 <td><b><a asp-action="Index" asp-route-sortColumnName="SupplierName" asp-route-sortOrder="ASC">Supplier Name</a></b></td>
             </tr>
 
-            @foreach (ShopEase.ViewModels.Product.ProductVm productVm in Model)
+            @foreach (ShopEase.ViewModels.ProductVm productVm in Model)
             {
                 <tr class="table1">
                     <td><b>@productVm.ProductName</b></td>

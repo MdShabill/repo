@@ -1,4 +1,4 @@
-﻿using ShopEase.DataModels.Product;
+﻿using ShopEase.DataModels;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -13,53 +13,20 @@ namespace ShopEase.Repositories
             _connectionString = connectionString;
         }
 
-        public List<Products> GetAll()
-        {
-            using (SqlConnection sqlConnection = new(_connectionString))
-            {
-                string sqlQuery = @"
-                        SELECT 
-                            Products.Id, Products.ProductName, Brands.BrandName, Products.Price, 
-                            Products.Discount, Categories.CategoryName, Suppliers.SupplierName 
-                        FROM Products
-                        Inner Join Brands On Products.BrandId = Brands.Id
-                        Inner Join Categories On Products.CategoryId = Categories.Id
-                        Inner Join Suppliers On Products.SupplierId = Suppliers.Id
-                        ";
-                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                DataTable dataTable = new();
-                sqlDataAdapter.Fill(dataTable);
-
-                List<Products> products = new();
-
-                for (int i = 0; i < dataTable.Rows.Count; i++)
-                {
-                    Products product = new()
-                    {
-                        Id = (int)dataTable.Rows[i]["Id"],
-                        ProductName = (string)dataTable.Rows[i]["ProductName"],
-                        BrandName = (string)dataTable.Rows[i]["BrandName"],
-                        Discount = Convert.ToInt32(dataTable.Rows[i]["Discount"]),
-                        Price = Convert.ToInt32(dataTable.Rows[i]["Price"]),
-                        CategoryName = (string)dataTable.Rows[i]["CategoryName"],
-                        SupplierName = (string)dataTable.Rows[i]["SupplierName"],
-                    };
-                    products.Add(product);
-                }
-                return products;
-            }
-        }
-
-        public List<Products> GetSortedProducts(string? sortColumnName, string? sortOrder)
+        public List<Product> GetSortedProducts(string? sortColumnName, string? sortOrder)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 if (string.IsNullOrEmpty(sortColumnName))
+                {
                     sortColumnName = "ProductName";
-
+                }
+                    
                 if (string.IsNullOrEmpty(sortOrder))
+                {
                     sortOrder = "ASC";
-
+                }
+                    
                 string sqlQuery = @"SELECT Products.Id,
                          Products.ProductName, Brands.BrandName,
                          Products.Price, Products.Discount,
@@ -78,11 +45,14 @@ namespace ShopEase.Repositories
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<Products> products = new();
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sortColumnName", sortColumnName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sortOrder", sortOrder);
+
+                List<Product> products = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    Products product = new()
+                    Product product = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
                         ProductName = (string)dataTable.Rows[i]["ProductName"],

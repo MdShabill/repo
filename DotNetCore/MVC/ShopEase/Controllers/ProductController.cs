@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShopEase.ViewModels.Product;
 using AutoMapper;
-using ShopEase.DataModels.Product;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ShopEase.Repositories;
 using System.Reflection;
+using ShopEase.DataModels;
+using ShopEase.ViewModels;
 
 namespace ShopEase.Controllers
 {
@@ -28,7 +28,7 @@ namespace ShopEase.Controllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Products, ProductVm>();
+                cfg.CreateMap<Product, ProductVm>();
                 cfg.CreateMap<ProductAddVm, ProductAdd>();
                 cfg.CreateMap<ProductBrand, ProductBrandVm>();
                 cfg.CreateMap<ProductCategory, ProductCategoryVm>();
@@ -40,17 +40,9 @@ namespace ShopEase.Controllers
 
         public IActionResult Index(string sortColumnName, string sortOrder)
         {
-            List<Products> products;
+            List<Product> products = _productRepository.GetSortedProducts(sortColumnName, sortOrder);
 
-            if (!string.IsNullOrEmpty(sortColumnName) && !string.IsNullOrEmpty(sortOrder))
-            {
-                products = _productRepository.GetSortedProducts(sortColumnName, sortOrder);
-            }
-            else
-            {
-                products = _productRepository.GetAll();
-            }
-            List<ProductVm> productsVm = _imapper.Map<List<Products>, List<ProductVm>>(products);
+            List<ProductVm> productsVm = _imapper.Map<List<Product>, List<ProductVm>>(products);
 
             ViewBag.productsCount = productsVm.Count;
 

@@ -1,4 +1,4 @@
-﻿namespace ShopEase.ViewModels.Product
+﻿namespace ShopEase.ViewModels
 {
     public class BrandVm
     {

@@ -1,6 +1,6 @@
-﻿namespace ShopEase.ViewModels.Product
+﻿namespace ShopEase.DataModels
 {
-    public class SupplierVm
+    public class Supplier
     {
         public int Id { get; set; }
         public string SupplierName { get; set; }

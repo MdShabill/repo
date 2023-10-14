@@ -1,6 +1,6 @@
-﻿namespace ShopEase.ViewModels.Product
+﻿namespace ShopEase.ViewModels
 {
-    public class ProductCategoryVm
+    public class CategoryVm
     {
         public int Id { get; set; }
         public string CategoryName { get; set; }

@@ -1,11 +1,10 @@
-﻿using ShopEase.DataModels.Product;
+﻿using ShopEase.DataModels;
 
 namespace ShopEase.Repositories
 {
     public interface IProductRepository
     {
-        public List<Products> GetAll();
-        List<Products> GetSortedProducts(string? sortColumnName, string? sortOrder);
+        List<Product> GetSortedProducts(string? sortColumnName, string? sortOrder);
         public int Add(ProductAdd productAdd);
     }
 }

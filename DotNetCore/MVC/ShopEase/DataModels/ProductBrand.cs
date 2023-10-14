@@ -1,6 +1,6 @@
-﻿namespace ShopEase.DataModels.Product
+﻿namespace ShopEase.DataModels
 {
-    public class Brand
+    public class ProductBrand
     {
         public int Id { get; set; }
         public string BrandName { get; set; }
