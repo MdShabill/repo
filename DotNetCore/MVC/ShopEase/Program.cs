@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using ShopEase.Repositories;
-using ShopEase.Repositories.Product;
+using ShopEase.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -8,33 +8,19 @@ Create Table AddressTypes
 MERGE INTO AddressTypes AS target
 USING (
     VALUES
+	('Home'),
+	('Office'),
+	('Residential'),
+	('Temporary'),
     ('Hospital'),
     ('Farm House'),
     ('Permanent'),
-	('Apartment')
+    ('Apartment')
 ) AS source (AddressTypeName)
-ON 0 = 1  
-WHEN NOT MATCHED BY TARGET THEN
+ON target.AddressTypeName = source.AddressTypeName
+WHEN NOT MATCHED THEN
     INSERT (AddressTypeName)
     VALUES (source.AddressTypeName);
 
 
-	
-
-
-
-
-
-
-Insert Into AddressTypes(AddressTypeName)
-Values('Home')
-
-Insert Into AddressTypes(AddressTypeName)
-Values('Office')
-
-Insert Into AddressTypes(AddressTypeName)
-Values('Residential')
-
-Insert Into AddressTypes(AddressTypeName)
-Values('Temporary ')
 

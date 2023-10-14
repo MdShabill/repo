@@ -6,17 +6,19 @@ Create Table Categories
 )
 
 
-Insert Into Categories(CategoryName)
-Values('Fashion')
+MERGE INTO Categories AS target
+USING (
+    VALUES
+	('Medicine'),
+	('Toys'),
+	('Fashion')
+	
+) AS source (CategoryName)
+ON target.CategoryName = source.CategoryName
+WHEN NOT MATCHED THEN
+    INSERT (CategoryName)
+    VALUES (source.CategoryName);
 
-Insert Into Categories(CategoryName)
-Values('Mobiles')
-
-Insert Into Categories(CategoryName)
-Values('Electornics')
-
-Insert Into Categories(CategoryName)
-Values('Sports')
 
 
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShopEase.Repositories.Product;
 using ShopEase.ViewModels.Product;
 using AutoMapper;
 using ShopEase.DataModels.Product;

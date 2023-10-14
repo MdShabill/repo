@@ -11,14 +11,8 @@ Create Table Addresses
 
 	Primary Key(Id),
 	FOREIGN KEY (CountryId) REFERENCES Countries (Id),
-	FOREIGN KEY (CountryId) REFERENCES AddressTypes (Id)
+	FOREIGN KEY (AddressTypeId) REFERENCES AddressTypes (Id)
 )
-
-
-
-
-
-
 
 
 

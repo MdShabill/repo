@@ -1,5 +1,4 @@
 ﻿using ShopEase.DataModels.Product;
-using ShopEase.Repositories.Product;
 using System.Data.SqlClient;
 using System.Data;
 

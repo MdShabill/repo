@@ -6,14 +6,21 @@ Create Table Brands
 )
 
 
-Insert Into Brands(BrandName)
-Values('Levis')
+MERGE INTO Brands AS target
+USING (
+    VALUES
+	('Dell'),
+	('Hp'),
+	('Cipla'),
+	('MRF'),
+	('Sun Pharma')
+) AS source (BrandName)
+ON target.BrandName = source.BrandName
+WHEN NOT MATCHED THEN
+    INSERT (BrandName)
+    VALUES (source.BrandName);
 
-Insert Into Brands(BrandName)
-Values('Nike')
 
-Insert Into Brands(BrandName)
-Values('Apple')
 
-Insert Into Brands(BrandName)
-Values('Sumsung')
+
+
