@@ -39,15 +39,16 @@ namespace ShopEase.Repositories
 
                 if (!string.IsNullOrEmpty(sortColumnName) && !string.IsNullOrEmpty(sortOrder))
                 {
-                    sqlQuery += " ORDER BY " + sortColumnName + " " + sortOrder;
+                    sqlQuery += " ORDER BY " + @sortColumnName + " " + @sortOrder;
                 }
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                DataTable dataTable = new();
-                sqlDataAdapter.Fill(dataTable);
-
+                
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sortColumnName", sortColumnName);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sortOrder", sortOrder);
+
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
 
                 List<Product> products = new();
 
