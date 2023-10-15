@@ -23,6 +23,7 @@
                 <td><b><a asp-action="Index" asp-route-sortColumnName="BrandName" asp-route-sortOrder="ASC">Brand Name</a></b></td>
                 <td><b><a asp-action="Index" asp-route-sortColumnName="Price" asp-route-sortOrder="ASC">Price</a></b></td>
                 <td><b><a asp-action="Index" asp-route-sortColumnName="Discount" asp-route-sortOrder="ASC">Discount</a></b></td>
+                <td><b><a asp-action="Index" asp-route-sortColumnName="ActualPrice" asp-route-sortOrder="ASC">Actual Price</a></b></td>
                 <td><b><a asp-action="Index" asp-route-sortColumnName="CategoryName" asp-route-sortOrder="ASC">Category Name</a></b></td>
                 <td><b><a asp-action="Index" asp-route-sortColumnName="SupplierName" asp-route-sortOrder="ASC">Supplier Name</a></b></td>
             </tr>
@@ -34,6 +35,7 @@
                     <td><b>@productVm.BrandName</b></td>
                     <td><b>@productVm.Price</b></td>
                     <td><b>@productVm.Discount</b></td>
+                    <td><b>@productVm.ActualPrice</b></td>
                     <td><b>@productVm.CategoryName</b></td>
                     <td><b>@productVm.SupplierName</b></td>
                 </tr>
