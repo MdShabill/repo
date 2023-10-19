@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.DataProtection.Repositories;
 using ShopEase.Repositories;
-using ShopEase.Repositories;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +33,11 @@ builder.Services.AddTransient<IProductCategoryReopsitory>((svc) =>
 builder.Services.AddTransient<IProductSupplierRepository>((svc) =>
 {
     return new ProductSupplierRepository(ShopEaseDBConnectionString);
+});
+
+builder.Services.AddTransient<ICustomerRepository>((svc) =>
+{
+    return new CustomerRepository(ShopEaseDBConnectionString);
 });
 
 WebApplication app = builder.Build();

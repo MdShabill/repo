@@ -10,6 +10,8 @@ Create Table Customers
 	Primary Key(Id)
 )
 
+ALTER TABLE Customers
+ADD CONSTRAINT UQ_Customers_Email UNIQUE (Email)
 
 
 

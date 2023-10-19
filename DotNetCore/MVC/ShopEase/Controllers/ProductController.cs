@@ -40,6 +40,38 @@ namespace ShopEase.Controllers
 
         public IActionResult Index(string sortColumnName, string sortOrder)
         {
+            if (string.IsNullOrEmpty(sortColumnName))
+            {
+                sortColumnName = "ProductName";
+            }
+
+            if (string.IsNullOrEmpty(sortOrder))
+            {
+                sortOrder = "ASC";
+            }
+
+            if (!string.IsNullOrEmpty(sortColumnName) && !string.IsNullOrEmpty(sortOrder))
+            {
+                ViewBag.SortColumnName = sortColumnName;
+
+                if (sortColumnName == ViewBag.SortColumnName)
+                {
+                    if(ViewBag.SortOrder == sortOrder)
+                    {
+                        ViewBag.sortOrder = "DESC";
+                    }
+                    else
+                    {
+                        ViewBag.SortOrder = sortOrder;
+                    }
+                }
+                else
+                {
+                    ViewBag.SortColumnName = sortColumnName;
+                    ViewBag.SortOrder = sortOrder;
+                }
+            }
+
             List<Product> products = _productRepository.GetSortedProducts(sortColumnName, sortOrder);
 
             List<ProductVm> productsVm = _imapper.Map<List<Product>, List<ProductVm>>(products);

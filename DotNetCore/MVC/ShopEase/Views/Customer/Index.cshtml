@@ -1,0 +1,37 @@
+﻿@model List<ShopEase.ViewModels.CustomerVm>
+
+<h1>Customer Table</h1>
+
+<html>
+<head>
+    <title>Customer Table</title>
+</head>
+<br />
+<div>
+    <b><b><a href="https://localhost:7150/Customer/Register"> Register </a></b></b>
+</div
+<br />
+<body>
+    <form>
+        <table border="3px" class="table">
+            <tr class="table1">
+                <td><b>Full Name</b></td>
+                <td><b>Mobile</b></td>
+                <td><b>Gender</b></td>
+                <td><b>Email</b></td>
+                <td><b>Password</b></td>
+            </tr>
+
+            @foreach (ShopEase.ViewModels.CustomerVm customerVm in Model)
+            {
+                <tr class="table1">
+                    <td><b>@customerVm.FullName</b></td>
+                    <td><b>@customerVm.Mobile</b></td>
+                    <td><b>@customerVm.Gender</b></td>
+                    <td><b>@customerVm.Email</b></td>
+                    <td><b>@customerVm.Password</b></td>
+                </tr>
+            }
+        </table>
+    </form>
+</body>
