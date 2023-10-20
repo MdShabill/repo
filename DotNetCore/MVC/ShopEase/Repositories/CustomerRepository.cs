@@ -17,8 +17,11 @@ namespace ShopEase.Repositories
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "Select * From Customers";
-
+                string sqlQuery = @"Select 
+                           FullName, Mobile, Gender, 
+                           Email, Password
+                           From 
+                           Customers";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
