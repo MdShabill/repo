@@ -18,8 +18,8 @@ namespace ShopEase.Repositories
             using(SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Select 
-                           FullName, Mobile, Gender, 
-                           Email, Password
+                           FullName, Mobile,  
+                           Gender, Email
                            From 
                            Customers";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
@@ -36,7 +36,6 @@ namespace ShopEase.Repositories
                         Mobile = (string)dataTable.Rows[i]["Mobile"],
                         Gender = (int)dataTable.Rows[i]["Gender"],
                         Email = (string)dataTable.Rows[i]["Email"],
-                        Password = (string)dataTable.Rows[i]["Password"],
                     };
                     customers.Add(customer);
                 }
