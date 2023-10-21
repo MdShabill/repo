@@ -43,6 +43,91 @@ namespace ShopEase.Repositories
             }
         }
 
+        public Customer GetCustomerDetailByEmail(string email)
+        {
+            using(SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"Select FullName, Mobile, Gender, 
+                                    Email, Password, LoginFailedCount, IsLocked
+                                    From 
+                                    Customers 
+                                    Where Email = @email ";
+
+                SqlDataAdapter sqlDataAdapter = new( sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@email", email);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                if(dataTable.Rows.Count > 0)
+                {
+                    Customer customers = new()
+                    {
+                        FullName = (string)dataTable.Rows[0]["FullName"],
+                        Mobile = (string)dataTable.Rows[0]["Mobile"],
+                        Gender = (int)dataTable.Rows[0]["Gender"],
+                        Email  = (string)dataTable.Rows[0]["Email"],
+                        Password  = dataTable.Rows[0]["Password"] != DBNull.Value ? (string)dataTable.Rows[0]["Password"] : null,
+                        LoginFailedCount = dataTable.Rows[0]["LoginFailedCount"] != DBNull.Value ? (int)dataTable.Rows[0]["LoginFailedCount"] : null,
+                        IsLocked = dataTable.Rows[0]["IsLocked"] != DBNull.Value ? (bool)dataTable.Rows[0]["IsLocked"] : false
+                    };
+                    return customers;
+                }
+                return null;
+            }
+        }
+
+        public void UpdateOnLoginSuccessfull(string email)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"UPDATE Customers 
+                                  SET 
+                                  LastSuccessFulLoginDate = getdate(), 
+                                  LoginFailedCount = 0
+                                  WHERE Email = @email";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@email", email);
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+            }
+        }
+
+        public void UpdateOnLoginFailed(string email)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"UPDATE Customers
+                                    SET
+                                    LoginFailedCount = ISNULL(LoginFailedCount, 0) + 1,
+                                    LastFailedLoginDate = GETDATE()
+                                    WHERE Email = @email ";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@Email", email);
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+            }
+        }
+
+        public void UpdateIsLocked(string email, bool isLocked)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"Update Customers 
+                                    Set 
+                                    Islocked = @isLocked
+                                    Where Email = @email";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@email", email);
+                sqlCommand.Parameters.AddWithValue("@isLocked", isLocked);
+
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+            }
+        }
+
         public int Register(Customer customer)
         {
             using(SqlConnection sqlConnection = new(_connectionString)) 

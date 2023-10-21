@@ -13,6 +13,10 @@ Create Table Customers
 ALTER TABLE Customers
 ADD CONSTRAINT UQ_Customers_Email UNIQUE (Email)
 
+Alter Table Customers
+Add LastFailedLoginDate DateTime, LastSuccessfulLoginDate DateTime, 
+	LoginfailedCount int, IsLocked bit
+	
 
 
 
