@@ -1,0 +1,29 @@
+﻿@model List<ShopEase.ViewModels.ProductFilterVm>
+
+<h1>ProductSearchResult</h1>
+
+<html>
+<br />
+<body>
+    <form>
+        <table border="3px" class="table">
+            <tr>
+                <td><b>Product Name</b></td>
+                <td><b>Brand Name</b></td>
+                <td><b>Category Name</b></td>
+                <td><b>Actual Price</b></td>
+            </tr>
+
+            @foreach (ShopEase.ViewModels.ProductFilterVm productFilterVm in Model)
+            {
+                <tr>
+                    <td><b>@productFilterVm.ProductName</b></td>
+                    <td><b>@productFilterVm.BrandId</b></td>
+                    <td><b>@productFilterVm.CategoryId</b></td>
+                    <td><b>@productFilterVm.ActualPrice</b></td>
+                </tr>
+            }
+        </table>
+    </form>
+</body>
+</html>

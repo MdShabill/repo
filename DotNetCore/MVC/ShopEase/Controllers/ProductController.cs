@@ -81,6 +81,32 @@ namespace ShopEase.Controllers
             return View(productsVm);
         }
 
+        public IActionResult ProductSearch()
+        {
+            List<ProductBrand> productBrands = _productBrandRepository.GetBrands();
+            ViewBag.Brands = new SelectList(productBrands, "Id", "BrandName");
+
+            List<ProductCategory> categories = _productCategoryReopsitory.GetCategories();
+            ViewBag.Categories = new SelectList(categories, "Id", "CategoryName");
+
+            return View();
+        }
+
+        public IActionResult ProductSearchResult(ProductFilterVm productFilterVm)
+        {
+            if (string.IsNullOrEmpty(productFilterVm.ProductName) ||
+                productFilterVm.BrandId == 0 ||
+                productFilterVm.Min ==0 ||
+                productFilterVm.Max == 0 ||
+                productFilterVm.CategoryId == 0)
+            {
+                ViewBag.ErrorMessage = "Please select at least one column to search ";
+                return View();
+            }
+
+            return View(productFilterVm);
+        }
+
         public IActionResult Add()
         {
             DropDownSelectList();

@@ -31,7 +31,7 @@ namespace ShopEase.Controllers
         public IActionResult Login(string email, string password)
         {
             Customer customer = _customerRepository.GetCustomerDetailByEmail(email);
-            CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
+            _imapper.Map<Customer, CustomerVm>(customer);
 
             if (customer is null)
             {
@@ -55,7 +55,7 @@ namespace ShopEase.Controllers
                 }
 
                 ViewBag.ErrorMessage = "Invalid Email Or Password ";
-                return View(customerVm);
+                return View();
             }
 
             _customerRepository.UpdateOnLoginSuccessfull(email);
