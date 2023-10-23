@@ -1,4 +1,4 @@
-﻿@model List<ShopEase.ViewModels.ProductFilterVm>
+﻿@model List<ShopEase.ViewModels.ProductSearchResultVm>
 
 <h1>ProductSearchResult</h1>
 
@@ -10,17 +10,17 @@
             <tr>
                 <td><b>Product Name</b></td>
                 <td><b>Brand Name</b></td>
+                <td><b>Price</b></td>
                 <td><b>Category Name</b></td>
-                <td><b>Actual Price</b></td>
             </tr>
 
-            @foreach (ShopEase.ViewModels.ProductFilterVm productFilterVm in Model)
+            @foreach (ShopEase.ViewModels.ProductSearchResultVm productSearchResultVm in Model)
             {
                 <tr>
-                    <td><b>@productFilterVm.ProductName</b></td>
-                    <td><b>@productFilterVm.BrandId</b></td>
-                    <td><b>@productFilterVm.CategoryId</b></td>
-                    <td><b>@productFilterVm.ActualPrice</b></td>
+                    <td><b>@productSearchResultVm.ProductName</b></td>
+                    <td><b>@productSearchResultVm.BrandName</b></td>
+                    <td><b>@productSearchResultVm.Price</b></td>
+                    <td><b>@productSearchResultVm.CategoryName</b></td>
                 </tr>
             }
         </table>

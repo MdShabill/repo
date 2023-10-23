@@ -33,6 +33,8 @@ namespace ShopEase.Controllers
                 cfg.CreateMap<ProductBrand, ProductBrandVm>();
                 cfg.CreateMap<ProductCategory, ProductCategoryVm>();
                 cfg.CreateMap<ProductSupplier, ProductSupplierVm>();
+                cfg.CreateMap<ProductFilterVm, ProductFilterResult>();
+                cfg.CreateMap<ProductSearchResult, ProductSearchResultVm>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -94,17 +96,23 @@ namespace ShopEase.Controllers
 
         public IActionResult ProductSearchResult(ProductFilterVm productFilterVm)
         {
-            if (string.IsNullOrEmpty(productFilterVm.ProductName) ||
-                productFilterVm.BrandId == 0 ||
-                productFilterVm.Min ==0 ||
-                productFilterVm.Max == 0 ||
+            if (string.IsNullOrEmpty(productFilterVm.ProductName) &&
+                productFilterVm.BrandId == 0 &&
+                productFilterVm.Min ==0 &&
+                productFilterVm.Max == 0 &&
                 productFilterVm.CategoryId == 0)
             {
                 ViewBag.ErrorMessage = "Please select at least one column to search ";
                 return View();
             }
 
-            return View(productFilterVm);
+            ProductFilterResult productFilters = _imapper.Map<ProductFilterVm, ProductFilterResult>(productFilterVm);
+
+            List<ProductSearchResult> productSearchResults = _productRepository.GetProductsResult(productFilters);
+
+            List<ProductSearchResultVm> productSearchResultVm = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);
+
+            return View(productSearchResultVm);
         }
 
         public IActionResult Add()

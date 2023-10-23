@@ -7,6 +7,9 @@
         <form asp-action="ProductSearchResult">
 
             <div asp-validation-summary="ModelOnly" class="text-danger"> </div>
+
+            <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
+
             <div class="form-group">
                 <label class="control-label"><b>Product Name</b></label>
                 <input type="Text" id="ProductName" name="ProductName" class="form-control" />
@@ -16,7 +19,6 @@
             <div class="form-group">
                 <label class="control-label"><b>Brand Name</b></label>
                 @Html.DropDownListFor(model => model.BrandId, ViewBag.Brands as SelectList, "-- Select --", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.BrandId, "", new { @class = "text-danger" })
             </div>
             </br>
             <div class="form-group">
@@ -35,15 +37,19 @@
             <div class="form-group">
                 <label><b>Category Name</b></label>
                 @Html.DropDownListFor(model => model.CategoryId, ViewBag.Categories as SelectList, "-- Select --", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger"})
             </div>
             </br>
             <div class="form-group">
-                <input type="submit" value="Search" class="btn btn-primary" />
-            </div>
-            </br>
-            <div class="form-group">
-                <input type="submit" value="Buy Now" class="btn btn-primary" />
+                <table>
+                    <tr>
+                        <td>
+                            <input type="submit" value="Search" class="btn btn-primary" />
+                        </td>
+                        <td>
+                            <input type="submit" value="Buy Now" class="btn btn-primary" />
+                        </td>
+                    </tr>
+                </table>
             </div>
         </form>
     </div>

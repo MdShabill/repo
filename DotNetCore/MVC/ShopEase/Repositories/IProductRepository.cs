@@ -6,5 +6,6 @@ namespace ShopEase.Repositories
     {
         List<Product> GetSortedProducts(string? sortColumnName, string? sortOrder);
         public int Add(ProductAdd productAdd);
+        public List<ProductSearchResult> GetProductsResult(ProductFilterResult productsFilter);
     }
 }

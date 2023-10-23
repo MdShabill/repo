@@ -71,6 +71,85 @@ namespace ShopEase.Repositories
             }
         }
 
+        public List<ProductSearchResult> GetProductsResult(ProductFilterResult productFilters)
+        {
+            using(SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"Select  
+                        Products.ProductName, Brands.BrandName,
+                        Products.Price, Categories.CategoryName
+                        From Products 
+                        Inner Join Brands On Products.BrandId = Brands.Id                
+                        Inner Join Categories On Products.CategoryId = Categories.Id
+                        Where 1=1 ";
+
+                if (!string.IsNullOrEmpty(productFilters.ProductName))
+                {
+                    sqlQuery += " And Products.ProductName Like '%' + @productName + '%' ";
+                }
+                    
+                if (productFilters.BrandId != 0)
+                {
+                    sqlQuery += " And Products.BrandId = @brandId ";
+                }
+
+                if (productFilters.Min != 0 || productFilters.Max != 0)
+                {
+                    sqlQuery += " And Products.Price BETWEEN @minPrice AND @maxPrice ";
+                }
+
+                if (productFilters.CategoryId != 0)
+                {
+                    sqlQuery += " And Products.CategoryId = @categoryId ";
+                }
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+
+                if (!string.IsNullOrEmpty(productFilters.ProductName))
+                {
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productFilters.ProductName);
+                }
+
+                if (productFilters.BrandId != 0)
+                {
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@brandId", productFilters.BrandId);
+                }
+
+                if (productFilters.Min != 0)
+                {
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minPrice", productFilters.Min);
+                }
+
+                if (productFilters.Max != 0)
+                {
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maxPrice", productFilters.Max);
+                }
+
+                if (productFilters.CategoryId != 0)
+                {
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@categoryId", productFilters.CategoryId);
+                }
+
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<ProductSearchResult> productSearchResults = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    ProductSearchResult productSearchFilter = new()
+                    {
+                        ProductName = (string)dataTable.Rows[i]["ProductName"],
+                        BrandName = (string)dataTable.Rows[i]["BrandName"],
+                        Price = (decimal)dataTable.Rows[i]["Price"],
+                        CategoryName = (string)dataTable.Rows[i]["CategoryName"]
+                    };
+                    productSearchResults.Add(productSearchFilter);
+                }
+                return productSearchResults;
+            }
+        }
+
         public int Add(ProductAdd productAdd)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
