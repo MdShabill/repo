@@ -5,6 +5,7 @@ using ShopEase.Repositories;
 using System.Reflection;
 using ShopEase.DataModels;
 using ShopEase.ViewModels;
+using Microsoft.AspNetCore.Http;
 
 namespace ShopEase.Controllers
 {
@@ -33,7 +34,7 @@ namespace ShopEase.Controllers
                 cfg.CreateMap<ProductBrand, ProductBrandVm>();
                 cfg.CreateMap<ProductCategory, ProductCategoryVm>();
                 cfg.CreateMap<ProductSupplier, ProductSupplierVm>();
-                cfg.CreateMap<ProductFilterVm, ProductFilterResult>();
+                cfg.CreateMap<ProductFilterVm, ProductFilter>();
                 cfg.CreateMap<ProductSearchResult, ProductSearchResultVm>();
             });
 
@@ -43,35 +44,38 @@ namespace ShopEase.Controllers
         public IActionResult Index(string sortColumnName, string sortOrder)
         {
             if (string.IsNullOrEmpty(sortColumnName))
-            {
                 sortColumnName = "ProductName";
-            }
 
             if (string.IsNullOrEmpty(sortOrder))
-            {
                 sortOrder = "ASC";
-            }
 
-            if (!string.IsNullOrEmpty(sortColumnName) && !string.IsNullOrEmpty(sortOrder))
+
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("SortColumnName")) && 
+                !string.IsNullOrEmpty(HttpContext.Session.GetString("SortOrder")))
             {
-                ViewBag.SortColumnName = sortColumnName;
-
-                if (sortColumnName == ViewBag.SortColumnName)
+                if (HttpContext.Session.GetString("SortColumnName") == sortColumnName)
                 {
-                    if(ViewBag.SortOrder == sortOrder)
+                    if (HttpContext.Session.GetString("SortOrder") == "ASC")
                     {
-                        ViewBag.sortOrder = "DESC";
+                        sortOrder = "DESC";
+                        HttpContext.Session.SetString("SortOrder", sortOrder);
                     }
-                    else
+                    else if (HttpContext.Session.GetString("SortOrder") == "DESC")
                     {
-                        ViewBag.SortOrder = sortOrder;
+                        sortOrder = "ASC";
+                        HttpContext.Session.SetString("SortOrder", sortOrder);
                     }
                 }
                 else
                 {
-                    ViewBag.SortColumnName = sortColumnName;
-                    ViewBag.SortOrder = sortOrder;
+                    HttpContext.Session.SetString("SortColumnName", sortColumnName);
+                    HttpContext.Session.SetString("SortOrder", sortOrder);
                 }
+            }
+            else 
+            {
+                HttpContext.Session.SetString("SortColumnName", sortColumnName);
+                HttpContext.Session.SetString("SortOrder", sortOrder);
             }
 
             List<Product> products = _productRepository.GetSortedProducts(sortColumnName, sortOrder);
@@ -96,6 +100,7 @@ namespace ShopEase.Controllers
 
         public IActionResult ProductSearchResult(ProductFilterVm productFilterVm)
         {
+           
             if (string.IsNullOrEmpty(productFilterVm.ProductName) &&
                 productFilterVm.BrandId == 0 &&
                 productFilterVm.Min ==0 &&
@@ -103,16 +108,23 @@ namespace ShopEase.Controllers
                 productFilterVm.CategoryId == 0)
             {
                 ViewBag.ErrorMessage = "Please select at least one column to search ";
-                return View();
+
+                List<ProductBrand> productBrands = _productBrandRepository.GetBrands();
+                ViewBag.Brands = new SelectList(productBrands, "Id", "BrandName");
+
+                List<ProductCategory> categories = _productCategoryReopsitory.GetCategories();
+                ViewBag.Categories = new SelectList(categories, "Id", "CategoryName");
+
+                return View("ProductSearch");
             }
 
-            ProductFilterResult productFilters = _imapper.Map<ProductFilterVm, ProductFilterResult>(productFilterVm);
+            ProductFilter productFilters = _imapper.Map<ProductFilterVm, ProductFilter>(productFilterVm);
 
             List<ProductSearchResult> productSearchResults = _productRepository.GetProductsResult(productFilters);
 
-            List<ProductSearchResultVm> productSearchResultVm = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);
+            List<ProductSearchResultVm> aa = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);
 
-            return View(productSearchResultVm);
+            return View(aa);
         }
 
         public IActionResult Add()

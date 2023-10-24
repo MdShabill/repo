@@ -71,7 +71,7 @@ namespace ShopEase.Repositories
             }
         }
 
-        public List<ProductSearchResult> GetProductsResult(ProductFilterResult productFilters)
+        public List<ProductSearchResult> GetProductsResult(ProductFilter productFilters)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
@@ -137,14 +137,14 @@ namespace ShopEase.Repositories
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    ProductSearchResult productSearchFilter = new()
+                    ProductSearchResult productSearchResult = new()
                     {
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         Price = (decimal)dataTable.Rows[i]["Price"],
                         CategoryName = (string)dataTable.Rows[i]["CategoryName"]
                     };
-                    productSearchResults.Add(productSearchFilter);
+                    productSearchResults.Add(productSearchResult);
                 }
                 return productSearchResults;
             }

@@ -14,6 +14,8 @@ string ShopEaseDBConnectionString = configuration.GetConnectionString("ShopEaseD
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
 
 builder.Services.AddTransient<IProductRepository>((svc) =>
 {
@@ -50,6 +52,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
