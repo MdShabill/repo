@@ -76,59 +76,55 @@ namespace ShopEase.Repositories
             using(SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Select  
-                        Products.ProductName, Brands.BrandName,
-                        Products.Price, Categories.CategoryName
+                        Products.ProductName, Brands.BrandName, Products.Price,
+                        (Products.Price - Products.Discount) AS ActualPrice,
+                        Categories.CategoryName
                         From Products 
                         Inner Join Brands On Products.BrandId = Brands.Id                
                         Inner Join Categories On Products.CategoryId = Categories.Id
                         Where 1=1 ";
 
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+
                 if (!string.IsNullOrEmpty(productFilters.ProductName))
                 {
                     sqlQuery += " And Products.ProductName Like '%' + @productName + '%' ";
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productFilters.ProductName);
                 }
                     
                 if (productFilters.BrandId != 0)
                 {
                     sqlQuery += " And Products.BrandId = @brandId ";
-                }
-
-                if (productFilters.Min != 0 || productFilters.Max != 0)
-                {
-                    sqlQuery += " And Products.Price BETWEEN @minPrice AND @maxPrice ";
-                }
-
-                if (productFilters.CategoryId != 0)
-                {
-                    sqlQuery += " And Products.CategoryId = @categoryId ";
-                }
-
-                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-
-                if (!string.IsNullOrEmpty(productFilters.ProductName))
-                {
-                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productFilters.ProductName);
-                }
-
-                if (productFilters.BrandId != 0)
-                {
                     sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@brandId", productFilters.BrandId);
                 }
 
-                if (productFilters.Min != 0)
+                if (productFilters.Min != 0 && productFilters.Max == 0)
                 {
+                    sqlQuery += " And Products.Price >= @minPrice ";
                     sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minPrice", productFilters.Min);
                 }
 
-                if (productFilters.Max != 0)
+                if (productFilters.Min == 0 && productFilters.Max != 0)
                 {
+                    sqlQuery += " And Products.Price <= @maxPrice ";
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maxPrice", productFilters.Max);
+                }
+
+
+                if (productFilters.Min != 0 && productFilters.Max != 0)
+                {
+                    sqlQuery += " And Products.Price BETWEEN @minPrice AND @maxPrice ";
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minPrice", productFilters.Min);
                     sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maxPrice", productFilters.Max);
                 }
 
                 if (productFilters.CategoryId != 0)
                 {
+                    sqlQuery += " And Products.CategoryId = @categoryId ";
                     sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@categoryId", productFilters.CategoryId);
                 }
+
+                sqlDataAdapter.SelectCommand.CommandText = sqlQuery;
 
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -140,9 +136,10 @@ namespace ShopEase.Repositories
                     ProductSearchResult productSearchResult = new()
                     {
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
+                        CategoryName = (string)dataTable.Rows[i]["CategoryName"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         Price = (decimal)dataTable.Rows[i]["Price"],
-                        CategoryName = (string)dataTable.Rows[i]["CategoryName"]
+                        ActualPrice = (decimal)dataTable.Rows[i]["ActualPrice"],
                     };
                     productSearchResults.Add(productSearchResult);
                 }

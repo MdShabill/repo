@@ -49,34 +49,58 @@ namespace ShopEase.Controllers
             if (string.IsNullOrEmpty(sortOrder))
                 sortOrder = "ASC";
 
+            //Approach 1
+            string SessionSortColumnName = HttpContext.Session.GetString("SortColumnName");
+            string SessionSortOrder = HttpContext.Session.GetString("SortOrder");
 
-            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("SortColumnName")) && 
-                !string.IsNullOrEmpty(HttpContext.Session.GetString("SortOrder")))
+            if (!string.IsNullOrEmpty(SessionSortColumnName)  && !string.IsNullOrEmpty(SessionSortOrder) && SessionSortColumnName == sortColumnName)
             {
-                if (HttpContext.Session.GetString("SortColumnName") == sortColumnName)
+                if (HttpContext.Session.GetString("SortOrder") == "ASC")
                 {
-                    if (HttpContext.Session.GetString("SortOrder") == "ASC")
-                    {
-                        sortOrder = "DESC";
-                        HttpContext.Session.SetString("SortOrder", sortOrder);
-                    }
-                    else if (HttpContext.Session.GetString("SortOrder") == "DESC")
-                    {
-                        sortOrder = "ASC";
-                        HttpContext.Session.SetString("SortOrder", sortOrder);
-                    }
-                }
-                else
-                {
-                    HttpContext.Session.SetString("SortColumnName", sortColumnName);
+                    sortOrder = "DESC";
                     HttpContext.Session.SetString("SortOrder", sortOrder);
                 }
+                else if (HttpContext.Session.GetString("SortOrder") == "DESC")
+                {
+                    sortOrder = "ASC";
+                    HttpContext.Session.SetString("SortOrder", sortOrder);
+                }   
             }
-            else 
+            else
             {
                 HttpContext.Session.SetString("SortColumnName", sortColumnName);
                 HttpContext.Session.SetString("SortOrder", sortOrder);
             }
+
+
+            // Approach 2
+            //if (!string.IsNullOrEmpty(HttpContext.Session.GetString("SortColumnName")) && 
+            //    !string.IsNullOrEmpty(HttpContext.Session.GetString("SortOrder")))
+            //{
+            //    if (HttpContext.Session.GetString("SortColumnName") == sortColumnName)
+            //    {
+            //        if (HttpContext.Session.GetString("SortOrder") == "ASC")
+            //        {
+            //            sortOrder = "DESC";
+            //            HttpContext.Session.SetString("SortOrder", sortOrder);
+            //        }
+            //        else if (HttpContext.Session.GetString("SortOrder") == "DESC")
+            //        {
+            //            sortOrder = "ASC";
+            //            HttpContext.Session.SetString("SortOrder", sortOrder);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        HttpContext.Session.SetString("SortColumnName", sortColumnName);
+            //        HttpContext.Session.SetString("SortOrder", sortOrder);
+            //    }
+            //}
+            //else 
+            //{
+            //    HttpContext.Session.SetString("SortColumnName", sortColumnName);
+            //    HttpContext.Session.SetString("SortOrder", sortOrder);
+            //}
 
             List<Product> products = _productRepository.GetSortedProducts(sortColumnName, sortOrder);
 
@@ -122,9 +146,9 @@ namespace ShopEase.Controllers
 
             List<ProductSearchResult> productSearchResults = _productRepository.GetProductsResult(productFilters);
 
-            List<ProductSearchResultVm> aa = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);
+            List<ProductSearchResultVm> productSearchResultsVm = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);
 
-            return View(aa);
+            return View(productSearchResultsVm);
         }
 
         public IActionResult Add()

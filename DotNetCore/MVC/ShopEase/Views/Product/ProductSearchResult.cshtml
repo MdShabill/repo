@@ -9,18 +9,20 @@
         <table border="3px" class="table">
             <tr>
                 <td><b>Product Name</b></td>
+                <td><b>Category Name</b></td>
                 <td><b>Brand Name</b></td>
                 <td><b>Price</b></td>
-                <td><b>Category Name</b></td>
+                <td><b>Actual Price</b></td>
             </tr>
 
             @foreach (ShopEase.ViewModels.ProductSearchResultVm productSearchResultVm in Model)
             {
                 <tr>
                     <td><b>@productSearchResultVm.ProductName</b></td>
+                    <td><b>@productSearchResultVm.CategoryName</b></td>
                     <td><b>@productSearchResultVm.BrandName</b></td>
                     <td><b>@productSearchResultVm.Price</b></td>
-                    <td><b>@productSearchResultVm.CategoryName</b></td>
+                    <td><b>@productSearchResultVm.ActualPrice</b></td>
                 </tr>
             }
         </table>
