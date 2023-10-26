@@ -1,0 +1,74 @@
+﻿@model ShopEase.ViewModels.ProductSearchResultVm
+
+<h1>View</h1>
+
+<html>
+
+<style>
+    /* .heading {
+            background-color: rgb(113, 168, 175);
+            font-family: Verdana;
+        } */
+
+    .table {
+        width: 600px;
+        font-size: medium;
+        font-family: sans-serif;
+        border-collapse: collapse;
+    }
+
+        .table td {
+            border: 2px solid black;
+            padding: 4px;
+        }
+</style>
+
+<body>
+    <form asp-controller="Order" asp-action="PlaceOrder">
+
+        <h2 class="heading">
+            Product View
+        </h2>
+
+        <table class="table" style="width:600px;">
+            <tr>
+                <td>
+                    <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
+                </td>
+            </tr>
+            <tr>
+                <td><b>Product Name:</b></td>
+                <td>@Model.ProductName</td>
+            </tr>
+            <tr>
+                <td><b>Category Name:</b></td>
+                <td>@Model.CategoryName</td>
+            </tr>
+            <tr>
+                <td><b>Brand Name:</b></td>
+                <td>@Model.BrandName</td>
+            </tr>
+            <tr>
+                <td><b>Price:</b></td>
+                <td>@Model.Price </td>
+            </tr>
+            <tr>
+                <td><b>Actual Price:</b></td>
+                <td>@Model.ActualPrice</td>
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input type="submit" value="Buy Now" class="btn btn-primary" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <a href="https://localhost:7150/Product/ProductSearchResult"> <b>Back Home</b> </a>
+    </form>
+</body>
+
+</html>

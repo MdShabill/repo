@@ -21,12 +21,12 @@ namespace ShopEase.Repositories
                 {
                     sortColumnName = "ProductName";
                 }
-                    
+
                 if (string.IsNullOrEmpty(sortOrder))
                 {
                     sortOrder = "ASC";
                 }
-                    
+
                 string sqlQuery = @"SELECT Products.Id,
                          Products.ProductName, Brands.BrandName,
                          Products.Price, Products.Discount,
@@ -43,7 +43,7 @@ namespace ShopEase.Repositories
                 }
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                
+
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sortColumnName", sortColumnName);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sortOrder", sortOrder);
 
@@ -58,16 +58,82 @@ namespace ShopEase.Repositories
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
+                        CategoryName = (string)dataTable.Rows[i]["CategoryName"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
-                        Discount = Convert.ToInt32(dataTable.Rows[i]["Discount"]),
                         Price = Convert.ToInt32(dataTable.Rows[i]["Price"]),
                         ActualPrice = Convert.ToInt32(dataTable.Rows[i]["ActualPrice"]),
-                        CategoryName = (string)dataTable.Rows[i]["CategoryName"],
+                        Discount = Convert.ToInt32(dataTable.Rows[i]["Discount"]),
                         SupplierName = (string)dataTable.Rows[i]["SupplierName"],
                     };
                     products.Add(product);
                 }
                 return products;
+            }
+        }
+
+        public Product GetProductById(int id)
+        {
+            using(SqlConnection sqlConnection = new (_connectionString))
+            {
+                string sqlQuery = @"SELECT Products.Id,
+                         Products.ProductName, Categories.CategoryName,
+                         Brands.BrandName, Products.Price, Products.Discount,
+                         (Products.Price - Products.Discount) AS ActualPrice,
+                         Suppliers.SupplierName 
+                         FROM Products
+                         Inner Join Brands On Products.BrandId = Brands.Id                
+                         Inner Join Categories On Products.CategoryId = Categories.Id                    
+                         Inner Join Suppliers On Products.SupplierId = Suppliers.Id  
+                         Where Products.Id = @id ";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                Product product = new()
+                {
+                    Id = (int)dataTable.Rows[0]["Id"],
+                    ProductName = (string)dataTable.Rows[0]["ProductName"],
+                    CategoryName = (string)dataTable.Rows[0]["CategoryName"],
+                    BrandName = (string)dataTable.Rows[0]["BrandName"],
+                    Price = Convert.ToInt32(dataTable.Rows[0]["Price"]),
+                    ActualPrice = Convert.ToInt32(dataTable.Rows[0]["ActualPrice"]),
+                    Discount = Convert.ToInt32(dataTable.Rows[0]["Discount"]),
+                    SupplierName = (string)dataTable.Rows[0]["SupplierName"],
+                };
+                return product;
+            }
+        }
+
+        public ProductSearchResult GetProductSearchById(int id)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"SELECT Products.Id,
+                         Products.ProductName, Categories.CategoryName,
+                         Brands.BrandName, Products.Price,
+                         (Products.Price - Products.Discount) AS ActualPrice 
+                         FROM Products
+                         Inner Join Brands On Products.BrandId = Brands.Id                
+                         Inner Join Categories On Products.CategoryId = Categories.Id                      
+                         Where Products.Id = @id ";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                ProductSearchResult productSearchResult = new()
+                {
+                    Id = (int)dataTable.Rows[0]["Id"],
+                    ProductName = (string)dataTable.Rows[0]["ProductName"],
+                    CategoryName = (string)dataTable.Rows[0]["CategoryName"],
+                    BrandName = (string)dataTable.Rows[0]["BrandName"],
+                    Price = Convert.ToInt32(dataTable.Rows[0]["Price"]),
+                    ActualPrice = Convert.ToInt32(dataTable.Rows[0]["ActualPrice"]),
+                };
+                return productSearchResult;
             }
         }
 
@@ -113,7 +179,7 @@ namespace ShopEase.Repositories
 
                 if (productFilters.Min != 0 && productFilters.Max != 0)
                 {
-                    sqlQuery += " And Products.Price BETWEEN @minPrice AND @maxPrice ";
+                    sqlQuery += " And Products.Price >= @minPrice AND Products.Price <= @maxPrice ";
                     sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minPrice", productFilters.Min);
                     sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maxPrice", productFilters.Max);
                 }

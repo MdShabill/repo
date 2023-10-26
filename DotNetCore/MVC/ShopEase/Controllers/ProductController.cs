@@ -111,6 +111,24 @@ namespace ShopEase.Controllers
             return View(productsVm);
         }
 
+        public IActionResult View(int id)
+        {
+            Product product = _productRepository.GetProductById(id);
+
+            ProductVm productVm = _imapper.Map<Product, ProductVm>(product);
+
+            return View(productVm);
+        }
+
+        public IActionResult ProductView(int id)
+        {
+            ProductSearchResult productSearch = _productRepository.GetProductSearchById(id);
+
+            ProductSearchResultVm productSearchVm = _imapper.Map<ProductSearchResult, ProductSearchResultVm>(productSearch);
+
+            return  View(productSearchVm);
+        }
+
         public IActionResult ProductSearch()
         {
             List<ProductBrand> productBrands = _productBrandRepository.GetBrands();

@@ -31,7 +31,7 @@
             @foreach (ShopEase.ViewModels.ProductVm productVm in Model)
             {
                 <tr class="table1">
-                    <td><b>@productVm.ProductName</b></td>
+                    <td><b><a href="https://localhost:7150/Product/View/@productVm.Id">@productVm.ProductName</a></b></td>
                     <td><b>@productVm.BrandName</b></td>
                     <td><b>@productVm.Price</b></td>
                     <td><b>@productVm.Discount</b></td>
