@@ -13,5 +13,6 @@
         public decimal ActualPrice { get; set; }
         public int SupplierId { get; set; }
         public string SupplierName { get; set; }
+        public string ImageName { get; set; }
     }
 }

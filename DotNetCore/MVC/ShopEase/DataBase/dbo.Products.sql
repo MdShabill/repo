@@ -8,16 +8,20 @@ CREATE TABLE Products
 	Discount Decimal(10,3) NOT NULL,
 	CategoryId Int NOT NULL,
 	SupplierId Int NOT NULL,
-	Primary Key (Id),
-    FOREIGN KEY (BrandId) REFERENCES Brands (Id),
-	FOREIGN KEY (CategoryId) REFERENCES Categories (Id),
-	FOREIGN KEY (SupplierId) REFERENCES Suppliers (Id)
+	Primary Key (Id),	
 )
 
+Alter Table Products
+Add ImageName Nvarchar(200)
 
+Alter Table Products
+Add FOREIGN KEY (BrandId) REFERENCES Brands (Id)
 
+Alter Table Products
+Add FOREIGN KEY (CategoryId) REFERENCES Categories (Id)
 
-
+Alter Table Products
+Add FOREIGN KEY (SupplierId) REFERENCES Suppliers (Id)
 
 
 

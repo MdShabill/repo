@@ -8,5 +8,6 @@
         public decimal Discount { get; set; }
         public int CategoryId { get; set; }
         public int SupplierId { get; set; }
+        public string ImageName { get; set; }
     }
 }

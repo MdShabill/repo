@@ -1,11 +1,11 @@
 ﻿@model ShopEase.ViewModels.ProductAddVm
 <h1>Add</h1>
 
-<h4>ProductAddVm</h4>
+<h4>ProductAdd</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Add">
+        <form asp-action="Add" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
@@ -44,6 +44,11 @@
                 <label asp-for="SupplierId"><b>Product Supplier</b></label>
                 @Html.DropDownListFor(model => model.SupplierId, ViewBag.Suppliers as SelectList, "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.SupplierId, "", new { @class = "text-danger" })
+            </div>
+            <br />
+            <div class="form-group">
+                <label for="ImageName">Image</label>
+                <input class="form-control" type="file" id="ImageFile" name="ImageFile" />
             </div>
             <br />
             <div class="form-group">

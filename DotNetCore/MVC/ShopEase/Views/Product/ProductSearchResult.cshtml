@@ -18,7 +18,7 @@
             @foreach (ShopEase.ViewModels.ProductSearchResultVm productSearchResultVm in Model)
             {
                 <tr>
-                    <td><b><a href="https://localhost:7150/Product/ProductSearchResult/ProductView/@productSearchResultVm.Id">@productSearchResultVm.ProductName</a></b></td>
+                    <td><b><a href="https://localhost:7150/Product/View/@productSearchResultVm.Id">@productSearchResultVm.ProductName</a></b></td>
                     <td><b>@productSearchResultVm.CategoryName</b></td>
                     <td><b>@productSearchResultVm.BrandName</b></td>
                     <td><b>@productSearchResultVm.Price</b></td>

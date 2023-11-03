@@ -21,8 +21,7 @@ Create Table Orders
 
 
 
-
-
+Select * from Orders
 
 
 Insert Into Orders(ProductId, CustomerId, OrderDate, ExpectedDeliveryDate, ActualDeliverdDate, AmountPaid)

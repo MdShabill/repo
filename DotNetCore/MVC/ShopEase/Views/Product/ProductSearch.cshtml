@@ -9,18 +9,18 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"> </div>
 
             <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
-
+            <br />
             <div class="form-group">
                 <label class="control-label"><b>Product Name</b></label>
                 <input type="Text" id="ProductName" name="ProductName" class="form-control" />
                 <span asp-validation-for="ProductName" class="text-danger"></span>
             </div>
-            </br>
+            <br />
             <div class="form-group">
                 <label class="control-label"><b>Brand Name</b></label>
                 @Html.DropDownListFor(model => model.BrandId, ViewBag.Brands as SelectList, "-- Select --", new { @class = "form-control" })
             </div>
-            </br>
+            <br />
             <div class="form-group">
                 <table>
                     <tr>
@@ -33,12 +33,12 @@
                     </tr>
                 </table>
             </div>
-            </br>
+            <br />
             <div class="form-group">
                 <label><b>Category Name</b></label>
                 @Html.DropDownListFor(model => model.CategoryId, ViewBag.Categories as SelectList, "-- Select --", new { @class = "form-control" })
             </div>
-            </br>
+            <br />
             <div class="form-group">
                 <table>
                     <tr>

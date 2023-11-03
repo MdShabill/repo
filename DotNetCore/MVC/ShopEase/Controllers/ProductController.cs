@@ -6,6 +6,8 @@ using System.Reflection;
 using ShopEase.DataModels;
 using ShopEase.ViewModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using AutoMapper.Configuration.Conventions;
 
 namespace ShopEase.Controllers
 {
@@ -16,11 +18,13 @@ namespace ShopEase.Controllers
         IProductCategoryReopsitory _productCategoryReopsitory;
         IProductSupplierRepository _productSupplierRepository;
         IMapper _imapper;
+        private readonly IWebHostEnvironment _env;
 
-        public ProductController(IProductRepository productRepository, 
+        public ProductController(IProductRepository productRepository,
                                  IProductBrandRepository productBrandRepository,
                                  IProductCategoryReopsitory productCategoryReopsitory,
-                                 IProductSupplierRepository productSupplierRepository)
+                                 IProductSupplierRepository productSupplierRepository,
+                                 IWebHostEnvironment env)
         {
             _productRepository = productRepository;
             _productBrandRepository = productBrandRepository;
@@ -39,6 +43,7 @@ namespace ShopEase.Controllers
             });
 
             _imapper = configuration.CreateMapper();
+            _env = env;
         }
 
         public IActionResult Index(string sortColumnName, string sortOrder)
@@ -120,15 +125,6 @@ namespace ShopEase.Controllers
             return View(productVm);
         }
 
-        public IActionResult ProductView(int id)
-        {
-            ProductSearchResult productSearch = _productRepository.GetProductSearchById(id);
-
-            ProductSearchResultVm productSearchVm = _imapper.Map<ProductSearchResult, ProductSearchResultVm>(productSearch);
-
-            return  View(productSearchVm);
-        }
-
         public IActionResult ProductSearch()
         {
             List<ProductBrand> productBrands = _productBrandRepository.GetBrands();
@@ -143,13 +139,23 @@ namespace ShopEase.Controllers
         public IActionResult ProductSearchResult(ProductFilterVm productFilterVm)
         {
            
-            if (string.IsNullOrEmpty(productFilterVm.ProductName) &&
-                productFilterVm.BrandId == 0 &&
-                productFilterVm.Min ==0 &&
-                productFilterVm.Max == 0 &&
-                productFilterVm.CategoryId == 0)
+            if (!string.IsNullOrEmpty(productFilterVm.ProductName) ||
+                productFilterVm.BrandId != 0 ||
+                productFilterVm.Min != 0 ||
+                productFilterVm.Max != 0 ||
+                productFilterVm.CategoryId != 0)
             {
-                ViewBag.ErrorMessage = "Please select at least one column to search ";
+                ProductFilter productFilters = _imapper.Map<ProductFilterVm, ProductFilter>(productFilterVm);
+
+                List<ProductSearchResult> productSearchResults = _productRepository.GetProductsResult(productFilters);
+
+                List<ProductSearchResultVm> productSearchResultsVm = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);
+
+                return View(productSearchResultsVm);
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "Please Provide Any Input ";
 
                 List<ProductBrand> productBrands = _productBrandRepository.GetBrands();
                 ViewBag.Brands = new SelectList(productBrands, "Id", "BrandName");
@@ -159,14 +165,6 @@ namespace ShopEase.Controllers
 
                 return View("ProductSearch");
             }
-
-            ProductFilter productFilters = _imapper.Map<ProductFilterVm, ProductFilter>(productFilterVm);
-
-            List<ProductSearchResult> productSearchResults = _productRepository.GetProductsResult(productFilters);
-
-            List<ProductSearchResultVm> productSearchResultsVm = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);
-
-            return View(productSearchResultsVm);
         }
 
         public IActionResult Add()
@@ -222,13 +220,34 @@ namespace ShopEase.Controllers
                 return View();
             }
 
+            string dir = Path.Combine(_env.WebRootPath, "UploadedFiles");
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            string uniqueFileName = GetUniqueFileName(productAddVm.ImageFile.FileName);
+            string filePath = Path.Combine(dir, uniqueFileName);
+
+            productAddVm.ImageFile.CopyToAsync(new FileStream(filePath, FileMode.Create));
+
             ProductAdd productAdd = _imapper.Map<ProductAddVm, ProductAdd>(productAddVm);
+            productAdd.ImageName = uniqueFileName;
             int affrectedRowCount = _productRepository.Add(productAdd);
             if (affrectedRowCount > 0)
             {
                 TempData["SuccessMessageForAdd"] = "Product Add Successful ";
             }
             return RedirectToAction("Index", productAddVm);
+        }
+
+        private string GetUniqueFileName(string fileName)
+        {
+            fileName = Path.GetFileName(fileName);
+            return Path.GetFileNameWithoutExtension(fileName) 
+                   + "_"
+                   + Guid.NewGuid().ToString().Substring(0, 4)
+                   + Path.GetExtension(fileName);
         }
 
         private void DropDownSelectList()

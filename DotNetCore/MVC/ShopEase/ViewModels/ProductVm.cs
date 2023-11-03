@@ -17,5 +17,7 @@
         //}
         public string CategoryName { get; set; }
         public string SupplierName { get; set; }
+        public IFormFile ImageFile { get; set; }
+        public string ImageName { get; set; }
     }
 }
