@@ -47,7 +47,7 @@ namespace ShopEase.Repositories
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Select FullName, Mobile, Gender, 
+                string sqlQuery = @"Select Id, FullName, Mobile, Gender, 
                                     Email, Password, LoginFailedCount, IsLocked
                                     From 
                                     Customers 
@@ -62,6 +62,7 @@ namespace ShopEase.Repositories
                 {
                     Customer customers = new()
                     {
+                        Id = (int)dataTable.Rows[0]["Id"],
                         FullName = (string)dataTable.Rows[0]["FullName"],
                         Mobile = (string)dataTable.Rows[0]["Mobile"],
                         Gender = (int)dataTable.Rows[0]["Gender"],

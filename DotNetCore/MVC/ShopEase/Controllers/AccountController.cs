@@ -26,7 +26,7 @@ namespace ShopEase.Controllers
         {
             return View();
         }
-
+        
         [HttpPost]
         public IActionResult Login(string email, string password)
         {
@@ -60,7 +60,11 @@ namespace ShopEase.Controllers
 
             _customerRepository.UpdateOnLoginSuccessfull(email);
 
-            return RedirectToAction("Index", "Customer");
+            HttpContext.Session.SetInt32("LoggedInCustomerId", customer.Id);
+            HttpContext.Session.SetString("LoggedInCustomerFullName", customer.FullName);
+            HttpContext.Session.SetString("LoggedInCustomerFullEmail", customer.Email);
+            
+            return RedirectToAction("ProductSearch", "Product", customer);
         }
     }
 }

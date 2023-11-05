@@ -1,14 +1,8 @@
 ﻿@model ShopEase.ViewModels.ProductVm
 
-<h1>View</h1>
-
 <html>
 
 <style>
-    /* .heading {
-        background-color: rgb(113, 168, 175);
-        font-family: Verdana;
-    } */
 
     .table {
         width: 600px;
@@ -24,7 +18,7 @@
 </style>
 
 <body>
-    <form asp-action="View">
+    <form asp-controller="Order" asp-action="PlaceOrder" method="get">
 
         <h2 class="heading">
             Product View
@@ -50,7 +44,10 @@
             </tr>
             <tr>
                 <td><b>Price:</b></td>
-                <td>@Model.Price </td>
+                <td>
+                    @Model.Price
+                    <input type="hidden" name="Price" value="@Model.Price" id="Price" />
+                </td>
             </tr>
             <tr>
                 <td><b>Actual Price:</b></td>
@@ -68,13 +65,6 @@
                 <td><b>Image:</b></td>
                 <td> <img src="/UploadedFiles/@Model.ImageName" width="60" height="60" /> </td>
             </tr>
-            <td>
-                <b>Enter Quantity:</b>
-            </td>
-            <td>
-                <input type="text" id="Quantity" name="Quantity" />
-            </td>
-            <tr>
                 <td>
 
                 </td>

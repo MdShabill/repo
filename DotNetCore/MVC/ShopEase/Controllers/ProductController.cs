@@ -122,11 +122,17 @@ namespace ShopEase.Controllers
 
             ProductVm productVm = _imapper.Map<Product, ProductVm>(product);
 
+            HttpContext.Session.SetInt32("LoggedInProductId", productVm.Id);
+            HttpContext.Session.SetString("LoggedInProductPrice", productVm.Price.ToString());
             return View(productVm);
         }
 
         public IActionResult ProductSearch()
         {
+            ViewBag.LoggedInCustomerId = HttpContext.Session.GetInt32("LoggedInCustomerId");
+            ViewBag.LoggedInCustomerFullName = HttpContext.Session.GetString("LoggedInCustomerFullName");
+            ViewBag.LoggedInCustomerFullEmail = HttpContext.Session.GetString("LoggedInCustomerFullEmail");
+
             List<ProductBrand> productBrands = _productBrandRepository.GetBrands();
             ViewBag.Brands = new SelectList(productBrands, "Id", "BrandName");
 
