@@ -21,6 +21,8 @@ namespace ShopEase.Controllers
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<OrderVm, Order>();
+                cfg.CreateMap<Order, OrderVm>();
+                cfg.CreateMap<OrderSummary, OrderSummaryVm>();
             });
             _imapper = configuration.CreateMapper();
             _addressRepository = addressRepository;
@@ -29,7 +31,7 @@ namespace ShopEase.Controllers
         public IActionResult PlaceOrder()
         {
             List<Address> addresses = _addressRepository.GetAllAddress();
-            ViewBag.Addresses = new SelectList(addresses, "Id", "PinCode");
+            ViewBag.Addresses = new SelectList(addresses, "Id", "AddressDetail");
             return View();
         }
 
@@ -39,14 +41,29 @@ namespace ShopEase.Controllers
             orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("LoggedInCustomerId"));
             orderVm.ProductId = Convert.ToInt32(HttpContext.Session.GetInt32("LoggedInProductId"));
             orderVm.Price = decimal.Parse(HttpContext.Session.GetString("LoggedInProductPrice"));
-            
+
+            orderVm.OrderNumber = GenerateRandomOrderNumber();
+
             Order order = _imapper.Map<OrderVm, Order>(orderVm);
             int affectedRowCount = _orderRepository.PlaceOrder(order);
             if(affectedRowCount > 0)
             {
-                ViewBag.SuccessMessage = "Order Placed SuccessFul ";
+                ViewBag.SuccessMessage = "Your Order Placed Successfully Done... ";
             }
-            return RedirectToAction("Index", "Product");
+            return RedirectToAction("OrderSummary");
+        }
+
+        private int GenerateRandomOrderNumber()
+        {
+            Random random = new Random();
+            return random.Next(100000, 999999);
+        }
+
+        public IActionResult OrderSummary()
+        {
+            OrderSummary orderSummary = _orderRepository.GetLastOrderSummaryDetails();
+            OrderSummaryVm orderSummaryVm = _imapper.Map<OrderSummary, OrderSummaryVm>(orderSummary);
+            return View(orderSummaryVm);
         }
     }
 }
