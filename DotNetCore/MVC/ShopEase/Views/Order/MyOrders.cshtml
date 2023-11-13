@@ -1,0 +1,37 @@
+﻿@model List<ShopEase.ViewModels.OrderVm>
+
+<html>
+<br />
+    <body>
+        <form>
+            <table border="3px" class="table">
+                <tr class="table1">
+                    <td><b>Order Number</b></td>
+                    <td><b>Product Name</b></td>
+                    <td><b>Full Name</b></td>
+                    <td><b>Order Date</b></td>
+                    <td><b>Price</b></td>
+                    <td><b>Quantity</b></td>
+                    <td><b>Address</b></td>
+                </tr>
+    
+                @foreach (ShopEase.ViewModels.OrderVm orderVm in Model)
+                {
+                    <tr class="table1">
+                    <td><b><a href="https://localhost:7150/Order/OrderDetail/@orderVm.Id">@orderVm.OrderNumber</a></b></td>
+                        <td><b>@orderVm.ProductName</b></td>
+                        <td><b>@orderVm.FullName</b></td>
+                        <td><b>@orderVm.OrderDate</b></td>
+                        <td><b>@orderVm.Price</b></td>
+                        <td><b>@orderVm.Quantity</b></td>
+                    <td>
+                        <b>@($@"{orderVm.AddressLine1}, {orderVm.AddressLine2}, 
+                                {orderVm.PinCode}, {orderVm.CountryName}, 
+                                {orderVm.AddressTypeName}")</b>
+                    </td>
+                    </tr>
+                }
+            </table>
+        </form>
+    </body>
+</html>

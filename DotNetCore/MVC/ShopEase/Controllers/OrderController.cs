@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -23,6 +24,7 @@ namespace ShopEase.Controllers
                 cfg.CreateMap<OrderVm, Order>();
                 cfg.CreateMap<Order, OrderVm>();
                 cfg.CreateMap<OrderSummary, OrderSummaryVm>();
+                cfg.CreateMap<OrderDetail, OrderDetailVm>();
             });
             _imapper = configuration.CreateMapper();
             _addressRepository = addressRepository;
@@ -38,9 +40,9 @@ namespace ShopEase.Controllers
         [HttpPost]
         public IActionResult PlaceOrder(OrderVm orderVm)
         {
-            orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("LoggedInCustomerId"));
-            orderVm.ProductId = Convert.ToInt32(HttpContext.Session.GetInt32("LoggedInProductId"));
-            orderVm.Price = decimal.Parse(HttpContext.Session.GetString("LoggedInProductPrice"));
+            orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
+            orderVm.ProductId = Convert.ToInt32(HttpContext.Session.GetInt32("ProductId"));
+            orderVm.Price = decimal.Parse(HttpContext.Session.GetString("ProductPrice"));
 
             orderVm.OrderNumber = GenerateRandomOrderNumber();
 
@@ -50,6 +52,7 @@ namespace ShopEase.Controllers
             {
                 ViewBag.SuccessMessage = "Your Order Placed Successfully Done... ";
             }
+            HttpContext.Session.SetInt32("OrderNumber", (int)orderVm.OrderNumber);
             return RedirectToAction("OrderSummary");
         }
 
@@ -61,9 +64,24 @@ namespace ShopEase.Controllers
 
         public IActionResult OrderSummary()
         {
-            OrderSummary orderSummary = _orderRepository.GetLastOrderSummaryDetails();
+            int orderNumber = Convert.ToInt32(HttpContext.Session.GetInt32("OrderNumber"));
+            OrderSummary orderSummary = _orderRepository.GetLastOrderSummaryDetails(orderNumber);
             OrderSummaryVm orderSummaryVm = _imapper.Map<OrderSummary, OrderSummaryVm>(orderSummary);
             return View(orderSummaryVm);
+        }
+
+        public IActionResult MyOrders()
+        {
+            List<Order> orders = _orderRepository.GetAllOrders();
+            List<OrderVm> ordersVm = _imapper.Map<List<Order>, List<OrderVm>>(orders);
+            return View(ordersVm);
+        }
+
+        public IActionResult OrderDetail(int id)
+        {
+            OrderDetail orderDetail = _orderRepository.GetOrderByOrderId(id);
+            OrderDetailVm orderDetailVm = _imapper.Map<OrderDetail, OrderDetailVm>(orderDetail);
+            return View(orderDetailVm);
         }
     }
 }

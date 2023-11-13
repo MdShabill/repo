@@ -122,16 +122,16 @@ namespace ShopEase.Controllers
 
             ProductVm productVm = _imapper.Map<Product, ProductVm>(product);
 
-            HttpContext.Session.SetInt32("LoggedInProductId", productVm.Id);
-            HttpContext.Session.SetString("LoggedInProductPrice", productVm.Price.ToString());
+            HttpContext.Session.SetInt32("ProductId", productVm.Id);
+            HttpContext.Session.SetString("ProductPrice", productVm.Price.ToString());
             return View(productVm);
         }
 
         public IActionResult ProductSearch()
         {
-            ViewBag.LoggedInCustomerId = HttpContext.Session.GetInt32("LoggedInCustomerId");
-            ViewBag.LoggedInCustomerFullName = HttpContext.Session.GetString("LoggedInCustomerFullName");
-            ViewBag.LoggedInCustomerFullEmail = HttpContext.Session.GetString("LoggedInCustomerFullEmail");
+            ViewBag.CustomerId = HttpContext.Session.GetInt32("CustomerId");
+            ViewBag.CustomerFullName = HttpContext.Session.GetString("CustomerFullName");
+            ViewBag.CustomerFullEmail = HttpContext.Session.GetString("CustomerFullEmail");
 
             List<ProductBrand> productBrands = _productBrandRepository.GetBrands();
             ViewBag.Brands = new SelectList(productBrands, "Id", "BrandName");
@@ -144,7 +144,12 @@ namespace ShopEase.Controllers
 
         public IActionResult ProductSearchResult(ProductFilterVm productFilterVm)
         {
-           
+            if (productFilterVm.ProductName.Length < 3)
+            {
+                ViewBag.ErrorMessage = "Product Name should be at least 3 characters";
+                return View();
+            }
+
             if (!string.IsNullOrEmpty(productFilterVm.ProductName) ||
                 productFilterVm.BrandId != 0 ||
                 productFilterVm.Min != 0 ||

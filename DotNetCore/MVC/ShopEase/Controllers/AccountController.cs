@@ -60,9 +60,9 @@ namespace ShopEase.Controllers
 
             _customerRepository.UpdateOnLoginSuccessfull(email);
 
-            HttpContext.Session.SetInt32("LoggedInCustomerId", customer.Id);
-            HttpContext.Session.SetString("LoggedInCustomerFullName", customer.FullName);
-            HttpContext.Session.SetString("LoggedInCustomerFullEmail", customer.Email);
+            HttpContext.Session.SetInt32("CustomerId", customer.Id);
+            HttpContext.Session.SetString("CustomerFullName", customer.FullName);
+            HttpContext.Session.SetString("CustomerFullEmail", customer.Email);
             
             return RedirectToAction("ProductSearch", "Product", customer);
         }
