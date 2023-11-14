@@ -1,4 +1,4 @@
-﻿@model ShopEase.ViewModels.OrderDetailVm
+﻿@model ShopEase.ViewModels.OrderSummaryDetailVm
 
 <html>
 
@@ -18,14 +18,9 @@
 </style>
 <h1>Order Detail</h1>
 <body>
-    <form asp-action="OrderDetail" method="get">
+    <form asp-action="OrderDetail">
 
         <table class="table" style="width:600px;">
-            <tr>
-                <td>
-                    <input type="hidden" name="OrderId" value="@Model.Id" id="OrderId" />
-                </td>
-            </tr>
             <tr>
                 <td><b>Order Number:</b></td>
                 <td>@Model.OrderNumber</td>
@@ -69,7 +64,6 @@
             </tr>
         </table>
         <br />
-        @* <a href="https://localhost:7150/Product/Index"> <b>Back Home</b> </a> *@
     </form>
 </body>
 

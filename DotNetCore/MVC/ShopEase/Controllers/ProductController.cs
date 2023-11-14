@@ -144,18 +144,18 @@ namespace ShopEase.Controllers
 
         public IActionResult ProductSearchResult(ProductFilterVm productFilterVm)
         {
-            if (productFilterVm.ProductName.Length < 3)
-            {
-                ViewBag.ErrorMessage = "Product Name should be at least 3 characters";
-                return View();
-            }
-
             if (!string.IsNullOrEmpty(productFilterVm.ProductName) ||
                 productFilterVm.BrandId != 0 ||
                 productFilterVm.Min != 0 ||
                 productFilterVm.Max != 0 ||
                 productFilterVm.CategoryId != 0)
             {
+                //if (productFilterVm.ProductName.Length < 3)
+                //{
+                //    ViewBag.ErrorMessage = "Product Name should be at least 3 characters";
+                //    return View();
+                //}
+
                 ProductFilter productFilters = _imapper.Map<ProductFilterVm, ProductFilter>(productFilterVm);
 
                 List<ProductSearchResult> productSearchResults = _productRepository.GetProductsResult(productFilters);

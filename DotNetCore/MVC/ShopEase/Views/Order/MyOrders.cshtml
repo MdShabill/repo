@@ -18,7 +18,7 @@
                 @foreach (ShopEase.ViewModels.OrderVm orderVm in Model)
                 {
                     <tr class="table1">
-                    <td><b><a href="https://localhost:7150/Order/OrderDetail/@orderVm.Id">@orderVm.OrderNumber</a></b></td>
+                    <td><b><a href="https://localhost:7150/Order/OrderDetail/@orderVm.OrderNumber">@orderVm.OrderNumber</a></b></td>
                         <td><b>@orderVm.ProductName</b></td>
                         <td><b>@orderVm.FullName</b></td>
                         <td><b>@orderVm.OrderDate</b></td>
