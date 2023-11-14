@@ -34,6 +34,11 @@ namespace ShopEase.Controllers
             return View(customersVm);
         }
 
+        public IActionResult View(int id)
+        {
+            return View();
+        }
+
         public IActionResult Register()
         {
             return View();

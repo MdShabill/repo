@@ -14,7 +14,7 @@ namespace ShopEase.Repositories
             _connectionString = connectionString;
         }
 
-        public List<Order> GetAllOrders()
+        public List<Order> GetOrderByCustomerId(int customerId)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
@@ -29,9 +29,11 @@ namespace ShopEase.Repositories
                              JOIN Addresses ON Orders.AddressId = Addresses.Id
                              JOIN Products ON Orders.ProductId = Products.Id
                              JOIN AddressTypes ON Addresses.AddressTypeID = AddressTypes.Id
-                             JOIN Countries ON Addresses.CountryId = Countries.Id";
+                             JOIN Countries ON Addresses.CountryId = Countries.Id
+                             Where Orders.CustomerId = @customerId ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@customerId", customerId);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
@@ -41,7 +43,7 @@ namespace ShopEase.Repositories
                 {
                     Order order = new Order()
                     {
-                        Id = (int)dataTable.Rows[0]["Id"],
+                        Id = (int)dataTable.Rows[i]["Id"],
                         OrderNumber = (int)dataTable.Rows[i]["OrderNumber"],
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
                         FullName = (string)dataTable.Rows[i]["FullName"],
@@ -60,7 +62,7 @@ namespace ShopEase.Repositories
             }
         }
 
-        public OrderSummaryDetail GetOrders(int orderNumber)
+        public OrderDetail GetOrder(int orderNumber)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
@@ -86,7 +88,7 @@ namespace ShopEase.Repositories
 
                 if (dataTable.Rows.Count > 0)
                 {
-                    OrderSummaryDetail orders = new()
+                    OrderDetail order = new()
                     {
                         OrderNumber = (int)dataTable.Rows[0]["OrderNumber"],
                         OrderDate = (DateTime)dataTable.Rows[0]["OrderDate"],
@@ -102,7 +104,7 @@ namespace ShopEase.Repositories
                         Price = Convert.ToInt32(dataTable.Rows[0]["Price"]),
                         Quantity = (int)dataTable.Rows[0]["Quantity"]
                     };
-                    return orders;
+                    return order;
                 }
                 return null;
             }

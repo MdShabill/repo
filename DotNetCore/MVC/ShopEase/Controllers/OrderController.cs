@@ -23,10 +23,33 @@ namespace ShopEase.Controllers
             {
                 cfg.CreateMap<OrderVm, Order>();
                 cfg.CreateMap<Order, OrderVm>();
-                cfg.CreateMap<OrderSummaryDetail, OrderSummaryDetailVm>();
+                cfg.CreateMap<OrderDetail, OrderSummaryDetailVm>();
             });
             _imapper = configuration.CreateMapper();
             _addressRepository = addressRepository;
+        }
+
+        public IActionResult MyOrder()
+        {
+            int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
+            List<Order> order = _orderRepository.GetOrderByCustomerId(customerId);
+            List<OrderVm> orderVm = _imapper.Map<List<Order>, List<OrderVm>>(order);
+            return View(orderVm);
+        }
+
+        public IActionResult OrderSummary()
+        {
+            int orderNumber = Convert.ToInt32(HttpContext.Session.GetInt32("OrderNumber"));
+            OrderDetail ordersummaryDetail = _orderRepository.GetOrder(orderNumber);
+            OrderSummaryDetailVm orderSummaryDetailVm = _imapper.Map<OrderDetail, OrderSummaryDetailVm>(ordersummaryDetail);
+            return View(orderSummaryDetailVm);
+        }
+
+        public IActionResult OrderDetail(int orderNumber)
+        {
+            OrderDetail ordersummaryDetail = _orderRepository.GetOrder(orderNumber);
+            OrderSummaryDetailVm orderSummaryDetailVm = _imapper.Map<OrderDetail, OrderSummaryDetailVm>(ordersummaryDetail);
+            return View(orderSummaryDetailVm);
         }
 
         public IActionResult PlaceOrder()
@@ -47,7 +70,7 @@ namespace ShopEase.Controllers
 
             Order order = _imapper.Map<OrderVm, Order>(orderVm);
             int affectedRowCount = _orderRepository.PlaceOrder(order);
-            if(affectedRowCount > 0)
+            if (affectedRowCount > 0)
             {
                 ViewBag.SuccessMessage = "Your Order Placed Successfully Done... ";
             }
@@ -60,27 +83,5 @@ namespace ShopEase.Controllers
             Random random = new Random();
             return random.Next(100000, 999999);
         }
-
-        public IActionResult OrderSummary()
-        {
-            int orderNumber = Convert.ToInt32(HttpContext.Session.GetInt32("OrderNumber"));
-            OrderSummaryDetail ordersummaryDetail = _orderRepository.GetOrders(orderNumber);
-            OrderSummaryDetailVm orderSummaryDetailVm = _imapper.Map<OrderSummaryDetail, OrderSummaryDetailVm>(ordersummaryDetail);
-            return View(orderSummaryDetailVm);
-        }
-
-        public IActionResult MyOrders()
-        {
-            List<Order> orders = _orderRepository.GetAllOrders();
-            List<OrderVm> ordersVm = _imapper.Map<List<Order>, List<OrderVm>>(orders);
-            return View(ordersVm);
-        }
-
-        public IActionResult OrderDetail(int orderNumber)
-        {
-            OrderSummaryDetail ordersummaryDetail = _orderRepository.GetOrders(orderNumber);
-            OrderSummaryDetailVm orderSummaryDetailVm = _imapper.Map<OrderSummaryDetail, OrderSummaryDetailVm>(ordersummaryDetail);
-            return View(orderSummaryDetailVm);
-        }   
     }
 }

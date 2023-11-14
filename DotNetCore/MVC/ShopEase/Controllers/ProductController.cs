@@ -131,7 +131,7 @@ namespace ShopEase.Controllers
         {
             ViewBag.CustomerId = HttpContext.Session.GetInt32("CustomerId");
             ViewBag.CustomerFullName = HttpContext.Session.GetString("CustomerFullName");
-            ViewBag.CustomerFullEmail = HttpContext.Session.GetString("CustomerFullEmail");
+            ViewBag.CustomerEmail = HttpContext.Session.GetString("CustomerEmail");
 
             List<ProductBrand> productBrands = _productBrandRepository.GetBrands();
             ViewBag.Brands = new SelectList(productBrands, "Id", "BrandName");

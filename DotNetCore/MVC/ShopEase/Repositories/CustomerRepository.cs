@@ -43,6 +43,11 @@ namespace ShopEase.Repositories
             }
         }
 
+        public Customer GetCustomerById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public Customer GetCustomerDetailByEmail(string email)
         {
             using(SqlConnection sqlConnection = new(_connectionString))

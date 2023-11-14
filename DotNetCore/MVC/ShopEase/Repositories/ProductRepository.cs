@@ -90,6 +90,7 @@ namespace ShopEase.Repositories
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
+                
 
                 Product product = new()
                 {

@@ -62,7 +62,7 @@ namespace ShopEase.Controllers
 
             HttpContext.Session.SetInt32("CustomerId", customer.Id);
             HttpContext.Session.SetString("CustomerFullName", customer.FullName);
-            HttpContext.Session.SetString("CustomerFullEmail", customer.Email);
+            HttpContext.Session.SetString("CustomerEmail", customer.Email);
             
             return RedirectToAction("ProductSearch", "Product", customer);
         }
