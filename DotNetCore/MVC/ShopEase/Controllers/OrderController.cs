@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using ShopEase.DataModels;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
+using static NuGet.Packaging.PackagingConstants;
 
 namespace ShopEase.Controllers
 {
@@ -42,15 +43,27 @@ namespace ShopEase.Controllers
         {
             int orderNumber = Convert.ToInt32(HttpContext.Session.GetInt32("OrderNumber"));
             List<Order> order = _orderRepository.GetAllOrders(orderNumber, null);
-            List<OrderSummaryVm> orderSummaryVm = _imapper.Map<List<Order>, List<OrderSummaryVm>>(order);
-            return View(orderSummaryVm);
+            if (order != null && order.Count > 0)
+            {
+                Order firstOrder = order[0];
+                OrderSummaryVm orderSummaryVm = _imapper.Map<Order, OrderSummaryVm>(firstOrder);
+
+                return View(orderSummaryVm);
+            }
+            return View("NoOrdersFound");
         }
 
         public IActionResult OrderDetail(int? orderNumber, int? customerId = null)
         {
             List<Order> order = _orderRepository.GetAllOrders(orderNumber, customerId);
-            List<OrderDetailVm> orderDetailVm = _imapper.Map<List<Order>, List<OrderDetailVm>>(order);
-            return View(orderDetailVm);
+            if (order != null && order.Count > 0)
+            {
+                Order firstOrder = order[0];
+                OrderDetailVm orderDetailVm = _imapper.Map<Order, OrderDetailVm>(firstOrder);
+
+                return View(orderDetailVm);
+            }
+            return View("NoOrdersFound");
         }
 
         public IActionResult PlaceOrder()
