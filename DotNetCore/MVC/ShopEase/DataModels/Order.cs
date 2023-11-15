@@ -4,11 +4,13 @@
     {
         public int Id { get; set; }
         public int OrderNumber { get; set; }
-        public int ProductId { get; set; }
-        public int CustomerId { get; set; }
-        public string ProductName { get; set; }
-        public string FullName { get; set; }
         public DateTime OrderDate { get; set; }
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public string ImageName { get; set; }
+        public int CustomerId { get; set; }
+        public string FullName { get; set; } 
+        public string Mobile { get; set; } 
         public decimal Price { get; set; }
         public int Quantity { get; set; }
         public int AddressId { get; set; }

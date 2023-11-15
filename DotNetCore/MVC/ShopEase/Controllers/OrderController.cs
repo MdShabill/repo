@@ -23,8 +23,8 @@ namespace ShopEase.Controllers
             {
                 cfg.CreateMap<OrderVm, Order>();
                 cfg.CreateMap<Order, OrderVm>();
-                cfg.CreateMap<OrderDetail, OrderSummaryVm>();
-                cfg.CreateMap<OrderDetail, OrderDetailVm>();
+                cfg.CreateMap<Order, OrderSummaryVm>();
+                cfg.CreateMap<Order, OrderDetailVm>();
             });
             _imapper = configuration.CreateMapper();
             _addressRepository = addressRepository;
@@ -41,15 +41,15 @@ namespace ShopEase.Controllers
         public IActionResult OrderSummary()
         {
             int orderNumber = Convert.ToInt32(HttpContext.Session.GetInt32("OrderNumber"));
-            OrderDetail orderDetail = _orderRepository.GetOrder(orderNumber);
-            OrderSummaryVm orderSummaryVm = _imapper.Map<OrderDetail, OrderSummaryVm>(orderDetail);
+            Order order = _orderRepository.GetOrder(orderNumber);
+            OrderSummaryVm orderSummaryVm = _imapper.Map<Order, OrderSummaryVm>(order);
             return View(orderSummaryVm);
         }
 
         public IActionResult OrderDetail(int orderNumber)
         {
-            OrderDetail orderDetail = _orderRepository.GetOrder(orderNumber);
-            OrderDetailVm orderDetailVm = _imapper.Map<OrderDetail, OrderDetailVm>(orderDetail);
+            Order order = _orderRepository.GetOrder(orderNumber);
+            OrderDetailVm orderDetailVm = _imapper.Map<Order, OrderDetailVm>(order);
             return View(orderDetailVm);
         }
 

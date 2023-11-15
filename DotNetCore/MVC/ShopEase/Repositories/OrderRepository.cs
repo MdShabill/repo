@@ -68,7 +68,7 @@ namespace ShopEase.Repositories
             }
         }
 
-        public OrderDetail GetOrder(int orderNumber)
+        public Order GetOrder(int orderNumber)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
@@ -94,7 +94,7 @@ namespace ShopEase.Repositories
 
                 if (dataTable.Rows.Count > 0)
                 {
-                    OrderDetail order = new()
+                    Order order = new()
                     {
                         OrderNumber = (int)dataTable.Rows[0]["OrderNumber"],
                         OrderDate = (DateTime)dataTable.Rows[0]["OrderDate"],
