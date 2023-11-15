@@ -23,7 +23,8 @@ namespace ShopEase.Controllers
             {
                 cfg.CreateMap<OrderVm, Order>();
                 cfg.CreateMap<Order, OrderVm>();
-                cfg.CreateMap<OrderDetail, OrderSummaryDetailVm>();
+                cfg.CreateMap<OrderDetail, OrderSummaryVm>();
+                cfg.CreateMap<OrderDetail, OrderDetailVm>();
             });
             _imapper = configuration.CreateMapper();
             _addressRepository = addressRepository;
@@ -32,7 +33,7 @@ namespace ShopEase.Controllers
         public IActionResult MyOrder()
         {
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
-            List<Order> order = _orderRepository.GetOrderByCustomerId(customerId);
+            List<Order> order = _orderRepository.GetAllOrders(customerId);
             List<OrderVm> orderVm = _imapper.Map<List<Order>, List<OrderVm>>(order);
             return View(orderVm);
         }
@@ -40,16 +41,16 @@ namespace ShopEase.Controllers
         public IActionResult OrderSummary()
         {
             int orderNumber = Convert.ToInt32(HttpContext.Session.GetInt32("OrderNumber"));
-            OrderDetail ordersummaryDetail = _orderRepository.GetOrder(orderNumber);
-            OrderSummaryDetailVm orderSummaryDetailVm = _imapper.Map<OrderDetail, OrderSummaryDetailVm>(ordersummaryDetail);
-            return View(orderSummaryDetailVm);
+            OrderDetail orderDetail = _orderRepository.GetOrder(orderNumber);
+            OrderSummaryVm orderSummaryVm = _imapper.Map<OrderDetail, OrderSummaryVm>(orderDetail);
+            return View(orderSummaryVm);
         }
 
         public IActionResult OrderDetail(int orderNumber)
         {
-            OrderDetail ordersummaryDetail = _orderRepository.GetOrder(orderNumber);
-            OrderSummaryDetailVm orderSummaryDetailVm = _imapper.Map<OrderDetail, OrderSummaryDetailVm>(ordersummaryDetail);
-            return View(orderSummaryDetailVm);
+            OrderDetail orderDetail = _orderRepository.GetOrder(orderNumber);
+            OrderDetailVm orderDetailVm = _imapper.Map<OrderDetail, OrderDetailVm>(orderDetail);
+            return View(orderDetailVm);
         }
 
         public IActionResult PlaceOrder()
@@ -69,7 +70,7 @@ namespace ShopEase.Controllers
             orderVm.OrderNumber = GenerateRandomOrderNumber();
 
             Order order = _imapper.Map<OrderVm, Order>(orderVm);
-            int affectedRowCount = _orderRepository.PlaceOrder(order);
+            int affectedRowCount = _orderRepository.AddOrder(order);
             if (affectedRowCount > 0)
             {
                 ViewBag.SuccessMessage = "Your Order Placed Successfully Done... ";

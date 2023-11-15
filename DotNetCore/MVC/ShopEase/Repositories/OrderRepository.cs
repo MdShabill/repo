@@ -14,7 +14,7 @@ namespace ShopEase.Repositories
             _connectionString = connectionString;
         }
 
-        public List<Order> GetOrderByCustomerId(int customerId)
+        public List<Order> GetAllOrders(int? customerId)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
@@ -30,10 +30,16 @@ namespace ShopEase.Repositories
                              JOIN Products ON Orders.ProductId = Products.Id
                              JOIN AddressTypes ON Addresses.AddressTypeID = AddressTypes.Id
                              JOIN Countries ON Addresses.CountryId = Countries.Id
-                             Where Orders.CustomerId = @customerId ";
+                             Where 1=1";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@customerId", customerId);
+                if (customerId != null)
+                {
+                    sqlQuery += " And Orders.CustomerId = @customerId ";
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@customerId", customerId);
+                }
+
+                sqlDataAdapter.SelectCommand.CommandText = sqlQuery;
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
@@ -110,7 +116,7 @@ namespace ShopEase.Repositories
             }
         }
 
-        public int PlaceOrder(Order order)
+        public int AddOrder(Order order)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
