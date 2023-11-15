@@ -1,4 +1,4 @@
-﻿@model ShopEase.ViewModels.OrderDetailVm
+﻿@model List<ShopEase.ViewModels.OrderDetailVm>
 
 <html>
 
@@ -18,62 +18,59 @@
 </style>
 <h1>Order Detail</h1>
 <body>
-    <form asp-action="OrderDetail">
-
-        <table class="table" style="width:600px;">
-            <tr>
-                <td><b>Order Number:</b></td>
-                <td>@Model.OrderNumber</td>
-            </tr>
-            <tr>
-                <td><b>Order Date:</b></td>
-                <td>@Model.OrderDate</td>
-            </tr>
-            <tr>
-                <td><b>Full Name:</b></td>
-                <td>@Model.FullName</td>
-            </tr>
-            <tr>
-                <td><b>Mobile Number:</b></td>
-                <td>@Model.Mobile</td>
-            </tr>
-            <tr>
-                <td><b>Product Name:</b></td>
-                <td>@Model.ProductName</td>
-            </tr>
-            @* <tr>
-                <td><b>Image:</b></td>
-                <td><a href="https://localhost:7150/Product/View?imageName=@Model.ImageName"> <img src="/UploadedFiles/@Model.ImageName" width="60" height="60" /></a></td>
-            </tr> *@
-            <tr>
-                <td><b>Image:</b></td>
-                <td>
-                    <a href="@Url.Action("View", "Product", new { id = Model.ImageName })">
-                        <img src="/UploadedFiles/@Model.ImageName" width="60" height="60" />
-                    </a>
-                </td>
-            </tr>
-
-            <tr>
-                <td><b>Address:</b></td>
-                <td>
-                    @Model.AddressLine1 @("-")
-                    @Model.AddressLine2 @("-")
-                    @Model.PinCode @("-") @Model.CountryName
-                    @("-") @Model.AddressTypeName
-                </td>
-            </tr>
-            <tr>
-                <td><b>Paid Amount:</b></td>
-                <td>@Model.Price</td>
-            </tr>
-            <tr>
-                <td><b>Quantity:</b></td>
-                <td>@Model.Quantity</td>
-            </tr>
-        </table>
-        <br />
-    </form>
+    @foreach (var orderDetail in Model)
+    {
+        <form asp-action="OrderDetail">
+            <table class="table" style="width:600px;">
+                <tr>
+                    <td><b>Order Number:</b></td>
+                    <td>@orderDetail.OrderNumber</td>
+                </tr>
+                <tr>
+                    <td><b>Order Date:</b></td>
+                    <td>@orderDetail.OrderDate</td>
+                </tr>
+                <tr>
+                    <td><b>Full Name:</b></td>
+                    <td>@orderDetail.FullName</td>
+                </tr>
+                <tr>
+                    <td><b>Mobile Number:</b></td>
+                    <td>@orderDetail.Mobile</td>
+                </tr>
+                <tr>
+                    <td><b>Product Name:</b></td>
+                    <td>@orderDetail.ProductName</td>
+                </tr>
+                <tr>
+                    <td><b>Image:</b></td>
+                    <td>
+                        <a href="@Url.Action("View", "Product", new { id = orderDetail.ImageName })">
+                            <img src="/UploadedFiles/@orderDetail.ImageName" width="60" height="60" />
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Address:</b></td>
+                    <td>
+                        @orderDetail.AddressLine1 @("-")
+                        @orderDetail.AddressLine2 @("-")
+                        @orderDetail.PinCode @("-") @orderDetail.CountryName
+                        @("-") @orderDetail.AddressTypeName
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Paid Amount:</b></td>
+                    <td>@orderDetail.Price</td>
+                </tr>
+                <tr>
+                    <td><b>Quantity:</b></td>
+                    <td>@orderDetail.Quantity</td>
+                </tr>
+            </table>
+            <br />
+        </form>
+    }
 </body>
 
 </html>

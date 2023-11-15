@@ -33,7 +33,7 @@ namespace ShopEase.Controllers
         public IActionResult MyOrder()
         {
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
-            List<Order> order = _orderRepository.GetAllOrders(customerId);
+            List<Order> order = _orderRepository.GetAllOrders(null, customerId);
             List<OrderVm> orderVm = _imapper.Map<List<Order>, List<OrderVm>>(order);
             return View(orderVm);
         }
@@ -41,15 +41,15 @@ namespace ShopEase.Controllers
         public IActionResult OrderSummary()
         {
             int orderNumber = Convert.ToInt32(HttpContext.Session.GetInt32("OrderNumber"));
-            Order order = _orderRepository.GetOrder(orderNumber);
-            OrderSummaryVm orderSummaryVm = _imapper.Map<Order, OrderSummaryVm>(order);
+            List<Order> order = _orderRepository.GetAllOrders(orderNumber, null);
+            List<OrderSummaryVm> orderSummaryVm = _imapper.Map<List<Order>, List<OrderSummaryVm>>(order);
             return View(orderSummaryVm);
         }
 
-        public IActionResult OrderDetail(int orderNumber)
+        public IActionResult OrderDetail(int? orderNumber, int? customerId = null)
         {
-            Order order = _orderRepository.GetOrder(orderNumber);
-            OrderDetailVm orderDetailVm = _imapper.Map<Order, OrderDetailVm>(order);
+            List<Order> order = _orderRepository.GetAllOrders(orderNumber, customerId);
+            List<OrderDetailVm> orderDetailVm = _imapper.Map<List<Order>, List<OrderDetailVm>>(order);
             return View(orderDetailVm);
         }
 

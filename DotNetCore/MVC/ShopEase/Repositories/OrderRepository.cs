@@ -14,13 +14,13 @@ namespace ShopEase.Repositories
             _connectionString = connectionString;
         }
 
-        public List<Order> GetAllOrders(int? customerId)
+        public List<Order> GetAllOrders(int? orderNumber, int? customerId)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Select Orders.Id, Orders.OrderNumber,
-                             Products.ProductName, Customers.FullName,
-                             Orders.OrderDate, Orders.Price, Orders.Quantity,
+                string sqlQuery = @"Select Orders.Id, Orders.OrderNumber, Orders.OrderDate, 
+                             Orders.Price, Orders.Quantity, Products.ProductName,
+                             Products.ImageName, Customers.FullName, Customers.Mobile,
                              Addresses.AddressLine1, Addresses.AddressLine2, 
                              Addresses.PinCode, Countries.CountryName,
                              AddressTypes.AddressTypeName
@@ -39,6 +39,12 @@ namespace ShopEase.Repositories
                     sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@customerId", customerId);
                 }
 
+                if (orderNumber != null)
+                {
+                    sqlQuery += " And Orders.OrderNumber = @orderNumber ";
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@orderNumber", orderNumber);
+                }
+
                 sqlDataAdapter.SelectCommand.CommandText = sqlQuery;
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -52,7 +58,9 @@ namespace ShopEase.Repositories
                         Id = (int)dataTable.Rows[i]["Id"],
                         OrderNumber = (int)dataTable.Rows[i]["OrderNumber"],
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
+                        ImageName = (string)dataTable.Rows[0]["ImageName"],
                         FullName = (string)dataTable.Rows[i]["FullName"],
+                        Mobile = (string)dataTable.Rows[0]["Mobile"],
                         OrderDate = (DateTime)dataTable.Rows[i]["OrderDate"],
                         Price = Convert.ToInt32(dataTable.Rows[i]["Price"]),
                         Quantity = (int)dataTable.Rows[i]["Quantity"],
@@ -65,54 +73,6 @@ namespace ShopEase.Repositories
                     orders.Add(order);
                 }
                 return orders;
-            }
-        }
-
-        public Order GetOrder(int orderNumber)
-        {
-            using(SqlConnection sqlConnection = new(_connectionString))
-            {
-                string sqlQuery = @"Select Orders.OrderNumber, 
-                       Orders.Price, Orders.Quantity, Orders.OrderDate,
-                       Products.ProductName, Products.ImageName, Customers.FullName,
-                       Customers.Mobile, Addresses.AddressLine1,
-                       Addresses.AddressLine2, Addresses.PinCode,
-                       Countries.CountryName, AddressTypes.AddressTypeName 
-                       FROM Orders 
-                       JOIN Customers ON Orders.CustomerId = Customers.Id
-                       JOIN Addresses ON Orders.AddressId = Addresses.Id
-                       JOIN Products ON Orders.ProductId = Products.Id
-                       JOIN AddressTypes ON Addresses.AddressTypeID = AddressTypes.Id
-                       JOIN Countries ON Addresses.CountryId = Countries.Id
-                       Where Orders.OrderNumber = @orderNumber ";
-
-                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@orderNumber", orderNumber);
-
-                DataTable dataTable = new();
-                sqlDataAdapter.Fill(dataTable);
-
-                if (dataTable.Rows.Count > 0)
-                {
-                    Order order = new()
-                    {
-                        OrderNumber = (int)dataTable.Rows[0]["OrderNumber"],
-                        OrderDate = (DateTime)dataTable.Rows[0]["OrderDate"],
-                        ProductName = (string)dataTable.Rows[0]["ProductName"],
-                        ImageName = (string)dataTable.Rows[0]["ImageName"],
-                        FullName = (string)dataTable.Rows[0]["FullName"],
-                        Mobile = (string)dataTable.Rows[0]["Mobile"],
-                        AddressLine1 = (string)dataTable.Rows[0]["AddressLine1"],
-                        AddressLine2 = (string)dataTable.Rows[0]["AddressLine2"],
-                        PinCode = (int)dataTable.Rows[0]["PinCode"],
-                        CountryName = (string)dataTable.Rows[0]["CountryName"],
-                        AddressTypeName = (string)dataTable.Rows[0]["AddressTypeName"],
-                        Price = Convert.ToInt32(dataTable.Rows[0]["Price"]),
-                        Quantity = (int)dataTable.Rows[0]["Quantity"]
-                    };
-                    return order;
-                }
-                return null;
             }
         }
 

@@ -1,21 +1,29 @@
-﻿@model ShopEase.ViewModels.OrderSummaryVm
+﻿@model List<ShopEase.ViewModels.OrderSummaryVm>
 
 <h1>Order Summary</h1>
 <br />
 <span class="success-msg"><b>@ViewBag.ErrorMessage</b></span>
-<form asp-action="MyOrders">
-    <div>
-        <p><b>Order Number: @Model.OrderNumber </b></p>
-        <p><b>Paid Amount: @Model.Price </b></p>
-        <p><b>Order Date: @Model.OrderDate </b></p>
-        <p><b>Customer Name: @Model.FullName </b></p>
-        <p><b>Address: @Model.AddressLine1 @("-") 
-                    @Model.AddressLine2 @("-") 
-                    @Model.PinCode @("-") @Model.CountryName 
-                    @("-") @Model.AddressTypeName </b></p>
+
+@foreach (var orderSummary in Model)
+{
+    <form asp-action="MyOrder">
+        <div>
+            <p><b>Order Number: @orderSummary.OrderNumber </b></p>
+            <p><b>Paid Amount: @orderSummary.Price </b></p>
+            <p><b>Order Date: @orderSummary.OrderDate </b></p>
+            <p><b>Customer Name: @orderSummary.FullName </b></p>
+            <p>
+                <b>
+                    Address: @orderSummary.AddressLine1 @("-")
+                    @orderSummary.AddressLine2 @("-")
+                    @orderSummary.PinCode @("-") @orderSummary.CountryName
+                    @("-") @orderSummary.AddressTypeName
+                </b>
+            </p>
+            <br />
+            <img src="/UploadedFiles/@orderSummary.ImageName" alt="Product Image" style="float: right; width: 200px; height: 200px; ">
+        </div>
         <br />
-        <img src="/UploadedFiles/@Model.ImageName" alt="Product Image" style="float: right; width: 200px; height: 200px; ">
-    </div>
-    <br />
-    <input type="submit" value="MyOrder" class="btn btn-primary" />
-</form>
+        <input type="submit" value="MyOrder" class="btn btn-primary" />
+    </form>
+}
