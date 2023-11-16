@@ -72,7 +72,7 @@ namespace ShopEase.Repositories
             }
         }
 
-        public Product GetProduct(int? id, string? imageName)
+        public Product GetProduct(int id)
         {
             using(SqlConnection sqlConnection = new (_connectionString))
             {
@@ -85,27 +85,13 @@ namespace ShopEase.Repositories
                          Inner Join Brands On Products.BrandId = Brands.Id                
                          Inner Join Categories On Products.CategoryId = Categories.Id                    
                          Inner Join Suppliers On Products.SupplierId = Suppliers.Id  
-                         Where 1=1 ";
+                         Where Products.Id = @id ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-
-                if (id != null)
-                {
-                    sqlQuery += " And Products.Id = @id ";
-                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
-                }
-
-                if (!string.IsNullOrEmpty(imageName))
-                {
-                    sqlQuery += " And Products.ImageName = @imageName ";
-                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@imageName", imageName);
-                }
-
-                sqlDataAdapter.SelectCommand.CommandText = sqlQuery;
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
                 
-
                 Product product = new()
                 {
                     Id = (int)dataTable.Rows[0]["Id"],

@@ -18,7 +18,7 @@
 </style>
 <h1>Order Detail</h1>
 <body>
-    <form asp-action="OrderDetail">
+    <form asp-action="MyOrder">
         <table class="table" style="width:600px;">
             <tr>
                 <td><b>Order Number:</b></td>
@@ -42,11 +42,7 @@
             </tr>
             <tr>
                 <td><b>Image:</b></td>
-                <td>
-                    <a href="@Url.Action("View", "Product", new { id = Model.ImageName })">
-                        <img src="/UploadedFiles/@Model.ImageName" width="60" height="60" />
-                    </a>
-                </td>
+                <td><a href="https://localhost:7150/Product/View?Id=@Model.ProductId"> <img src="/UploadedFiles/@Model.ImageName" width="60" height="60" /></a></td>
             </tr>
             <tr>
                 <td><b>Address:</b></td>
@@ -66,6 +62,14 @@
                 <td>@Model.Quantity</td>
             </tr>
         </table>
+        <tr>
+            <td></td>
+            <td style="text-align: right;">
+                <div style="margin-left: 150px;">
+                    <input type="submit" value="Back To Order" class="btn btn-primary" onclick="window.location.href='https://localhost:7150/Order/MyOrder'" />
+                </div>
+            </td>
+        </tr>
         <br />
     </form>
 </body>

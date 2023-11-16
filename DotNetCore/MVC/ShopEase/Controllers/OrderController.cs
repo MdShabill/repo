@@ -34,9 +34,13 @@ namespace ShopEase.Controllers
         public IActionResult MyOrder()
         {
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
-            List<Order> order = _orderRepository.GetAllOrders(null, customerId);
-            List<OrderVm> orderVm = _imapper.Map<List<Order>, List<OrderVm>>(order);
-            return View(orderVm);
+            if(customerId > 0)
+            {
+                List<Order> order = _orderRepository.GetAllOrders(null, customerId);
+                List<OrderVm> orderVm = _imapper.Map<List<Order>, List<OrderVm>>(order);
+                return View(orderVm);
+            }
+            return RedirectToAction("Login", "Account");
         }
 
         public IActionResult OrderSummary()

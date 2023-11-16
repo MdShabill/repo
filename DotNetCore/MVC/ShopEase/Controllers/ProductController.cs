@@ -116,9 +116,9 @@ namespace ShopEase.Controllers
             return View(productsVm);
         }
 
-        public IActionResult View(int? id, string? imageName)
+        public IActionResult View(int id)
         {
-            Product product = _productRepository.GetProduct(id, imageName);
+            Product product = _productRepository.GetProduct(id);
 
             ProductVm productVm = _imapper.Map<Product, ProductVm>(product);
 

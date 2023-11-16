@@ -18,8 +18,8 @@ namespace ShopEase.Repositories
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Select Orders.Id, Orders.OrderNumber, Orders.OrderDate, 
-                             Orders.Price, Orders.Quantity, Products.ProductName,
+                string sqlQuery = @"Select Orders.Id, Orders.ProductId, Orders.OrderNumber, 
+                             Orders.OrderDate, Orders.Price, Orders.Quantity, Products.ProductName,
                              Products.ImageName, Customers.FullName, Customers.Mobile,
                              Addresses.AddressLine1, Addresses.AddressLine2, 
                              Addresses.PinCode, Countries.CountryName,
@@ -56,6 +56,7 @@ namespace ShopEase.Repositories
                     Order order = new Order()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
+                        ProductId = (int)dataTable.Rows[i]["ProductId"],
                         OrderNumber = (int)dataTable.Rows[i]["OrderNumber"],
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
                         ImageName = (string)dataTable.Rows[0]["ImageName"],
