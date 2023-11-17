@@ -66,5 +66,11 @@ namespace ShopEase.Controllers
             
             return RedirectToAction("ProductSearch", "Product", customer);
         }
+
+        public IActionResult LogOut()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
+        }
     }
 }
