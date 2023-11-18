@@ -43,6 +43,37 @@ namespace ShopEase.Repositories
             }
         }
 
+        public Customer GetCustomerById(int id)
+        {
+            using(SqlConnection sqlConnection=new(_connectionString))
+            {
+                string sqlQuery = @"Select Id,
+                          FullName, Gender, 
+                          Email, Mobile
+                          From Customers
+                          Where Id = @id ";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery,sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                if(dataTable.Rows.Count > 0)
+                {
+                    Customer customers = new()
+                    {
+                        Id = (int)dataTable.Rows[0]["Id"],
+                        FullName = (string)dataTable.Rows[0]["FullName"],
+                        Gender = (int)dataTable.Rows[0]["Gender"],
+                        Email = (string)dataTable.Rows[0]["Email"],
+                        Mobile = (string)dataTable.Rows[0]["Mobile"]
+                    };
+                    return customers;
+                }
+                return null;
+            }
+        }
+
         public Customer GetCustomerDetailByEmail(string email)
         {
             using(SqlConnection sqlConnection = new(_connectionString))
@@ -149,6 +180,31 @@ namespace ShopEase.Repositories
                 int affectedRowCount = sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
 
+                return affectedRowCount;
+            }
+        }
+
+        public int Update(Customer customer)
+        {
+            using(SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"Update Customers Set 
+                                    FullName = @fullName,
+                                    Gender = @gender,
+                                    Email = @email,
+                                    Password = @password,
+                                    Mobile = @mobile
+                                    Where Id = @id";
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@Id", customer.Id);
+                sqlCommand.Parameters.AddWithValue("@fullName", customer.FullName);
+                sqlCommand.Parameters.AddWithValue("@gender", customer.Gender);
+                sqlCommand.Parameters.AddWithValue("@email", customer.Email);
+                sqlCommand.Parameters.AddWithValue("@password", customer.Password);
+                sqlCommand.Parameters.AddWithValue("@mobile", customer.Mobile);
+                sqlConnection.Open();
+                int affectedRowCount = sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
                 return affectedRowCount;
             }
         }

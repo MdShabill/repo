@@ -1,0 +1,54 @@
+﻿@model ShopEase.ViewModels.CustomerVm
+
+<html>
+
+<style>
+
+    .table {
+        width: 600px;
+        font-size: medium;
+        font-family: sans-serif;
+        border-collapse: collapse;
+    }
+
+        .table td {
+            border: 2px solid black;
+            padding: 4px;
+        }
+</style>
+
+<h2 class="heading">
+    My Profile
+</h2>
+
+<body>
+    <form asp-action="MyProfile">
+        <table class="table" style="width:500px;">
+            <tr>
+                <td>
+                    <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
+                </td>
+            </tr>
+            <tr>
+                <td><b>Full Name:</b></td>
+                <td>@Model.FullName</td>
+            </tr>
+            <tr>
+                <td><b>Gender:</b></td>
+                <td>@Model.Gender</td>
+            </tr>
+            <tr>
+                <td><b>Email:</b></td>
+                <td>@Model.Email</td>
+            </tr>
+            <tr>
+                <td><b>Mobile:</b></td>
+                <td>@Model.Mobile</td>
+            </tr>
+        </table>
+        <br />
+        <b><a href="https://localhost:7150/Customer/Edit"> EditMyProfile </a></b>
+    </form>
+</body>
+
+</html>

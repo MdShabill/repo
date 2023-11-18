@@ -1,0 +1,52 @@
+﻿@model ShopEase.ViewModels.CustomerVm
+
+<html>
+
+<style>
+
+    .table {
+        width: 600px;
+        font-size: medium;
+        font-family: sans-serif;
+        border-collapse: collapse;
+    }
+
+        .table td {
+            border: 2px solid black;
+            padding: 4px;
+        }
+</style>
+
+<h1> Customer Edit </h1>
+<body>
+    <table class="table" style="width:600px;">
+        <tr class="table1"> </tr>
+        <form asp-action="Update">
+            <label style="visibility:hidden;" for="id">Id:</label><br>
+            <input style="visibility:hidden;" type="text" id="id" name="id" value="@Model.Id"><br>
+
+            <label for="FullName"><b>Full Name:</b></label><br>
+            <input type="text" id="FullName" name="FullName" value="@Model.FullName"><br>
+            <br />
+            <label for="gender"><b>Gender:</b></label><br>
+            <input type="text" id="gender" name="gender" value="@Model.Gender"><br>
+            <br />
+            <label for="Email"><b>Email:</b></label><br>
+            <input type="text" id="Email" name="Email" value="@Model.Email"><br>
+            <br />
+            <label for="Password"><b>Password:</b></label><br>
+            <input type="text" id="Password" name="Password" value="@Model.Password"><br>
+            <br />
+            <label for="Mobile"><b>Mobile:</b></label><br>
+            <input type="text" id="Mobile" name="Mobile" value="@Model.Mobile"><br><br>
+         
+            <input type="submit" value="Update" class="btn btn-primary" />
+            <br />
+            <br />
+            <input type="submit" value="Cancel" class="btn btn-primary" />
+        </form>
+    </table>
+    </>
+</body>
+
+</html>
