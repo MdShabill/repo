@@ -192,7 +192,6 @@ namespace ShopEase.Repositories
                                     FullName = @fullName,
                                     Gender = @gender,
                                     Email = @email,
-                                    Password = @password,
                                     Mobile = @mobile
                                     Where Id = @id";
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
@@ -200,7 +199,6 @@ namespace ShopEase.Repositories
                 sqlCommand.Parameters.AddWithValue("@fullName", customer.FullName);
                 sqlCommand.Parameters.AddWithValue("@gender", customer.Gender);
                 sqlCommand.Parameters.AddWithValue("@email", customer.Email);
-                sqlCommand.Parameters.AddWithValue("@password", customer.Password);
                 sqlCommand.Parameters.AddWithValue("@mobile", customer.Mobile);
                 sqlConnection.Open();
                 int affectedRowCount = sqlCommand.ExecuteNonQuery();

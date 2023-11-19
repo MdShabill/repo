@@ -37,9 +37,13 @@ namespace ShopEase.Controllers
         public IActionResult MyProfile()
         {
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
-            Customer customer = _customerRepository.GetCustomerById(customerId);
-            CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
-            return View(customerVm);
+            if (customerId > 0)
+            {
+                Customer customer = _customerRepository.GetCustomerById(customerId);
+                CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
+                return View(customerVm);
+            }
+            return RedirectToAction("Login", "Account");
         }
 
         public IActionResult Register()
@@ -129,19 +133,6 @@ namespace ShopEase.Controllers
             {
                 ViewBag.ErrorMessage = "First Name Should Be 20 Characters or less";
                 return View();
-            }
-
-            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-            Match match = regex.Match(customerVm.Email);
-            if (!match.Success)
-            {
-                ViewBag.ErrorMessage = "Email is Invalid";
-                return View();
-            }
-
-            if (string.IsNullOrWhiteSpace(customerVm.Password))
-            {
-                ViewBag.ErrorMessage = "Password Can Not Be Blank ";
             }
 
             if (string.IsNullOrWhiteSpace(customerVm.Mobile))
