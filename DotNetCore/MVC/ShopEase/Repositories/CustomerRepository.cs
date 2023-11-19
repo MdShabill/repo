@@ -1,4 +1,5 @@
 ﻿using ShopEase.DataModels;
+using ShopEase.Enum;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -34,7 +35,7 @@ namespace ShopEase.Repositories
                     {
                         FullName = (string)dataTable.Rows[i]["FullName"],
                         Mobile = (string)dataTable.Rows[i]["Mobile"],
-                        Gender = (int)dataTable.Rows[i]["Gender"],
+                        Gender = (GenderType)dataTable.Rows[i]["Gender"],
                         Email = (string)dataTable.Rows[i]["Email"],
                     };
                     customers.Add(customer);
@@ -64,7 +65,7 @@ namespace ShopEase.Repositories
                     {
                         Id = (int)dataTable.Rows[0]["Id"],
                         FullName = (string)dataTable.Rows[0]["FullName"],
-                        Gender = (int)dataTable.Rows[0]["Gender"],
+                        Gender = (GenderType)dataTable.Rows[0]["Gender"],
                         Email = (string)dataTable.Rows[0]["Email"],
                         Mobile = (string)dataTable.Rows[0]["Mobile"]
                     };
@@ -96,7 +97,7 @@ namespace ShopEase.Repositories
                         Id = (int)dataTable.Rows[0]["Id"],
                         FullName = (string)dataTable.Rows[0]["FullName"],
                         Mobile = (string)dataTable.Rows[0]["Mobile"],
-                        Gender = (int)dataTable.Rows[0]["Gender"],
+                        Gender = (GenderType)dataTable.Rows[0]["Gender"],
                         Email  = (string)dataTable.Rows[0]["Email"],
                         Password  = dataTable.Rows[0]["Password"] != DBNull.Value ? (string)dataTable.Rows[0]["Password"] : null,
                         LoginFailedCount = dataTable.Rows[0]["LoginFailedCount"] != DBNull.Value ? (int)dataTable.Rows[0]["LoginFailedCount"] : null,
@@ -186,24 +187,27 @@ namespace ShopEase.Repositories
 
         public int Update(Customer customer)
         {
-            using(SqlConnection sqlConnection = new(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = @"Update Customers Set 
-                                    FullName = @fullName,
-                                    Gender = @gender,
-                                    Email = @email,
-                                    Mobile = @mobile
-                                    Where Id = @id";
-                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@Id", customer.Id);
-                sqlCommand.Parameters.AddWithValue("@fullName", customer.FullName);
-                sqlCommand.Parameters.AddWithValue("@gender", customer.Gender);
-                sqlCommand.Parameters.AddWithValue("@email", customer.Email);
-                sqlCommand.Parameters.AddWithValue("@mobile", customer.Mobile);
-                sqlConnection.Open();
-                int affectedRowCount = sqlCommand.ExecuteNonQuery();
-                sqlConnection.Close();
-                return affectedRowCount;
+                string sqlQuery = @"UPDATE Customers SET 
+                            FullName = @fullName,
+                            Gender = @gender,
+                            Email = @email,
+                            Mobile = @mobile
+                            WHERE Id = @id";
+
+                using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, sqlConnection))
+                {
+                    sqlCommand.Parameters.AddWithValue("@id", customer.Id);
+                    sqlCommand.Parameters.AddWithValue("@fullName", customer.FullName);
+                    sqlCommand.Parameters.AddWithValue("@gender", customer.Gender);
+                    sqlCommand.Parameters.AddWithValue("@email", customer.Email);
+                    sqlCommand.Parameters.AddWithValue("@mobile", customer.Mobile);
+
+                    sqlConnection.Open();
+                    int affectedRowCount = sqlCommand.ExecuteNonQuery();
+                    return affectedRowCount;
+                }
             }
         }
     }
