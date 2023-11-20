@@ -15,8 +15,14 @@
                     <td><input type="text" id="FullName" name="FullName" value="@Model.FullName"></td>
                 </tr>
                 <tr>
-                    <td><label for="gender"><b>Gender:</b></label></td>
-                    <td><input type="text" id="gender" name="gender" value="@Model.Gender"></td>
+                    <td><b><label for="Gender">Gender:</label></b></td>
+                    <td>
+                        @Html.RadioButtonFor(model => model.Gender, "Male") Male
+                        @Html.RadioButtonFor(model => model.Gender, "Female") Female
+                        @Html.RadioButtonFor(model => model.Gender, "Transgender") Transgender
+                        @Html.RadioButtonFor(model => model.Gender, "Others") Others
+                        @Html.ValidationMessageFor(model => model.Gender)
+                    </td>   
                 </tr>
                 <tr>
                     <td><label for="Email"><b>Email:</b></label></td>

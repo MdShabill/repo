@@ -40,6 +40,37 @@
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="AddressLine1" class="control-label"><b>Address Line1</b></label>
+                <input asp-for="AddressLine1" class="form-control" />
+                <span asp-validation-for="AddressLine1" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="AddressLine2" class="control-label"><b>Address Line2</b></label>
+                <input asp-for="AddressLine2" class="form-control" />
+                <span asp-validation-for="AddressLine2" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="PinCode" class="control-label"><b>Pin Code</b></label>
+                <input asp-for="PinCode" class="form-control" />
+                <span asp-validation-for="PinCode" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="CountryId"><b>Country Name</b></label>
+                @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="AddressTypeId"><b>Address Type</b></label>
+                @Html.DropDownListFor(model => model.AddressTypeId, ViewBag.AddresseTypes as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
+            </div>
+            <br />
             <div class="form-group">
                 <input type="submit" value="Add" class="btn btn-primary" />
             </div>

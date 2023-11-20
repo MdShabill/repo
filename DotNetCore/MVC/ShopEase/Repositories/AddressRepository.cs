@@ -13,9 +13,34 @@ namespace ShopEase.Repositories
             _connectionString = connectionString;
         }
 
+        public void Add(Address address)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                {
+                    string sqlQuery = @"INSERT INTO Addresses(CustomerId, AddressLine1, AddressLine2, PinCode,
+                            CountryId, AddressTypeId, CreatedOn)
+                            VALUES (@customerId, @addressLine1, @addressLine2, @pinCode, @countryId, @addressTypeId,
+                            @createdOn)";
+
+                    SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                    sqlCommand.Parameters.AddWithValue("@customerId", address.CustomerId);
+                    sqlCommand.Parameters.AddWithValue("@addressLine1", address.AddressLine1);
+                    sqlCommand.Parameters.AddWithValue("@addressLine2", address.AddressLine2);
+                    sqlCommand.Parameters.AddWithValue("@pinCode", address.PinCode);
+                    sqlCommand.Parameters.AddWithValue("@countryId", address.CountryId);
+                    sqlCommand.Parameters.AddWithValue("@addressTypeId", address.AddressTypeId);
+                    sqlCommand.Parameters.AddWithValue("@createdOn", DateTime.Now);
+                    sqlConnection.Open();
+                    int affectecRowCount = sqlCommand.ExecuteNonQuery();
+                    sqlConnection.Close();
+                }
+            }
+        }
+
         public List<Address> GetAllAddress()
         {
-            using(SqlConnection sqlConnection = new(_connectionString)) 
+            using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"SELECT Addresses.Id, ' - ', CONCAT(Addresses.Id, Addresses.AddressLine1, ' - ', 
                             Addresses.AddressLine2, ' - ', Addresses.PinCode, 
@@ -35,11 +60,6 @@ namespace ShopEase.Repositories
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
                         AddressDetail = dataTable.Rows[i]["AddressDetail"].ToString()
-                        //AddressLine1 = (string)dataTable.Rows[i]["AddressLine1"],
-                        //AddressLine2 = (string)dataTable.Rows[i]["AddressLine2"],
-                        //PinCode = (int)dataTable.Rows[i]["PinCode"],
-                        //CountryName = (string)dataTable.Rows[i]["CountryName"],
-                        //AddressTypeName = (string)dataTable.Rows[i]["AddressTypeName"],
                     };
                     addresses.Add(address);
                 }

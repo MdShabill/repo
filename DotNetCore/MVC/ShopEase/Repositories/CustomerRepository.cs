@@ -168,7 +168,8 @@ namespace ShopEase.Repositories
                 string sqlQuery = @"Insert Into Customers
                        (FullName, Mobile, Gender, Email, Password)
                        Values
-                       (@fullName, @mobile, @gender, @email, @password)";
+                       (@fullName, @mobile, @gender, @email, @password)
+                       Select Scope_Identity()";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@fullName", customer.FullName);
@@ -178,10 +179,10 @@ namespace ShopEase.Repositories
                 sqlCommand.Parameters.AddWithValue("@password", customer.Password);
 
                 sqlConnection.Open();
-                int affectedRowCount = sqlCommand.ExecuteNonQuery();
+                customer.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
                 sqlConnection.Close();
 
-                return affectedRowCount;
+                return customer.Id;
             }
         }
 
@@ -206,6 +207,7 @@ namespace ShopEase.Repositories
 
                     sqlConnection.Open();
                     int affectedRowCount = sqlCommand.ExecuteNonQuery();
+                    sqlConnection.Close();
                     return affectedRowCount;
                 }
             }

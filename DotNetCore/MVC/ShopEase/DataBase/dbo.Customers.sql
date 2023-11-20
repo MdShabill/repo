@@ -7,15 +7,16 @@ Create Table Customers
 	Gender Int Not Null,
 	Email NVarchar(200) Not Null,
 	Password NVarchar(200) Not Null,
+	LastFailedLoginDate DateTime Null,
+	LastSuccessfulLoginDate DateTime Null,
+	LoginfailedCount int Null,
+	IsLocked bit,
 	Primary Key(Id)
 )
 
 ALTER TABLE Customers
 ADD CONSTRAINT UQ_Customers_Email UNIQUE (Email)
 
-Alter Table Customers
-Add LastFailedLoginDate DateTime, LastSuccessfulLoginDate DateTime, 
-	LoginfailedCount int, IsLocked bit
 	
 
 

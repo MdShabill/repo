@@ -47,6 +47,16 @@ builder.Services.AddTransient<IAddressRepository>((svc) =>
     return new AddressRepository(ShopEaseDBConnectionString);
 });
 
+builder.Services.AddTransient<IAddressTypeRepository>((svc) =>
+{
+    return new AddressTypeRepository(ShopEaseDBConnectionString);
+});
+
+builder.Services.AddTransient<ICountryRepository>((svc) =>
+{
+    return new CountryRepository(ShopEaseDBConnectionString);
+});
+
 builder.Services.AddTransient<ICustomerRepository>((svc) =>
 {
     return new CustomerRepository(ShopEaseDBConnectionString);

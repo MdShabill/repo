@@ -1,9 +1,7 @@
-﻿namespace ShopEase.DataModels
+﻿namespace ShopEase.ViewModels
 {
-    public class Address
+    public class AddressVm
     {
-        public int Id { get; set; }
-        public string AddressDetail { get; set; }
         public int CustomerId { get; set; }
         public string AddressLine1 { get; set; }
         public string AddressLine2 { get; set; }

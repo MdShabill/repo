@@ -1,18 +1,25 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ShopEase.DataModels;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
+using System.Net;
 using System.Text.RegularExpressions;
+using System.Transactions;
 
 namespace ShopEase.Controllers
 {
     public class CustomerController : Controller
     {
         ICustomerRepository _customerRepository;
+        IAddressRepository _addressRepository;
+        IAddressTypeRepository _addressTypeRepository;
+        ICountryRepository _countryRepository;
         IMapper _imapper;
 
-        public CustomerController(ICustomerRepository customerRepository)
+        public CustomerController(ICustomerRepository customerRepository, IAddressRepository addressRepository,
+                                  IAddressTypeRepository addressTypeRepository, ICountryRepository countryRepository)
         {
             _customerRepository = customerRepository;
 
@@ -20,9 +27,13 @@ namespace ShopEase.Controllers
             {
                 cfg.CreateMap<CustomerVm, Customer>();
                 cfg.CreateMap<Customer, CustomerVm>();
+                cfg.CreateMap<AddressVm, Address>();
             });
 
             _imapper = configuration.CreateMapper();
+            _addressRepository = addressRepository;
+            _addressTypeRepository = addressTypeRepository;
+            _countryRepository = countryRepository;
         }
 
         public IActionResult Index()
@@ -48,13 +59,18 @@ namespace ShopEase.Controllers
 
         public IActionResult Register()
         {
+            List<AddressType> addressTypes = _addressTypeRepository.GetAllAddresses();
+            ViewBag.AddresseTypes = new SelectList(addressTypes, "Id", "AddressTypeName");
+
+            List<Country> countries = _countryRepository.GetAllCountries();
+            ViewBag.Countries = new SelectList(countries, "Id", "CountryName");
             return View();
         }
 
         [HttpPost]
-        public IActionResult Register(CustomerVm customerVm)
+        public IActionResult Register(CustomerVm customerVm, AddressVm addressVm)
         {
-            if(string.IsNullOrWhiteSpace(customerVm.FullName))
+            if (string.IsNullOrWhiteSpace(customerVm.FullName))
             {
                 ViewBag.ErrorMessage = "Customer Full Name Can not be Blank";
             }
@@ -97,11 +113,26 @@ namespace ShopEase.Controllers
                 ViewBag.ErrorMessage = "Mobile Number Should Be exactly 10 Digits";
             }
 
-            Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
-            int affectedRowCount = _customerRepository.Register(customer);
-            if (affectedRowCount > 0)
+            using (TransactionScope transactionScope = new())
             {
-                ViewBag.SuccessMessage = "Customer Register Successful";
+                try
+                {
+                    Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
+                    customer.Id = _customerRepository.Register(customer);
+                    if(customer.Id > 0)
+                    {
+                        Address address = _imapper.Map<AddressVm, Address>(addressVm);
+                        address.CustomerId = customer.Id;
+                        _addressRepository.Add(address);
+
+                        transactionScope.Complete();
+                        return Ok(customer.Id);
+                    }
+                }
+                catch (TransactionException ex)
+                {
+                    transactionScope.Dispose();
+                }
             }
             return View();
         }
