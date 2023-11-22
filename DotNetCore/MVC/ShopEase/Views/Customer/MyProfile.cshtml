@@ -1,14 +1,12 @@
 ﻿@model ShopEase.ViewModels.CustomerVm
 
 <html>
-    <h1> My Profile </h1>
     <body>
+        <h1> My Profile </h1>
         <form asp-action="MyProfile">
             <table class="table" style="width:500px;">
                 <tr>
-                    <td>
-                        <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
-                    </td>
+                    <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
                 </tr>
                 <tr>
                     <td><b>Full Name:</b></td>
@@ -51,5 +49,4 @@
             <b><a href="https://localhost:7150/Customer/Edit"> Edit My Profile </a></b>
         </form>
     </body>
-
 </html>
