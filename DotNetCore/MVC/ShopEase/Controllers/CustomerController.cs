@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ShopEase.DataModels;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Transactions;
 
@@ -14,12 +13,11 @@ namespace ShopEase.Controllers
     {
         ICustomerRepository _customerRepository;
         IAddressRepository _addressRepository;
-        IAddressTypeRepository _addressTypeRepository;
         ICountryRepository _countryRepository;
         IMapper _imapper;
 
         public CustomerController(ICustomerRepository customerRepository, IAddressRepository addressRepository,
-                                  IAddressTypeRepository addressTypeRepository, ICountryRepository countryRepository)
+                                  ICountryRepository countryRepository)
         {
             _customerRepository = customerRepository;
 
@@ -27,12 +25,10 @@ namespace ShopEase.Controllers
             {
                 cfg.CreateMap<CustomerVm, Customer>();
                 cfg.CreateMap<Customer, CustomerVm>();
-                cfg.CreateMap<AddressVm, Address>();
             });
 
             _imapper = configuration.CreateMapper();
             _addressRepository = addressRepository;
-            _addressTypeRepository = addressTypeRepository;
             _countryRepository = countryRepository;
         }
 
@@ -59,8 +55,8 @@ namespace ShopEase.Controllers
 
         public IActionResult Register()
         {
-            List<AddressType> addressTypes = _addressTypeRepository.GetAllAddresses();
-            ViewBag.AddresseTypes = new SelectList(addressTypes, "Id", "AddressTypeName");
+            var enumValues = Enum.GetValues(typeof(Enums.AddressType));
+            ViewBag.AddressTypes = new SelectList(enumValues);
 
             List<Country> countries = _countryRepository.GetAllCountries();
             ViewBag.Countries = new SelectList(countries, "Id", "CountryName");
@@ -68,7 +64,7 @@ namespace ShopEase.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(CustomerVm customerVm, AddressVm addressVm)
+        public IActionResult Register(CustomerVm customerVm)
         {
             if (string.IsNullOrWhiteSpace(customerVm.FullName))
             {
@@ -121,8 +117,15 @@ namespace ShopEase.Controllers
                     customer.Id = _customerRepository.Register(customer);
                     if(customer.Id > 0)
                     {
-                        Address address = _imapper.Map<AddressVm, Address>(addressVm);
-                        address.CustomerId = customer.Id;
+                        Address address = new()
+                        {
+                            CustomerId = customer.Id,
+                            AddressLine1 = customerVm.AddressLine1,
+                            AddressLine2 = customerVm.AddressLine2,
+                            PinCode = customerVm.PinCode,
+                            CountryId = customerVm.CountryId,
+                            AddressTypeId = (int)customerVm.AddressTypeId,
+                        };
                         _addressRepository.Add(address);
 
                         transactionScope.Complete();

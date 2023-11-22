@@ -1,4 +1,4 @@
-﻿using ShopEase.Enum;
+﻿using ShopEase.Enums;
 
 namespace ShopEase.DataModels
 {

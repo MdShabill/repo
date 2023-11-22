@@ -1,5 +1,5 @@
 ﻿using ShopEase.DataModels;
-using ShopEase.Enum;
+using ShopEase.Enums;
 using System.Data;
 using System.Data.SqlClient;
 

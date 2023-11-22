@@ -18,9 +18,12 @@ namespace ShopEase.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 {
-                    string sqlQuery = @"INSERT INTO Addresses(CustomerId, AddressLine1, AddressLine2, PinCode,
-                            CountryId, AddressTypeId, CreatedOn)
-                            VALUES (@customerId, @addressLine1, @addressLine2, @pinCode, @countryId, @addressTypeId,
+                    string sqlQuery = @"INSERT INTO Addresses
+                                (CustomerId, AddressLine1, AddressLine2, 
+                            PinCode, CountryId, AddressTypeId, CreatedOn)
+                            VALUES 
+                            (@customerId, @addressLine1, @addressLine2, 
+                            @pinCode, @countryId, @addressTypeId,
                             @createdOn)";
 
                     SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
@@ -32,7 +35,7 @@ namespace ShopEase.Repositories
                     sqlCommand.Parameters.AddWithValue("@addressTypeId", address.AddressTypeId);
                     sqlCommand.Parameters.AddWithValue("@createdOn", DateTime.Now);
                     sqlConnection.Open();
-                    int affectecRowCount = sqlCommand.ExecuteNonQuery();
+                    sqlCommand.ExecuteNonQuery();
                     sqlConnection.Close();
                 }
             }

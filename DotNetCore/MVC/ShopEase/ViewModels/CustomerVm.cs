@@ -1,4 +1,4 @@
-﻿using ShopEase.Enum;
+﻿using ShopEase.Enums;
 
 namespace ShopEase.ViewModels
 {
@@ -16,7 +16,7 @@ namespace ShopEase.ViewModels
         public int PinCode { get; set; }
         public int CountryId { get; set; }
         public string CountryName { get; set; }
-        public int AddressTypeId { get; set; }
+        public AddressType AddressTypeId { get; set; }
         public string AddressTypeName { get; set; }
     }
 }

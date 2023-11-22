@@ -67,9 +67,10 @@
             <br />
             <div class="form-group">
                 <label asp-for="AddressTypeId"><b>Address Type</b></label>
-                @Html.DropDownListFor(model => model.AddressTypeId, ViewBag.AddresseTypes as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.DropDownListFor(model => model.AddressTypeId, (SelectList)ViewBag.AddressTypes, "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
             </div>
+
             <br />
             <div class="form-group">
                 <input type="submit" value="Add" class="btn btn-primary" />

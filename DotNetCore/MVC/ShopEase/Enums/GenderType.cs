@@ -1,4 +1,4 @@
-﻿namespace ShopEase.Enum
+﻿namespace ShopEase.Enums
 {
     public enum GenderType
     {
