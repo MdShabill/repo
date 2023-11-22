@@ -48,11 +48,16 @@ namespace ShopEase.Repositories
         {
             using(SqlConnection sqlConnection=new(_connectionString))
             {
-                string sqlQuery = @"Select Id,
-                          FullName, Gender, 
-                          Email, Mobile
-                          From Customers
-                          Where Id = @id ";
+                string sqlQuery = @"SELECT Customers.Id, Customers.FullName, 
+                            Customers.Gender, Customers.Email, Customers.Mobile,
+                            Addresses.AddressLine1, Addresses.AddressLine2,
+                            Addresses.Pincode, AddressTypes.AddressTypeName,
+                            Countries.CountryName
+                            FROM Customers
+                            INNER JOIN Addresses ON Customers.Id = Addresses.CustomerId
+                            INNER JOIN Countries ON Addresses.CountryId = Countries.Id
+                            INNER JOIN AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
+                            WHERE Customers.Id = @id ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery,sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
@@ -67,7 +72,12 @@ namespace ShopEase.Repositories
                         FullName = (string)dataTable.Rows[0]["FullName"],
                         Gender = (GenderType)dataTable.Rows[0]["Gender"],
                         Email = (string)dataTable.Rows[0]["Email"],
-                        Mobile = (string)dataTable.Rows[0]["Mobile"]
+                        Mobile = (string)dataTable.Rows[0]["Mobile"],
+                        AddressLine1 = (string)dataTable.Rows[0]["AddressLine1"],
+                        AddressLine2 = (string)dataTable.Rows[0]["AddressLine2"],
+                        PinCode = (int)dataTable.Rows[0]["PinCode"],
+                        AddressTypeName = (string)dataTable.Rows[0]["AddressTypeName"],
+                        CountryName = (string)dataTable.Rows[0]["CountryName"]
                     };
                     return customers;
                 }

@@ -14,5 +14,10 @@ namespace ShopEase.DataModels
         public DateTime LastFailedLoginDate { get; set; }
         public int? LoginFailedCount { get; set; }
         public bool IsLocked { get; set; }
+        public string AddressLine1 { get; set; }    
+        public string AddressLine2 { get; set;}
+        public int PinCode { get; set;}
+        public string AddressTypeName { get; set;}
+        public string CountryName { get; set;}
     }
 }
