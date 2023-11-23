@@ -8,12 +8,8 @@
 
 <body>
     <form asp-controller="Order" asp-action="PlaceOrder" method="get">
+        <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
         <table class="table" style="width:600px;">
-            <tr>
-                <td>
-                    <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
-                </td>
-            </tr>
             <tr>
                 <td><b>Product Name:</b></td>
                 <td>@Model.ProductName</td> 

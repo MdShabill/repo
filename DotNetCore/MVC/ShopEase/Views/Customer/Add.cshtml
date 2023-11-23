@@ -1,9 +1,9 @@
 ﻿@model ShopEase.ViewModels.CustomerVm
-<h1>Register</h1>
-<hr />
+<h1>Customer Register</h1>
+
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Register">
+        <form asp-action="Add">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
@@ -42,14 +42,20 @@
             </div>
             <br />
             <div class="form-group">
-                <label asp-for="AddressLine1" class="control-label"><b>Address Line1</b></label>
-                <input asp-for="AddressLine1" class="form-control" />
+                <label asp-for="AddressTypeId"><b>Address Type</b></label>
+                @Html.DropDownListFor(model => model.AddressTypeId, (SelectList)ViewBag.AddressTypes, "-- Select --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
+            </div>
+            <br />
+            <div class="form-group">
+                <td><label asp-for="AddressLine1"><b>Address Line1:</b></label></td>
+                <textarea asp-for="AddressLine1" class="form-control"></textarea>
                 <span asp-validation-for="AddressLine1" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">
-                <label asp-for="AddressLine2" class="control-label"><b>Address Line2</b></label>
-                <input asp-for="AddressLine2" class="form-control" />
+                <td><label asp-for="AddressLine2"><b>Address Line2:</b></label></td>
+                <textarea asp-for="AddressLine2" class="form-control"></textarea>
                 <span asp-validation-for="AddressLine2" class="text-danger"></span>
             </div>
             <br />
@@ -64,13 +70,6 @@
                 @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
             </div>
-            <br />
-            <div class="form-group">
-                <label asp-for="AddressTypeId"><b>Address Type</b></label>
-                @Html.DropDownListFor(model => model.AddressTypeId, (SelectList)ViewBag.AddressTypes, "-- Select --", new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
-            </div>
-
             <br />
             <div class="form-group">
                 <input type="submit" value="Add" class="btn btn-primary" />

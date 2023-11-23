@@ -72,9 +72,14 @@ namespace ShopEase.Controllers
 
         public IActionResult PlaceOrder()
         {
-            List<Address> addresses = _addressRepository.GetAllAddress();
-            ViewBag.Addresses = new SelectList(addresses, "Id", "AddressDetail");
-            return View();
+            int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
+            if(customerId > 0)
+            {
+                List<Address> addresses = _addressRepository.GetAllAddress(customerId);
+                ViewBag.Address = new SelectList(addresses, "Id", "AddressDetail");
+                return View();
+            }
+            return RedirectToAction("Login", "Account");
         }
 
         [HttpPost]

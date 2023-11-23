@@ -1,16 +1,20 @@
-﻿@model ShopEase.ViewModels.CustomerVm
+﻿@using ShopEase.Enums;
+@model ShopEase.ViewModels.CustomerVm
 
 <html>
     <body>
         <h1> My Profile </h1>
         <form asp-action="MyProfile">
+            <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
             <table class="table" style="width:500px;">
                 <tr>
-                    <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
-                </tr>
-                <tr>
                     <td><b>Full Name:</b></td>
-                    <td>@Model.FullName</td>
+                    <td>
+                       @{
+                            string title = (Model.Gender == GenderType.Male) ? "Mr." : "Mrs.";
+                        }
+                        @title @Model.FullName
+                    </td>
                 </tr>
                 <tr>
                     <td><b>Gender:</b></td>

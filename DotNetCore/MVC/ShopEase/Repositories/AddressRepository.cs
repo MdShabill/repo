@@ -1,4 +1,5 @@
 ﻿using ShopEase.DataModels;
+using ShopEase.ViewModels;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -41,7 +42,7 @@ namespace ShopEase.Repositories
             }
         }
 
-        public List<Address> GetAllAddress()
+        public List<Address> GetAllAddress(int customerId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -50,23 +51,50 @@ namespace ShopEase.Repositories
                             ' - ', Countries.CountryName, ' - ', AddressTypes.AddressTypeName) As AddressDetail
                             FROM Addresses
                             INNER JOIN Countries ON Addresses.CountryId = Countries.Id
-                            INNER JOIN AddressTypes ON Addresses.AddressTypeID = AddressTypes.Id ";
+                            INNER JOIN AddressTypes ON Addresses.AddressTypeID = AddressTypes.Id
+                            Where CustomerId = @customerId";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@customerId", customerId);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
                 List<Address> addresses = new();
-
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
                     Address address = new()
                     {
-                        Id = (int)dataTable.Rows[i]["Id"],
-                        AddressDetail = dataTable.Rows[i]["AddressDetail"].ToString()
+                        Id = (int)dataTable.Rows[0]["Id"],
+                        AddressDetail = dataTable.Rows[0]["AddressDetail"].ToString()
                     };
                     addresses.Add(address);
                 }
                 return addresses;
+            }
+        }
+
+        public void Update(Address address)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                {
+                    string sqlQuery = @" UPDATE Addresses SET 
+                                 AddressLine1 = @addressLine1, 
+                                 AddressLine2 = @addressLine2, 
+                                 PinCode = @pinCode, 
+                                 CountryId = @countryId, 
+                                 AddressTypeId = @addressTypeId 
+                                 WHERE CustomerId = @CustomerId ";
+                    SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                    sqlCommand.Parameters.AddWithValue("@CustomerId", address.CustomerId);
+                    sqlCommand.Parameters.AddWithValue("@AddressLine1", address.AddressLine1);
+                    sqlCommand.Parameters.AddWithValue("@AddressLine2", address.AddressLine2);
+                    sqlCommand.Parameters.AddWithValue("@PinCode", address.PinCode);
+                    sqlCommand.Parameters.AddWithValue("@countryId", address.CountryId);
+                    sqlCommand.Parameters.AddWithValue("@addressTypeId", address.AddressTypeId);
+                    sqlConnection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                    sqlConnection.Close();
+                }
             }
         }
     }

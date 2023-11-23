@@ -35,7 +35,6 @@ namespace ShopEase.Controllers
         public IActionResult Index()
         {
             List<Customer> customers = _customerRepository.GetAll();
-
             List<CustomerVm> customersVm = _imapper.Map<List<Customer>, List<CustomerVm>>(customers);
 
             return View(customersVm);
@@ -53,9 +52,9 @@ namespace ShopEase.Controllers
             return RedirectToAction("Login", "Account");
         }
 
-        public IActionResult Register()
+        public IActionResult Add()
         {
-            var enumValues = Enum.GetValues(typeof(Enums.AddressType));
+            Array enumValues = Enum.GetValues(typeof(Enums.AddressType));
             ViewBag.AddressTypes = new SelectList(enumValues);
 
             List<Country> countries = _countryRepository.GetAllCountries();
@@ -64,7 +63,7 @@ namespace ShopEase.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(CustomerVm customerVm)
+        public IActionResult Add(CustomerVm customerVm)
         {
             if (string.IsNullOrWhiteSpace(customerVm.FullName))
             {
@@ -143,6 +142,13 @@ namespace ShopEase.Controllers
         public IActionResult Edit()
         {
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
+
+            var enumValues = Enum.GetValues(typeof(Enums.AddressType));
+            ViewBag.AddressTypes = new SelectList(enumValues);
+
+            List<Country> countries = _countryRepository.GetAllCountries();
+            ViewBag.Countries = new SelectList(countries, "Id", "CountryName");
+
             Customer customer = _customerRepository.GetCustomerById(customerId);
             CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
             return View(customerVm);
@@ -175,14 +181,35 @@ namespace ShopEase.Controllers
                 return View();
             }
 
-            Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
-
-            int affectedRowCount = _customerRepository.Update(customer);
-            if (affectedRowCount > 0)
+            using (TransactionScope transactionScope = new())
             {
-                TempData["SuccessMessageForUpdate"] = "Customer Update Successful";
+                try
+                {
+                    Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
+                    int affectedRowCount = _customerRepository.Update(customer);
+                    if (affectedRowCount > 0)
+                    {
+                        Address address = new()
+                        {
+                            CustomerId = customer.Id,
+                            AddressLine1 = customerVm.AddressLine1,
+                            AddressLine2 = customerVm.AddressLine2,
+                            PinCode = customerVm.PinCode,
+                            CountryId = customerVm.CountryId,
+                            AddressTypeId = (int)customerVm.AddressTypeId,
+                        };
+                        _addressRepository.Update(address);
+
+                        transactionScope.Complete();
+                        return RedirectToAction("MyProfile");
+                    }
+                }
+                catch (TransactionException ex)
+                {
+                    transactionScope.Dispose();
+                }
             }
-            return RedirectToAction("MyProfile");
+            return View();
         }
     }
 }

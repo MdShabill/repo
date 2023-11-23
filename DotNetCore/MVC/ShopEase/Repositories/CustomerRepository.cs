@@ -203,7 +203,6 @@ namespace ShopEase.Repositories
                 string sqlQuery = @"UPDATE Customers SET 
                             FullName = @fullName,
                             Gender = @gender,
-                            Email = @email,
                             Mobile = @mobile
                             WHERE Id = @id";
 
@@ -212,7 +211,6 @@ namespace ShopEase.Repositories
                     sqlCommand.Parameters.AddWithValue("@id", customer.Id);
                     sqlCommand.Parameters.AddWithValue("@fullName", customer.FullName);
                     sqlCommand.Parameters.AddWithValue("@gender", customer.Gender);
-                    sqlCommand.Parameters.AddWithValue("@email", customer.Email);
                     sqlCommand.Parameters.AddWithValue("@mobile", customer.Mobile);
 
                     sqlConnection.Open();
