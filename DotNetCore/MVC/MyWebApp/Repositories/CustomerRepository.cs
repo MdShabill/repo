@@ -218,7 +218,8 @@ namespace MyWebApp.Repositories
             using (SqlConnection sqlconnection = new(_connectionString))
             {
                 string sqlQuery = @"Update Customers 
-                                  Set LastSuccessfulLoginDate = getDate()
+                                  Set LastSuccessfulLoginDate = getDate(),
+                                  LoginFailedCount = 0
                                   Where Email = @email ";
                 SqlCommand sqlCommand = new(sqlQuery, sqlconnection);
                 sqlCommand.Parameters.AddWithValue("@email", email);

@@ -52,6 +52,5 @@ namespace MyWebApp.Controllers
 
             return View("index", employees);
         }
-
     }
 }

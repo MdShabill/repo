@@ -67,7 +67,7 @@ namespace MyWebApp.Controllers
                 }
                 
                 ViewBag.ErrorMessage = "Invalid Email Or Password ";
-                return View(customerVm);
+                return View();
             }
 
             _customerRepository.UpdateOnLoginSuccessful(email);
@@ -78,7 +78,7 @@ namespace MyWebApp.Controllers
             HttpContext.Session.SetString("LoggedInCustomerLastName", customerVm.LastName);
             HttpContext.Session.SetString("LoggedInCustomerMobile", customerVm.Mobile);
 
-            return RedirectToAction("ProductSearchOptional", "Product");
+            return RedirectToAction("ProductSearchOptional", "Product", customerVm);
         }
     }
 }

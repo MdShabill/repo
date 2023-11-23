@@ -105,10 +105,9 @@ namespace MyWebApp.Controllers
             ViewBag.productSizes = new SelectList(productSizes, "Id", "Size");
 
             List<ProductFabric> productFabrics = _productRepository.GetFabric();
-
             ViewBag.ProductFabrics = new SelectList(productFabrics, "Id", "FabricName");
 
-            return View("ProductSearch");
+            return View();
         }
 
         public IActionResult ProductSearchResult(ProductFilterVm productFilterVm)
@@ -119,7 +118,7 @@ namespace MyWebApp.Controllers
 
             List<ProductResultVm> productResultsOutPut = _imapper.Map<List<ProductResult>, List<ProductResultVm>>(ProductsResult);
 
-            return View("ProductSearchResult", productResultsOutPut);
+            return View(productResultsOutPut);
         }
 
         public IActionResult ProductSearchOptional()
@@ -144,7 +143,7 @@ namespace MyWebApp.Controllers
 
             List<ProductResultsOptionalVm> optionalResultVm = _imapper.Map<List<ProductResultsOptional>, 
                                                         List<ProductResultsOptionalVm>>(optionalResult);
-            return View("GetProductResultOptional", optionalResultVm);
+            return View(optionalResultVm);
         }
 
         //List<Product> products = new List<Product>();
@@ -369,42 +368,6 @@ namespace MyWebApp.Controllers
                 TempData["SuccessMessageForDelete"] = "Product Record Delete Successful";
             }
             return RedirectToAction("Index");
-        }
-
-        private List<ProductSizesVm> GetSizes()
-        {
-            List<ProductSize> productSizes = _productRepository.GetSizes();
-
-            List<ProductSizesVm> productSizesVm = _imapper.Map<List<ProductSize>, List<ProductSizesVm>>(productSizes);
-
-            return productSizesVm;
-        }
-
-        private List<ProductColorVm> GetColors()
-        {
-            List<ProductColor> productColors = _productRepository.GetColors();
-
-            List<ProductColorVm> productSizesVm = _imapper.Map<List<ProductColor>, List<ProductColorVm>>(productColors);
-
-            return productSizesVm;
-        }
-
-        private List<ProductFabricVm> GetFabric()
-        {
-            List<ProductFabric> productFabrics = _productRepository.GetFabric();
-
-            List<ProductFabricVm> productFabricsVm = _imapper.Map<List<ProductFabric>, List<ProductFabricVm>>(productFabrics);
-
-            return productFabricsVm;
-        }
-
-        private List<ProductCategoryVm> GetCategory()
-        {
-            List<ProductCategory> ProductCategories = _productRepository.GetCategory();
-
-            List<ProductCategoryVm> productCategoryVm = _imapper.Map<List<ProductCategory>, List<ProductCategoryVm>>(ProductCategories);
-
-            return productCategoryVm;
         }
 
         //private void SetAllDropdownItemsInViewBag() 

@@ -2,7 +2,7 @@
 {
     public class ProductSizesVm
     {
-        public int SizeId { get; set; }
+        public int MyId { get; set; }
         public string SizeName { get; set; }
     }
 }
