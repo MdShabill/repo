@@ -13,7 +13,7 @@ namespace UploadFile.Repository
             _connectionString = connectionString;
         }
 
-        public int AddImage(ProductImage productImage)
+        public int Add(ProductImage productImage)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {

@@ -29,13 +29,13 @@ namespace UploadFile.Controllers
 
 
 
-		public IActionResult Index()
+		public IActionResult Add()
         {
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(ProductImageVm productImageVm)
+        public async Task<IActionResult> Add(ProductImageVm productImageVm)
         {
 			//upload image in folder
 			
@@ -51,21 +51,28 @@ namespace UploadFile.Controllers
             await productImageVm.ImageFile.CopyToAsync(new FileStream(filePath, FileMode.Create));
 
             // now call repo method to insert data in table
-            AddImage(productImageVm, uniqueFileName);
-
-			return View();
-		}
-
-        private void AddImage(ProductImageVm productImageVm, string uniqueFileName)
-        {
+            
             ProductImage productImage = _imapper.Map<ProductImageVm, ProductImage>(productImageVm);
             productImage.ImageName = uniqueFileName;
-            int affectedRowsCount = _uploadRepository.AddImage(productImage);
+            int affectedRowsCount = _uploadRepository.Add(productImage);
             if (affectedRowsCount > 0)
             {
 
             }
-        }
+
+            return View();
+		}
+
+        //private void AddImage(ProductImageVm productImageVm, string uniqueFileName)
+        //{
+        //    ProductImage productImage = _imapper.Map<ProductImageVm, ProductImage>(productImageVm);
+        //    productImage.ImageName = uniqueFileName;
+        //    int affectedRowsCount = _uploadRepository.AddImage(productImage);
+        //    if (affectedRowsCount > 0)
+        //    {
+
+        //    }
+        //}
 
         private string GetUniqueFileName(string fileName)
         {                                   

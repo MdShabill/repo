@@ -4,7 +4,7 @@ namespace UploadFile.Repository
 {
     public interface IUploadRepository
     {
-        public int AddImage(ProductImage productImage);
+        public int Add(ProductImage productImage);
         public ProductImage GetImageById(int id);
     }
 }
