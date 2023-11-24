@@ -2,55 +2,59 @@
 @model ShopEase.ViewModels.CustomerVm
 
 <html>
-    <body>
-        <h1> My Profile </h1>
-        <form asp-action="MyProfile">
-            <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
-            <table class="table" style="width:500px;">
-                <tr>
-                    <td><b>Full Name:</b></td>
-                    <td>
-                       @{
-                            string title = (Model.Gender == GenderType.Male) ? "Mr." : "Mrs.";
-                        }
-                        @title @Model.FullName
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Gender:</b></td>
-                    <td>@Model.Gender</td>
-                </tr>
-                <tr>
-                    <td><b>Email:</b></td>
-                    <td>@Model.Email</td>
-                </tr>
-                <tr>
-                    <td><b>Mobile:</b></td>
-                    <td>@Model.Mobile</td>
-                </tr>
-                <tr>
-                    <td><b>Address Type:</b></td>
-                    <td>@Model.AddressTypeName</td>
-                </tr>
-                <tr>
-                    <td><b>Address Line1:</b></td>
-                    <td>@Model.AddressLine1</td>
-                </tr>
-                <tr>
-                    <td><b>Address Line2:</b></td>
-                    <td>@Model.AddressLine2</td>
-                </tr>
-                <tr>
-                    <td><b>Pin Code:</b></td>
-                    <td>@Model.PinCode</td>
-                </tr>
-                <tr>
-                    <td><b>Country Name:</b></td>
-                    <td>@Model.CountryName</td>
-                </tr>
-            </table>
-            <br />
-            <b><a href="https://localhost:7150/Customer/Edit"> Edit My Profile </a></b>
-        </form>
-    </body>
+<body>
+    <h1> My Profile </h1>
+    <form asp-action="MyProfile">
+        <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
+        <table class="table" style="width:500px;">
+            <tr>
+                <td><b>Full Name:</b></td>
+                <td>
+                    @{
+                        string title = (Model.Gender == GenderType.Male) ? "Mr." : "Mrs.";
+                    }
+                    @title @Model.FullName
+                </td>
+            </tr>
+            <tr>
+                <td><b>Gender:</b></td>
+                <td>@Model.Gender</td>
+            </tr>
+            <tr>
+                <td><b>Email:</b></td>
+                <td>@Model.Email</td>
+            </tr>
+            <tr>
+                <td><b>Mobile:</b></td>
+                <td>@Model.Mobile</td>
+            </tr>
+        </table>
+        <br />
+        <h3>Address Details</h3>
+        <table class="table" style="width:500px;">
+            <tr>
+                <td><b>Address Type:</b></td>
+                <td>@Model.AddressTypeName</td>
+            </tr>
+            <tr>
+                <td><b>Address Line1:</b></td>
+                <td>@Model.AddressLine1</td>
+            </tr>
+            <tr>
+                <td><b>Address Line2:</b></td>
+                <td>@Model.AddressLine2</td>
+            </tr>
+            <tr>
+                <td><b>Pin Code:</b></td>
+                <td>@Model.PinCode</td>
+            </tr>
+            <tr>
+                <td><b>Country Name:</b></td>
+                <td>@Model.CountryName</td>
+            </tr>
+        </table>
+        <br />
+        <b><a href="https://localhost:7150/Customer/Edit"> Edit My Profile </a></b>
+    </form>
+</body>
 </html>

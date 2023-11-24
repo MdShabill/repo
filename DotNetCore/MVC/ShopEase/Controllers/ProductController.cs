@@ -2,12 +2,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ShopEase.Repositories;
-using System.Reflection;
 using ShopEase.DataModels;
 using ShopEase.ViewModels;
-using Microsoft.AspNetCore.Http;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using AutoMapper.Configuration.Conventions;
 
 namespace ShopEase.Controllers
 {
@@ -177,6 +173,20 @@ namespace ShopEase.Controllers
                 return View("ProductSearch");
             }
         }
+
+
+        public IActionResult ProductSearchResultByBrand(int brandId)
+        {
+            ProductFilter productFilters = new();
+            productFilters.BrandId = brandId;
+            List<ProductSearchResult> productSearchResults = _productRepository.GetProductsResult(productFilters);
+
+            List<ProductSearchResultVm> productSearchResultsVm = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);
+
+            return View("ProductSearchResult", productSearchResultsVm);
+
+        }
+
 
         public IActionResult Add()
         {

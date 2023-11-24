@@ -8,7 +8,11 @@
             <form asp-action="Update">
                 <label style="visibility:hidden;" for="id">Id:</label><br>
                 <input style="visibility:hidden;" type="text" id="id" name="id" value="@Model.Id"><br>
-
+                <tr>
+                    <td colspan="2">
+                        <h3>Presnol Details</h3>
+                    </td>
+                </tr>
                 <tr>
                     <td><label for="FullName"><b>Full Name:</b></label></td>
                     <td><input type="text" id="FullName" name="FullName" value="@Model.FullName"></td>
@@ -30,6 +34,12 @@
                 <tr>
                     <td><label for="Mobile"><b>Mobile:</b></label></td>
                     <td><input type="text" id="Mobile" name="Mobile" value="@Model.Mobile"></td>
+                </tr>
+                <br />
+                <tr>
+                    <td colspan="2">
+                        <h3>Address Details</h3>
+                    </td>
                 </tr>
                 <tr>
                     <td><label for="AddressTypeId"><b>Address Type:</b></label></td>
