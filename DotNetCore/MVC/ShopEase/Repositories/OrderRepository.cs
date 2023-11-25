@@ -81,40 +81,51 @@ namespace ShopEase.Repositories
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string insertSqlQuery = @"INSERT INTO Orders 
-                           (OrderNumber, ProductId, CustomerId, 
-                           OrderDate, Price, Quantity, AddressId)
-                           VALUES
-                           (@orderNumber, @productId, @customerId, 
-                           GETDATE(), @price, @quantity, @addressId)";
-
-                SqlCommand sqlCommand = new(insertSqlQuery, sqlConnection);
-                
-                sqlCommand.Parameters.AddWithValue("@orderNumber", order.OrderNumber);
-                sqlCommand.Parameters.AddWithValue("@productId", order.ProductId);
-                sqlCommand.Parameters.AddWithValue("@customerId", order.CustomerId);
-                sqlCommand.Parameters.AddWithValue("@price", order.Price);
-                sqlCommand.Parameters.AddWithValue("@quantity", order.Quantity);
-                sqlCommand.Parameters.AddWithValue("@addressId", order.AddressId);
-
                 sqlConnection.Open();
-                int affectedRowCount = sqlCommand.ExecuteNonQuery();
-
-                if (affectedRowCount > 0)
+                using (SqlTransaction transaction = sqlConnection.BeginTransaction())
                 {
-                    string updateSqlQuery = @"UPDATE Products
-                                    SET Quantity = Quantity - @orderedQuantity
-                                    WHERE Id = @productId";
-                
-                    SqlCommand updateSqlCommand = new(updateSqlQuery, sqlConnection);
-                    
-                    updateSqlCommand.Parameters.AddWithValue("@orderedQuantity", order.Quantity);
-                    updateSqlCommand.Parameters.AddWithValue("@productId", order.ProductId);
-                
-                    updateSqlCommand.ExecuteNonQuery();
-                    sqlConnection.Close();
+                    try
+                    {
+                        string stringQuery = @"INSERT INTO Orders 
+                                    (OrderNumber, ProductId, CustomerId, 
+                                    OrderDate, Price, Quantity, AddressId)
+                                    VALUES
+                                    (@orderNumber, @productId, @customerId, 
+                                    GETDATE(), @price, @quantity, @addressId)";
+
+                        SqlCommand sqlCommand = new(stringQuery, sqlConnection, transaction);
+                     
+                        sqlCommand.Parameters.AddWithValue("@orderNumber", order.OrderNumber);
+                        sqlCommand.Parameters.AddWithValue("@productId", order.ProductId);
+                        sqlCommand.Parameters.AddWithValue("@customerId", order.CustomerId);
+                        sqlCommand.Parameters.AddWithValue("@price", order.Price);
+                        sqlCommand.Parameters.AddWithValue("@quantity", order.Quantity);
+                        sqlCommand.Parameters.AddWithValue("@addressId", order.AddressId);
+
+                        int affrctedRwoCount = sqlCommand.ExecuteNonQuery();
+                     
+                        string updateQuery = @"UPDATE Products
+                                     SET Quantity = Quantity - @orderedQuantity
+                                     WHERE Id = @productId";
+
+                        SqlCommand sqlUpdatCommand = new(updateQuery, sqlConnection, transaction);
+                     
+                        sqlUpdatCommand.Parameters.AddWithValue("@orderedQuantity", order.Quantity);
+                        sqlUpdatCommand.Parameters.AddWithValue("@productId", order.ProductId);
+
+                        sqlUpdatCommand.ExecuteNonQuery();
+
+                        transaction.Commit();
+                        sqlConnection.Close();
+                        
+                        return 1;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new Exception($"Error adding order and updating product quantity: {ex.Message}");
+                    }
                 }
-                return affectedRowCount;
             }
         }
     }
