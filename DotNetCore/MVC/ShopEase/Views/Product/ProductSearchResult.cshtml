@@ -13,6 +13,7 @@
                 <td><b>Brand Name</b></td>
                 <td><b>Price</b></td>
                 <td><b>Actual Price</b></td>
+                <td><b>Quantity</b></td>
             </tr>
 
             @foreach (ShopEase.ViewModels.ProductSearchResultVm productSearchResultVm in Model)
@@ -24,6 +25,7 @@
                     @* <td><b><a href="https://localhost:7150/Product/GetByBrand/@productSearchResultVm.BrandId">@productSearchResultVm.BrandName</a></b></td> *@
                     <td><b>@productSearchResultVm.Price</b></td>
                     <td><b>@productSearchResultVm.ActualPrice</b></td>
+                    <td><b>@productSearchResultVm.Quantity</b></td>
                 </tr>
             }
         </table>

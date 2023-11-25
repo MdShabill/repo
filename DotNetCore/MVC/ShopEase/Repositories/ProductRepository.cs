@@ -116,11 +116,11 @@ namespace ShopEase.Repositories
                 string sqlQuery = @"Select Products.Id, 
                         Products.ProductName, Brands.BrandName, Products.Price,
                         (Products.Price - Products.Discount) AS ActualPrice,
-                        Categories.CategoryName
+                        Categories.CategoryName, Products.Quantity
                         From Products 
                         Inner Join Brands On Products.BrandId = Brands.Id                
                         Inner Join Categories On Products.CategoryId = Categories.Id
-                        Where 1=1 ";
+                        Where Products.Quantity > 0 ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
 
@@ -171,6 +171,7 @@ namespace ShopEase.Repositories
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         Price = (decimal)dataTable.Rows[i]["Price"],
                         ActualPrice = (decimal)dataTable.Rows[i]["ActualPrice"],
+                        Quantity = (int)dataTable.Rows[i]["Quantity"]
                     };
                     productSearchResults.Add(productSearchResult);
                 }
@@ -183,9 +184,9 @@ namespace ShopEase.Repositories
             using(SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into Products
-                       (ProductName, BrandId, Price, Discount, CategoryId, SupplierId, ImageName)
+                       (ProductName, BrandId, Price, Discount, CategoryId, SupplierId, ImageName, Quantity)
                        Values
-                       (@ProductName, @BrandId, @Price, @Discount, @CategoryId, @SupplierId, @imageName)";
+                       (@ProductName, @BrandId, @Price, @Discount, @CategoryId, @SupplierId, @imageName, @quantity)";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@ProductName", productAdd.ProductName);
@@ -195,6 +196,7 @@ namespace ShopEase.Repositories
                 sqlCommand.Parameters.AddWithValue("@CategoryId", productAdd.CategoryId);
                 sqlCommand.Parameters.AddWithValue("@SupplierId", productAdd.SupplierId);
                 sqlCommand.Parameters.AddWithValue("@imageName", productAdd.ImageName);
+                sqlCommand.Parameters.AddWithValue("@quantity", productAdd.Quantity);
 
                 sqlConnection.Open();
                 int affectedRowCount = sqlCommand.ExecuteNonQuery();

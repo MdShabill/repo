@@ -15,6 +15,9 @@ Alter Table Products
 Add ImageName Nvarchar(200)
 
 Alter Table Products
+Add Quantity int
+
+Alter Table Products
 Add FOREIGN KEY (BrandId) REFERENCES Brands (Id)
 
 Alter Table Products

@@ -20,5 +20,6 @@
         public string SupplierName { get; set; }
         public IFormFile ImageFile { get; set; }
         public string ImageName { get; set; }
+        public int Quantity { get; set; }
     }
 }

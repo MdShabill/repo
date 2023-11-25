@@ -174,7 +174,6 @@ namespace ShopEase.Controllers
             }
         }
 
-
         public IActionResult ProductSearchResultByBrand(int brandId)
         {
             ProductFilter productFilters = new();
