@@ -79,15 +79,18 @@ namespace ShopEase.Repositories
 
         public int AddOrder(Order order)
         {
-            using(SqlConnection sqlConnection = new(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = @"Insert Into Orders 
-                                  (OrderNumber, ProductId, CustomerId, OrderDate, Price, Quantity, AddressId)
-                                  Values
-                                  (@orderNumber, @productId, @customerId, GetDate(), @price, @quantity, @addressId)";
+                string insertSqlQuery = @"INSERT INTO Orders 
+                           (OrderNumber, ProductId, CustomerId, 
+                           OrderDate, Price, Quantity, AddressId)
+                           VALUES
+                           (@orderNumber, @productId, @customerId, 
+                           GETDATE(), @price, @quantity, @addressId)";
 
-                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@OrderNumber", order.OrderNumber);
+                SqlCommand sqlCommand = new(insertSqlQuery, sqlConnection);
+                
+                sqlCommand.Parameters.AddWithValue("@orderNumber", order.OrderNumber);
                 sqlCommand.Parameters.AddWithValue("@productId", order.ProductId);
                 sqlCommand.Parameters.AddWithValue("@customerId", order.CustomerId);
                 sqlCommand.Parameters.AddWithValue("@price", order.Price);
@@ -96,8 +99,21 @@ namespace ShopEase.Repositories
 
                 sqlConnection.Open();
                 int affectedRowCount = sqlCommand.ExecuteNonQuery();
-                sqlConnection.Close();
 
+                if (affectedRowCount > 0)
+                {
+                    string updateSqlQuery = @"UPDATE Products
+                                    SET Quantity = Quantity - @orderedQuantity
+                                    WHERE Id = @productId";
+                
+                    SqlCommand updateSqlCommand = new(updateSqlQuery, sqlConnection);
+                    
+                    updateSqlCommand.Parameters.AddWithValue("@orderedQuantity", order.Quantity);
+                    updateSqlCommand.Parameters.AddWithValue("@productId", order.ProductId);
+                
+                    updateSqlCommand.ExecuteNonQuery();
+                    sqlConnection.Close();
+                }
                 return affectedRowCount;
             }
         }
