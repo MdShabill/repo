@@ -38,13 +38,13 @@
                 <br />
                 <tr>
                     <td colspan="2">
-                        <h3>Address Details</h3>
+                        <h4>Address Details</h4>
                     </td>
                 </tr>
                 <tr>
                     <td><label for="AddressTypeId"><b>Address Type:</b></label></td>
                     <td>
-                        @Html.DropDownListFor(model => model.AddressTypeId, (SelectList)ViewBag.AddressTypes, "-- Select --", new { @class = "form-control" })
+                        @Html.DropDownListFor(model => model.AddressTypeId, ViewBag.AddressTypes as SelectList, "-- Select --", new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
                     </td>
                 </tr>

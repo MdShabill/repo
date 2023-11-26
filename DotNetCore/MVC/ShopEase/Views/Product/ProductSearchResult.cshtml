@@ -1,8 +1,11 @@
 ﻿@model List<ShopEase.ViewModels.ProductSearchResultVm>
 
-<h1>Product Search Result</h1>
+<h2>Product Search Result</h2>
 
 <html>
+<br />
+<b><label>Total Count Record:</label>  @ViewBag.TotalCountRecord</b>
+<br />
 <br />
 <body>
     <form>
@@ -21,8 +24,7 @@
                 <tr>
                     <td><b><a href="https://localhost:7150/Product/View/@productSearchResultVm.Id">@productSearchResultVm.ProductName</a></b></td>
                     <td><b>@productSearchResultVm.CategoryName</b></td>
-                    <td><b>@productSearchResultVm.BrandName</b></td>
-                    @* <td><b><a href="https://localhost:7150/Product/GetByBrand/@productSearchResultVm.BrandId">@productSearchResultVm.BrandName</a></b></td> *@
+                    <td><b><a href="https://localhost:7150/Product/ProductSearchResultByBrand?brandId=@productSearchResultVm.BrandId">@productSearchResultVm.BrandName</a></b></td>
                     <td><b>@productSearchResultVm.Price</b></td>
                     <td><b>@productSearchResultVm.ActualPrice</b></td>
                     <td><b>@productSearchResultVm.Quantity</b></td>

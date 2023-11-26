@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ShopEase.Repositories;
 using ShopEase.DataModels;
 using ShopEase.ViewModels;
+using Microsoft.AspNetCore.Http;
 
 namespace ShopEase.Controllers
 {
@@ -120,6 +121,7 @@ namespace ShopEase.Controllers
 
             HttpContext.Session.SetInt32("ProductId", productVm.Id);
             HttpContext.Session.SetString("ProductPrice", productVm.Price.ToString());
+
             return View(productVm);
         }
 
@@ -158,6 +160,7 @@ namespace ShopEase.Controllers
 
                 List<ProductSearchResultVm> productSearchResultsVm = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);
 
+                ViewBag.TotalCountRecord = productSearchResultsVm.Count;
                 return View(productSearchResultsVm);
             }
             else
