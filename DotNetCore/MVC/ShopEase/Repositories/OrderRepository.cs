@@ -91,7 +91,8 @@ namespace ShopEase.Repositories
                                     OrderDate, Price, Quantity, AddressId)
                                     VALUES
                                     (@orderNumber, @productId, @customerId, 
-                                    GETDATE(), @price, @quantity, @addressId)";
+                                    GETDATE(), @price, @quantity, @addressId)
+                                    Select Scope_Identity()";
 
                         SqlCommand sqlCommand = new(stringQuery, sqlConnection, transaction);
                      
@@ -102,7 +103,7 @@ namespace ShopEase.Repositories
                         sqlCommand.Parameters.AddWithValue("@quantity", order.Quantity);
                         sqlCommand.Parameters.AddWithValue("@addressId", order.AddressId);
 
-                        int affrctedRwoCount = sqlCommand.ExecuteNonQuery();
+                        order.OrderId = Convert.ToInt32(sqlCommand.ExecuteScalar());
                      
                         string updateQuery = @"UPDATE Products
                                      SET Quantity = Quantity - @orderedQuantity
@@ -118,7 +119,7 @@ namespace ShopEase.Repositories
                         transaction.Commit();
                         sqlConnection.Close();
                         
-                        return 1;
+                        return order.OrderId;
                     }
                     catch (Exception ex)
                     {

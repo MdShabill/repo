@@ -41,7 +41,7 @@ namespace ShopEase.Controllers
         }
 
         public IActionResult MyProfile()
-        {
+        {   
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
             if (customerId > 0)
             {
@@ -126,9 +126,9 @@ namespace ShopEase.Controllers
                             AddressTypeId = (int)customerVm.AddressTypeId,
                         };
                         _addressRepository.Add(address);
-
+                        
                         transactionScope.Complete();
-                        return Ok(customer.Id);
+                        return RedirectToAction("Success");
                     }
                 }
                 catch (TransactionException ex)
@@ -136,6 +136,11 @@ namespace ShopEase.Controllers
                     transactionScope.Dispose();
                 }
             }
+            return View();
+        }
+
+        public IActionResult Success()
+        {
             return View();
         }
 

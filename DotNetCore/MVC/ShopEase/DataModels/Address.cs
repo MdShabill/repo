@@ -3,6 +3,7 @@
     public class Address
     {
         public int Id { get; set; }
+        public int OrderId { get; set; }
         public string AddressDetail { get; set; }
         public int CustomerId { get; set; }
         public string AddressLine1 { get; set; }

@@ -1,28 +1,86 @@
 ﻿@model ShopEase.ViewModels.OrderVm
 
-<h1>PlaceOrder</h1>
+<h1>Place Order</h1>
 
-<hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="PlaceOrder">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <td>
-                    <b>Enter Quantity:</b>
-                </td>
-                <td>
-                    <input type="text" id="Quantity" name="Quantity" />
-                </td>
+            <div class="form-group row">
+                <label for="Quantity" class="col-md-4 col-form-label"><b>Select Quantity:</b></label>
+                <div class="col-md-4">
+                    <select id="Quantity" name="Quantity" class="form-control">
+                        <option value="" disabled selected>--Select--</option>
+                        @for (int i = 1; i <= 10; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                </div>
             </div>
             <br />
-            <div class="form-group">
-                <label class="control-label"><b>Address</b></label>
-                @Html.DropDownListFor(model => model.AddressId, ViewBag.Address as SelectList, "-- Select --", new { @class = "form-control" })
+            <div class="form-group row">
+                <label for="AddressId" class="col-md-4 col-form-label"><b>Address</b></label>
+                <div class="col-md-8">
+                    @Html.DropDownListFor(model => model.AddressId, ViewBag.Address as SelectList, "-- Select --", new { @class = "form-control" })
+                </div>
             </div>
             <br />
-            <div class="form-group">
-                <input type="submit" value="Place Order" class="btn btn-primary" />
+            <div class="form-group row">
+                <div class="col-md-12">
+                    <h4>Card Details</h4>
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <label for="NickName" class="col-md-4 col-form-label"><b>Nick Name:</b></label>
+                <div class="col-md-4">
+                    <input type="text" id="NickName" name="NickName" class="form-control" />
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <label for="CardNumber" class="col-md-4 col-form-label"><b>Card Number:</b></label>
+                <div class="col-md-4">
+                    <input type="text" id="CardNumber" name="CardNumber" class="form-control" />
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <label for="ExpiryDate" class="col-md-4 col-form-label"><b>Expiry Date:</b></label>
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <select id="ExpiryDate" name="ExpiryDateMonth" class="form-control">
+                                @for (int month = 1; month <= 12; month++)
+                                {
+                                    <option value="@month">@month</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <select id="ExpiryDate" name="ExpiryDateYear" class="form-control">
+                                @for (int year = DateTime.Now.Year; year <= DateTime.Now.Year + 10; year++)
+                                {
+                                    <option value="@year">@year</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <label for="CVV" class="col-md-4 col-form-label"><b>CVV Number:</b></label>
+                <div class="col-md-4">
+                    <input type="text" id="CVV" name="CVV" class="form-control" />
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <div class="col-md-12">
+                    <input type="submit" value="Place Order" class="btn btn-primary" />
+                </div>
             </div>
         </form>
     </div>

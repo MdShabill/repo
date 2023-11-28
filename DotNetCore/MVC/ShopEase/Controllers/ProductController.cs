@@ -146,7 +146,7 @@ namespace ShopEase.Controllers
                 productFilterVm.BrandId != 0 ||
                 productFilterVm.Min != 0 ||
                 productFilterVm.Max != 0 ||
-                productFilterVm.CategoryId != 0)
+                productFilterVm.CategoryId != 0 )
             {
                 //if (productFilterVm.ProductName.Length < 3)
                 //{
@@ -185,6 +185,7 @@ namespace ShopEase.Controllers
 
             List<ProductSearchResultVm> productSearchResultsVm = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);
 
+            ViewBag.TotalCountRecord = productSearchResultsVm.Count;
             return View("ProductSearchResult", productSearchResultsVm);
 
         }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using ShopEase.DataModels;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
+using System.Transactions;
 using static NuGet.Packaging.PackagingConstants;
 
 namespace ShopEase.Controllers
@@ -14,9 +15,11 @@ namespace ShopEase.Controllers
     {
         IOrderRepository _orderRepository;
         IAddressRepository _addressRepository;
+        ICardDetailRepository _cardDetailRepository;
         IMapper _imapper;
 
-        public OrderController(IOrderRepository orderRepository, IAddressRepository addressRepository)
+        public OrderController(IOrderRepository orderRepository, IAddressRepository addressRepository, 
+                               ICardDetailRepository cardDetailRepository)
         {
             _orderRepository = orderRepository;
 
@@ -29,6 +32,7 @@ namespace ShopEase.Controllers
             });
             _imapper = configuration.CreateMapper();
             _addressRepository = addressRepository;
+            _cardDetailRepository = cardDetailRepository;
         }
 
         public IActionResult MyOrder()
@@ -54,7 +58,7 @@ namespace ShopEase.Controllers
 
                 return View(orderSummaryVm);
             }
-            return View("NoOrdersFound");
+            return View();
         }
 
         public IActionResult OrderDetail(int? orderNumber, int? customerId = null)
@@ -85,20 +89,49 @@ namespace ShopEase.Controllers
         [HttpPost]
         public IActionResult PlaceOrder(OrderVm orderVm)
         {
-            orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
-            orderVm.ProductId = Convert.ToInt32(HttpContext.Session.GetInt32("ProductId"));
-            orderVm.Price = decimal.Parse(HttpContext.Session.GetString("ProductPrice"));
-
-            orderVm.OrderNumber = GenerateRandomOrderNumber();
-
-            Order order = _imapper.Map<OrderVm, Order>(orderVm);
-            int affectedRowCount = _orderRepository.AddOrder(order);
-            if (affectedRowCount > 0)
+            using (TransactionScope transactionScope = new())
             {
-                ViewBag.SuccessMessage = "Your Order Placed Successfully Done... ";
+                try
+                {
+                    int expiryMonth = int.Parse(HttpContext.Request.Form["ExpiryDateMonth"]);
+                    int expiryYear = int.Parse(HttpContext.Request.Form["ExpiryDateYear"]);
+                    int daysInMonth = DateTime.DaysInMonth(expiryYear, expiryMonth);
+
+                    orderVm.ExpiryDate = new DateTime(expiryYear, expiryMonth, daysInMonth, DateTime.Now.Hour, 
+                                             DateTime.Now.Minute, DateTime.Now.Second);
+
+                    orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
+                    orderVm.ProductId = Convert.ToInt32(HttpContext.Session.GetInt32("ProductId"));
+                    orderVm.Price = decimal.Parse(HttpContext.Session.GetString("ProductPrice"));
+
+                    orderVm.OrderNumber = GenerateRandomOrderNumber();
+
+                    Order order = _imapper.Map<OrderVm, Order>(orderVm);
+                    order.OrderId = _orderRepository.AddOrder(order);
+                    if (order.OrderId > 0)
+                    {
+                        CardDetail cardDetail = new()
+                        {
+                            OrderId = order.OrderId,
+                            CustomerId = orderVm.CustomerId,
+                            NickName = orderVm.NickName,
+                            CardNumber = orderVm.CardNumber,
+                            ExpiryDate = orderVm.ExpiryDate,
+                            CVV = orderVm.CVV,
+                        };
+                        _cardDetailRepository.AddCardDetail(cardDetail);
+                        ViewBag.SuccessMessage = "Your Order Placed Successfully Done... ";
+                        transactionScope.Complete();
+                    }
+                    HttpContext.Session.SetInt32("OrderNumber", orderVm.OrderNumber);
+                    return RedirectToAction("OrderSummary");
+                }
+                catch (TransactionException ex)
+                {
+                    transactionScope.Dispose();
+                }
             }
-            HttpContext.Session.SetInt32("OrderNumber", (int)orderVm.OrderNumber);
-            return RedirectToAction("OrderSummary");
+            return View();
         }
 
         private int GenerateRandomOrderNumber()

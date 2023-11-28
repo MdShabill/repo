@@ -3,6 +3,7 @@
     public class OrderVm
     {
         public int Id { get; set; } 
+        public int OrderId { get; set; }
         public int OrderNumber { get; set; }
         public int ProductId { get; set; }
         public int CustomerId { get; set; }
@@ -18,5 +19,11 @@
         public int PinCode { get; set; }
         public string CountryName { get; set; }
         public string AddressTypeName { get; set; }
+        public string NickName { get; set; }
+        public string CardNumber { get; set; }
+        public DateTime ExpiryDate { get; set;}
+        public int ExpiryMonth { get; set; }
+        public int ExpiryYear { get; set; }
+        public int CVV { get; set; }
     }
 }

@@ -18,13 +18,13 @@ Create Table Addresses
 
 
 Insert Into Addresses(CustomerId, AddressLine1, AddressLine2, PinCode, CountryId, AddressTypeId, CreatedOn)
-Values(2, 'SamastiPur Bihar', 'Sangam Vihar', 848101, 2, 1, DATEADD(Month, -3,GETDATE()))
+Values(6, 'L-49 B, ATM Building, Abul Fazal Enclave, Jamia Nagar, New Delehi', 'House No.90, Chakjado, Bihar', 110025, 2, 1, DATEADD(Month, -3,GETDATE()))
 
 Insert Into Addresses(CustomerId, AddressLine1, AddressLine2, PinCode, CountryId, AddressTypeId, CreatedOn)
-Values(3, 'Muzaffarpur Bihar', 'Najafgarh New Delhi', 842001, 1, 2, DATEADD(Month, -5,GETDATE()))
+Values(6, 'House No.7, Zakariya Colony, Muzaffarpur Bihar', 'Rz- H-47, B-J, RoshanPura, Najafgarh New Delhi', 842001, 1, 2, DATEADD(Month, -5,GETDATE()))
 
 Insert Into Addresses(CustomerId, AddressLine1, AddressLine2, PinCode, CountryId, AddressTypeId, CreatedOn)
-Values(2, 'Shaheen Bagh', 'Najafgarh New Delhi', 110025, 1, 2, DATEADD(Month, -2,GETDATE()))
+Values(6, 'Paharw Colony, Gali No.4, Plot No.1-A-KH, Najafgarh', 'Falt No.303, 3rd Floor, Ummat Apartment, Shaheen Bagh', 110071, 1, 2, DATEADD(Month, -2,GETDATE()))
 
 Insert Into Addresses(CustomerId, AddressLine1, AddressLine2, PinCode, CountryId, AddressTypeId, CreatedOn)
 Values(4, 'Kolkata West Bangal', 'SamastiPur Bihar', 700100, 2, 3, DATEADD(Month, -3,GETDATE()))

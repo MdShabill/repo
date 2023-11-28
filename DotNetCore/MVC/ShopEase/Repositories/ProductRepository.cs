@@ -113,7 +113,7 @@ namespace ShopEase.Repositories
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Select Products.Id, 
+                string sqlQuery = @"Select Products.Id, Products.BrandId,
                         Products.ProductName, Brands.BrandName, Products.Price,
                         (Products.Price - Products.Discount) AS ActualPrice,
                         Categories.CategoryName, Products.Quantity
@@ -168,6 +168,7 @@ namespace ShopEase.Repositories
                         Id = (int)dataTable.Rows[i]["Id"],  
                         ProductName = (string)dataTable.Rows[i]["ProductName"],
                         CategoryName = (string)dataTable.Rows[i]["CategoryName"],
+                        BrandId = (int)dataTable.Rows[i]["BrandId"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         Price = (decimal)dataTable.Rows[i]["Price"],
                         ActualPrice = (decimal)dataTable.Rows[i]["ActualPrice"],

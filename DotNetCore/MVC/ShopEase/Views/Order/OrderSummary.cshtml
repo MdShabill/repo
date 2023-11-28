@@ -6,17 +6,16 @@
 
 <form asp-action="MyOrder">
     <div>
-        <p><b>Order Number: @Model.OrderNumber </b></p>
-        <p><b>Paid Amount: @Model.Price </b></p>
-        <p><b>Order Date: @Model.OrderDate </b></p>
-        <p><b>Customer Name: @Model.FullName </b></p>
+        <p><b>Order Number:</b> @Model.OrderNumber</p>
+        <p><b>Paid Amount:</b> @Model.Price</p>
+        <p><b>Order Date:</b> @Model.OrderDate</p>
+        <p><b>Customer Name:</b> @Model.FullName</p>
         <p>
-            <b>
-                Address: @Model.AddressLine1 @("-")
-                @Model.AddressLine2 @("-")
-                @Model.PinCode @("-") @Model.CountryName
-                @("-") @Model.AddressTypeName
-            </b>
+            <b>Address:</b>
+             @Model.AddressLine1 @("-")
+             @Model.AddressLine2 @("-")
+             @Model.PinCode @("-") @Model.CountryName
+             @("-") @Model.AddressTypeName
         </p>
         <br />
         <img src="/UploadedFiles/@Model.ImageName" alt="Product Image" style="float: right; width: 200px; height: 200px; ">

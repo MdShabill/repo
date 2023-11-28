@@ -63,8 +63,8 @@ namespace ShopEase.Repositories
                 {
                     Address address = new()
                     {
-                        Id = (int)dataTable.Rows[0]["Id"],
-                        AddressDetail = dataTable.Rows[0]["AddressDetail"].ToString()
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        AddressDetail = dataTable.Rows[i]["AddressDetail"].ToString()
                     };
                     addresses.Add(address);
                 }

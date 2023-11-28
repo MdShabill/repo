@@ -52,6 +52,11 @@ builder.Services.AddTransient<ICountryRepository>((svc) =>
     return new CountryRepository(ShopEaseDBConnectionString);
 });
 
+builder.Services.AddTransient<ICardDetailRepository>((svc) =>
+{
+    return new CardDetailRepository(ShopEaseDBConnectionString);
+});
+
 builder.Services.AddTransient<ICustomerRepository>((svc) =>
 {
     return new CustomerRepository(ShopEaseDBConnectionString);
