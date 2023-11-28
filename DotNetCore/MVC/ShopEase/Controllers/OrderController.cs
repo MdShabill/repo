@@ -93,10 +93,10 @@ namespace ShopEase.Controllers
             {
                 try
                 {
-                    int expiryMonth = int.Parse(HttpContext.Request.Form["ExpiryDateMonth"]);
-                    int expiryYear = int.Parse(HttpContext.Request.Form["ExpiryDateYear"]);
+                    //int expiryMonth = int.Parse(HttpContext.Request.Form["ExpiryDateMonth"]);
+                    //int expiryYear = int.Parse(HttpContext.Request.Form["ExpiryDateYear"]);
 
-                    orderVm.ExpiryDate = new DateTime(expiryYear, expiryMonth, 1);
+                    orderVm.ExpiryDate = new DateTime(orderVm.ExpiryYear, orderVm.ExpiryMonth, 1);
                     
                     orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
                     orderVm.ProductId = Convert.ToInt32(HttpContext.Session.GetInt32("ProductId"));

@@ -27,10 +27,10 @@ Insert Into Addresses(CustomerId, AddressLine1, AddressLine2, PinCode, CountryId
 Values(6, 'Paharw Colony, Gali No.4, Plot No.1-A-KH, Najafgarh', 'Falt No.303, 3rd Floor, Ummat Apartment, Shaheen Bagh', 110071, 1, 2, DATEADD(Month, -2,GETDATE()))
 
 Insert Into Addresses(CustomerId, AddressLine1, AddressLine2, PinCode, CountryId, AddressTypeId, CreatedOn)
-Values(4, 'Kolkata West Bangal', 'SamastiPur Bihar', 700100, 2, 3, DATEADD(Month, -3,GETDATE()))
+Values(23, 'House No.90, Chakjado, Muzaffarpur, Bihar', 'House No.7, Zakariya Colony, Muzaffarpur Bihar', 843104, 1, 7, DATEADD(YEAR, 10,GETDATE()))
 
 Insert Into Addresses(CustomerId, AddressLine1, AddressLine2, PinCode, CountryId, AddressTypeId, CreatedOn)
-Values(5, 'Patna Bihar', 'Shaheen bagh', 800004, 1, 4, DATEADD(Month, -2,GETDATE()))
+Values(23, 'Patna Bihar', 'Shaheen bagh', 800004, 1, 4, DATEADD(Month, -2,GETDATE()))
 
 Insert Into Addresses(CustomerId, AddressLine1, AddressLine2, PinCode, CountryId, AddressTypeId, CreatedOn)
 Values(6, 'Raipur Chhattis Garh', 'Kolkata West Bangal', 492001, 1, 5, DATEADD(Month, -5,GETDATE()))

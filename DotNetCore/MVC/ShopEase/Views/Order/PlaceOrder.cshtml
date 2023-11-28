@@ -51,7 +51,7 @@
                 <div class="col-md-4">
                     <div class="row">
                         <div class="col-md-6">
-                            <select id="ExpiryDate" name="ExpiryDateMonth" class="form-control">
+                            <select id="ExpiryDate" name="ExpiryMonth" class="form-control">
                                 @for (int month = 1; month <= 12; month++)
                                 {
                                     <option value="@month">@month</option>
@@ -59,7 +59,7 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <select id="ExpiryDate" name="ExpiryDateYear" class="form-control">
+                            <select id="ExpiryDate" name="ExpiryYear" class="form-control">
                                 @for (int year = DateTime.Now.Year; year <= DateTime.Now.Year + 10; year++)
                                 {
                                     <option value="@year">@year</option>
