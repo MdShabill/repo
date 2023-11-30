@@ -1,4 +1,4 @@
-﻿using ShopEase.DataModels;
+﻿using ShopEase.DataModels.Address;
 using ShopEase.ViewModels;
 using System.Data;
 using System.Data.SqlClient;

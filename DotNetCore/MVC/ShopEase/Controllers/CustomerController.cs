@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ShopEase.DataModels;
+using ShopEase.DataModels.Address;
+using ShopEase.DataModels.Customer;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Transactions;
 
@@ -65,29 +67,28 @@ namespace ShopEase.Controllers
         [HttpPost]
         public IActionResult Add(CustomerVm customerVm)
         {
-            if (string.IsNullOrWhiteSpace(customerVm.FullName))
-            {
-                ViewBag.ErrorMessage = "Customer Full Name Can not be Blank";
-            }
+            Array enumValues = Enum.GetValues(typeof(Enums.AddressType));
+            ViewBag.AddressTypes = new SelectList(enumValues);
 
-            if(customerVm.FullName.Length > 20)
-            {
-                ViewBag.ErrorMessage = "Customer Name should be 20 Characters or Less";
-            }
+            List<Country> countries = _countryRepository.GetAllCountries();
+            ViewBag.Countries = new SelectList(countries, "Id", "CountryName");
 
-            if(string.IsNullOrWhiteSpace(customerVm.Mobile))
+            if (string.IsNullOrWhiteSpace(customerVm.Mobile))
             {
                 ViewBag.ErrorMessage = "Customer Mobile Number Should Not Be Blank";
+                return View();
             }
 
-            if(customerVm.Mobile.Length != 10)
+            if (customerVm.Mobile.Length != 10)
             {
                 ViewBag.ErrorMessage = "Mobile Number Should Be exactly 10 Digits";
+                return View();
             }
 
-            if(string.IsNullOrWhiteSpace(customerVm.Email))
+            if (string.IsNullOrWhiteSpace(customerVm.Email))
             {
                 ViewBag.ErrorMessage = "Email Should Not Be Blank";
+                return View();
             }
 
             Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
@@ -101,11 +102,13 @@ namespace ShopEase.Controllers
             if (string.IsNullOrWhiteSpace(customerVm.Password))
             {
                 ViewBag.ErrorMessage = "Password Should Not Be Blank";
+                return View();
             }
 
             if (customerVm.Mobile.Length != 10)
             {
                 ViewBag.ErrorMessage = "Mobile Number Should Be exactly 10 Digits";
+                return View();
             }
 
             using (TransactionScope transactionScope = new())

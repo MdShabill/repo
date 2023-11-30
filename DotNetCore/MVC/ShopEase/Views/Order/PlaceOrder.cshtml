@@ -33,9 +33,9 @@
             </div>
             <br />
             <div class="form-group row">
-                <label for="NickName" class="col-md-4 col-form-label"><b>Nick Name:</b></label>
+                <label for="FullName" class="col-md-4 col-form-label"><b>Full Name:</b></label>
                 <div class="col-md-4">
-                    <input type="text" id="NickName" name="NickName" class="form-control" />
+                    <input type="text" id="FullName" name="FullName" class="form-control" />
                 </div>
             </div>
             <br />
@@ -51,7 +51,7 @@
                 <div class="col-md-4">
                     <div class="row">
                         <div class="col-md-6">
-                            <select id="ExpiryDate" name="ExpiryMonth" class="form-control">
+                            <select id="ExpiryMonth" name="ExpiryMonth" class="form-control">
                                 @for (int month = 1; month <= 12; month++)
                                 {
                                     <option value="@month">@month</option>
@@ -59,7 +59,7 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <select id="ExpiryDate" name="ExpiryYear" class="form-control">
+                            <select id="ExpiryYear" name="ExpiryYear" class="form-control">
                                 @for (int year = DateTime.Now.Year; year <= DateTime.Now.Year + 10; year++)
                                 {
                                     <option value="@year">@year</option>

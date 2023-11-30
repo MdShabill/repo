@@ -19,7 +19,6 @@
         public int PinCode { get; set; }
         public string CountryName { get; set; }
         public string AddressTypeName { get; set; }
-        public string NickName { get; set; }
         public string CardNumber { get; set; }
         public DateTime ExpiryDate { get; set;}
         public int ExpiryMonth { get; set; }

@@ -1,4 +1,4 @@
-﻿using ShopEase.DataModels;
+﻿using ShopEase.DataModels.Customer;
 using ShopEase.Enums;
 using System.Data;
 using System.Data.SqlClient;

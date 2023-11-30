@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using ShopEase.DataModels;
+using ShopEase.DataModels.Customer;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
 

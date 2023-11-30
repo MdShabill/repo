@@ -1,4 +1,5 @@
 ﻿using ShopEase.DataModels;
+using ShopEase.DataModels.Customer;
 using ShopEase.ViewModels;
 using System.Data.SqlClient;
 
@@ -26,7 +27,7 @@ namespace ShopEase.Repositories
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@orderId", cardDetail.OrderId);
                 sqlCommand.Parameters.AddWithValue("@customerId", cardDetail.CustomerId);
-                sqlCommand.Parameters.AddWithValue("@fullName", cardDetail.NickName);
+                sqlCommand.Parameters.AddWithValue("@fullName", cardDetail.FullName);
                 sqlCommand.Parameters.AddWithValue("@cardNumber", cardDetail.CardNumber);
                 sqlCommand.Parameters.AddWithValue("@expiryDate", cardDetail.ExpiryDate);
                 sqlCommand.Parameters.AddWithValue("@cVV", cardDetail.CVV);

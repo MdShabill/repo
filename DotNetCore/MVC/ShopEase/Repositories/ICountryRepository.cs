@@ -1,4 +1,4 @@
-﻿using ShopEase.DataModels;
+﻿using ShopEase.DataModels.Address;
 
 namespace ShopEase.Repositories
 {

@@ -2,9 +2,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ShopEase.Repositories;
-using ShopEase.DataModels;
+using ShopEase.DataModels.Product;
 using ShopEase.ViewModels;
-using Microsoft.AspNetCore.Http;
 
 namespace ShopEase.Controllers
 {
@@ -148,11 +147,6 @@ namespace ShopEase.Controllers
                 productFilterVm.Max != 0 ||
                 productFilterVm.CategoryId != 0 )
             {
-                //if (productFilterVm.ProductName.Length < 3)
-                //{
-                //    ViewBag.ErrorMessage = "Product Name should be at least 3 characters";
-                //    return View();
-                //}
 
                 ProductFilter productFilters = _imapper.Map<ProductFilterVm, ProductFilter>(productFilterVm);
 

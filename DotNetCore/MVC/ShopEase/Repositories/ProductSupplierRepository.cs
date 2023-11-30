@@ -1,6 +1,6 @@
 ﻿using System.Data.SqlClient;
 using System.Data;
-using ShopEase.DataModels;
+using ShopEase.DataModels.Product;
 
 namespace ShopEase.Repositories
 {

@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using ShopEase.DataModels;
+using ShopEase.DataModels.Address;
+using ShopEase.DataModels.Order;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
 using System.Transactions;
-using static NuGet.Packaging.PackagingConstants;
 
 namespace ShopEase.Controllers
 {
@@ -58,7 +57,7 @@ namespace ShopEase.Controllers
 
                 return View(orderSummaryVm);
             }
-            return View();
+            return RedirectToAction("Login", "Account");
         }
 
         public IActionResult OrderDetail(int? orderNumber, int? customerId = null)
@@ -71,7 +70,7 @@ namespace ShopEase.Controllers
 
                 return View(orderDetailVm);
             }
-            return View("NoOrdersFound");
+            return RedirectToAction("Login", "Account");
         }
 
         public IActionResult PlaceOrder()
@@ -93,9 +92,6 @@ namespace ShopEase.Controllers
             {
                 try
                 {
-                    //int expiryMonth = int.Parse(HttpContext.Request.Form["ExpiryDateMonth"]);
-                    //int expiryYear = int.Parse(HttpContext.Request.Form["ExpiryDateYear"]);
-
                     orderVm.ExpiryDate = new DateTime(orderVm.ExpiryYear, orderVm.ExpiryMonth, 1);
                     
                     orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
@@ -112,7 +108,7 @@ namespace ShopEase.Controllers
                         {
                             OrderId = order.OrderId,
                             CustomerId = orderVm.CustomerId,
-                            NickName = orderVm.NickName,
+                            FullName = orderVm.FullName,
                             CardNumber = orderVm.CardNumber,
                             ExpiryDate = orderVm.ExpiryDate,
                             CVV = orderVm.CVV,
