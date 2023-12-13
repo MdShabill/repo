@@ -6,6 +6,8 @@
     <div class="col-md-6">
         <form asp-action="PlaceOrder">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
             <div class="form-group row">
                 <label for="Quantity" class="col-md-4 col-form-label"><b>Select Quantity:</b></label>
                 <div class="col-md-4">
@@ -78,8 +80,9 @@
             </div>
             <br />
             <div class="form-group row">
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <input type="submit" value="Place Order" class="btn btn-primary" />
+                    <a href="https://localhost:7150/Product/ProductSearch" style="margin-left: 60px;"><b>Go Back</b></a>
                 </div>
             </div>
         </form>

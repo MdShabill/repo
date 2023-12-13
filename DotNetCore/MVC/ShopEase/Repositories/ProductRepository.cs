@@ -29,7 +29,7 @@ namespace ShopEase.Repositories
                 }
 
                 string sqlQuery = @"SELECT Products.Id,
-                         Products.ProductName, Brands.BrandName,
+                         Products.Title, Brands.BrandName,
                          Products.Price, Products.Discount,
                          (Products.Price - Products.Discount) AS ActualPrice,
                          Categories.CategoryName, Suppliers.SupplierName 
@@ -58,7 +58,7 @@ namespace ShopEase.Repositories
                     Product product = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
-                        ProductName = (string)dataTable.Rows[i]["ProductName"],
+                        Title = (string)dataTable.Rows[i]["Title"],
                         CategoryName = (string)dataTable.Rows[i]["CategoryName"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         Price = Convert.ToInt32(dataTable.Rows[i]["Price"]),
@@ -77,10 +77,10 @@ namespace ShopEase.Repositories
             using(SqlConnection sqlConnection = new (_connectionString))
             {
                 string sqlQuery = @"SELECT Products.Id,
-                         Products.ProductName, Categories.CategoryName,
+                         Products.Title, Categories.CategoryName,
                          Products.BrandId, Brands.BrandName, Products.Price, Products.Discount,
                          (Products.Price - Products.Discount) AS ActualPrice,
-                         Suppliers.SupplierName, Products.ImageName
+                         Suppliers.SupplierName, Products.Quantity, Products.ImageName
                          FROM Products
                          Inner Join Brands On Products.BrandId = Brands.Id                
                          Inner Join Categories On Products.CategoryId = Categories.Id                    
@@ -95,7 +95,7 @@ namespace ShopEase.Repositories
                 Product product = new()
                 {
                     Id = (int)dataTable.Rows[0]["Id"],
-                    ProductName = (string)dataTable.Rows[0]["ProductName"],
+                    Title = (string)dataTable.Rows[0]["Title"],
                     CategoryName = (string)dataTable.Rows[0]["CategoryName"],
                     BrandId = (int)dataTable.Rows[0]["BrandId"],
                     BrandName = (string)dataTable.Rows[0]["BrandName"],
@@ -103,6 +103,7 @@ namespace ShopEase.Repositories
                     ActualPrice = Convert.ToInt32(dataTable.Rows[0]["ActualPrice"]),
                     Discount = Convert.ToInt32(dataTable.Rows[0]["Discount"]),
                     SupplierName = (string)dataTable.Rows[0]["SupplierName"],
+                    Quantity = (int)dataTable.Rows[0]["Quantity"],
                     ImageName = (string)dataTable.Rows[0]["ImageName"],
                 };
                 return product;
@@ -114,7 +115,7 @@ namespace ShopEase.Repositories
             using(SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Select Products.Id, Products.BrandId,
-                        Products.ProductName, Brands.BrandName, Products.Price,
+                        Products.Title, Brands.BrandName, Products.Price,
                         (Products.Price - Products.Discount) AS ActualPrice,
                         Categories.CategoryName, Products.Quantity
                         From Products 
@@ -124,10 +125,10 @@ namespace ShopEase.Repositories
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
 
-                if (!string.IsNullOrEmpty(productFilters.ProductName))
+                if (!string.IsNullOrEmpty(productFilters.Title))
                 {
-                    sqlQuery += " And Products.ProductName Like '%' + @productName + '%' ";
-                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@productName", productFilters.ProductName);
+                    sqlQuery += " And Products.Title Like '%' + @title + '%' ";
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@title", productFilters.Title);
                 }
 
                 if (productFilters.BrandId != 0)
@@ -165,8 +166,8 @@ namespace ShopEase.Repositories
                 {
                     ProductSearchResult productSearchResult = new()
                     {
-                        Id = (int)dataTable.Rows[i]["Id"],  
-                        ProductName = (string)dataTable.Rows[i]["ProductName"],
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        Title = (string)dataTable.Rows[i]["Title"],
                         CategoryName = (string)dataTable.Rows[i]["CategoryName"],
                         BrandId = (int)dataTable.Rows[i]["BrandId"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
@@ -185,12 +186,12 @@ namespace ShopEase.Repositories
             using(SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into Products
-                       (ProductName, BrandId, Price, Discount, CategoryId, SupplierId, ImageName, Quantity)
+                       (Title, BrandId, Price, Discount, CategoryId, SupplierId, ImageName, Quantity)
                        Values
-                       (@ProductName, @BrandId, @Price, @Discount, @CategoryId, @SupplierId, @imageName, @quantity)";
+                       (@title, @BrandId, @Price, @Discount, @CategoryId, @SupplierId, @imageName, @quantity)";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@ProductName", productAdd.ProductName);
+                sqlCommand.Parameters.AddWithValue("@title", productAdd.Title);
                 sqlCommand.Parameters.AddWithValue("@BrandId", productAdd.BrandId);
                 sqlCommand.Parameters.AddWithValue("@Price", productAdd.Price);
                 sqlCommand.Parameters.AddWithValue("@Discount", productAdd.Discount);

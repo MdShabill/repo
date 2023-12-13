@@ -8,7 +8,7 @@
     <div>
         <p><b>Order Number:</b> @Model.OrderNumber</p>
         <p><b>Paid Amount:</b> @Model.Price</p>
-        <p><b>Order Date:</b> @Model.OrderDate</p>
+        <p><b>Order Date:</b> @Model.OrderDate.ToString("dddd, dd MMMM yyyy hh:mm tt")</p>
         <p><b>Customer Name:</b> @Model.FullName</p>
         <p>
             <b>Address:</b>

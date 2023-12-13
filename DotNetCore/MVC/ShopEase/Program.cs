@@ -42,6 +42,11 @@ builder.Services.AddTransient<IOrderRepository>((svc) =>
     return new OrderRepository(ShopEaseDBConnectionString);
 });
 
+builder.Services.AddTransient<ICartRepository>((svc) =>
+{
+    return new CartRepository(ShopEaseDBConnectionString);
+});
+
 builder.Services.AddTransient<IAddressRepository>((svc) =>
 {
     return new AddressRepository(ShopEaseDBConnectionString);

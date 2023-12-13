@@ -1,0 +1,85 @@
+﻿@model List<ShopEase.ViewModels.Cart.CartVm>
+<html>
+<head>
+    <style>
+        body {
+            padding: 10px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        td {
+            padding: 5px;
+        }
+
+        img {
+            max-width: 80px;
+            max-height: 100px;
+        }
+
+        select {
+            width: 80px;
+        }
+
+        form {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cart Index</h1>
+    <table>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><b>Title :</b></td>
+                <td>@item.Title</td>
+            </tr>
+            <tr>
+                <td><b>Image Name :</b></td>
+                <td><img src="/UploadedFiles/@item.ImageName" alt="Product Image"></td>
+            </tr>
+            <tr>
+                <td><b>Quantity :</b></td>
+                <td>
+                    <select name="Quantity" id="Quantity">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Price :</b></td>
+                <td>@item.Price</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <form asp-controller="Order" asp-action="PlaceOrder" method="post">
+                        <input type="submit" value="Place Order" class="btn btn-primary" />
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><hr /></td>
+            </tr>
+        }
+    </table>
+</body>
+</html>

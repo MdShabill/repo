@@ -11,7 +11,7 @@
     <form>
         <table border="3px" class="table">
             <tr>
-                <td><b>Product Name</b></td>
+                <td><b>Title</b></td>
                 <td><b>Category Name</b></td>
                 <td><b>Brand Name</b></td>
                 <td><b>Price</b></td>
@@ -22,7 +22,7 @@
             @foreach (ShopEase.ViewModels.ProductSearchResultVm productSearchResultVm in Model)
             {
                 <tr>
-                    <td><b><a href="https://localhost:7150/Product/View/@productSearchResultVm.Id">@productSearchResultVm.ProductName</a></b></td>
+                    <td><b><a href="https://localhost:7150/Product/View/@productSearchResultVm.Id">@productSearchResultVm.Title</a></b></td>
                     <td><b>@productSearchResultVm.CategoryName</b></td>
                     <td><b><a href="https://localhost:7150/Product/ProductSearchResultByBrand?brandId=@productSearchResultVm.BrandId">@productSearchResultVm.BrandName</a></b></td>
                     <td><b>@productSearchResultVm.Price</b></td>

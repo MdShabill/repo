@@ -2,7 +2,7 @@
 {
     public class ProductFilterVm
     {
-        public string ProductName { get; set; }
+        public string Title { get; set; }
         public int CategoryId { get; set; }
         public int BrandId { get; set; }
         public int Min { get; set; }

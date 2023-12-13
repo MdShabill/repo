@@ -3,7 +3,7 @@
     public class ProductSearchResultVm
     {
         public int Id { get; set; }
-        public string ProductName { get; set; }
+        public string Title { get; set; }
         public string CategoryName { get; set; }
         public int BrandId { get; set; }
         public string BrandName { get; set; }

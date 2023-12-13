@@ -51,8 +51,8 @@ namespace ShopEase.Repositories
                 string sqlQuery = @"SELECT Customers.Id, Customers.FullName, 
                             Customers.Gender, Customers.Email, Customers.Mobile,
                             Addresses.AddressLine1, Addresses.AddressLine2,
-                            Addresses.Pincode, AddressTypes.AddressTypeName,
-                            Countries.CountryName
+                            Addresses.Pincode, Addresses.AddressTypeId, AddressTypes.AddressTypeName,
+                            Countries.Id as CountryId, Countries.CountryName
                             FROM Customers
                             INNER JOIN Addresses ON Customers.Id = Addresses.CustomerId
                             INNER JOIN Countries ON Addresses.CountryId = Countries.Id
@@ -66,7 +66,7 @@ namespace ShopEase.Repositories
 
                 if(dataTable.Rows.Count > 0)
                 {
-                    Customer customers = new()
+                    Customer customer = new()
                     {
                         Id = (int)dataTable.Rows[0]["Id"],
                         FullName = (string)dataTable.Rows[0]["FullName"],
@@ -76,10 +76,13 @@ namespace ShopEase.Repositories
                         AddressLine1 = (string)dataTable.Rows[0]["AddressLine1"],
                         AddressLine2 = (string)dataTable.Rows[0]["AddressLine2"],
                         PinCode = (int)dataTable.Rows[0]["PinCode"],
+                        AddressTypeId = (int)dataTable.Rows[0]["AddressTypeId"],
                         AddressTypeName = (string)dataTable.Rows[0]["AddressTypeName"],
+                        CountryId = (int)dataTable.Rows[0]["CountryId"],
                         CountryName = (string)dataTable.Rows[0]["CountryName"]
                     };
-                    return customers;
+
+                    return customer;
                 }
                 return null;
             }

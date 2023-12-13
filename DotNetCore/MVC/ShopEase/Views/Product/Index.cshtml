@@ -15,7 +15,7 @@
     <form>
         <table border="3px" class="table">
             <tr class="table1">
-                <td><b><a asp-action="Index" asp-route-sortColumnName="ProductName" asp-route-sortOrder="ASC">Product Name</a></b></td>
+                <td><b><a asp-action="Index" asp-route-sortColumnName="Title" asp-route-sortOrder="ASC">Title</a></b></td>
                 <td><b><a asp-action="Index" asp-route-sortColumnName="BrandName" asp-route-sortOrder="ASC">Brand Name</a></b></td>
                 <td><b><a asp-action="Index" asp-route-sortColumnName="Price" asp-route-sortOrder="ASC">Price</a></b></td>
                 <td><b><a asp-action="Index" asp-route-sortColumnName="Discount" asp-route-sortOrder="ASC">Discount</a></b></td>
@@ -27,7 +27,7 @@
             @foreach (ShopEase.ViewModels.ProductVm productVm in Model)
             {
                 <tr class="table1">
-                    <td><b><a href="https://localhost:7150/Product/View/@productVm.Id">@productVm.ProductName</a></b></td>
+                    <td><b><a href="https://localhost:7150/Product/View/@productVm.Id">@productVm.Title</a></b></td>
                     <td><b>@productVm.BrandName</b></td>
                     <td><b>@productVm.Price</b></td>
                     <td><b>@productVm.Discount</b></td>

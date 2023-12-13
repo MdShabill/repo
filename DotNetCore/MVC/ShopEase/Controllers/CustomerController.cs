@@ -8,6 +8,7 @@ using ShopEase.ViewModels;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Transactions;
+using System.Xml.Linq;
 
 namespace ShopEase.Controllers
 {
@@ -43,7 +44,7 @@ namespace ShopEase.Controllers
         }
 
         public IActionResult MyProfile()
-        {   
+        {
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
             if (customerId > 0)
             {
@@ -73,6 +74,80 @@ namespace ShopEase.Controllers
             List<Country> countries = _countryRepository.GetAllCountries();
             ViewBag.Countries = new SelectList(countries, "Id", "CountryName");
 
+
+            ////rule 1
+            //if (!string.IsNullOrWhiteSpace(customerVm.FullName))
+            //{
+
+            //    //rule 2
+            //    if (string.IsNullOrWhiteSpace(customerVm.FullName))
+            //    {
+            //        //rule 3
+            //        if (string.IsNullOrWhiteSpace(customerVm.FullName))
+            //        {
+            //            //ret
+            //        }
+            //        else
+            //        {
+            //            ViewBag.ErrorMessage = "Invalid Full Name";
+            //            return View();
+            //        }
+            //    }
+            //    else
+            //    {
+            //        ViewBag.ErrorMessage = "Invalid Full Name";
+            //        return View();
+            //    }
+            //}
+            //else
+            //{
+            //    ViewBag.ErrorMessage = "Invalid Full Name";
+            //    return View();
+            //}
+
+
+            //#rule 1
+            if (string.IsNullOrWhiteSpace(customerVm.FullName))
+            {
+                ViewBag.ErrorMessage = "Invalid Full Name";
+                return View();
+            }
+
+            //#Rule 2
+            string[] nameParts = customerVm.FullName.Split(' ');
+            //if ((nameParts.Length == 2 || nameParts.Length == 3) != true)
+            //if(   (nameParts.Length > 1 || nameParts.Length < 2) != true)
+            
+            if (!(nameParts.Length > 1 || nameParts.Length < 2))
+            {
+                ViewBag.ErrorMessage = "Invalid Full Name";
+                return View();
+            }
+
+            //#Rule 3
+            for (int i = 0; i < nameParts.Length; i++)
+            {
+                if (nameParts[i].Length <= 3) 
+                {
+                    ViewBag.ErrorMessage = "Invalid Full Name";
+                    return View();
+                }
+            }
+
+            //now here full name is valid and get it into variables
+            string fistName = nameParts[0];
+            string middleName, lastName ;
+
+            if (nameParts.Length == 3)
+            {
+                middleName= nameParts[1];
+                lastName = nameParts[2];
+            }
+            else
+            {
+                lastName = nameParts[1];
+            }
+          
             if (string.IsNullOrWhiteSpace(customerVm.Mobile))
             {
                 ViewBag.ErrorMessage = "Customer Mobile Number Should Not Be Blank";
@@ -117,7 +192,7 @@ namespace ShopEase.Controllers
                 {
                     Customer customer = _imapper.Map<CustomerVm, Customer>(customerVm);
                     customer.Id = _customerRepository.Register(customer);
-                    if(customer.Id > 0)
+                    if (customer.Id > 0)
                     {
                         Address address = new()
                         {
@@ -129,7 +204,7 @@ namespace ShopEase.Controllers
                             AddressTypeId = (int)customerVm.AddressTypeId,
                         };
                         _addressRepository.Add(address);
-                        
+
                         transactionScope.Complete();
                         return RedirectToAction("Success");
                     }

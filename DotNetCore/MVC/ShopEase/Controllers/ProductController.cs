@@ -54,7 +54,8 @@ namespace ShopEase.Controllers
             string SessionSortColumnName = HttpContext.Session.GetString("SortColumnName");
             string SessionSortOrder = HttpContext.Session.GetString("SortOrder");
 
-            if (!string.IsNullOrEmpty(SessionSortColumnName)  && !string.IsNullOrEmpty(SessionSortOrder) && SessionSortColumnName == sortColumnName)
+            if (!string.IsNullOrEmpty(SessionSortColumnName)  && !string.IsNullOrEmpty(SessionSortOrder) 
+                && SessionSortColumnName == sortColumnName)
             {
                 if (HttpContext.Session.GetString("SortOrder") == "ASC")
                 {
@@ -120,7 +121,6 @@ namespace ShopEase.Controllers
 
             HttpContext.Session.SetInt32("ProductId", productVm.Id);
             HttpContext.Session.SetString("ProductPrice", productVm.Price.ToString());
-
             return View(productVm);
         }
 
@@ -141,7 +141,7 @@ namespace ShopEase.Controllers
 
         public IActionResult ProductSearchResult(ProductFilterVm productFilterVm)
         {
-            if (!string.IsNullOrEmpty(productFilterVm.ProductName) ||
+            if (!string.IsNullOrEmpty(productFilterVm.Title) ||
                 productFilterVm.BrandId != 0 ||
                 productFilterVm.Min != 0 ||
                 productFilterVm.Max != 0 ||
@@ -196,15 +196,15 @@ namespace ShopEase.Controllers
         {
             DropDownSelectList();
 
-            if (string.IsNullOrWhiteSpace(productAddVm.ProductName))
+            if (string.IsNullOrWhiteSpace(productAddVm.Title))
             {
-                ViewBag.ErrorMessage = "Product Name should not be blank ";
+                ViewBag.ErrorMessage = "Title should not be blank ";
                 return View();
             }
 
-            if (productAddVm.ProductName.Length > 20)
+            if (productAddVm.Title.Length > 50)
             {
-                ViewBag.ErrorMessage = "Product Name should be 20 characters or less ";
+                ViewBag.ErrorMessage = "Title should be 50 characters or less ";
                 return View();
             }
 

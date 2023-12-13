@@ -7,12 +7,12 @@
 </h2>
 
 <body>
-    <form asp-controller="Order" asp-action="PlaceOrder" method="get">
+    <form >
         <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
         <table class="table" style="width:600px;">
             <tr>
-                <td><b>Product Name:</b></td>
-                <td>@Model.ProductName</td> 
+                <td><b>Title:</b></td>
+                <td>@Model.Title</td>
             </tr>
             <tr>
                 <td><b>Category Name:</b></td>
@@ -42,21 +42,53 @@
                 <td>@Model.SupplierName</td>
             </tr>
             <tr>
+                <td><b>Quantity:</b></td>
+                <td>
+                    <select name="Quantity" id="Quantity" >
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                     </select>
+                </td>
+            </tr>
+            <tr>
                 <td><b>Image:</b></td>
                 <td> <img src="/UploadedFiles/@Model.ImageName" width="60" height="60" /> </td>
-            </tr>
+            <tr>
+                <td></td>
                 <td>
-
-                </td>
-                <td>
-                    <div class="form-group" >
-                        <input type="submit" value="Buy Now" class="btn btn-primary" />
+                    <div class="form-group row">
+                        <div class="col-md-4">
+                            <input type="submit" value="Buy Now" asp-controller="Order" asp-action="PlaceOrder" class="btn btn-primary" />
+                        </div>
+                        <div class="col-md-4">
+                            <div style="margin-left: 2px;">
+                                <input type="submit" value="Add To Cart" asp-controller="Cart" asp-action="AddToCart" formmethod="post" class="btn btn-primary" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div style="margin-left: 2px;">
+                                <input type="submit" value="Go To Cart" asp-controller="Cart" asp-action="Index" formmethod="get" class="btn btn-primary" />
+                            </div>
+                        </div>
                     </div>
                 </td>
             </tr>
         </table>
+        <br />
+        <lable>
+            <span class="alert alert-success"> <b> @TempData["SuccessMessage"] </b> </span>
+        </lable>
         <br/>
-        <a href="https://localhost:7150/Product/Index"> <b>Back Home</b> </a>
+        <br />
+        <a href="https://localhost:7150/Product/View?Id=@Model.Id"> <b>Back</b> </a>
     </form>
 </body>
 

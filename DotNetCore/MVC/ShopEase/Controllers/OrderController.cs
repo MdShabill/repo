@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ShopEase.DataModels;
 using ShopEase.DataModels.Address;
+using ShopEase.DataModels.Customer;
 using ShopEase.DataModels.Order;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
+using System.Text.RegularExpressions;
 using System.Transactions;
 
 namespace ShopEase.Controllers
@@ -57,7 +59,7 @@ namespace ShopEase.Controllers
 
                 return View(orderSummaryVm);
             }
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Login", "Account"); 
         }
 
         public IActionResult OrderDetail(int? orderNumber, int? customerId = null)
@@ -92,6 +94,16 @@ namespace ShopEase.Controllers
             {
                 try
                 {
+                    orderVm.CardNumber = orderVm.CardNumber.Replace("-", "").Replace(" ", "");
+
+                    orderVm.CardNumber = string.Concat(orderVm.CardNumber.Where(char.IsDigit));
+                    
+                    if (orderVm.CardNumber.Length != 16)
+                    {
+                        ViewBag.ErrorMessage = "Invalid Card Number";
+                        return View();
+                    }
+
                     orderVm.ExpiryDate = new DateTime(orderVm.ExpiryYear, orderVm.ExpiryMonth, 1);
                     
                     orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));

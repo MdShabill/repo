@@ -5,14 +5,14 @@
 <h1>Order Detail</h1>
 <body>
     <form asp-action="MyOrder">
-        <table class="table" style="width:600px;">
+        <table class="table" style="width:800px;">
             <tr>
                 <td><b>Order Number:</b></td>
                 <td>@Model.OrderNumber</td>
             </tr>
             <tr>
                 <td><b>Order Date:</b></td>
-                <td>@Model.OrderDate</td>
+                <td>@Model.OrderDate.ToString("dddd, dd MMMM yyyy hh:mm tt")</td>
             </tr>
             <tr>
                 <td><b>Full Name:</b></td>

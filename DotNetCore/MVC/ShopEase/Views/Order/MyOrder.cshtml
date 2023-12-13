@@ -10,10 +10,10 @@
         </td>
     <br />
         <form>
-            <table border="3px" class="table">
+            <table border="3px" class="table" style="width:1400px;">
                 <tr class="table1">
                     <td><b>Order Number</b></td>
-                    <td><b>Product Name</b></td>
+                    <td><b>Title</b></td>
                     <td><b>Full Name</b></td>
                     <td><b>Order Date</b></td>
                     <td><b>Price</b></td>
@@ -25,9 +25,9 @@
                 {
                     <tr class="table1">
                     <td><b><a href="https://localhost:7150/Order/OrderDetail?orderNumber=@orderVm.OrderNumber">@orderVm.OrderNumber</a></b></td>
-                        <td><b>@orderVm.ProductName</b></td>
+                        <td><b>@orderVm.Title</b></td>
                         <td><b>@orderVm.FullName</b></td>
-                        <td><b>@orderVm.OrderDate</b></td>
+                        <td><b>@orderVm.OrderDate.ToString("dddd, dd MMMM yyyy hh:mm tt")</b></td>
                         <td><b>@orderVm.Price</b></td>
                         <td><b>@orderVm.Quantity</b></td>
                     <td>
