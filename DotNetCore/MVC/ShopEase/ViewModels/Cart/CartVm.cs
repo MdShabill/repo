@@ -1,7 +1,7 @@
 ﻿namespace ShopEase.ViewModels.Cart
 {
     public class CartVm
-    {
+    {   
         public int CustomerId { get; set; }
         public int ProductId { get; set; }
         public string Title { get; set; }

@@ -20,7 +20,8 @@ namespace ShopEase.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Select Carts.ProductId, Carts.CustomerId,
-                                    Products.Title, Products.ImageName, Products.Price
+                                    Products.Title, Products.ImageName, Products.Price,
+                                    Products.Quantity
                                     From Carts
                                     Inner Join Products On Carts.ProductId = Products.Id";
 
@@ -39,6 +40,7 @@ namespace ShopEase.Repositories
                         ImageName = (string)dataTable.Rows[i]["ImageName"],
                         CustomerId = (int)dataTable.Rows[i]["CustomerId"],
                         Price = Convert.ToInt32(dataTable.Rows[i]["Price"]),
+                        Quantity = (int)dataTable.Rows[i]["Quantity"],
                     };
                     carts.Add(cart);
                 }

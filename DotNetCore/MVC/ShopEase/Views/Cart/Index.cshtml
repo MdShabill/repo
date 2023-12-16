@@ -11,18 +11,19 @@
         }
 
         table {
-            width: 80%;
+            width: 70%;
             border-collapse: collapse;
             margin-top: 20px;
         }
 
         td {
             padding: 5px;
+            vertical-align: top;
         }
 
         img {
-            max-width: 80px;
-            max-height: 100px;
+            max-width: 120px;
+            max-height: 120px;
         }
 
         select {
@@ -35,45 +36,56 @@
     </style>
 </head>
 <body>
-    <h1>Cart Index</h1>
+    <h1>Cart</h1>
+
+    <div>
+        <p style="display: inline-block; margin-right: 20px;"><b>Total Items:</b> @ViewBag.TotalItems</p>
+        <p style="display: inline-block;"><b>Total Price:</b> @ViewBag.TotalPrice</p>
+    </div>
+
+    <br />
+    @if (Model.Count > 0)
+    {
+        <form method="get" asp-controller="Order" asp-action="PlaceOrder">
+            <input type="submit" value="Place Order" class="btn btn-primary" />
+        </form>
+    }
+    <br />
     <table>
         @foreach (var item in Model)
         {
             <tr>
-                <td><b>Title :</b></td>
-                <td>@item.Title</td>
-            </tr>
-            <tr>
-                <td><b>Image Name :</b></td>
-                <td><img src="/UploadedFiles/@item.ImageName" alt="Product Image"></td>
-            </tr>
-            <tr>
-                <td><b>Quantity :</b></td>
                 <td>
-                    <select name="Quantity" id="Quantity">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                        <option>10</option>
-                    </select>
+                    <a href="https://localhost:7150/Product/View?Id=@item.ProductId">
+                        <img src="/UploadedFiles/@item.ImageName" alt="Product Image">
+                    </a>
                 </td>
-            </tr>
-            <tr>
-                <td><b>Price :</b></td>
-                <td>@item.Price</td>
-            </tr>
-            <tr>
-                <td></td>
                 <td>
-                    <form asp-controller="Order" asp-action="PlaceOrder" method="post">
-                        <input type="submit" value="Place Order" class="btn btn-primary" />
-                    </form>
+                    <div>
+                        <p><a href="https://localhost:7150/Product/View?Id=@item.ProductId"><b>@item.Title</b></a></p>
+                        <p><b>Price:</b> ₹ @item.Price</p>
+                        <select name="Quantity" id="Quantity">
+                            <option>Qty: 1</option>
+                            <option>Qty: 2</option>
+                            <option>Qty: 3</option>
+                            <option>Qty: 4</option>
+                            <option>Qty: 5</option>
+                            <option>Qty: 6</option>
+                            <option>Qty: 7</option>
+                            <option>Qty: 8</option>
+                            <option>Qty: 9</option>
+                            <option>Qty: 10</option>
+                        </select>
+
+                        <span style="margin-left: 10px;">|</span>
+                        <span>Delete</span>
+                        <span style="margin-left: 10px;">|</span>
+                        <span>Save For Later</span>
+                        <span style="margin-left: 10px;">|</span>
+                        <span>See More Like This</span>
+                        <span style="margin-left: 10px;">|</span>
+                        <span>Share</span>
+                    </div>
                 </td>
             </tr>
             <tr>

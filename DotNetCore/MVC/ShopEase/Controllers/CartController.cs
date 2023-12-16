@@ -33,6 +33,12 @@ namespace ShopEase.Controllers
         {
             List<Cart> cart = _cartRepository.GetAllCart();
             List<CartVm> cartVm = _imapper.Map<List<Cart>, List<CartVm>>(cart);
+
+            int totalItems = cartVm.Count;
+            int totalPrice = cartVm.Sum(item => item.Price);
+
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPrice = totalPrice;
             return View(cartVm);
         } 
 

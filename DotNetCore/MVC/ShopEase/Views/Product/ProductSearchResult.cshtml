@@ -1,33 +1,80 @@
 ﻿@model List<ShopEase.ViewModels.ProductSearchResultVm>
 
-<h2>Product Search Result</h2>
-
 <html>
-<br />
-<b><label>Total Count Record:</label>  @ViewBag.TotalCountRecord</b>
-<br />
-<br />
-<body>
-    <form>
-        <table border="3px" class="table">
-            <tr>
-                <td><b>Title</b></td>
-                <td><b>Category Name</b></td>
-                <td><b>Brand Name</b></td>
-                <td><b>Price</b></td>
-                <td><b>Actual Price</b></td>
-                <td><b>Quantity</b></td>
-            </tr>
+<head>
+    <style>
+        body {
+            padding: 10px;
+        }
 
-            @foreach (ShopEase.ViewModels.ProductSearchResultVm productSearchResultVm in Model)
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 70%;
+            margin-top: 20px;
+        }
+
+        td {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+        }
+
+        form {
+            margin-top: 10px;
+        }
+
+        .red-text {
+            color: red;
+        }
+
+        .right-data {
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Product Search Result</h1>
+
+    <b>Total Count Record: @ViewBag.TotalCountRecord</b>
+    <br />
+    <br />
+    <form>
+        <table>
+            @foreach (var item in Model)
             {
                 <tr>
-                    <td><b><a href="https://localhost:7150/Product/View/@productSearchResultVm.Id">@productSearchResultVm.Title</a></b></td>
-                    <td><b>@productSearchResultVm.CategoryName</b></td>
-                    <td><b><a href="https://localhost:7150/Product/ProductSearchResultByBrand?brandId=@productSearchResultVm.BrandId">@productSearchResultVm.BrandName</a></b></td>
-                    <td><b>@productSearchResultVm.Price</b></td>
-                    <td><b>@productSearchResultVm.ActualPrice</b></td>
-                    <td><b>@productSearchResultVm.Quantity</b></td>
+                    <td>
+                        <a href="https://localhost:7150/Product/View?Id=@item.Id">
+                            <img src="/UploadedFiles/@item.ImageName" />
+                        </a>
+                    </td>
+                    <td class="right-data">
+                        <div>
+                            <p><a href="https://localhost:7150/Product/View/@item.Id"><b>@item.Title</b></a></p>
+
+                            <p><a href="https://localhost:7150/Product/ProductSearchResultByBrand?brandId=@item.BrandId"><b>@item.BrandName</b></a></p>
+
+                            <p><b>@item.CategoryName</b></p>
+
+                            <p><b>₹ @item.Price</b></p>
+
+                            <p class="red-text"><b>₹ @item.ActualPrice</b></p>
+
+                            <p><b>@item.Quantity</b></p>
+
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><hr /></td>
                 </tr>
             }
         </table>
