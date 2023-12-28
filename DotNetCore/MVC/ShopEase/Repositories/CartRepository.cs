@@ -15,17 +15,18 @@ namespace ShopEase.Repositories
             _connectionString = connectionString;
         }
 
-        public List<Cart> GetAllCart()
+        public List<Cart> GetMyCart(int customerId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Select Carts.ProductId, Carts.CustomerId,
-                                    Products.Title, Products.ImageName, Products.Price,
-                                    Products.Quantity
+                string sqlQuery = @"Select Carts.ProductId, Carts.CustomerId, Carts.Quantity,
+                                    Products.Title, Products.ImageName, Products.Price
                                     From Carts
-                                    Inner Join Products On Carts.ProductId = Products.Id";
+                                    Inner Join Products On Carts.ProductId = Products.Id
+                                    Where Carts.CustomerId = @customerId";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@customerId", customerId);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ShopEase.DataModels;
 using ShopEase.DataModels.Address;
 using ShopEase.DataModels.Customer;
+using ShopEase.DataModels.OderItem;
 using ShopEase.DataModels.Order;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
@@ -113,9 +114,15 @@ namespace ShopEase.Controllers
                     orderVm.OrderNumber = GenerateRandomOrderNumber();
 
                     Order order = _imapper.Map<OrderVm, Order>(orderVm);
+                    order.OrderItem = new OrderItem
+                    {
+                        ProductId = orderVm.ProductId, 
+                        Quantity = orderVm.Quantity,
+                    };
                     order.OrderId = _orderRepository.AddOrder(order);
                     if (order.OrderId > 0)
                     {
+                        //todo: use auto mapper 
                         CardDetail cardDetail = new()
                         {
                             OrderId = order.OrderId,

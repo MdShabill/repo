@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
+using ShopEase.DataModels.Address;
 using ShopEase.DataModels.Cart;
 using ShopEase.DataModels.Order;
 using ShopEase.DataModels.Product;
@@ -21,6 +23,7 @@ namespace ShopEase.Controllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
+                cfg.CreateMap<AddToCartVm, Cart>();
                 cfg.CreateMap<CartVm, Cart>();
                 cfg.CreateMap<Cart, CartVm>();
             });
@@ -31,7 +34,11 @@ namespace ShopEase.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            List<Cart> cart = _cartRepository.GetAllCart();
+            //List<int> quantities = new List<int> { 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            //ViewBag.Quantities = new SelectList(quantities, "Quantity", "Quantity");
+
+            int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
+            List<Cart> cart = _cartRepository.GetMyCart(customerId);
             List<CartVm> cartVm = _imapper.Map<List<Cart>, List<CartVm>>(cart);
 
             int totalItems = cartVm.Count;
@@ -40,19 +47,20 @@ namespace ShopEase.Controllers
             ViewBag.TotalItems = totalItems;
             ViewBag.TotalPrice = totalPrice;
             return View(cartVm);
-        } 
+        }
 
         [HttpPost]
-        public IActionResult AddToCart(CartVm cartVm)
+        public IActionResult AddToCart(AddToCartVm cartVm)
         {
-            cartVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
-            Cart cart = _imapper.Map<CartVm, Cart>(cartVm);
+            Cart cart = _imapper.Map<AddToCartVm, Cart>(cartVm);
+            cart.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
+
             int affaffectedRowCount = _cartRepository.Add(cart);
             if (affaffectedRowCount > 0)
             {
                 TempData["SuccessMessage"] = "The Item Has Been Added To Your Cart";
             }
-            return RedirectToAction("View", "Product", new {id = cartVm.ProductId});
+            return RedirectToAction("View", "Product", new { id = cartVm.ProductId });
         }
     }
 }

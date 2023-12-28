@@ -5,7 +5,7 @@
         public int OrderNumber { get; set; }
         public DateTime OrderDate { get; set; }
         public int ProductId { get; set; }
-        public string ProductName { get; set; }
+        public string Title { get; set; }
         public string ImageName { get; set; }
         public string FullName { get; set; }
         public string Mobile { get; set; }

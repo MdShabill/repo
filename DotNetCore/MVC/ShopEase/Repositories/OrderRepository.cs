@@ -18,16 +18,17 @@ namespace ShopEase.Repositories
         {
             using(SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Select Orders.Id, Orders.ProductId, Orders.OrderNumber, 
-                             Orders.OrderDate, Orders.Price, Orders.Quantity, Products.Title,
+                string sqlQuery = @"Select Orders.Id, OrderItems.ProductId, Orders.OrderNumber, 
+                             Orders.OrderDate, Orders.Price, OrderItems.Quantity, Products.Title,
                              Products.ImageName, Customers.FullName, Customers.Mobile,
                              Addresses.AddressLine1, Addresses.AddressLine2, 
                              Addresses.PinCode, Countries.CountryName,
                              AddressTypes.AddressTypeName
-                             From Orders 
+                             From Orders
+                             Join OrderItems On OrderItems.OrderId = Orders.Id
+                             JOIN Products ON OrderItems.ProductId = Products.Id
                              JOIN Customers ON Orders.CustomerId = Customers.Id
                              JOIN Addresses ON Orders.AddressId = Addresses.Id
-                             JOIN Products ON Orders.ProductId = Products.Id
                              JOIN AddressTypes ON Addresses.AddressTypeID = AddressTypes.Id
                              JOIN Countries ON Addresses.CountryId = Countries.Id
                              Where 1=1";
@@ -57,11 +58,11 @@ namespace ShopEase.Repositories
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
                         ProductId = (int)dataTable.Rows[i]["ProductId"],
-                        OrderNumber = (int)dataTable.Rows[i]["OrderNumber"],
+                        OrderNumber = (string)dataTable.Rows[i]["OrderNumber"],
                         Title = (string)dataTable.Rows[i]["Title"],
-                        ImageName = (string)dataTable.Rows[0]["ImageName"],
+                        ImageName = (string)dataTable.Rows[i]["ImageName"],
                         FullName = (string)dataTable.Rows[i]["FullName"],
-                        Mobile = (string)dataTable.Rows[0]["Mobile"],
+                        Mobile = (string)dataTable.Rows[i]["Mobile"],
                         OrderDate = (DateTime)dataTable.Rows[i]["OrderDate"],
                         Price = Convert.ToInt32(dataTable.Rows[i]["Price"]),
                         Quantity = (int)dataTable.Rows[i]["Quantity"],
@@ -77,6 +78,7 @@ namespace ShopEase.Repositories
             }
         }
 
+        //TODO: Refactor and move these three query into three different repo methods
         public int AddOrder(Order order)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
@@ -87,24 +89,35 @@ namespace ShopEase.Repositories
                     try
                     {
                         string stringQuery = @"INSERT INTO Orders 
-                                    (OrderNumber, ProductId, CustomerId, 
-                                    OrderDate, Price, Quantity, AddressId)
+                                    (OrderNumber,CustomerId, OrderDate, 
+                                    Price, AddressId)
                                     VALUES
-                                    (@orderNumber, @productId, @customerId, 
-                                    GETDATE(), @price, @quantity, @addressId)
+                                    (@orderNumber, @customerId, GETDATE(),
+                                    @price, @addressId)
                                     Select Scope_Identity()";
 
                         SqlCommand sqlCommand = new(stringQuery, sqlConnection, transaction);
                      
                         sqlCommand.Parameters.AddWithValue("@orderNumber", order.OrderNumber);
-                        sqlCommand.Parameters.AddWithValue("@productId", order.ProductId);
                         sqlCommand.Parameters.AddWithValue("@customerId", order.CustomerId);
                         sqlCommand.Parameters.AddWithValue("@price", order.Price);
-                        sqlCommand.Parameters.AddWithValue("@quantity", order.Quantity);
                         sqlCommand.Parameters.AddWithValue("@addressId", order.AddressId);
 
                         order.OrderId = Convert.ToInt32(sqlCommand.ExecuteScalar());
-                     
+
+                        string orderItemQuery = @"INSERT INTO OrderItems 
+                                         (OrderId, OrderNumber, ProductId, Quantity)
+                                         VALUES
+                                         (@orderId, @orderNumber, @productId, @quantity);";
+
+                        SqlCommand orderItemCommand = new SqlCommand(orderItemQuery, sqlConnection, transaction);
+                        orderItemCommand.Parameters.AddWithValue("@orderId", order.OrderId);
+                        orderItemCommand.Parameters.AddWithValue("@orderNumber", order.OrderNumber);
+                        orderItemCommand.Parameters.AddWithValue("@productId", order.OrderItem.ProductId);
+                        orderItemCommand.Parameters.AddWithValue("@quantity", order.OrderItem.Quantity);
+
+                        orderItemCommand.ExecuteNonQuery();
+
                         string updateQuery = @"UPDATE Products
                                      SET Quantity = Quantity - @orderedQuantity
                                      WHERE Id = @productId";

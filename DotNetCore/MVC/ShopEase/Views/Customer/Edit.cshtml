@@ -63,14 +63,18 @@
                 </tr>
                 <tr>
                     <td><label for="CountryId"><b>Country Name:</b></label></td>
-
                     <td>
-                        @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", 
-                            new { @class = "form-control" })
-                        
+                        <select class="form-control" id="CountryId" name="CountryId">
+                            <option value="">-- Select --</option>
+                                @foreach (var country in ViewBag.Countries as SelectList)
+                                {
+                                    <option value="@country.Value">@country.Text</option>
+                                }
+                        </select>
                         @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
                     </td>
                 </tr>
+
                 <tr>
                     <td colspan="2" class="button-container">
                         <input type="submit" value="Update" class="btn btn-primary" />
