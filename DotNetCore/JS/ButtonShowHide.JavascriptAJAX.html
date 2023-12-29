@@ -1,0 +1,32 @@
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#addToCartButton").click(function(){
+                $("#addToCartButton").hide();
+                $("#goToCartButton").show();
+            });
+            
+            $("#goToCartButton").click(function(){
+                $("#goToCartButton").hide();
+                $("#addToCartButton").show();
+            });
+        });
+    </script>
+</head>
+<body>
+
+<div class="col-md-4">
+    <div style="margin-left: 2px;">
+        <input type="button" value="Add To Cart" id="addToCartButton" class="btn btn-primary" />
+    </div>
+</div>
+<div class="col-md-4">
+    <div style="margin-left: 2px;">
+        <input type="button" value="Go To Cart" id="goToCartButton" class="btn btn-primary" style="display:none;" />
+    </div>
+</div>
+
+</body>
+</html>
