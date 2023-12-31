@@ -2,7 +2,7 @@
 using ShopEase.Models;
 using System.Diagnostics;
 
-namespace ShopEase.Controllers
+namespace MyWebApp.Controllers
 {
     public class HomeController : Controller
     {

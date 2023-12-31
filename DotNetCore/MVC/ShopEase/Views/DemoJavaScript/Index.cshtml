@@ -1,0 +1,75 @@
+﻿<!DOCTYPE>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    @* <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    </div> *@
+
+
+    <label for="txtProductId"><b>Product ID:</b></label>
+    <input type="text" id="txtProductId" placeholder="Enter Product ID" />
+
+    @* Create Quantity DropDown  *@
+    <label for="ddlQuantity"><b>Quantity:</b></label>
+    <select id="ddlQuantity">
+        <option value="1"> 1</option>
+        <option value="2"> 2</option>
+        <option value="3"> 3</option>
+        <option value="4"> 4</option>
+        <option value="5"> 5</option>
+        <option value="6"> 6</option>
+        <option value="7"> 7</option>
+        <option value="8"> 8</option>
+        <option value="9"> 9</option>
+        <option value="10"> 10</option>
+    </select>
+
+    <input type="button" id="AddToCart" value="Add To Cart" />
+
+    @* Add GoToCart button *@
+    <input type="Button" id="GoToCart" value="Go To Cart" style="display:none" />
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            function performAction(buttonId) {
+                var productId = $("#txtProductId").val();
+                var quantity = $("#ddlQuantity").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/DemoJavaScript/AjaxMethod",
+                    data: { "productId": productId, "quantity": quantity },
+                    success: function (response) {
+                        alert("Product ID: " + response.productId + ".\nQuantity: " + response.quantity + ".\nCurrent Date and Time: " + response.dateTime);
+
+                        // Toggle visibility of GoToCart and AddToCart buttons
+                        $("#GoToCart").toggle();
+                        $("#AddToCart").toggle();
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            }
+
+            $("#AddToCart").click(function () {
+                performAction("AddToCart");
+            });
+
+            $("#GoToCart").click(function () {
+                performAction("GoToCart");
+            });
+        });
+    </script>
+</body>
+</html>
