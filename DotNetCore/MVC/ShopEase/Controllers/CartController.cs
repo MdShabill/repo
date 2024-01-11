@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using ShopEase.DataModels.Address;
 using ShopEase.DataModels.Cart;
 using ShopEase.DataModels.Order;
+using ShopEase.DataModels.Person;
 using ShopEase.DataModels.Product;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
@@ -50,7 +51,7 @@ namespace ShopEase.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddToCart(AddToCartVm cartVm)
+        public JsonResult AddToCart(AddToCartVm cartVm)
         {
             Cart cart = _imapper.Map<AddToCartVm, Cart>(cartVm);
             cart.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
@@ -60,7 +61,7 @@ namespace ShopEase.Controllers
             {
                 TempData["SuccessMessage"] = "The Item Has Been Added To Your Cart";
             }
-            return RedirectToAction("View", "Product", new { id = cartVm.ProductId });
+            return Json(cartVm);
         }
     }
 }

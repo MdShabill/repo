@@ -43,9 +43,13 @@
                 var quantity = $("#ddlQuantity").val();
 
                 $.ajax({
+                    
+                    
                     type: "POST",
                     url: "/DemoJavaScript/AjaxMethod",
                     data: { "productId": productId, "quantity": quantity },
+
+
                     success: function (response) {
                         alert("Product ID: " + response.productId + ".\nQuantity: " + response.quantity + ".\nCurrent Date and Time: " + response.dateTime);
 

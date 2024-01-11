@@ -5,91 +5,120 @@
 <h2 class="heading">
     Product View
 </h2>
+    <body>
+        @* <form > *@
+            <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
+            <table class="table" style="width:600px;">
+                <tr>
+                    <td><b>Title:</b></td>
+                    <td>@Model.Title</td>
+                </tr>
+                <tr>
+                    <td><b>Category Name:</b></td>
+                    <td>@Model.CategoryName</td>
+                </tr>
+                <tr>
+                    <td><b>Brand Name:</b></td>
+                    <td><b><a href="https://localhost:7150/Product/ProductSearchResultByBrand?brandId=@Model.BrandId">@Model.BrandName</a></b></td>
+                </tr>
+                <tr>
+                    <td><b>Price:</b></td>
+                    <td>
+                        @Model.Price
+                        <input type="hidden" name="Price" value="@Model.Price" id="Price" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Actual Price:</b></td>
+                    <td>@Model.ActualPrice</td>
+                </tr>
+                <tr>
+                    <td><b>Discount:</b></td>
+                    <td>@Model.Discount</td>
+                </tr>
+                <tr>
+                    <td><b>Supplier Name:</b></td>
+                    <td>@Model.SupplierName</td>
+                </tr>
+                <tr>
+                    <td><b>Quantity:</b></td>
+                    <td>
+                        <select name="Quantity" id="Quantity" >
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
+                            <option>8</option>
+                            <option>9</option>
+                            <option>10</option>
+                         </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Image:</b></td>
+                    <td> <img src="/UploadedFiles/@Model.ImageName" width="60" height="60" /> </td>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <input type="submit" value="Buy Now" asp-controller="Order" asp-action="PlaceOrder" class="btn btn-primary" />
+                            </div>
+                            <div class="col-md-4">
+                                <div style="margin-left: 2px;">
+                                    <input type="submit" id="AddToCart" value="Add To Cart" class="btn btn-primary" />
+                                </div>
 
-<body>
-    <form >
-        <input type="hidden" name="ProductId" value="@Model.Id" id="ProductId" />
-        <table class="table" style="width:600px;">
-            <tr>
-                <td><b>Title:</b></td>
-                <td>@Model.Title</td>
-            </tr>
-            <tr>
-                <td><b>Category Name:</b></td>
-                <td>@Model.CategoryName</td>
-            </tr>
-            <tr>
-                <td><b>Brand Name:</b></td>
-                <td><b><a href="https://localhost:7150/Product/ProductSearchResultByBrand?brandId=@Model.BrandId">@Model.BrandName</a></b></td>
-            </tr>
-            <tr>
-                <td><b>Price:</b></td>
-                <td>
-                    @Model.Price
-                    <input type="hidden" name="Price" value="@Model.Price" id="Price" />
-                </td>
-            </tr>
-            <tr>
-                <td><b>Actual Price:</b></td>
-                <td>@Model.ActualPrice</td>
-            </tr>
-            <tr>
-                <td><b>Discount:</b></td>
-                <td>@Model.Discount</td>
-            </tr>
-            <tr>
-                <td><b>Supplier Name:</b></td>
-                <td>@Model.SupplierName</td>
-            </tr>
-            <tr>
-                <td><b>Quantity:</b></td>
-                <td>
-                    <select name="Quantity" id="Quantity" >
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                        <option>10</option>
-                     </select>
-                </td>
-            </tr>
-            <tr>
-                <td><b>Image:</b></td>
-                <td> <img src="/UploadedFiles/@Model.ImageName" width="60" height="60" /> </td>
-            <tr>
-                <td></td>
-                <td>
-                    <div class="form-group row">
-                        <div class="col-md-4">
-                            <input type="submit" value="Buy Now" asp-controller="Order" asp-action="PlaceOrder" class="btn btn-primary" />
-                        </div>
-                        <div class="col-md-4">
-                            <div style="margin-left: 2px;">
-                                <input type="submit" value="Add To Cart" asp-controller="Cart" asp-action="AddToCart" formmethod="post" class="btn btn-primary" />
+                                <div style="margin-left: 2px;">
+                                    <input type="submit" id="GoToCart" style="display:none" value="Go To Cart" asp-controller="Cart" asp-action="Index" formmethod="get" class="btn btn-primary" />
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div style="margin-left: 2px;">
-                                <input type="submit" value="Go To Cart" asp-controller="Cart" asp-action="Index" formmethod="get" class="btn btn-primary" />
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        </table>
-        <br />
-        <lable>
-            <span class="alert alert-success"> <b> @TempData["SuccessMessage"] </b> </span>
-        </lable>
-        <br/>
-        <br />
-        <a href="https://localhost:7150/Product/View?Id=@Model.Id"> <b>Back</b> </a>
-    </form>
-</body>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            <lable>
+                <span class="alert alert-success"> <b> @TempData["SuccessMessage"] </b> </span>
+            </lable>
+            <br/>
+            <br />
+            <a href="https://localhost:7150/Product/View?Id=@Model.Id"> <b>Back</b> </a>
+        @* </form> *@
 
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            function perfornAction(buttonId) {
+                var productId = $("#ProductId").val();
+                var quantity = $("#Quantity").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Cart/AddToCart",
+                    data: { "ProductId": productId, "Quantity": quantity },
+
+                    success: function (response) {
+                        alert("ProductId:" + response.productId + ".\nQuantity:" + response.quantity);
+                        $("#GoToCart").toggle();
+                        $("#AddToCart").toggle();
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.response.Text);
+                    }
+                });
+            }
+            $("#AddToCart").click(function () {
+                perfornAction("AddToCart");
+            });
+        });
+    </script>
+
+    </body>
 </html>
