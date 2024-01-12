@@ -1,4 +1,4 @@
-﻿namespace ShopEase.ViewModels.Card_Detail
+﻿namespace ShopEase.ViewModels.CardDetail
 {
     public class CardDetailsVm
     {

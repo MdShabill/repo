@@ -31,6 +31,7 @@ namespace ShopEase.Controllers
                 cfg.CreateMap<Order, OrderVm>();
                 cfg.CreateMap<Order, OrderSummaryVm>();
                 cfg.CreateMap<Order, OrderDetailVm>();
+                cfg.CreateMap<OrderVm, CardDetail>();
             });
             _imapper = configuration.CreateMapper();
             _addressRepository = addressRepository;
@@ -76,6 +77,7 @@ namespace ShopEase.Controllers
             return RedirectToAction("Login", "Account");
         }
 
+        [HttpGet]
         public IActionResult PlaceOrder()
         {
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
@@ -91,60 +93,46 @@ namespace ShopEase.Controllers
         [HttpPost]
         public IActionResult PlaceOrder(OrderVm orderVm)
         {
-            using (TransactionScope transactionScope = new())
+            orderVm.CardNumber = orderVm.CardNumber.Replace("-", "").Replace(" ", "");
+
+            orderVm.CardNumber = string.Concat(orderVm.CardNumber.Where(char.IsDigit));
+
+            if (orderVm.CardNumber.Length != 16)
             {
-                try
-                {
-                    orderVm.CardNumber = orderVm.CardNumber.Replace("-", "").Replace(" ", "");
-
-                    orderVm.CardNumber = string.Concat(orderVm.CardNumber.Where(char.IsDigit));
-                    
-                    if (orderVm.CardNumber.Length != 16)
-                    {
-                        ViewBag.ErrorMessage = "Invalid Card Number";
-                        return View();
-                    }
-
-                    orderVm.ExpiryDate = new DateTime(orderVm.ExpiryYear, orderVm.ExpiryMonth, 1);
-                    
-                    orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
-                    orderVm.ProductId = Convert.ToInt32(HttpContext.Session.GetInt32("ProductId"));
-                    orderVm.Price = decimal.Parse(HttpContext.Session.GetString("ProductPrice"));
-
-                    orderVm.OrderNumber = GenerateRandomOrderNumber();
-
-                    Order order = _imapper.Map<OrderVm, Order>(orderVm);
-                    order.OrderItem = new OrderItem
-                    {
-                        ProductId = orderVm.ProductId, 
-                        Quantity = orderVm.Quantity,
-                    };
-                    order.OrderId = _orderRepository.AddOrder(order);
-                    if (order.OrderId > 0)
-                    {
-                        //todo: use auto mapper 
-                        CardDetail cardDetail = new()
-                        {
-                            OrderId = order.OrderId,
-                            CustomerId = orderVm.CustomerId,
-                            FullName = orderVm.FullName,
-                            CardNumber = orderVm.CardNumber,
-                            ExpiryDate = orderVm.ExpiryDate,
-                            CVV = orderVm.CVV,
-                        };
-                        _cardDetailRepository.AddCardDetail(cardDetail);
-                        ViewBag.SuccessMessage = "Your Order Placed Successfully Done... ";
-                        transactionScope.Complete();
-                    }
-                    HttpContext.Session.SetInt32("OrderNumber", orderVm.OrderNumber);
-                    return RedirectToAction("OrderSummary");
-                }
-                catch (TransactionException ex)
-                {
-                    transactionScope.Dispose();
-                }
+                ViewBag.ErrorMessage = "Invalid Card Number";
+                return View();
             }
-            return View();
+
+            orderVm.ExpiryDate = new DateTime(orderVm.ExpiryYear, orderVm.ExpiryMonth, 1);
+
+            orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
+            orderVm.ProductId = Convert.ToInt32(HttpContext.Session.GetInt32("ProductId"));
+            orderVm.Price = decimal.Parse(HttpContext.Session.GetString("ProductPrice"));
+
+            orderVm.OrderNumber = GenerateRandomOrderNumber();
+
+            Order order = _imapper.Map<OrderVm, Order>(orderVm);
+            order.OrderItem = new OrderItem
+            {
+                ProductId = orderVm.ProductId,
+                Quantity = orderVm.Quantity,
+            };
+            order.OrderId = _orderRepository.AddOrder(order);
+            if (order.OrderId > 0)
+            {
+                _orderRepository.AddOrderItem(order.OrderItem, order.OrderId, order.OrderNumber);
+
+                _orderRepository.UpdateProductQuantity(order.ProductId, order.Quantity);
+
+                CardDetail cardDetail = _imapper.Map<OrderVm, CardDetail>(orderVm);
+                cardDetail.OrderId = order.OrderId;
+
+                _cardDetailRepository.AddCardDetail(cardDetail);
+
+                ViewBag.SuccessMessage = "Your Order Placed Successfully Done... ";
+            }
+            HttpContext.Session.SetInt32("OrderNumber", orderVm.OrderNumber);
+            return RedirectToAction("OrderSummary");
         }
 
         private int GenerateRandomOrderNumber()

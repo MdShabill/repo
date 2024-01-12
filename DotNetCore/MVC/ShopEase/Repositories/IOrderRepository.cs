@@ -1,11 +1,16 @@
-﻿using ShopEase.DataModels.Order;
+﻿using ShopEase.DataModels.OderItem;
+using ShopEase.DataModels.Order;
 
 namespace ShopEase.Repositories
 {
     public interface IOrderRepository 
     {
         public List<Order> GetAllOrders(int? customerId, int? orderNumber);
-        //public Order GetOrder(int orderNumber);
+
         public int AddOrder(Order order);
+
+        public void AddOrderItem(OrderItem orderItem, int orderId, string orderNumber);
+
+        public void UpdateProductQuantity(int productId, int orderQuantity);
     }
 }

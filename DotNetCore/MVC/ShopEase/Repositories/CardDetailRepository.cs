@@ -33,7 +33,7 @@ namespace ShopEase.Repositories
                 sqlCommand.Parameters.AddWithValue("@cVV", cardDetail.CVV);
 
                 sqlConnection.Open();
-                int affectedRowCount = sqlCommand.ExecuteNonQuery();
+                sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();
             }
         }

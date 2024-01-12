@@ -65,7 +65,7 @@
                     <td>
                         <div class="form-group row">
                             <div class="col-md-4">
-                                <input type="submit" value="Buy Now" asp-controller="Order" asp-action="PlaceOrder" class="btn btn-primary" />
+                                <a id="BuyNow" href="https://localhost:7150/Order/PlaceOrder" class="btn btn-primary">Buy Now</a>
                             </div>
                             <div class="col-md-4">
                                 <div style="margin-left: 2px;">
@@ -73,7 +73,7 @@
                                 </div>
 
                                 <div style="margin-left: 2px;">
-                                    <input type="submit" id="GoToCart" style="display:none" value="Go To Cart" asp-controller="Cart" asp-action="Index" formmethod="get" class="btn btn-primary" />
+                                <a id="GoToCart" href="https://localhost:7150/Cart/Index" style="display:none" class="btn btn-primary">Go To Cart</a>
                                 </div>
                             </div>
                         </div>
@@ -89,36 +89,33 @@
             <a href="https://localhost:7150/Product/View?Id=@Model.Id"> <b>Back</b> </a>
         @* </form> *@
 
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script type="text/javascript">
-        $(function () {
-            function perfornAction(buttonId) {
-                var productId = $("#ProductId").val();
-                var quantity = $("#Quantity").val();
-
-                $.ajax({
-                    type: "POST",
-                    url: "/Cart/AddToCart",
-                    data: { "ProductId": productId, "Quantity": quantity },
-
-                    success: function (response) {
-                        alert("ProductId:" + response.productId + ".\nQuantity:" + response.quantity);
-                        $("#GoToCart").toggle();
-                        $("#AddToCart").toggle();
-                    },
-                    failure: function (response) {
-                        alert(response.responseText);
-                    },
-                    error: function (response) {
-                        alert(response.response.Text);
-                    }
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                function performAction(buttonId) {
+                    var productId = $("#ProductId").val();
+                    var quantity = $("#Quantity").val();
+                    $.ajax({
+                        type: "POST",
+                        url: "/Cart/AddToCart",
+                        data: { "ProductId": productId, "Quantity": quantity },
+                        success: function (response) {
+                            alert("ProductId:" + response.productId + ".\nQuantity:" + response.quantity);
+                            $("#GoToCart").toggle();
+                            $("#AddToCart").toggle();
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        },
+                        error: function (response) {
+                            alert(response.response.Text);
+                        }
+                    });
+                }
+                $("#AddToCart").click(function () {
+                    performAction("AddToCart");
                 });
-            }
-            $("#AddToCart").click(function () {
-                perfornAction("AddToCart");
             });
-        });
-    </script>
-
+        </script>
     </body>
 </html>

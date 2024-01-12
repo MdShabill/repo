@@ -1,7 +1,10 @@
-﻿using ShopEase.DataModels.Order;
+﻿using ShopEase.DataModels.OderItem;
+using ShopEase.DataModels.Order;
 using ShopEase.ViewModels;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using System.Transactions;
 
 namespace ShopEase.Repositories
 {
@@ -16,7 +19,7 @@ namespace ShopEase.Repositories
 
         public List<Order> GetAllOrders(int? orderNumber, int? customerId)
         {
-            using(SqlConnection sqlConnection = new(_connectionString))
+            using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Select Orders.Id, OrderItems.ProductId, Orders.OrderNumber, 
                              Orders.OrderDate, Orders.Price, OrderItems.Quantity, Products.Title,
@@ -78,68 +81,219 @@ namespace ShopEase.Repositories
             }
         }
 
+        //public int AddOrder(Order order, List<OrderItem> orderItems)
+        //{
+        //    using (SqlConnection sqlConnection = new (_connectionString))
+        //    {
+        //        sqlConnection.Open();
+        //        using (SqlTransaction transaction = sqlConnection.BeginTransaction())
+        //        {
+        //            try
+        //            {
+        //                string stringQuery = @"INSERT INTO Orders 
+        //                            (OrderNumber,CustomerId, OrderDate, 
+        //                            Price, AddressId)
+        //                            VALUES
+        //                            (@orderNumber, @customerId, GETDATE(),
+        //                            @price, @addressId)
+        //                            Select Scope_Identity()";
+
+        //                SqlCommand sqlCommand = new(stringQuery, sqlConnection, transaction);
+
+        //                sqlCommand.Parameters.AddWithValue("@orderNumber", order.OrderNumber);
+        //                sqlCommand.Parameters.AddWithValue("@customerId", order.CustomerId);
+        //                sqlCommand.Parameters.AddWithValue("@price", order.Price);
+        //                sqlCommand.Parameters.AddWithValue("@addressId", order.AddressId);
+
+        //                order.OrderId = Convert.ToInt32(sqlCommand.ExecuteScalar());
+
+        //                string orderItemsQuery = @"INSERT INTO OrderItems 
+        //                                   (OrderId, OrderNumber, ProductId, Quantity)
+        //                                   VALUES
+        //                                   (@orderId, @orderNumber, @productId, @quantity)";
+
+        //                using (SqlCommand orderItemsCommand = new(orderItemsQuery, sqlConnection, transaction))
+        //                {
+        //                    orderItemsCommand.Parameters.AddWithValue("@orderId", order.OrderId);
+        //                    orderItemsCommand.Parameters.AddWithValue("@orderNumber", order.OrderNumber);
+
+        //                    foreach (var orderItem in orderItems)
+        //                    {
+        //                        orderItemsCommand.Parameters.AddWithValue("@productId", orderItem.ProductId);
+        //                        orderItemsCommand.Parameters.AddWithValue("@quantity", orderItem.Quantity);
+
+        //                        orderItemsCommand.ExecuteNonQuery();
+        //                    }
+        //                }
+
+        //                string updateQuery = @"UPDATE Products
+        //                             SET Quantity = Quantity - @orderedQuantity
+        //                             WHERE Id = @productId";
+
+        //                SqlCommand sqlUpdatCommand = new(updateQuery, sqlConnection, transaction);
+
+        //                sqlUpdatCommand.Parameters.AddWithValue("@orderedQuantity", order.Quantity);
+        //                sqlUpdatCommand.Parameters.AddWithValue("@productId", order.ProductId);
+
+        //                sqlUpdatCommand.ExecuteNonQuery();
+
+        //                transaction.Commit();
+        //                sqlConnection.Close();
+
+        //                return order.OrderId;
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                transaction.Rollback();
+        //                throw new Exception($"Error adding order and updating product quantity: {ex.Message}");
+        //            }
+        //        }
+        //    }
+        //}
+
+        //public int AddOrders(Orders order)
+        //{
+        //    using (SqlConnection sqlConnection = new(_connectionString))
+        //    {
+        //        {
+        //            string stringQuery = @"INSERT INTO Orders 
+        //                            (OrderNumber,CustomerId, OrderDate, 
+        //                            Price, AddressId)
+        //                            VALUES
+        //                            (@orderNumber, @customerId, GETDATE(),
+        //                            @price, @addressId)
+        //                            Select Scope_Identity()";
+
+        //            SqlCommand sqlCommand = new(stringQuery, sqlConnection);
+
+        //            sqlCommand.Parameters.AddWithValue("@orderNumber", order.OrderNumber);
+        //            sqlCommand.Parameters.AddWithValue("@customerId", order.CustomerId);
+        //            sqlCommand.Parameters.AddWithValue("@price", order.Price);
+        //            sqlCommand.Parameters.AddWithValue("@addressId", order.AddressId);
+
+        //            sqlConnection.Open();
+        //            order.Id = Convert.ToInt32(sqlCommand.ExecuteScalar());
+        //            sqlConnection.Close();
+
+        //            return order.Id;
+        //        }
+        //    }
+        //}
+
+        //public void AddOrderItems(List<OrderItem> orderItems, int orderId, string orderNumber)
+        //{
+        //    using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+        //    {
+        //        sqlConnection.Open();
+
+        //        string orderItemsQuery = @"INSERT INTO OrderItems 
+        //                           (OrderId, OrderNumber, ProductId, Quantity)
+        //                           VALUES
+        //                           (@orderId, @orderNumber, @productId, @quantity)";
+
+        //        using (SqlCommand sqlCommand = new SqlCommand(orderItemsQuery, sqlConnection))
+        //        {
+        //            sqlCommand.Parameters.AddWithValue("@orderId", orderId);
+        //            sqlCommand.Parameters.AddWithValue("@orderNumber", orderNumber);
+
+        //            foreach (var orderItem in orderItems)
+        //            {
+        //                sqlCommand.Parameters.AddWithValue("@productId", orderItem.ProductId);
+        //                sqlCommand.Parameters.AddWithValue("@quantity", orderItem.Quantity);
+
+        //                sqlCommand.ExecuteNonQuery();
+        //            }
+        //        }
+        //        sqlConnection.Close();
+        //    }
+        //}
+
+        //public void UpdateProductQuantity(int productId, int orderQuantity)
+        //{
+        //    using (SqlConnection sqlConnection = new(_connectionString))
+        //    {
+        //        string updateQuery = @"UPDATE Products
+        //                 SET Quantity = Quantity - @orderQuantity
+        //                 WHERE Id = @productId";
+
+        //        SqlCommand sqlUpdatCommand = new(updateQuery, sqlConnection);
+
+        //        sqlUpdatCommand.Parameters.AddWithValue("@orderQuantity", orderQuantity);
+        //        sqlUpdatCommand.Parameters.AddWithValue("@productId", productId);
+
+        //        sqlConnection.Open();
+        //        sqlUpdatCommand.ExecuteNonQuery();
+        //        sqlConnection.Close();
+
+        //    }
+        //}
+
         //TODO: Refactor and move these three query into three different repo methods
+
         public int AddOrder(Order order)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new(_connectionString))
             {
+                string stringQuery = @"INSERT INTO Orders 
+                            (OrderNumber,CustomerId, OrderDate, 
+                            Price, AddressId)
+                            VALUES
+                            (@orderNumber, @customerId, GETDATE(),
+                            @price, @addressId)
+                            Select Scope_Identity()";
+
+                SqlCommand sqlCommand = new(stringQuery, sqlConnection);
+
+                sqlCommand.Parameters.AddWithValue("@orderNumber", order.OrderNumber);
+                sqlCommand.Parameters.AddWithValue("@customerId", order.CustomerId);
+                sqlCommand.Parameters.AddWithValue("@price", order.Price);
+                sqlCommand.Parameters.AddWithValue("@addressId", order.AddressId);
+
                 sqlConnection.Open();
-                using (SqlTransaction transaction = sqlConnection.BeginTransaction())
-                {
-                    try
-                    {
-                        string stringQuery = @"INSERT INTO Orders 
-                                    (OrderNumber,CustomerId, OrderDate, 
-                                    Price, AddressId)
-                                    VALUES
-                                    (@orderNumber, @customerId, GETDATE(),
-                                    @price, @addressId)
-                                    Select Scope_Identity()";
+                order.OrderId = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                sqlConnection.Close();
 
-                        SqlCommand sqlCommand = new(stringQuery, sqlConnection, transaction);
-                     
-                        sqlCommand.Parameters.AddWithValue("@orderNumber", order.OrderNumber);
-                        sqlCommand.Parameters.AddWithValue("@customerId", order.CustomerId);
-                        sqlCommand.Parameters.AddWithValue("@price", order.Price);
-                        sqlCommand.Parameters.AddWithValue("@addressId", order.AddressId);
+                return order.OrderId;
+            }
+        }
 
-                        order.OrderId = Convert.ToInt32(sqlCommand.ExecuteScalar());
+        public void AddOrderItem(OrderItem orderItem, int orderId, string orderNumber)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string orderItemQuery = @"INSERT INTO OrderItems 
+                         (OrderId, OrderNumber, ProductId, Quantity)
+                         VALUES
+                         (@orderId, @orderNumber, @productId, @quantity)";
 
-                        string orderItemQuery = @"INSERT INTO OrderItems 
-                                         (OrderId, OrderNumber, ProductId, Quantity)
-                                         VALUES
-                                         (@orderId, @orderNumber, @productId, @quantity);";
+                SqlCommand orderItemCommand = new(orderItemQuery, sqlConnection);
+                orderItemCommand.Parameters.AddWithValue("@orderId", orderId);
+                orderItemCommand.Parameters.AddWithValue("@orderNumber", orderNumber);
+                orderItemCommand.Parameters.AddWithValue("@productId", orderItem.ProductId);
+                orderItemCommand.Parameters.AddWithValue("@quantity", orderItem.Quantity);
 
-                        SqlCommand orderItemCommand = new SqlCommand(orderItemQuery, sqlConnection, transaction);
-                        orderItemCommand.Parameters.AddWithValue("@orderId", order.OrderId);
-                        orderItemCommand.Parameters.AddWithValue("@orderNumber", order.OrderNumber);
-                        orderItemCommand.Parameters.AddWithValue("@productId", order.OrderItem.ProductId);
-                        orderItemCommand.Parameters.AddWithValue("@quantity", order.OrderItem.Quantity);
+                sqlConnection.Open();
+                orderItemCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+            }
+        }
 
-                        orderItemCommand.ExecuteNonQuery();
+        public void UpdateProductQuantity(int productId, int orderQuantity)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            { 
+                string updateQuery = @"UPDATE Products
+                     SET Quantity = Quantity - @orderQuantity
+                     WHERE Id = @productId";
 
-                        string updateQuery = @"UPDATE Products
-                                     SET Quantity = Quantity - @orderedQuantity
-                                     WHERE Id = @productId";
+                SqlCommand sqlUpdatCommand = new(updateQuery, sqlConnection);
 
-                        SqlCommand sqlUpdatCommand = new(updateQuery, sqlConnection, transaction);
-                     
-                        sqlUpdatCommand.Parameters.AddWithValue("@orderedQuantity", order.Quantity);
-                        sqlUpdatCommand.Parameters.AddWithValue("@productId", order.ProductId);
+                sqlUpdatCommand.Parameters.AddWithValue("@orderQuantity", orderQuantity);
+                sqlUpdatCommand.Parameters.AddWithValue("@productId", productId);
 
-                        sqlUpdatCommand.ExecuteNonQuery();
-
-                        transaction.Commit();
-                        sqlConnection.Close();
-                        
-                        return order.OrderId;
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        throw new Exception($"Error adding order and updating product quantity: {ex.Message}");
-                    }
-                }
+                sqlConnection.Open();
+                sqlUpdatCommand.ExecuteNonQuery();
+                sqlConnection.Close();
             }
         }
     }
