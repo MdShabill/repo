@@ -49,20 +49,6 @@ namespace ShopEase.Repositories
             }
         }
 
-        public DataTable GetAll(int customerId)
-        {
-            using(SqlConnection sqlConnection = new(_connectionString))
-            {
-                string sqlQuery = "Select ProductId, Quantity From Carts Where CustomerId = @customerId ";
-                SqlDataAdapter sqlDataAdapter = new( sqlQuery, sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@customerId", customerId );
-                DataTable dTCart = new();    
-                sqlDataAdapter.Fill(dTCart);
-
-                return dTCart;
-            }
-        }
-
         public int Add(Cart cart)
         {
             using(SqlConnection sqlConnection = new (_connectionString))

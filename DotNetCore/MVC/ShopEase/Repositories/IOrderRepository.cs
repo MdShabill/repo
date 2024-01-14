@@ -1,4 +1,5 @@
-﻿using ShopEase.DataModels.OderItem;
+﻿using ShopEase.DataModels.Cart;
+using ShopEase.DataModels.OderItem;
 using ShopEase.DataModels.Order;
 using System.Data;
 
@@ -14,6 +15,6 @@ namespace ShopEase.Repositories
 
         public void UpdateProductQuantity(int productId, int orderQuantity);
 
-        public void AddOrderItem(DataTable cartDataTable, int orderId, string orderNumber);
+        public void AddOrderItem(List<Cart> carts, int orderId, string orderNumber);
     }
 }

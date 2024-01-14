@@ -104,12 +104,6 @@ namespace ShopEase.Controllers
 
             orderVm.CardNumber = string.Concat(orderVm.CardNumber.Where(char.IsDigit));
 
-            if (orderVm.CardNumber.Length != 16)
-            {
-                ViewBag.ErrorMessage = "Invalid Card Number";
-                return View();
-            }
-
             orderVm.ExpiryDate = new DateTime(orderVm.ExpiryYear, orderVm.ExpiryMonth, 1);
 
             orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
@@ -171,9 +165,9 @@ namespace ShopEase.Controllers
             order.OrderId = _orderRepository.AddOrder(order);
             if (order.OrderId > 0)
             {
-                DataTable dTCart = _cartRepository.GetAll(order.CustomerId);
+                List<Cart> carts = _cartRepository.GetMyCart(order.CustomerId);
 
-                _orderRepository.AddOrderItem(dTCart, order.OrderId, order.OrderNumber);
+                _orderRepository.AddOrderItem(carts, order.OrderId, order.OrderNumber);
 
                 _cartRepository.Delete(order.CustomerId);
 

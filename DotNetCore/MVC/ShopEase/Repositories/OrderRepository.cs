@@ -1,4 +1,5 @@
-﻿using ShopEase.DataModels.OderItem;
+﻿using ShopEase.DataModels.Cart;
+using ShopEase.DataModels.OderItem;
 using ShopEase.DataModels.Order;
 using ShopEase.ViewModels;
 using System.Data;
@@ -129,11 +130,11 @@ namespace ShopEase.Repositories
             }
         }
 
-        public void AddOrderItem(DataTable dTCart, int orderId, string orderNumber)
+        public void AddOrderItem(List<Cart> carts, int orderId, string orderNumber)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                for (int i = 0; i < dTCart.Rows.Count; i++)
+                for (int i = 0; i < carts.Count; i++)
                 {
                     string insertQuery = @"
                             Insert Into OrderItems (OrderId, OrderNumber, ProductId, Quantity)
@@ -141,8 +142,8 @@ namespace ShopEase.Repositories
                     SqlCommand sqlCommand = new(insertQuery, sqlConnection);
                     sqlCommand.Parameters.AddWithValue("@orderId", orderId);
                     sqlCommand.Parameters.AddWithValue("@orderNumber", orderNumber);
-                    sqlCommand.Parameters.AddWithValue("@productId", (int)dTCart.Rows[i]["ProductId"]);
-                    sqlCommand.Parameters.AddWithValue("@quantity", (int)dTCart.Rows[i]["Quantity"]);
+                    sqlCommand.Parameters.AddWithValue("@productId", carts[i].ProductId);
+                    sqlCommand.Parameters.AddWithValue("@quantity", carts[i].Quantity);
 
                     sqlConnection.Open();
                     sqlCommand.ExecuteNonQuery();
