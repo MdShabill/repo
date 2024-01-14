@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ShopEase.DataModels;
 using ShopEase.DataModels.Address;
+using ShopEase.DataModels.Cart;
 using ShopEase.DataModels.Customer;
 using ShopEase.DataModels.OderItem;
 using ShopEase.DataModels.Order;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
+using ShopEase.ViewModels.Cart;
+using System.Data;
 using System.Text.RegularExpressions;
 using System.Transactions;
 
@@ -18,10 +21,11 @@ namespace ShopEase.Controllers
         IOrderRepository _orderRepository;
         IAddressRepository _addressRepository;
         ICardDetailRepository _cardDetailRepository;
+        ICartRepository _cartRepository;
         IMapper _imapper;
 
         public OrderController(IOrderRepository orderRepository, IAddressRepository addressRepository, 
-                               ICardDetailRepository cardDetailRepository)
+                               ICardDetailRepository cardDetailRepository, ICartRepository cartRepository)
         {
             _orderRepository = orderRepository;
 
@@ -36,6 +40,7 @@ namespace ShopEase.Controllers
             _imapper = configuration.CreateMapper();
             _addressRepository = addressRepository;
             _cardDetailRepository = cardDetailRepository;
+            _cartRepository = cartRepository;
         }
 
         public IActionResult MyOrder()
@@ -83,6 +88,8 @@ namespace ShopEase.Controllers
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
             if(customerId > 0)
             {
+                ViewBag.TotalPrice = HttpContext.Session.GetInt32("TotalPrice");
+                
                 List<Address> addresses = _addressRepository.GetAllAddress(customerId);
                 ViewBag.Address = new SelectList(addresses, "Id", "AddressDetail");
                 return View();
@@ -121,6 +128,54 @@ namespace ShopEase.Controllers
             if (order.OrderId > 0)
             {
                 _orderRepository.AddOrderItem(order.OrderItem, order.OrderId, order.OrderNumber);
+
+                _orderRepository.UpdateProductQuantity(order.ProductId, order.Quantity);
+
+                CardDetail cardDetail = _imapper.Map<OrderVm, CardDetail>(orderVm);
+                cardDetail.OrderId = order.OrderId;
+
+                _cardDetailRepository.AddCardDetail(cardDetail);
+
+                ViewBag.SuccessMessage = "Your Order Placed Successfully Done... ";
+            }
+            HttpContext.Session.SetInt32("OrderNumber", orderVm.OrderNumber);
+            return RedirectToAction("OrderSummary");
+        }
+
+        [HttpPost]
+        public IActionResult PlaceOrderFromCart(OrderVm orderVm)
+        {
+            orderVm.CardNumber = orderVm.CardNumber.Replace("-", "").Replace(" ", "");
+
+            orderVm.CardNumber = string.Concat(orderVm.CardNumber.Where(char.IsDigit));
+
+            if (orderVm.CardNumber.Length != 16)
+            {
+                ViewBag.ErrorMessage = "Invalid Card Number";
+                return View();
+            }
+
+            orderVm.ExpiryDate = new DateTime(orderVm.ExpiryYear, orderVm.ExpiryMonth, 1);
+
+            orderVm.CustomerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
+            orderVm.Price = Convert.ToInt32(HttpContext.Session.GetInt32("TotalPrice"));
+
+            orderVm.OrderNumber = GenerateRandomOrderNumber();
+
+            Order order = _imapper.Map<OrderVm, Order>(orderVm);
+            order.OrderItem = new OrderItem
+            {
+                ProductId = orderVm.ProductId,
+                Quantity = orderVm.Quantity,
+            };
+            order.OrderId = _orderRepository.AddOrder(order);
+            if (order.OrderId > 0)
+            {
+                DataTable dTCart = _cartRepository.GetAll(order.CustomerId);
+
+                _orderRepository.AddOrderItem(dTCart, order.OrderId, order.OrderNumber);
+
+                _cartRepository.Delete(order.CustomerId);
 
                 _orderRepository.UpdateProductQuantity(order.ProductId, order.Quantity);
 
