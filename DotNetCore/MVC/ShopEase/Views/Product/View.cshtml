@@ -100,15 +100,12 @@
                         url: "/Cart/AddToCart",
                         data: { "ProductId": productId, "Quantity": quantity },
                         success: function (response) {
-                            alert("ProductId:" + response.productId + ".\nQuantity:" + response.quantity);
                             $("#GoToCart").toggle();
                             $("#AddToCart").toggle();
                         },
                         failure: function (response) {
-                            alert(response.responseText);
                         },
                         error: function (response) {
-                            alert(response.response.Text);
                         }
                     });
                 }

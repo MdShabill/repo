@@ -4,7 +4,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="PlaceOrder">
+        <form asp-action="PlaceOrderFromCart">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
@@ -29,6 +29,13 @@
             </div>
             <br />
             <div class="form-group row">
+                <label for="Price" class="col-md-4 col-form-label"><b>Total Price:</b></label>
+                <div class="col-md-8">
+                    <p style="display: inline-block;">@ViewBag.TotalPrice</p>
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
                 <div class="col-md-12">
                     <h4>Card Details</h4>
                 </div>
@@ -44,7 +51,7 @@
             <div class="form-group row">
                 <label for="CardNumber" class="col-md-4 col-form-label"><b>Card Number:</b></label>
                 <div class="col-md-4">
-                    <input type="text" id="CardNumber" name="CardNumber" class="form-control" />
+                    <input type="text" id="CardNumber" value="9080500750602099" name="CardNumber" class="form-control" />
                 </div>
             </div>
             <br />

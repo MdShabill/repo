@@ -81,13 +81,12 @@ namespace ShopEase.Repositories
             }
         }
 
-        //TODO: Refactor and move these three query into three different repo methods
         public int AddOrder(Order order)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string stringQuery = @"INSERT INTO Orders 
-                            (OrderNumber,CustomerId, OrderDate, 
+                            (OrderNumber, CustomerId, OrderDate, 
                             Price, AddressId)
                             VALUES
                             (@orderNumber, @customerId, GETDATE(),
@@ -130,6 +129,28 @@ namespace ShopEase.Repositories
             }
         }
 
+        public void AddOrderItem(DataTable dTCart, int orderId, string orderNumber)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                for (int i = 0; i < dTCart.Rows.Count; i++)
+                {
+                    string insertQuery = @"
+                            Insert Into OrderItems (OrderId, OrderNumber, ProductId, Quantity)
+                                        Values  (@orderId, @orderNumber, @productId, @quantity)";
+                    SqlCommand sqlCommand = new(insertQuery, sqlConnection);
+                    sqlCommand.Parameters.AddWithValue("@orderId", orderId);
+                    sqlCommand.Parameters.AddWithValue("@orderNumber", orderNumber);
+                    sqlCommand.Parameters.AddWithValue("@productId", (int)dTCart.Rows[i]["ProductId"]);
+                    sqlCommand.Parameters.AddWithValue("@quantity", (int)dTCart.Rows[i]["Quantity"]);
+
+                    sqlConnection.Open();
+                    sqlCommand.ExecuteNonQuery();
+                    sqlConnection.Close();
+                }
+            }
+        }
+
         public void UpdateProductQuantity(int productId, int orderQuantity)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
@@ -148,5 +169,6 @@ namespace ShopEase.Repositories
                 sqlConnection.Close();
             }
         }
+
     }
 }

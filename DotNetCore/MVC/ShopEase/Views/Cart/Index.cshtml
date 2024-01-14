@@ -40,7 +40,7 @@
 
     <div>
         <p style="display: inline-block; margin-right: 20px;"><b>Total Items:</b> @ViewBag.TotalItems</p>
-        <p style="display: inline-block;"><b>Total Price:</b> @ViewBag.TotalPrice</p>
+        <p style="display: inline-block;"><b>Total Price:</b> @TempData["TotalPrice"]</p>
     </div>    
     <br />
     @if (Model.Count > 0)

@@ -1,10 +1,13 @@
 ﻿using ShopEase.DataModels.Cart;
+using System.Data;
 
 namespace ShopEase.Repositories
 {
     public interface ICartRepository
     {
         public List<Cart> GetMyCart(int customerId);
+        public DataTable GetAll(int customerId);
         public int Add(Cart cart);
+        public void Delete(int customerId);
     }
 }

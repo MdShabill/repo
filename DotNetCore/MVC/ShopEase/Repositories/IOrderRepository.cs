@@ -1,5 +1,6 @@
 ﻿using ShopEase.DataModels.OderItem;
 using ShopEase.DataModels.Order;
+using System.Data;
 
 namespace ShopEase.Repositories
 {
@@ -12,5 +13,7 @@ namespace ShopEase.Repositories
         public void AddOrderItem(OrderItem orderItem, int orderId, string orderNumber);
 
         public void UpdateProductQuantity(int productId, int orderQuantity);
+
+        public void AddOrderItem(DataTable cartDataTable, int orderId, string orderNumber);
     }
 }

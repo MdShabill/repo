@@ -44,9 +44,10 @@ namespace ShopEase.Controllers
 
             int totalItems = cartVm.Count;
             int totalPrice = cartVm.Sum(item => item.Price);
+            HttpContext.Session.SetInt32("TotalPrice", totalPrice);
 
             ViewBag.TotalItems = totalItems;
-            ViewBag.TotalPrice = totalPrice;
+            TempData["TotalPrice"] = totalPrice;
             return View(cartVm);
         }
 
