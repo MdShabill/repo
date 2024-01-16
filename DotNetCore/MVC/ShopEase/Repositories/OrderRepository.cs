@@ -130,11 +130,11 @@ namespace ShopEase.Repositories
             }
         }
 
-        public void AddOrderItem(List<Cart> carts, int orderId, string orderNumber)
+        public void AddOrderItem(List<Cart> cartItems, int orderId, string orderNumber)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                for (int i = 0; i < carts.Count; i++)
+                for (int i = 0; i < cartItems.Count; i++)
                 {
                     string insertQuery = @"
                             Insert Into OrderItems (OrderId, OrderNumber, ProductId, Quantity)
@@ -142,8 +142,8 @@ namespace ShopEase.Repositories
                     SqlCommand sqlCommand = new(insertQuery, sqlConnection);
                     sqlCommand.Parameters.AddWithValue("@orderId", orderId);
                     sqlCommand.Parameters.AddWithValue("@orderNumber", orderNumber);
-                    sqlCommand.Parameters.AddWithValue("@productId", carts[i].ProductId);
-                    sqlCommand.Parameters.AddWithValue("@quantity", carts[i].Quantity);
+                    sqlCommand.Parameters.AddWithValue("@productId", cartItems[i].ProductId);
+                    sqlCommand.Parameters.AddWithValue("@quantity", cartItems[i].Quantity);
 
                     sqlConnection.Open();
                     sqlCommand.ExecuteNonQuery();

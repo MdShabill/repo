@@ -16,7 +16,7 @@ namespace ShopEase.Repositories
 
         public List<Customer> GetAll()
         {
-            using(SqlConnection sqlConnection = new(_connectionString))
+            using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Select 
                            FullName, Mobile,  
@@ -29,7 +29,7 @@ namespace ShopEase.Repositories
 
                 List<Customer> customers = new();
 
-                for(int i = 0; i < dataTable.Rows.Count; i++)
+                for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
                     Customer customer = new()
                     {
@@ -46,7 +46,7 @@ namespace ShopEase.Repositories
 
         public Customer GetCustomerById(int id)
         {
-            using(SqlConnection sqlConnection=new(_connectionString))
+            using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"SELECT Customers.Id, Customers.FullName, 
                             Customers.Gender, Customers.Email, Customers.Mobile,
@@ -59,12 +59,12 @@ namespace ShopEase.Repositories
                             INNER JOIN AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
                             WHERE Customers.Id = @id ";
 
-                SqlDataAdapter sqlDataAdapter = new(sqlQuery,sqlConnection);
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                if(dataTable.Rows.Count > 0)
+                if (dataTable.Rows.Count > 0)
                 {
                     Customer customer = new()
                     {
@@ -90,7 +90,7 @@ namespace ShopEase.Repositories
 
         public Customer GetCustomerDetailByEmail(string email)
         {
-            using(SqlConnection sqlConnection = new(_connectionString))
+            using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Select Id, FullName, Mobile, Gender, 
                                     Email, Password, LoginFailedCount, IsLocked
@@ -98,12 +98,12 @@ namespace ShopEase.Repositories
                                     Customers 
                                     Where Email = @email ";
 
-                SqlDataAdapter sqlDataAdapter = new( sqlQuery, sqlConnection);
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@email", email);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                if(dataTable.Rows.Count > 0)
+                if (dataTable.Rows.Count > 0)
                 {
                     Customer customers = new()
                     {
@@ -111,8 +111,8 @@ namespace ShopEase.Repositories
                         FullName = (string)dataTable.Rows[0]["FullName"],
                         Mobile = (string)dataTable.Rows[0]["Mobile"],
                         Gender = (GenderType)dataTable.Rows[0]["Gender"],
-                        Email  = (string)dataTable.Rows[0]["Email"],
-                        Password  = dataTable.Rows[0]["Password"] != DBNull.Value ? (string)dataTable.Rows[0]["Password"] : null,
+                        Email = (string)dataTable.Rows[0]["Email"],
+                        Password = dataTable.Rows[0]["Password"] != DBNull.Value ? (string)dataTable.Rows[0]["Password"] : null,
                         LoginFailedCount = dataTable.Rows[0]["LoginFailedCount"] != DBNull.Value ? (int)dataTable.Rows[0]["LoginFailedCount"] : null,
                         IsLocked = dataTable.Rows[0]["IsLocked"] != DBNull.Value ? (bool)dataTable.Rows[0]["IsLocked"] : false
                     };
@@ -176,7 +176,7 @@ namespace ShopEase.Repositories
 
         public int Register(Customer customer)
         {
-            using(SqlConnection sqlConnection = new(_connectionString)) 
+            using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into Customers
                        (FullName, Mobile, Gender, Email, Password)

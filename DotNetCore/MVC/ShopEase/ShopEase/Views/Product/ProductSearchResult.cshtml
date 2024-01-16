@@ -1,0 +1,83 @@
+﻿@model List<ShopEase.ViewModels.ProductSearchResultVm>
+
+<html>
+<head>
+    <style>
+        body {
+            padding: 10px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 70%;
+            margin-top: 20px;
+        }
+
+        td {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+        }
+
+        form {
+            margin-top: 10px;
+        }
+
+        .red-text {
+            color: red;
+        }
+
+        .right-data {
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Product Search Result</h1>
+
+    <b>Total Count Record: @ViewBag.TotalCountRecord</b>
+    <br />
+    <br />
+    <form>
+        <table>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a href="https://localhost:7150/Product/View?Id=@item.Id">
+                            <img src="/UploadedFiles/@item.ImageName" />
+                        </a>
+                    </td>
+                    <td class="right-data">
+                        <div>
+                            <p><a href="https://localhost:7150/Product/View/@item.Id"><b>@item.Title</b></a></p>
+
+                            <p><a href="https://localhost:7150/Product/ProductSearchResultByBrand?brandId=@item.BrandId"><b>@item.BrandName</b></a></p>
+
+                            <p><b>@item.CategoryName</b></p>
+
+                            <p><b>₹ @item.Price</b></p>
+
+                            <p class="red-text"><b>₹ @item.ActualPrice</b></p>
+
+                            <p><b>@item.Quantity</b></p>
+
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><hr /></td>
+                </tr>
+            }
+        </table>
+    </form>
+</body>
+</html>

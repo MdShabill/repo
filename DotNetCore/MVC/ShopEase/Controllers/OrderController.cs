@@ -165,9 +165,9 @@ namespace ShopEase.Controllers
             order.OrderId = _orderRepository.AddOrder(order);
             if (order.OrderId > 0)
             {
-                List<Cart> carts = _cartRepository.GetMyCart(order.CustomerId);
+                List<Cart> cartItems = _cartRepository.GetAll(order.CustomerId);
 
-                _orderRepository.AddOrderItem(carts, order.OrderId, order.OrderNumber);
+                _orderRepository.AddOrderItem(cartItems, order.OrderId, order.OrderNumber);
 
                 _cartRepository.Delete(order.CustomerId);
 

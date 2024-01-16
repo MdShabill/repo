@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ShopEase.DataModels.Person;
+using ShopEase.DataModels.ProductDemo;
 
 namespace ShopEase.Controllers
 {
@@ -20,6 +21,17 @@ namespace ShopEase.Controllers
                 DateTime = DateTime.Now.ToString()
             };
             return Json(product);
+        }
+
+        public JsonResult JSDivPopupDemo(string fullName, string gender, string email)
+        {
+            Customer customer = new Customer
+            {
+                FullName = fullName,
+                Gender = gender,
+                Email = email,
+            };
+            return Json(customer);
         }
     }
 }

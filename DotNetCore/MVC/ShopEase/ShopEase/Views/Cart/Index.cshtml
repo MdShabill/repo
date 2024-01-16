@@ -1,0 +1,102 @@
+﻿@model List<ShopEase.ViewModels.Cart.CartVm>
+<html>
+<head>
+    <style>
+        body {
+            padding: 10px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 70%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        td {
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        img {
+            max-width: 120px;
+            max-height: 120px;
+        }
+
+        select {
+            width: 80px;
+        }
+
+        form {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cart</h1>
+
+    <div>
+        <p style="display: inline-block; margin-right: 20px;"><b>Total Items:</b> @ViewBag.TotalItems</p>
+        <p style="display: inline-block;"><b>Total Price:</b> @ViewBag.TotalPrice</p>
+    </div>    
+    <br />
+    @if (Model.Count > 0)
+    {
+        <form method="get" asp-controller="Order" asp-action="PlaceOrder">
+            <input type="submit" value="Place Order" class="btn btn-primary" />
+        </form>
+        <table>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="hidden" name="ProductId" value="@item.ProductId" id="ProductId" />
+                    </td>
+                    <td>
+                        <a href="https://localhost:7150/Product/View?Id=@item.ProductId">
+                            <img src="/UploadedFiles/@item.ImageName" alt="Product Image">
+                        </a>
+                    </td>
+                    <td>
+                        <div>
+                            <p><a href="https://localhost:7150/Product/View?Id=@item.ProductId"><b>@item.Title</b></a></p>
+                            <p><b>Price:</b> ₹ @item.Price</p>
+
+                            @* @Html.DropDownList("Quantity", ViewBag.Quantities as SelectList, "-- Select --",new { @class = "form-control" }) *@
+
+
+                            <select name="Quantity" id="Quantity">
+                                <option>Qty: 1</option>
+                                <option>Qty: 2</option>
+                                <option>Qty: 3</option>
+                                <option>Qty: 4</option>
+                                <option>Qty: 5</option>
+                                <option>Qty: 6</option>
+                                <option>Qty: 7</option>
+                                <option>Qty: 8</option>
+                                <option>Qty: 9</option>
+                                <option>Qty: 10</option>
+                            </select>
+
+                            <span style="margin-left: 10px;">|</span>
+                            <span>Delete</span>
+                            <span style="margin-left: 10px;">|</span>
+                            <span>Save For Later</span>
+                            <span style="margin-left: 10px;">|</span>
+                            <span>See More Like This</span>
+                            <span style="margin-left: 10px;">|</span>
+                            <span>Share</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><hr /></td>
+                </tr>
+            }
+        </table>
+    }
+</body>
+</html>

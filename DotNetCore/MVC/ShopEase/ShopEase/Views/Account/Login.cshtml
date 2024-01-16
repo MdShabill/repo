@@ -1,0 +1,33 @@
+﻿@model ShopEase.ViewModels.CustomerVm
+
+<h1>Customer Login</h1>
+
+<hr />
+<br />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Login">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
+
+            <span class="text-danger"><b>@ViewBag.LockedErrorMessage</b></span>
+
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"><b>Email</b></label>
+                <input asp-for="Email" class="form-control"  />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"><b>Password</b></label>
+                <input asp-for="Password" type="password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Login" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

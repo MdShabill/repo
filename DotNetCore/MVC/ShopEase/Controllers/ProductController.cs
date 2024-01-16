@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ShopEase.Repositories;
 using ShopEase.DataModels.Product;
 using ShopEase.ViewModels;
+using ShopEase.DataModels.Cart;
+using ShopEase.ViewModels.Cart;
 
 namespace ShopEase.Controllers
 {

@@ -1,0 +1,89 @@
+﻿@model ShopEase.DataModels.ProductDemo.Customer
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Customer Details</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Customer Details</h2>
+        <form id="customerForm">
+            <div class="mb-3">
+                <label for="fullName" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="fullName" name="fullName" required>
+            </div>
+            <div class="mb-3">
+                <label for="gender" class="form-label">Gender</label>
+                <input type="text" class="form-control" id="gender" name="gender" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Get Customer Details</button>
+        </form>
+
+        <div class="mt-4" id="customerDetails" style="display: none;">
+            <h3>Customer Details</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Full Name</td>
+                        <td id="customerFullName"></td>
+                    </tr>
+                    <tr>
+                        <td>Gender</td>
+                        <td id="customerGender"></td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td id="customerEmail"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#customerForm").submit(function (event) {
+                event.preventDefault();
+
+                var fullName = $("#fullName").val();
+                var gender = $("#gender").val();
+                var email = $("#email").val();
+
+                $.ajax({
+                    url: "/YourController/JSDivPopupDemo",
+                    method: "POST",
+                    data: { fullName: fullName, gender: gender, email: email },
+                    success: function (data) {
+                        
+                        $("#customerFullName").text(data.FullName);
+                        $("#customerGender").text(data.Gender);
+                        $("#customerEmail").text(data.Email);
+
+                        $("#customerDetails").slideDown();
+                    },
+                    error: function () {
+                        console.log("Error in AJAX request");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -12,4 +12,3 @@ Create Table CardDetails
 	FOREIGN KEY (OrderId) REFERENCES Orders (Id),
 	CONSTRAINT UQ_CardDetails_CVV UNIQUE (CVV)
 )
-

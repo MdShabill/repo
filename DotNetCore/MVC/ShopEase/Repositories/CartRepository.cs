@@ -15,7 +15,7 @@ namespace ShopEase.Repositories
             _connectionString = connectionString;
         }
 
-        public List<Cart> GetMyCart(int customerId)
+        public List<Cart> GetAll(int? customerId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -23,10 +23,16 @@ namespace ShopEase.Repositories
                                     Products.Title, Products.ImageName, Products.Price
                                     From Carts
                                     Inner Join Products On Carts.ProductId = Products.Id
-                                    Where Carts.CustomerId = @customerId";
+                                    Where 1=1";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@customerId", customerId);
+                if (customerId != null)
+                {
+                    sqlQuery += " And Carts.CustomerId = @customerId ";
+                    sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@customerId", customerId);
+                }
+
+                sqlDataAdapter.SelectCommand.CommandText = sqlQuery;
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 

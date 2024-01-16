@@ -1,0 +1,64 @@
+﻿@model ShopEase.ViewModels.ProductAddVm
+
+<h1>Product Add</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Add" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
+
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"><b>Product Name</b></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="BrandId"><b>Brand Name</b></label>
+                @Html.DropDownListFor(model => model.BrandId, ViewBag.Brands as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.BrandId, "", new { @class = "text-danger" })
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"><b>Price</b></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Discount" class="control-label"><b>Discount</b></label>
+                <input asp-for="Discount" class="form-control" />
+                <span asp-validation-for="Discount" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="CategoryId"><b>Product Category</b></label>
+                @Html.DropDownListFor(model => model.CategoryId, ViewBag.Categories as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="SupplierId"><b>Product Supplier</b></label>
+                @Html.DropDownListFor(model => model.SupplierId, ViewBag.Suppliers as SelectList, "-- Select --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SupplierId, "", new { @class = "text-danger" })
+            </div>
+            <br />
+            <div class="form-group">
+                <label for="ImageName">Image</label>
+                <input class="form-control" type="file" id="ImageFile" name="ImageFile" />
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Quantity" class="control-label"><b>Quantity</b></label>
+                <input asp-for="Quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Add" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

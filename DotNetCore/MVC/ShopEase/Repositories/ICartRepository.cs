@@ -5,7 +5,7 @@ namespace ShopEase.Repositories
 {
     public interface ICartRepository
     {
-        public List<Cart> GetMyCart(int customerId);
+        public List<Cart> GetAll(int? customerId);
         public int Add(Cart cart);
         public void Delete(int customerId);
     }
