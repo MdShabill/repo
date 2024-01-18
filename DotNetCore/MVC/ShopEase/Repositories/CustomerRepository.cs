@@ -81,7 +81,6 @@ namespace ShopEase.Repositories
                         CountryId = (int)dataTable.Rows[0]["CountryId"],
                         CountryName = (string)dataTable.Rows[0]["CountryName"]
                     };
-
                     return customer;
                 }
                 return null;

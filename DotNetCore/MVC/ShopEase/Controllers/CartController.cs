@@ -39,7 +39,7 @@ namespace ShopEase.Controllers
             //ViewBag.Quantities = new SelectList(quantities, "Quantity", "Quantity");
 
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
-            List<Cart> cart = _cartRepository.GetMyCart(customerId);
+            List<Cart> cart = _cartRepository.GetAll(customerId);
             List<CartVm> cartVm = _imapper.Map<List<Cart>, List<CartVm>>(cart);
 
             int totalItems = cartVm.Count;
