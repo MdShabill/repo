@@ -4,16 +4,16 @@ using System.Data;
 
 namespace ShopEase.Repositories
 {
-    public class SPProductRepository : ISPProductRepository
+    public class ProductRepositoryUsingSP : IProductRepositoryUsingSP
     {
         private readonly string _connectionString;
 
-        public SPProductRepository(string connectionString)
+        public ProductRepositoryUsingSP(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public Product SP_GetProduct(int id)
+        public Product SPGetProduct(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {

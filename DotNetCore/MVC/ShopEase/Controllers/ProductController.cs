@@ -12,7 +12,7 @@ namespace ShopEase.Controllers
     public class ProductController : Controller
     {
         IProductRepository _productRepository;
-        ISPProductRepository _sPProductRepository;
+        IProductRepositoryUsingSP _productRepositoryUsingSP;
         IProductBrandRepository _productBrandRepository;
         IProductCategoryReopsitory _productCategoryReopsitory;
         IProductSupplierRepository _productSupplierRepository;
@@ -24,13 +24,13 @@ namespace ShopEase.Controllers
                                  IProductCategoryReopsitory productCategoryReopsitory,
                                  IProductSupplierRepository productSupplierRepository,
                                  IWebHostEnvironment env,
-                                 ISPProductRepository sPProductRepository)
+                                 IProductRepositoryUsingSP productRepositoryUsingSP)
         {
             _productRepository = productRepository;
             _productBrandRepository = productBrandRepository;
             _productCategoryReopsitory = productCategoryReopsitory;
             _productSupplierRepository = productSupplierRepository;
-            _sPProductRepository = sPProductRepository;
+            _productRepositoryUsingSP = productRepositoryUsingSP;
 
             var configuration = new MapperConfiguration(cfg =>
             {
@@ -120,7 +120,7 @@ namespace ShopEase.Controllers
 
         public IActionResult View(int id)
         {
-            Product product = _sPProductRepository.SP_GetProduct(id);
+            Product product = _productRepositoryUsingSP.SPGetProduct(id);
 
             //Product product = _ProductRepository.GetProduct(id);
             ProductVm productVm = _imapper.Map<Product, ProductVm>(product);

@@ -22,9 +22,9 @@ builder.Services.AddTransient<IProductRepository>((svc) =>
     return new ProductRepository(ShopEaseDBConnectionString);
 });
 
-builder.Services.AddTransient<ISPProductRepository>((svc) =>
+builder.Services.AddTransient<IProductRepositoryUsingSP>((svc) =>
 {
-    return new SPProductRepository(ShopEaseDBConnectionString);
+    return new ProductRepositoryUsingSP(ShopEaseDBConnectionString);
 });
 
 builder.Services.AddTransient<IProductBrandRepository>((svc) =>
