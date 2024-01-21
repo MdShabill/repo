@@ -225,15 +225,15 @@ namespace ShopEase.Controllers
         public IActionResult Edit()
         {
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
+            Customer customer = _customerRepository.GetCustomerById(customerId);
+            CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
 
             var enumValues = Enum.GetValues(typeof(Enums.AddressType));
             ViewBag.AddressTypes = new SelectList(enumValues);
 
             List<Country> countries = _countryRepository.GetAllCountries();
-            ViewBag.Countries = new SelectList(countries, "Id", "CountryName");
+            ViewBag.Countries = new SelectList(countries, "Id", "CountryName", customerVm.CountryId);
 
-            Customer customer = _customerRepository.GetCustomerById(customerId);
-            CustomerVm customerVm = _imapper.Map<Customer, CustomerVm>(customer);
             return View(customerVm);
         }
 

@@ -74,7 +74,7 @@ namespace ShopEase.Repositories
 
         public Product GetProduct(int id)
         {
-            using(SqlConnection sqlConnection = new (_connectionString))
+            using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"SELECT Products.Id,
                          Products.Title, Categories.CategoryName,
@@ -91,7 +91,7 @@ namespace ShopEase.Repositories
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
-                
+
                 Product product = new()
                 {
                     Id = (int)dataTable.Rows[0]["Id"],

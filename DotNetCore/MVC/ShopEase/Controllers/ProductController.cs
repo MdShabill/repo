@@ -12,22 +12,25 @@ namespace ShopEase.Controllers
     public class ProductController : Controller
     {
         IProductRepository _productRepository;
+        ISPProductRepository _sPProductRepository;
         IProductBrandRepository _productBrandRepository;
         IProductCategoryReopsitory _productCategoryReopsitory;
         IProductSupplierRepository _productSupplierRepository;
         IMapper _imapper;
         private readonly IWebHostEnvironment _env;
 
-        public ProductController(IProductRepository productRepository,
+        public ProductController(IProductRepository productRepository, 
                                  IProductBrandRepository productBrandRepository,
                                  IProductCategoryReopsitory productCategoryReopsitory,
                                  IProductSupplierRepository productSupplierRepository,
-                                 IWebHostEnvironment env)
+                                 IWebHostEnvironment env,
+                                 ISPProductRepository sPProductRepository)
         {
             _productRepository = productRepository;
             _productBrandRepository = productBrandRepository;
             _productCategoryReopsitory = productCategoryReopsitory;
             _productSupplierRepository = productSupplierRepository;
+            _sPProductRepository = sPProductRepository;
 
             var configuration = new MapperConfiguration(cfg =>
             {
@@ -117,8 +120,9 @@ namespace ShopEase.Controllers
 
         public IActionResult View(int id)
         {
-            Product product = _productRepository.GetProduct(id);
+            Product product = _sPProductRepository.SP_GetProduct(id);
 
+            //Product product = _ProductRepository.GetProduct(id);
             ProductVm productVm = _imapper.Map<Product, ProductVm>(product);
 
             HttpContext.Session.SetInt32("ProductId", productVm.Id);
@@ -185,7 +189,6 @@ namespace ShopEase.Controllers
             return View("ProductSearchResult", productSearchResultsVm);
 
         }
-
 
         public IActionResult Add()
         {
