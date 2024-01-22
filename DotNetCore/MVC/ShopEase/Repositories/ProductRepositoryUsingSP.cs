@@ -40,6 +40,44 @@ namespace ShopEase.Repositories
                 };
                 return product;
             }
-        } 
+        }
+
+        public List<ProductSearchResult> SPGetProductsResult(ProductFilter productFilters)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"EXEC SP_GetProductsResult @title, @brandId, @minPrice, @maxPrice, @categoryId ";
+
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@title", (object)productFilters.Title ?? DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@brandId", (object)productFilters.BrandId ?? DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@minPrice", (object)productFilters.Min ?? DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@maxPrice", (object)productFilters.Max ?? DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@categoryId", (object)productFilters.CategoryId ?? DBNull.Value);
+
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<ProductSearchResult> productSearchResults = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    ProductSearchResult productSearchResult = new()
+                    {
+                        Id = (int)dataTable.Rows[i]["Id"],
+                        Title = (string)dataTable.Rows[i]["Title"],
+                        ImageName = (string)dataTable.Rows[i]["ImageName"],
+                        CategoryName = (string)dataTable.Rows[i]["CategoryName"],
+                        BrandId = (int)dataTable.Rows[i]["BrandId"],
+                        BrandName = (string)dataTable.Rows[i]["BrandName"],
+                        Price = (decimal)dataTable.Rows[i]["Price"],
+                        ActualPrice = (decimal)dataTable.Rows[i]["ActualPrice"],
+                        Quantity = (int)dataTable.Rows[i]["Quantity"]
+                    };
+                    productSearchResults.Add(productSearchResult);
+                }
+                return productSearchResults;
+            }
+        }
     }
 }
