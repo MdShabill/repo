@@ -1,7 +1,0 @@
-CREATE TABLE LoctionTypes
-(
-	Id INT IDENTITY(1,1),
-	Name NVARCHAR(200) NOT NULL,
-
-	PRIMARY KEY(Id)
-)

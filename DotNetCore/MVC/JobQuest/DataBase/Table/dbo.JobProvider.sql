@@ -7,8 +7,10 @@ CREATE TABLE JobProvider
 	Password NVARCHAR(200) NOT NULL,
     Phone NVARCHAR(200) NOT NULL,
     Website NVARCHAR(200) NOT NULL,
+	AddressId INT NOT NULL,
     AboutUs NVARCHAR(300) NOT NULL,
     RegistrationDate DATETIME DEFAULT GETDATE(),
 
-	PRIMARY KEY(Id)
+	PRIMARY KEY(Id),
+	FOREIGN KEY (AddressId) REFERENCES Addresses(Id)
 )
