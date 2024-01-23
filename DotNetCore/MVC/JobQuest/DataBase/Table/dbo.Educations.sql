@@ -9,12 +9,3 @@ CREATE TABLE Educations
 	PRIMARY KEY(Id),
 	FOREIGN KEY (JobSeekerId) REFERENCES JobSeekers (Id)
 )
-
-
-
-
-
-
-
-
-

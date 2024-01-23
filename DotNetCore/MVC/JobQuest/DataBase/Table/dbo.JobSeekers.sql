@@ -10,3 +10,6 @@ CREATE TABLE JobSeekers
 
 	Primary Key(Id)
 )
+
+ALTER TABLE JobSeekers
+ADD Gender INT;

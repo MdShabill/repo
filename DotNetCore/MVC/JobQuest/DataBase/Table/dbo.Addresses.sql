@@ -15,4 +15,3 @@ CREATE TABLE Addresses
 	FOREIGN KEY (AddressTypeId) REFERENCES AddressTypes (Id),
 	FOREIGN KEY (CountryId) REFERENCES Countries (Id)
 )
-

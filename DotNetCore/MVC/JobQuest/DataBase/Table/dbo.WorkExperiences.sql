@@ -5,7 +5,7 @@ CREATE TABLE WorkExperiences
     Position NVARCHAR(200) Not Null,
     Company NVARCHAR(200) Not Null,
     StartYear INT,
-    EndYear INT
+    EndYear INT,
 
 	PRIMARY KEY(Id),
 	FOREIGN KEY (JobSeekerId) REFERENCES JobSeekers (Id)
