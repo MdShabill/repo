@@ -120,7 +120,7 @@ namespace ShopEase.Controllers
 
         public IActionResult View(int id)
         {
-            Product product = _productRepositoryUsingSP.SPGetProduct(id);
+            Product product = _productRepositoryUsingSP.GetProduct(id);
 
             //Product product = _ProductRepository.GetProduct(id);
             ProductVm productVm = _imapper.Map<Product, ProductVm>(product);
@@ -156,7 +156,7 @@ namespace ShopEase.Controllers
 
                 ProductFilter productFilters = _imapper.Map<ProductFilterVm, ProductFilter>(productFilterVm);
 
-                List<ProductSearchResult> productSearchResults = _productRepositoryUsingSP.SPGetProductsResult(productFilters);
+                List<ProductSearchResult> productSearchResults = _productRepositoryUsingSP.GetProductsResult(productFilters);
 
                 //List<ProductSearchResult> productSearchResults = _productRepository.GetProductsResult(productFilters);
                 List<ProductSearchResultVm> productSearchResultsVm = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);

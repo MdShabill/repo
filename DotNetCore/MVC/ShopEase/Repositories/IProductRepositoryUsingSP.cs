@@ -4,7 +4,7 @@ namespace ShopEase.Repositories
 {
     public interface IProductRepositoryUsingSP
     {
-        public Product SPGetProduct(int id);
-        public List<ProductSearchResult> SPGetProductsResult(ProductFilter productsFilter);
+        public Product GetProduct(int id);
+        public List<ProductSearchResult> GetProductsResult(ProductFilter productsFilter);
     }
 }

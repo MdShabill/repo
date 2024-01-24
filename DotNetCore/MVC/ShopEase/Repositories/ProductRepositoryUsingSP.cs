@@ -13,7 +13,7 @@ namespace ShopEase.Repositories
             _connectionString = connectionString;
         }
 
-        public Product SPGetProduct(int id)
+        public Product GetProduct(int id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -42,7 +42,7 @@ namespace ShopEase.Repositories
             }
         }
 
-        public List<ProductSearchResult> SPGetProductsResult(ProductFilter productFilters)
+        public List<ProductSearchResult> GetProductsResult(ProductFilter productFilters)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
