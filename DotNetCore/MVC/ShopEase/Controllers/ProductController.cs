@@ -156,9 +156,9 @@ namespace ShopEase.Controllers
 
                 ProductFilter productFilters = _imapper.Map<ProductFilterVm, ProductFilter>(productFilterVm);
 
-                List<ProductSearchResult> productSearchResults = _productRepositoryUsingSP.GetProductsResult(productFilters);
+                //List<ProductSearchResult> productSearchResults = _productRepositoryUsingSP.GetProductsResult(productFilters);
 
-                //List<ProductSearchResult> productSearchResults = _productRepository.GetProductsResult(productFilters);
+                List<ProductSearchResult> productSearchResults = _productRepository.GetProductsResult(productFilters);
                 List<ProductSearchResultVm> productSearchResultsVm = _imapper.Map<List<ProductSearchResult>, List<ProductSearchResultVm>>(productSearchResults);
 
                 ViewBag.TotalCountRecord = productSearchResultsVm.Count;
