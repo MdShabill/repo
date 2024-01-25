@@ -38,31 +38,6 @@
         .right-data {
             width: 80%;
         }
-
-        #popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            background-color: #f1f1f1;
-            padding: 15px;
-            border: 1px solid #d4d4d4;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .hide-table {
-            display: none;
-        }
-        #buttonContainer {
-            position: fixed;
-            top: 180px;
-        }
-        #showButton, #closeButton {
-            display: block;
-            margin-bottom: 5px;
-        }
     </style>
 </head>
 <body>
@@ -72,7 +47,7 @@
     <br />
     <br />
     <form>
-        <table id="dataTable" class="hide-table">
+        <table>
             @foreach (var item in Model)
             {
                 <tr>
@@ -92,34 +67,8 @@
                         </div>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="2"><hr /></td>
-                </tr>
             }
         </table>
     </form>
-
-    <div id="buttonContainer">
-        <button id="showButton" onclick="toggleData()" class="btn btn-primary">Show</button>
-        <button id="closeButton" onclick="toggleData()" style="display: none;" class="btn btn-primary">Close</button>
-    </div>
-    
-    <script>
-        function toggleData() {
-            var dataTable = document.getElementById('dataTable');
-            var showButton = document.getElementById('showButton');
-            var closeButton = document.getElementById('closeButton');
-
-            if (dataTable.classList.contains('hide-table')) {
-                dataTable.classList.remove('hide-table');
-                showButton.style.display = 'none';
-                closeButton.style.display = 'block';
-            } else {
-                dataTable.classList.add('hide-table');
-                showButton.style.display = 'block';
-                closeButton.style.display = 'none';
-            }
-        }
-    </script>
 </body>
 </html>

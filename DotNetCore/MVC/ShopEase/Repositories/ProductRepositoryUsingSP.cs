@@ -17,7 +17,7 @@ namespace ShopEase.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"EXEC SP_GetProductById @id";
+                string sqlQuery = @"EXEC SP_GetProductResult @id";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id);
@@ -46,7 +46,7 @@ namespace ShopEase.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"EXEC SP_GetProductsResult @title, @brandId, @minPrice, @maxPrice, @categoryId ";
+                string sqlQuery = @"EXEC SP_GetProductResult @title, @brandId, @minPrice, @maxPrice, @categoryId ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@title", (object)productFilters.Title ?? DBNull.Value);

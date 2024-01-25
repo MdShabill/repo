@@ -1,52 +1,44 @@
 ﻿@model ShopEase.DataModels.ProductDemo.Customer
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>Customer Details</title>
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
+<html>
+<h2>Customer Detail</h2>
 <body>
-    <div class="container mt-4">
-        <h2>Customer Details</h2>
-        <form id="customerForm">
-            <div class="mb-3">
-                <label for="fullName" class="form-label">Full Name</label>
-                <input type="text" class="form-control" id="fullName" name="fullName" required>
+    <div>
+        <form id="customerForm" style="display: none;">
+            <div class="form-group">
+                <label for="fullName" class="form-label"><b>Full Name</b></label>
+                <input type="text" class="form-control" id="fullName" name="fullName" required style="width: 300px;">
             </div>
-            <div class="mb-3">
-                <label for="gender" class="form-label">Gender</label>
-                <input type="text" class="form-control" id="gender" name="gender" required>
+            <br />
+            <div class="form-group">
+                <label for="gender" class="form-label"><b>Gender</b></label>
+                <input type="text" class="form-control" id="gender" name="gender" required style="width: 300px;">
             </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+            <br />
+            <div class="form-group">
+                <label for="email" class="form-label"><b>Email</b></label>
+                <input type="email" class="form-control" id="email" name="email" required style="width: 300px;">
             </div>
-            <button type="submit" class="btn btn-primary">Get Customer Details</button>
+            <br />
+            <br />
+            <button type="submit" class="btn btn-primary">Customer Details</button>
         </form>
-
-        <div class="mt-4" id="customerDetails" style="display: none;">
-            <h3>Customer Details</h3>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Field</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
+        <br />
+        <button id="toggleDetailsButton" class="btn btn-primary">Show</button>
+        <div id="popup" class="mt-2" style="display: none;">
+            <table>
                 <tbody>
                     <tr>
-                        <td>Full Name</td>
+                        <td style="padding-right: 10px;"><b>Full Name:</b></td>
                         <td id="customerFullName"></td>
                     </tr>
+                    <br />
                     <tr>
-                        <td>Gender</td>
+                        <td style="padding-right: 10px;"><b>Gender:</b></td>
                         <td id="customerGender"></td>
                     </tr>
+                    <br />
                     <tr>
-                        <td>Email</td>
+                        <td style="padding-right: 10px;"><b>Email: </b></td>
                         <td id="customerEmail"></td>
                     </tr>
                 </tbody>
@@ -54,35 +46,37 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        $(document).ready(function () {
-            $("#customerForm").submit(function (event) {
-                event.preventDefault();
+        document.getElementById('toggleDetailsButton').addEventListener('click', function () {
+            var form = document.getElementById('customerForm');
+            var popup = document.getElementById('popup');
+            var toggleButton = document.getElementById('toggleDetailsButton');
 
-                var fullName = $("#fullName").val();
-                var gender = $("#gender").val();
-                var email = $("#email").val();
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                popup.style.display = 'none';
+                toggleButton.innerText = 'Show';
+            } else {
+                form.style.display = 'none';
+                popup.style.display = 'block';
+                toggleButton.innerText = 'Close';
+            }
+        });
 
-                $.ajax({
-                    url: "/YourController/JSDivPopupDemo",
-                    method: "POST",
-                    data: { fullName: fullName, gender: gender, email: email },
-                    success: function (data) {
-                        
-                        $("#customerFullName").text(data.FullName);
-                        $("#customerGender").text(data.Gender);
-                        $("#customerEmail").text(data.Email);
+        document.getElementById('customerForm').addEventListener('submit', function (event) {
+            event.preventDefault();
 
-                        $("#customerDetails").slideDown();
-                    },
-                    error: function () {
-                        console.log("Error in AJAX request");
-                    }
-                });
-            });
+            var fullName = document.getElementById('fullName').value;
+            var gender = document.getElementById('gender').value;
+            var email = document.getElementById('email').value;
+
+            document.getElementById('customerFullName').innerText = fullName;
+            document.getElementById('customerGender').innerText = gender;
+            document.getElementById('customerEmail').innerText = email;
+
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('customerForm').style.display = 'none';
+            document.getElementById('toggleDetailsButton').innerText = 'Close';
         });
     </script>
 </body>

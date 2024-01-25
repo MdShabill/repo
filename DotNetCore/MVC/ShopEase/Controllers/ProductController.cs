@@ -120,9 +120,9 @@ namespace ShopEase.Controllers
 
         public IActionResult View(int id)
         {
-            Product product = _productRepositoryUsingSP.GetProduct(id);
+            //Product product = _productRepositoryUsingSP.GetProduct(id);
 
-            //Product product = _ProductRepository.GetProduct(id);
+            Product product = _productRepository.GetProduct(id);
             ProductVm productVm = _imapper.Map<Product, ProductVm>(product);
 
             HttpContext.Session.SetInt32("ProductId", productVm.Id);

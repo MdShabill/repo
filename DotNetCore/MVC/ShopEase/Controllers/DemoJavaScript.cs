@@ -23,7 +23,7 @@ namespace ShopEase.Controllers
             return Json(product);
         }
 
-        public JsonResult JSDivPopupDemo(string fullName, string gender, string email)
+        public IActionResult JSDivPopupDemo(string fullName, string gender, string email)
         {
             Customer customer = new Customer
             {
@@ -31,7 +31,7 @@ namespace ShopEase.Controllers
                 Gender = gender,
                 Email = email,
             };
-            return Json(customer);
+            return View(customer);
         }
     }
 }
