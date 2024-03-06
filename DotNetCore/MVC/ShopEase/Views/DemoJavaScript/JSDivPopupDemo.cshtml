@@ -1,67 +1,119 @@
-﻿@model ShopEase.DataModels.ProductDemo.Customer
-<html>
-<h2>Customer Detail</h2>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal Demo</title>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 5px;
+            top: 5px;
+            width: 70%;
+            height: 80%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
 <body>
-    <div>
-        <form id="customerForm" style="display: none;">
-            <div class="form-group">
-                <label for="fullName" class="form-label"><b>Full Name</b></label>
-                <input type="text" class="form-control" id="fullName" name="fullName" required style="width: 300px;">
-            </div>
-            <br />
-            <div class="form-group">
-                <label for="gender" class="form-label"><b>Gender</b></label>
-                <input type="text" class="form-control" id="gender" name="gender" required style="width: 300px;">
-            </div>
-            <br />
-            <div class="form-group">
-                <label for="email" class="form-label"><b>Email</b></label>
-                <input type="email" class="form-control" id="email" name="email" required style="width: 300px;">
-            </div>
-            <br />
-            <br />
-            <button type="submit" class="btn btn-primary">Customer Details</button>
-        </form>
-        <br />
-        <button id="toggleDetailsButton" class="btn btn-primary">Show</button>
-        <div id="popup" class="mt-2" style="display: none;">
-            <table>
-                <tbody>
-                    <tr>
-                        <td style="padding-right: 10px;"><b>Full Name:</b></td>
-                        <td id="customerFullName"></td>
-                    </tr>
+    <button id="openModalBtn">Open Modal</button>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div>
+                <h2>Customer Detail</h2>
+                <form id="customerForm">
+                    <div class="form-group">
+                        <label for="fullName" class="form-label"><b>Full Name</b></label>
+                        <input type="text" class="form-control" id="fullName" name="fullName" required style="width: 300px;">
+                    </div>
                     <br />
-                    <tr>
-                        <td style="padding-right: 10px;"><b>Gender:</b></td>
-                        <td id="customerGender"></td>
-                    </tr>
+                    <div class="form-group">
+                        <label for="gender" class="form-label"><b>Gender</b></label>
+                        <input type="text" class="form-control" id="gender" name="gender" required style="width: 300px;">
+                    </div>
                     <br />
-                    <tr>
-                        <td style="padding-right: 10px;"><b>Email: </b></td>
-                        <td id="customerEmail"></td>
-                    </tr>
-                </tbody>
-            </table>
+                    <div class="form-group">
+                        <label for="email" class="form-label"><b>Email</b></label>
+                        <input type="email" class="form-control" id="email" name="email" required style="width: 300px;">
+                    </div>
+                    <br />
+                    <button type="submit" class="btn btn-primary">Customer Details</button>
+                </form>
+                <br />
+                <div id="popup" class="mt-2" style="display: none;">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td style="padding-right: 10px;"><b>Full Name:</b></td>
+                                <td id="customerFullName"></td>
+                            </tr>
+                            <br />
+                            <tr>
+                                <td style="padding-right: 10px;"><b>Gender:</b></td>
+                                <td id="customerGender"></td>
+                            </tr>
+                            <br />
+                            <tr>
+                                <td style="padding-right: 10px;"><b>Email: </b></td>
+                                <td id="customerEmail"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><button id="closePopupBtn" class="btn btn-primary">Close</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('toggleDetailsButton').addEventListener('click', function () {
-            var form = document.getElementById('customerForm');
-            var popup = document.getElementById('popup');
-            var toggleButton = document.getElementById('toggleDetailsButton');
+        var modal = document.getElementById("myModal");
+        var btn = document.getElementById("openModalBtn");
+        var span = document.getElementsByClassName("close")[0];
+        var closePopupBtn = document.getElementById("closePopupBtn");
 
-            if (form.style.display === 'none') {
-                form.style.display = 'block';
-                popup.style.display = 'none';
-                toggleButton.innerText = 'Show';
-            } else {
-                form.style.display = 'none';
-                popup.style.display = 'block';
-                toggleButton.innerText = 'Close';
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        closePopupBtn.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
             }
-        });
+        }
 
         document.getElementById('customerForm').addEventListener('submit', function (event) {
             event.preventDefault();
@@ -76,7 +128,6 @@
 
             document.getElementById('popup').style.display = 'block';
             document.getElementById('customerForm').style.display = 'none';
-            document.getElementById('toggleDetailsButton').innerText = 'Close';
         });
     </script>
 </body>

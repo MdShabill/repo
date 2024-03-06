@@ -62,15 +62,17 @@
                     <td><input type="text" id="PinCode" name="PinCode" value="@Model.PinCode"></td>
                 </tr>
                 <tr>
-                    <td><label for="CountryId"><b>Country Name:</b></label></td>
+                <td><label for="CountryId"><b>Country Name:</b></label></td>
                     <td>
-                        <select class="form-control" id="CountryId" name="CountryId">
+                        @* <select class="form-control" id="CountryId" name="CountryId">
                             <option value="">-- Select --</option>
                                 @foreach (var country in ViewBag.Countries as SelectList)
                                 {
                                     <option value="@country.Value">@country.Text</option>
                                 }
-                        </select>
+                        </select> *@
+                        @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", new { @class = "form-control" })
+
                         @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
                     </td>
                 </tr>
