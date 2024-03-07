@@ -9,14 +9,6 @@ HAVING COUNT(*) > 1;
 --Approach: 2
 --Include FullName in the result so now result should have fullnamr, salary and 
 
---FullName | Salary
----------------------
---John     | 40000
---Allen    | 40000
---Henry    | 65000
---Marry    | 65000
---Tom      | 65000
-
 Select Employees.FullName, Employees.Salary
 From Employees
 Inner Join(
