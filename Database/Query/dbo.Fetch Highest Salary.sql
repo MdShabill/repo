@@ -29,5 +29,19 @@ WHERE Salary = (
     WHERE Salary < (SELECT MAX(Salary) FROM Employees)
 )
 
+--Approach: 4
+-- Find the 2nd highest salary from the employee table by Using Window Function instead of Aggregate function?
+
+WITH SecondHighestSalary AS (
+    SELECT 
+        ID, 
+        FullName, 
+        Salary,
+        DENSE_RANK() OVER (ORDER BY Salary DESC) AS RankSalary
+    FROM Employees
+)
+SELECT ID, FullName, Salary
+FROM SecondHighestSalary
+WHERE Ranksalary = 5
 
 
