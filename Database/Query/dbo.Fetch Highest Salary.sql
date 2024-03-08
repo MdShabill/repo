@@ -42,6 +42,6 @@ WITH SecondHighestSalary AS (
 )
 SELECT ID, FullName, Salary
 FROM SecondHighestSalary
-WHERE Ranksalary = 5
+WHERE Ranksalary = 2
 
 
