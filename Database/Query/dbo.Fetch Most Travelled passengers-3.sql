@@ -1,4 +1,4 @@
---Q3: Fetch Those Passengers Who Have Booked The Most Number Of Tickets With His Total Fare, Name And Gender  ?
+--Q3: Fetch Those Passengers Who Have Booked The Most Number Of Tickets With His Total Fare, Name And Gender  ?  
 
 SELECT TOP 1
 	Passengers.Id , Passengers.Name , Passengers.Gender,
