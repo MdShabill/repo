@@ -1,4 +1,5 @@
---Q3: Fetch Those Passengers Who Have Booked The Most Number Of Tickets With His Total Fare, Name And Gender?  
+--Approach: 1
+--Q3: Fetch Those Passengers Who has Most Travelled and With His Total Fare, Name And Gender?  
 
 SELECT TOP 1
 	Passengers.Id , Passengers.Name , Passengers.Gender,
@@ -10,7 +11,8 @@ FROM Passengers
 GROUP BY Passengers.Id , Passengers.Name , Passengers.Gender
 ORDER BY 'Most Travelled' DESC
 
---Q3: Fetch Those Passengers Who Have Booked The Most Number Of Tickets With His Total Fare, Name And Gender by using CTE?
+--Approach: 2
+--Q3: Fetch Those Passengers Who has Most Travelled and With His Total Fare, Name And Gender? by using CTE?
 
 WITH PassengerBookings AS (
     SELECT
