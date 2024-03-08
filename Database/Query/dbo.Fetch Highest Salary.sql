@@ -17,3 +17,17 @@ WITH SecondHighestSalary AS (
 SELECT TOP 1 *
 FROM SecondHighestSalary
 ORDER BY Salary ASC
+
+--Approach: 3
+-- Find the 2nd highest salary from the employee table by Using Aggregate function instead of CTE?
+
+SELECT ID, FullName, Salary AS SecondHighestSalary
+FROM Employees
+WHERE Salary = (
+    SELECT MAX(Salary)
+    FROM Employees
+    WHERE Salary < (SELECT MAX(Salary) FROM Employees)
+)
+
+
+
