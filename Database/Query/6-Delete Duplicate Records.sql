@@ -1,4 +1,4 @@
--- Q:4 How Can We Delete Duplicate Records In A Table Without Id Column?
+-- Q:1 How Can We Delete Duplicate Records In A Table Without Id Column?
 Select * from Students
 
 WITH DuplicateCTE AS (

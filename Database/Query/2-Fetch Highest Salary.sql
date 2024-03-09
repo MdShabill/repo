@@ -1,14 +1,15 @@
---Approach: 1
---Q:2 Find the employee details which employee have 2nd highest salary?
+--Q:1 Find the employee details which employee have 2nd highest salary?
 
+--Approach: 1
 SELECT TOP 1 * FROM
 	(SELECT TOP 2 * FROM Employees
 	ORDER BY Salary DESC) AS SecondHighestSalary
 ORDER BY Salary ASC
 
---Approach: 2
+
 -- Find the 2nd highest salary from the employee table by Using CTE instead of Subquery?
 
+--Approach: 2
 WITH SecondHighestSalary AS (
     SELECT TOP 2 * 
     FROM Employees
@@ -18,9 +19,10 @@ SELECT TOP 1 *
 FROM SecondHighestSalary
 ORDER BY Salary ASC
 
---Approach: 3
+
 -- Find the 2nd highest salary from the employee table by Using Aggregate function instead of CTE?
 
+--Approach: 3
 SELECT ID, FullName, Salary AS SecondHighestSalary
 FROM Employees
 WHERE Salary = (
@@ -29,9 +31,9 @@ WHERE Salary = (
     WHERE Salary < (SELECT MAX(Salary) FROM Employees)
 )
 
---Approach: 4
 -- Find the 2nd highest salary from the employee table by Using Window Function instead of Aggregate function?
 
+--Approach: 4
 WITH SecondHighestSalary AS (
     SELECT 
         ID, 

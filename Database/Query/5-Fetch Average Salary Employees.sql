@@ -1,4 +1,4 @@
---Q:5 How can you use a subquery to find employees whose salary is above the average salary?
+--Q:1 How can you use a subquery to find employees whose salary is above the average salary?
 
 SELECT 
     Id AS employeeid,
