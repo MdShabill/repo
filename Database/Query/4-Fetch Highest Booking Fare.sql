@@ -15,7 +15,7 @@ ORDER BY SUM(Bookings.Fare) DESC
 
 -- Using CTE
 
---Approach: 1
+--Approach: 2
 WITH PassengerBookings AS (
     SELECT
         Passengers.Id,
