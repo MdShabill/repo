@@ -1,28 +1,27 @@
---Approach: 1
---Q3: Fetch Those Passengers Who has highest Travelled. 
-		--Display PassengerId, Name, Gender, HighestTravelled, TotalFare ?  
+--Q3: Fetch Those Passengers Who has Highest Number OF Booking. 
+		--Display PassengerId, Name, Gender, Highest Number OF Booking, TotalFare ?  
 
+--Approach: 1
 SELECT TOP 1
 	Passengers.Id , Passengers.Name , Passengers.Gender,
-	COUNT(Bookings.PassengerId) AS 'Most Travelled', 
-	SUM(Bookings.Fare) AS 'Total Fare Of Most Travelled'
+	COUNT(Bookings.PassengerId) AS HighestBooking, 
+	SUM(Bookings.Fare) AS TotalFare
 FROM Passengers
 	INNER JOIN Bookings ON Bookings.PassengerId = Passengers.Id
 	
 GROUP BY Passengers.Id , Passengers.Name , Passengers.Gender
-ORDER BY 'Most Travelled' DESC
+ORDER BY HighestBooking DESC
 
+
+--Using CTE
 --Approach: 2
---Q3: Fetch Those Passengers Who has highest Travelled by using CTE. 
-		--Display PassengerId, Name, Gender, HighestTravelled, TotalFare ?
-
 WITH PassengerBookings AS (
     SELECT
     Passengers.Id,
     Passengers.Name,
     Passengers.Gender,
-    COUNT(Bookings.PassengerId) AS MostTravelled,
-    SUM(Bookings.Fare) AS TotalFareOfMostTravelled
+    COUNT(Bookings.PassengerId) AS HighestBooking,
+    SUM(Bookings.Fare) AS TotalFare
     FROM Passengers
     INNER JOIN Bookings ON Bookings.PassengerId = Passengers.Id
     GROUP BY Passengers.Id, Passengers.Name, Passengers.Gender
@@ -31,7 +30,7 @@ SELECT TOP 1
     Id,
     Name,
     Gender,
-    MostTravelled,
-    TotalFareOfMostTravelled
+    HighestBooking,
+    TotalFare
 FROM PassengerBookings
-ORDER BY MostTravelled DESC
+ORDER BY HighestBooking DESC
