@@ -13,9 +13,7 @@ INNER JOIN Bookings ON Bookings.PassengerId = Passengers.Id
 GROUP BY Passengers.Id, Passengers.Name, Passengers.Gender
 ORDER BY SUM(Bookings.Fare) DESC
 
--- Using CTE
-
---Approach: 2
+--Approach: 2 -- Using CTE
 WITH PassengerBookings AS (
     SELECT
         Passengers.Id,

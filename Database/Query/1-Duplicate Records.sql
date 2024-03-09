@@ -6,7 +6,7 @@ FROM Employees
 GROUP BY Salary
 HAVING COUNT(*) > 1;
 
---Approach: 2
+--Approach: 2 --SubQuery
 Select Employees.FullName, Employees.Salary
 From Employees
 Inner Join(
@@ -17,10 +17,7 @@ Inner Join(
 ) Duplicates On Employees.Salary = Duplicates.Salary
 Order By Employees.Salary, Employees.FullName
 
-
---Fetched the same result but instead of using SubQuery we used CTE in this query
-
---Approach: 3
+--Approach: 3 -- Using CTE
 With SalaryCount As(
 	Select Id, FullName, Salary,
 	Count(*) Over (Partition By Salary) As SalaryCount
@@ -31,10 +28,7 @@ From SalaryCount
 Where SalaryCount > 1
 Order By Id, FullName, Salary
 
-
---Fetched the same result but instead of using Window Function we used Inner Join in this query?
-
---Approach: 4
+--Approach: 4 --using Window Function
 WITH SalaryCounts AS (
     SELECT Salary, COUNT(*) AS DuplicateCount
     FROM Employees

@@ -6,10 +6,7 @@ SELECT TOP 1 * FROM
 	ORDER BY Salary DESC) AS SecondHighestSalary
 ORDER BY Salary ASC
 
-
--- Find the 2nd highest salary from the employee table by Using CTE instead of Subquery?
-
---Approach: 2
+--Approach: 2 --Using CTE
 WITH SecondHighestSalary AS (
     SELECT TOP 2 * 
     FROM Employees
@@ -19,10 +16,7 @@ SELECT TOP 1 *
 FROM SecondHighestSalary
 ORDER BY Salary ASC
 
-
--- Find the 2nd highest salary from the employee table by Using Aggregate function instead of CTE?
-
---Approach: 3
+--Approach: 3 --Using Aggregate function
 SELECT ID, FullName, Salary AS SecondHighestSalary
 FROM Employees
 WHERE Salary = (
@@ -31,9 +25,7 @@ WHERE Salary = (
     WHERE Salary < (SELECT MAX(Salary) FROM Employees)
 )
 
--- Find the 2nd highest salary from the employee table by Using Window Function instead of Aggregate function?
-
---Approach: 4
+--Approach: 4 --Using Window Function
 WITH SecondHighestSalary AS (
     SELECT 
         ID, 

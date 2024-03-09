@@ -12,9 +12,7 @@ FROM Passengers
 GROUP BY Passengers.Id , Passengers.Name , Passengers.Gender
 ORDER BY HighestBooking DESC
 
-
---Using CTE
---Approach: 2
+--Approach: 2 --Using CTE
 WITH PassengerBookings AS (
     SELECT
     Passengers.Id,
