@@ -6,26 +6,19 @@ using System.Threading.Tasks;
 
 namespace MyConsoleApp
 {
-    public class CheckExistsNumber
+    public class CheckFirstOcceurrence
     {
-        public void CheckNumber()
+        public void ArrayFirstOcceurrence(int[] numbers, int inputNumber)
         {
-            //---- Check whether that number exists in array or not
-
-            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-
-            Console.Write("\n Enter Number: ");
-
-            int inputNumber = int.Parse(Console.ReadLine());
-
             for (int i = 0; i < numbers.Length; i++)
             {
                 if (numbers[i] == inputNumber)
                 {
-                    Console.WriteLine($"{inputNumber} exist in the array.");
+                    Console.WriteLine($"{inputNumber} exists in the index {i}.");
                     return;
                 }
             }
+
             Console.WriteLine($"{inputNumber} does not exist in the array.");
         }
     }

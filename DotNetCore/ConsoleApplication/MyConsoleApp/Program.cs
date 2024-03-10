@@ -4,47 +4,32 @@ namespace MyConsoleApp
 {
     class Program
     {
-        static void Main(string[] args) 
+        static void Main(string[] args)
         {
             //CheckExistsNumber
             CheckExistsNumber existsNumber = new CheckExistsNumber();
             existsNumber.CheckNumber();
+
+            //CheckFirstOcceurrence
+            int[] numbers = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 10 };
+
+            Console.Write("\n Enter the number: ");
+            int inputNumber = int.Parse(Console.ReadLine());
+
+            CheckFirstOcceurrence checker = new CheckFirstOcceurrence();
+            checker.ArrayFirstOcceurrence(numbers, inputNumber);
+
+            CheckOddEven.Validate();
+
         }
     }
+
+
 }
-
-//---Array - Print the first occurrence index of that number----   
-
-//int[] numbers = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 10 };
-
-//Console.Write("Enter the number: ");
-//int inputNumber = int.Parse(Console.ReadLine());
-
-//for (int i = 0; i < numbers.Length; i++)
-//{
-//    if (numbers[i] == inputNumber)
-//    {
-//        Console.WriteLine($"{inputNumber} exist in the index {i}");
-//        return;
-//    }
-//}
-
-//Console.WriteLine($"{inputNumber} does not exist in the array.");
 
 //identify even and odd number by using loop and array
 
-//int[] num = { 7, 8, 19, 7, 8, 15, 16, 12, 5, 8, 9,};
-//for (int i = 0; i < num.Length; i++)
-//{
-//    if (num[i] % 2 == 0)
-//    {
-//        Console.WriteLine("\n Even Number: " + num[i]);
-//    }
-//    else
-//    {
-//        Console.WriteLine("\n Odd Number :" + num[i]);
-//    }
-//}
+
 
 
 //Find out the prime numbers between 1 to 100
