@@ -60,7 +60,11 @@ namespace MyConsoleApp
             //Console.WriteLine("\n");
 
             ////Write a program to find the factors of a user-provided number
-            numericHelper.GetFactorNumber();
+            numericHelper.GetFactorialNumber();
+            Console.WriteLine("\n");
+
+            ////Write a program to find the factors of a user-provided number and sum of total factor
+            numericHelper.GetFactorialNumberWithSum();
         }
     }
 }

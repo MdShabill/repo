@@ -256,10 +256,10 @@ namespace MyConsoleApp
         //    Console.ReadLine();
         //}
 
-        public void GetFactorNumber()
+        public void GetFactorialNumber()
         {
-            ////Write a program to find the factors of a user-provided number
-            Console.Write("Enter a number to find the factors: ");
+            ////Write a program to find the factors of a user provided number
+            Console.Write("\n Enter a number to find the factors: ");
             int number = Convert.ToInt32(Console.ReadLine());
 
             Console.WriteLine($"Factors of {number}:");
@@ -270,6 +270,25 @@ namespace MyConsoleApp
                     Console.WriteLine(i);
                 }
             }
+        }
+
+        public void GetFactorialNumberWithSum()
+        {
+            ////Write a program to find the factors of a user provided number and sum of total factor
+            Console.Write("\n Enter a number to find the factors: ");
+            int number = Convert.ToInt32(Console.ReadLine());
+
+            int sumOfFactors = 0;
+            Console.WriteLine($"Factors of {number}:");
+            for (int i = 1; i <= number; i++)
+            {
+                if (number % i == 0)
+                {
+                    Console.WriteLine(i);
+                    sumOfFactors += i;
+                }
+            }
+            Console.WriteLine($"Sum of factors of {number}: {sumOfFactors}");
         }
     }
 }
