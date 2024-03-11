@@ -6,100 +6,41 @@ namespace MyConsoleApp
     {
         static void Main(string[] args)
         {
-            //CheckExistsNumber
-            CheckExistsNumber existsNumber = new();
-            existsNumber.CheckNumber();
+            NumericHelper numericHelper = new();
+            
+            ////CheckExistsNumber
+            numericHelper.DisplayNumersForAnArrayElements();
 
-            //CheckFirstOcceurrence
+            ////CheckFirstOcceurrence
             int[] numbers = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 10 };
-
             Console.Write("\n Enter the number: ");
             int inputNumber = int.Parse(Console.ReadLine());
+            numericHelper.DisplayFirstOcceurrenceByGivenInput(numbers, inputNumber);
 
-            CheckFirstOcceurrence checker = new();
-            checker.ArrayFirstOcceurrence(numbers, inputNumber);
-
-            //Check odd and even number
-            CheckOddEven.Validate();
+            ////Check odd and even number
+            numericHelper.ValidateOddandEvenForAnArrayElements();
             Console.WriteLine("\n");
 
-            //Check prime numbers between 1 to 100
-            CheckPrimeNumber primeNumber = new();
-            primeNumber.PrimeNumber();
+            ////Check prime numbers between 1 to 100
+            numericHelper.GetPrimeNumbersBetween1To100();
             Console.WriteLine("\n");
 
-            //Check 1 to 20 Multiplication
-            CheckMultiplication multiplication = new();
-            multiplication.Multiplication();
+            ////Give nubmer between 1 to 20 and create Multiplication table
+            numericHelper.GetTableForGivenNumber();
+            Console.WriteLine("\n");
+
+            //Check Fibonacci series
+            numericHelper.GetFibonacciSeriesGivenUserInput();
+
+            ////Check Array number and changed into reverse order
+            numericHelper.ValidateReverseOrderForAnArrayElements();
+
+            ////Fabonacci series 1 to 10 elements
+            numericHelper.DisplayFibonacciSeriesGivenUserInput();
         }
     }
 }
 
-
-//int[] numbers = { 1, 2, 3, 4, 5 };
-
-//Console.WriteLine("Array in reverse order:");
-
-//for (int i = numbers.Length - 1; i >= 0; i--)
-//{
-//    Console.Write(numbers[i] + " ");
-//}
-
-//Fabonacci series based on user input
-
-//int num1 = 0, num2 = 1, num3, num4;
-//Console.Write("Enter Number Of Element : ");
-//num3 = Convert.ToInt32(Console.ReadLine());
-
-//Console.WriteLine("Your Fibonacci Series Of " + num3 + " Elements is below");
-//Console.Write(num1 + " " + num2 + " ");
-//for (int i = 2; i < num3; i++)
-//{
-//    num4 = num1 + num2;
-//    Console.Write(num4 + " ");
-//    num1 = num2;
-//    num2 = num4;
-//}
-//Console.ReadLine();
-
-
-//Fabonacci series 1 to 10 elements
-//int num1 = 0, num2 = 1, num3;
-
-//Console.WriteLine("Your Fibonacci Series Of 1 to 10 Elements ");
-
-//Console.Write(num1 + " " + num2 + " ");
-
-//for (int i = 2; i < 10; i++)
-//{
-//    num3 = num1 + num2;
-
-//    Console.Write(num3 + " ");
-
-//    num1 = num2;
-//    num2 = num3;
-//}
-//Console.ReadLine();
-
-
-//Reverse the array
-//int[] numbers = {10, 20, 30, 40, 50 };
-
-//Console.WriteLine("Original array:");
-//foreach (int num in numbers)
-//{
-//    Console.Write(num + " ");
-//}
-//Console.WriteLine();
-
-//Array.Reverse(numbers);
-
-//Console.WriteLine("Reversed array:");
-//foreach (int num in numbers)
-//{
-//    Console.Write(num + " ");
-//}
-//Console.WriteLine();
 //--------------------------------------------------------
 
 //Q: Check whether that number exists in an array or not and the position of that  index number 
@@ -119,7 +60,7 @@ namespace MyConsoleApp
 //}
 //Console.WriteLine($"{inputNumber} does not exist in the array.");
 
-//Q: Write a program on a random number and search how many times the number exists in the array
+//Q: Write a program on a random number and search how many times the number exists in the array element
 
 //int[] numbers = { 10, 20, 33, 40, 20, 66, 20, 33, 66, 30, 20 };
 
