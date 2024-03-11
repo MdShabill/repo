@@ -7,7 +7,7 @@ namespace MyConsoleApp
         static void Main(string[] args)
         {
             //CheckExistsNumber
-            CheckExistsNumber existsNumber = new CheckExistsNumber();
+            CheckExistsNumber existsNumber = new();
             existsNumber.CheckNumber();
 
             //CheckFirstOcceurrence
@@ -16,10 +16,16 @@ namespace MyConsoleApp
             Console.Write("\n Enter the number: ");
             int inputNumber = int.Parse(Console.ReadLine());
 
-            CheckFirstOcceurrence checker = new CheckFirstOcceurrence();
+            CheckFirstOcceurrence checker = new();
             checker.ArrayFirstOcceurrence(numbers, inputNumber);
 
+            //Check odd and even number
             CheckOddEven.Validate();
+            Console.WriteLine("\n");
+
+            //Check prime numbers between 1 to 100
+            CheckPrimeNumber primeNumber = new();
+            primeNumber.PrimeNumber();
 
         }
     }
@@ -27,26 +33,6 @@ namespace MyConsoleApp
 
 }
 
-//identify even and odd number by using loop and array
-
-
-
-
-//Find out the prime numbers between 1 to 100
-//for(int number = 1; number <= 100; number++)
-//{
-//    int count = 0;
-//    for (int i = 1; i <= number; i++)
-//    {
-//        if (number % i == 0)
-//            count++;
-//    }
-//    if (count == 2)
-//    {
-//        Console.WriteLine(number);
-//        Console.WriteLine("These are prime numbers");
-//    }
-//}
 
 //int[] numbers = { 1, 2, 3, 4, 5 };
 
