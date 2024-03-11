@@ -26,11 +26,13 @@ namespace MyConsoleApp
             //Check prime numbers between 1 to 100
             CheckPrimeNumber primeNumber = new();
             primeNumber.PrimeNumber();
+            Console.WriteLine("\n");
 
+            //Check 1 to 20 Multiplication
+            CheckMultiplication multiplication = new();
+            multiplication.Multiplication();
         }
     }
-
-
 }
 
 
@@ -41,25 +43,6 @@ namespace MyConsoleApp
 //for (int i = numbers.Length - 1; i >= 0; i--)
 //{
 //    Console.Write(numbers[i] + " ");
-//}
-
-// Write a program for 1 to 20 Multiplication result
-//Console.WriteLine("Enter a number to get the  Multiplication result");
-//int num = int.Parse(Console.ReadLine());
-//if (num > 0 && num <= 20)
-//{
-//    Console.WriteLine("Your Multiplication Is Ready");
-//}
-//else
-//{
-//    Console.WriteLine("Please Enter Multiplication Number Between 1 to 20 ");
-//    return;
-//}
-//int multiplyResult;
-//for (int i = 1; i <= 10; i++)
-//{
-//    multiplyResult = num * i;
-//    Console.WriteLine("{0} X {1} = {2}\n", num, i, multiplyResult);
 //}
 
 //Fabonacci series based on user input
