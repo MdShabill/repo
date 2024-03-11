@@ -8,7 +8,7 @@ namespace MyConsoleApp
 {
     public class NumericHelper
     {
-        public void DisplayNumersForAnArrayElements()
+        public void ValidateGivenNumberExistsInArray()
         {
             ////---- Check whether that number exists in array or not
 
@@ -29,8 +29,9 @@ namespace MyConsoleApp
             Console.WriteLine($"{inputNumber} does not exist in the array.");
         }
 
-        public void DisplayFirstOcceurrenceByGivenInput(int[] numbers, int inputNumber)
+        public void GetFirstIndexForGivenNumberInAnArray(int inputNumber)
         {
+            int[] numbers = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 10 };
             for (int i = 0; i < numbers.Length; i++)
             {
                 if (numbers[i] == inputNumber)
@@ -43,7 +44,7 @@ namespace MyConsoleApp
             Console.WriteLine($"{inputNumber} does not exist in the array.");
         }
 
-        public void ValidateOddandEvenForAnArrayElements()
+        public void ValidateOddandEvenForArrayElements()
         {
             ////identify odd and even number by using loop and array
             int[] num = { 7, 8, 19, 7, 8, 15, 16, 12, 5, 8, 9, };
@@ -103,7 +104,7 @@ namespace MyConsoleApp
             }
         }
 
-        public void GetFibonacciSeriesGivenUserInput()
+        public void GetFibonacciSeriesGivenNumber()
         {
             //Fibonacci series based on user input
             int num1 = 0, num2 = 1, num3, num4;
@@ -122,7 +123,7 @@ namespace MyConsoleApp
             Console.ReadLine();
         }
 
-        public void ValidateReverseOrderForAnArrayElements()
+        public void ReverseAnArray()
         {
             //Check Array number and changed into reverse order
             int[] numbers = { 1, 2, 3, 4, 5 };
@@ -135,7 +136,7 @@ namespace MyConsoleApp
             }
         }
 
-        public void DisplayFibonacciSeriesGivenUserInput()
+        public void DisplayFibonacciSeriesBetween1to10()
         {
             //Fabonacci series 1 to 10 elements
             int num1 = 0, num2 = 1, num3;

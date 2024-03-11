@@ -9,16 +9,15 @@ namespace MyConsoleApp
             NumericHelper numericHelper = new();
             
             ////CheckExistsNumber
-            numericHelper.DisplayNumersForAnArrayElements();
+            numericHelper.ValidateGivenNumberExistsInArray();
 
             ////CheckFirstOcceurrence
-            int[] numbers = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 10 };
             Console.Write("\n Enter the number: ");
             int inputNumber = int.Parse(Console.ReadLine());
-            numericHelper.DisplayFirstOcceurrenceByGivenInput(numbers, inputNumber);
+            numericHelper.GetFirstIndexForGivenNumberInAnArray(inputNumber);
 
             ////Check odd and even number
-            numericHelper.ValidateOddandEvenForAnArrayElements();
+            numericHelper.ValidateOddandEvenForArrayElements();
             Console.WriteLine("\n");
 
             ////Check prime numbers between 1 to 100
@@ -30,13 +29,16 @@ namespace MyConsoleApp
             Console.WriteLine("\n");
 
             //Check Fibonacci series
-            numericHelper.GetFibonacciSeriesGivenUserInput();
+            numericHelper.GetFibonacciSeriesGivenNumber();
+            Console.WriteLine("\n");
 
             ////Check Array number and changed into reverse order
-            numericHelper.ValidateReverseOrderForAnArrayElements();
+            numericHelper.ReverseAnArray();
+            Console.WriteLine("\n");
 
             ////Fabonacci series 1 to 10 elements
-            numericHelper.DisplayFibonacciSeriesGivenUserInput();
+            numericHelper.DisplayFibonacciSeriesBetween1to10();
+
         }
     }
 }
@@ -63,8 +65,7 @@ namespace MyConsoleApp
 //Q: Write a program on a random number and search how many times the number exists in the array element
 
 //int[] numbers = { 10, 20, 33, 40, 20, 66, 20, 33, 66, 30, 20 };
-
-//Console.Write("Enter Number to search: ");
+ //Console.Write("Enter Number to search: ");
 //int inputNumber = int.Parse(Console.ReadLine());
 
 //int count = 0;
