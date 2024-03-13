@@ -60,11 +60,18 @@ namespace MyConsoleApp
             //Console.WriteLine("\n");
 
             ////Write a program to find the factors of a user-provided number
-            numericHelper.GetFactorialNumber();
-            Console.WriteLine("\n");
+            //numericHelper.GetFactorialNumber();
+            //Console.WriteLine("\n");
 
             ////Write a program to find the factors of a user-provided number and sum of total factor
-            numericHelper.GetFactorialNumberWithSum();
+            //numericHelper.GetFactorialNumberWithSum();
+            //Console.WriteLine("\n");
+
+            ////Find unmatched elements in array1 and array2
+            int[] array1 = { 1, 2, 3, 4, 5 };
+            int[] array2 = { 2, 3, 2, 5, 6 };
+
+            NumericHelper.GetUnmatchedElements(array1, array2);
         }
     }
 }

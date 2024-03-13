@@ -256,39 +256,85 @@ namespace MyConsoleApp
         //    Console.ReadLine();
         //}
 
-        public void GetFactorialNumber()
-        {
-            ////Write a program to find the factors of a user provided number
-            Console.Write("\n Enter a number to find the factors: ");
-            int number = Convert.ToInt32(Console.ReadLine());
+        //public void GetFactorialNumber()
+        //{
+        //    ////Write a program to find the factors of a user provided number
+        //    Console.Write("\n Enter a number to find the factors: ");
+        //    int number = Convert.ToInt32(Console.ReadLine());
 
-            Console.WriteLine($"Factors of {number}:");
-            for (int i = 1; i <= number; i++)
+        //    Console.WriteLine($"Factors of {number}:");
+        //    for (int i = 1; i <= number; i++)
+        //    {
+        //        if (number % i == 0)
+        //        {
+        //            Console.WriteLine(i);
+        //        }
+        //    }
+        //}
+
+        //public void GetFactorialNumberWithSum()
+        //{
+        //    ////Write a program to find the factors of a user provided number and sum of total factor
+        //    Console.Write("\n Enter a number to find the factors: ");
+        //    int number = Convert.ToInt32(Console.ReadLine());
+
+        //    int sumOfFactors = 0;
+        //    Console.WriteLine($"Factors of {number}:");
+        //    for (int i = 1; i <= number; i++)
+        //    {
+        //        if (number % i == 0)
+        //        {
+        //            Console.WriteLine(i);
+        //            //sumOfFactors += i;
+        //            sumOfFactors = sumOfFactors + i;
+        //        }
+        //    }
+
+        //    Console.WriteLine($"Sum of factors of {number}: {sumOfFactors}");
+        //}
+
+        public static void GetUnmatchedElements(int[] array1, int[] array2)
+        {
+            Console.WriteLine("Array 1: " + string.Join(", ", array1));
+            Console.WriteLine("Array 2: " + string.Join(", ", array2));
+
+            Console.WriteLine("Unmatched elements:");
+
+            // Find unmatched elements in array1
+            for (int i = 0; i < array1.Length; i++)
             {
-                if (number % i == 0)
+                bool found = false;
+                for (int j = 0; j < array2.Length; j++)
                 {
-                    Console.WriteLine(i);
+                    if (array1[i] == array2[j])
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    Console.WriteLine(array1[i]);
                 }
             }
-        }
 
-        public void GetFactorialNumberWithSum()
-        {
-            ////Write a program to find the factors of a user provided number and sum of total factor
-            Console.Write("\n Enter a number to find the factors: ");
-            int number = Convert.ToInt32(Console.ReadLine());
-
-            int sumOfFactors = 0;
-            Console.WriteLine($"Factors of {number}:");
-            for (int i = 1; i <= number; i++)
+            // Find unmatched elements in array2
+            for (int i = 0; i < array2.Length; i++)
             {
-                if (number % i == 0)
+                bool found = false;
+                for (int j = 0; j < array1.Length; j++)
                 {
-                    Console.WriteLine(i);
-                    sumOfFactors += i;
+                    if (array2[i] == array1[j])
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    Console.WriteLine(array2[i]);
                 }
             }
-            Console.WriteLine($"Sum of factors of {number}: {sumOfFactors}");
         }
     }
 }
