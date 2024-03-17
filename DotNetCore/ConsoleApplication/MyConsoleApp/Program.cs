@@ -75,15 +75,11 @@ namespace MyConsoleApp
             //Console.WriteLine("\n");
 
             ////Find matched elements between array1 and array2
-            NumericHelper.GetMatchedElements();
-            Console.WriteLine("\n");
+            //NumericHelper.GetMatchedElements();
+            //Console.WriteLine("\n");
 
             //////Find matched elements between array1, array2 and array3
-            //int[] array1 = { 1, 2, 3};
-            //int[] array2 = { 11, 12, 1};
-            //int[] array3 = { 10, 2, 1000};
-
-            //NumericHelper.GetMatchedElements(array1, array2, array3);
+            NumericHelper.GetMatchedElements();
         }
     }
 }

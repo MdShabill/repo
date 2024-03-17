@@ -338,24 +338,65 @@ namespace MyConsoleApp
         //    }
         //}
 
+        //public static void GetMatchedElements()
+        //{
+        //    int[] array1 = { 1, 2, 3 };
+        //    int[] array2 = { 4, 3, 2 };
+
+        //    Console.WriteLine("Array1: " + string.Join(", ", array1));
+        //    Console.WriteLine("Array2: " + string.Join(", ", array2));
+
+        //    Console.WriteLine("Macthed Element: ");
+
+        //    for (int b = 0; b < array1.Length; b++)
+        //    {
+        //        for (int a = 0; a < array2.Length; a++)
+        //        {
+        //            if (array1[b] == array2[a])
+        //            {
+        //                Console.WriteLine(array1[b]);
+        //                break;
+        //            }
+        //        }
+        //    }
+        //}
+
         public static void GetMatchedElements()
         {
+            ////Find matched elements between array1, array2 and array3
+            
             int[] array1 = { 1, 2, 3 };
-            int[] array2 = { 4, 3, 2 };
+            int[] array2 = { 4, 2, 1 };
+            int[] array3 = { 2, 3, 7 };
 
             Console.WriteLine("Array1: " + string.Join(", ", array1));
             Console.WriteLine("Array2: " + string.Join(", ", array2));
+            Console.WriteLine("Array2: " + string.Join(", ", array3));
 
             Console.WriteLine("Macthed Element: ");
 
-            for (int b = 0;b < array1.Length; b++)
+            for (int i = 0; i < array1.Length; i++)
             {
-                for (int a = 0; a < array2.Length; a++)
+                bool foundInArray2 = false;
+                for (int j = 0; j < array2.Length; j++)
                 {
-                    if (array1[b] == array2[a])
+                    if (array1[i] == array2[j])
                     {
-                        Console.WriteLine(array1[b]);
+                        Console.WriteLine(array1[i]);
+                        foundInArray2 = true;
                         break;
+                    }
+                }
+
+                if(!foundInArray2)
+                {
+                    for (int k = 0; k < array3.Length; k++)
+                    {
+                        if ((array1[i] == array3[k]))
+                        {
+                            Console.WriteLine(array1[i]);
+                            break;
+                        }
                     }
                 }
             }
