@@ -7,10 +7,10 @@ namespace MyConsoleApp
         static void Main(string[] args)
         {
             NumericHelper numericHelper = new();
-            
+
             ////CheckExistsNumber
-            numericHelper.ValidateGivenNumberExistsInArray();
-            Console.WriteLine("\n");
+            //numericHelper.ValidateGivenNumberExistsInArray();
+            //Console.WriteLine("\n");
 
             ////CheckFirstOcceurrence
             //Console.Write("\n Enter the number: ");
@@ -68,10 +68,22 @@ namespace MyConsoleApp
             //Console.WriteLine("\n");
 
             ////Find unmatched elements in array1 and array2
-            int[] array1 = { 1, 2, 3, 4, 5 };
-            int[] array2 = { 2, 3, 2, 5, 6 };
+            //int[] array1 = { 1, 2, 3};
+            //int[] array2 = { 4, 5, 6};
 
-            NumericHelper.GetUnmatchedElements(array1, array2);
+            //NumericHelper.GetUnmatchedElements(array1, array2);
+            //Console.WriteLine("\n");
+
+            ////Find matched elements between array1 and array2
+            NumericHelper.GetMatchedElements();
+            Console.WriteLine("\n");
+
+            //////Find matched elements between array1, array2 and array3
+            //int[] array1 = { 1, 2, 3};
+            //int[] array2 = { 11, 12, 1};
+            //int[] array3 = { 10, 2, 1000};
+
+            //NumericHelper.GetMatchedElements(array1, array2, array3);
         }
     }
 }

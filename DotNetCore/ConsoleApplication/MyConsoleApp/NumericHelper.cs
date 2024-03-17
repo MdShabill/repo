@@ -293,46 +293,70 @@ namespace MyConsoleApp
         //    Console.WriteLine($"Sum of factors of {number}: {sumOfFactors}");
         //}
 
-        public static void GetUnmatchedElements(int[] array1, int[] array2)
+        //public static void GetUnmatchedElements(int[] array1, int[] array2)
+        //{
+        //    Console.WriteLine("Array-1: " + string.Join(", ", array1));
+        //    Console.WriteLine("Array-2: " + string.Join(", ", array2));
+
+        //    Console.WriteLine("Unmatched elements:");
+
+        //    //// Find unmatched elements in array1
+        //    for (int i = 0; i < array1.Length; i++)
+        //    {
+        //        bool found = false;
+        //        for (int j = 0; j < array2.Length; j++)
+        //        {
+        //            if (array1[i] == array2[j])
+        //            {
+        //                found = true;
+        //                break;
+        //            }
+        //        }
+
+        //        if (!found)
+        //        {
+        //            Console.WriteLine(array1[i]);
+        //        }
+        //    }
+
+        //    // Find unmatched elements in array2
+        //    for (int i = 0; i < array2.Length; i++)
+        //    {
+        //        bool found = false;
+        //        for (int j = 0; j < array1.Length; j++)
+        //        {
+        //            if (array2[i] == array1[j])
+        //            {
+        //                found = true;
+        //                break;
+        //            }
+        //        }
+        //        if (!found)
+        //        {
+        //            Console.WriteLine(array2[i]);
+        //        }
+        //    }
+        //}
+
+        public static void GetMatchedElements()
         {
-            Console.WriteLine("Array 1: " + string.Join(", ", array1));
-            Console.WriteLine("Array 2: " + string.Join(", ", array2));
+            int[] array1 = { 1, 2, 3 };
+            int[] array2 = { 4, 3, 2 };
 
-            Console.WriteLine("Unmatched elements:");
+            Console.WriteLine("Array1: " + string.Join(", ", array1));
+            Console.WriteLine("Array2: " + string.Join(", ", array2));
 
-            // Find unmatched elements in array1
-            for (int i = 0; i < array1.Length; i++)
+            Console.WriteLine("Macthed Element: ");
+
+            for (int b = 0;b < array1.Length; b++)
             {
-                bool found = false;
-                for (int j = 0; j < array2.Length; j++)
+                for (int a = 0; a < array2.Length; a++)
                 {
-                    if (array1[i] == array2[j])
+                    if (array1[b] == array2[a])
                     {
-                        found = true;
+                        Console.WriteLine(array1[b]);
                         break;
                     }
-                }
-                if (!found)
-                {
-                    Console.WriteLine(array1[i]);
-                }
-            }
-
-            // Find unmatched elements in array2
-            for (int i = 0; i < array2.Length; i++)
-            {
-                bool found = false;
-                for (int j = 0; j < array1.Length; j++)
-                {
-                    if (array2[i] == array1[j])
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    Console.WriteLine(array2[i]);
                 }
             }
         }
