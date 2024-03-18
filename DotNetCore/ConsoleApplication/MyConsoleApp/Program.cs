@@ -79,7 +79,11 @@ namespace MyConsoleApp
             //Console.WriteLine("\n");
 
             //////Find matched elements between array1, array2 and array3
-            NumericHelper.GetMatchedElements();
+            //NumericHelper.GetMatchedElements();
+            //Console.WriteLine("\n");
+
+            ////
+            NumericHelper.GetAlternateNumbers();
         }
     }
 }

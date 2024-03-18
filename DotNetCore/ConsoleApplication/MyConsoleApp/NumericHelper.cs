@@ -361,44 +361,57 @@ namespace MyConsoleApp
         //    }
         //}
 
-        public static void GetMatchedElements()
+        //public static void GetMatchedElements()
+        //{
+        //    ////Find matched elements between array1, array2 and array3
+
+        //    int[] array1 = { 1, 2, 3 };
+        //    int[] array2 = { 4, 2, 1 };
+        //    int[] array3 = { 2, 3, 7 };
+
+        //    Console.WriteLine("Array1: " + string.Join(", ", array1));
+        //    Console.WriteLine("Array2: " + string.Join(", ", array2));
+        //    Console.WriteLine("Array2: " + string.Join(", ", array3));
+
+        //    Console.WriteLine("Macthed Element: ");
+
+        //    for (int i = 0; i < array1.Length; i++)
+        //    {
+        //        bool foundInArray2 = false;
+        //        for (int j = 0; j < array2.Length; j++)
+        //        {
+        //            if (array1[i] == array2[j])
+        //            {
+        //                Console.WriteLine(array1[i]);
+        //                foundInArray2 = true;
+        //                break;
+        //            }
+        //        }
+
+        //        if(!foundInArray2)
+        //        {
+        //            for (int k = 0; k < array3.Length; k++)
+        //            {
+        //                if ((array1[i] == array3[k]))
+        //                {
+        //                    Console.WriteLine(array1[i]);
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+
+        public static void GetAlternateNumbers()
         {
-            ////Find matched elements between array1, array2 and array3
-            
-            int[] array1 = { 1, 2, 3 };
-            int[] array2 = { 4, 2, 1 };
-            int[] array3 = { 2, 3, 7 };
+            ////Display Alternate Array Element
 
-            Console.WriteLine("Array1: " + string.Join(", ", array1));
-            Console.WriteLine("Array2: " + string.Join(", ", array2));
-            Console.WriteLine("Array2: " + string.Join(", ", array3));
+            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            Console.WriteLine("Macthed Element: ");
-
-            for (int i = 0; i < array1.Length; i++)
+            Console.WriteLine("This is your Alternate Numbers: ");
+            for(int i = 0; i < numbers.Length; i = i + 2) 
             {
-                bool foundInArray2 = false;
-                for (int j = 0; j < array2.Length; j++)
-                {
-                    if (array1[i] == array2[j])
-                    {
-                        Console.WriteLine(array1[i]);
-                        foundInArray2 = true;
-                        break;
-                    }
-                }
-
-                if(!foundInArray2)
-                {
-                    for (int k = 0; k < array3.Length; k++)
-                    {
-                        if ((array1[i] == array3[k]))
-                        {
-                            Console.WriteLine(array1[i]);
-                            break;
-                        }
-                    }
-                }
+                Console.WriteLine(numbers[i]);
             }
         }
     }
