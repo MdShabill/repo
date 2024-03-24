@@ -82,8 +82,13 @@ namespace MyConsoleApp
             //NumericHelper.GetMatchedElements();
             //Console.WriteLine("\n");
 
-            ////
-            NumericHelper.GetAlternateNumbers();
+            ////Find The Alternate Array Element
+            //NumericHelper.GetAlternateNumbers();
+            //Console.WriteLine("\n");
+
+            ////Find total count and sum of matched elements in array1 and array2
+            NumericHelper.GetCountAndSumOfMatchedElements();
+
         }
     }
 }

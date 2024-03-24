@@ -402,17 +402,52 @@ namespace MyConsoleApp
         //    }
         //}
 
-        public static void GetAlternateNumbers()
+        //public static void GetAlternateNumbers()
+        //{
+        //    ////Find The Alternate Array Element
+
+        //    int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        //    Console.WriteLine("This is your Alternate Numbers: ");
+        //    for(int i = 0; i < numbers.Length; i = i + 2) 
+        //    {
+        //        Console.WriteLine(numbers[i]);
+        //    }
+        //}
+
+        public static void GetCountAndSumOfMatchedElements()
         {
-            ////Display Alternate Array Element
+            // Find total count and sum of matched elements which is not duplicate element in array1 and array2
+            int[] array1 = { 1, 2, 3, 4, 5, 6 };
+            int[] array2 = { 7, 4, 3, 2, 2, 8 };
 
-            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            Console.WriteLine("Array1: " + string.Join(", ", array1));
+            Console.WriteLine("Array2: " + string.Join(", ", array2));
 
-            Console.WriteLine("This is your Alternate Numbers: ");
-            for(int i = 0; i < numbers.Length; i = i + 2) 
+            int sumOfMatchedElements = 0;
+            Console.WriteLine("\nTotal Count of Matching Array Elements:");
+
+            string matchedElements = "";
+            for (int i = 0; i < array1.Length; i++)
             {
-                Console.WriteLine(numbers[i]);
+                int count = 0;
+                for (int j = 0; j < array2.Length; j++)
+                {
+                    if (array1[i] == array2[j])
+                    {
+                        count++;
+                    }
+                }
+                Console.WriteLine($"{array1[i]} - {count}");
+                if (count > 0)
+                {
+                    matchedElements += $"{array1[i]} ";
+                    //matchedElements += " " + array1[i];
+                    sumOfMatchedElements += array1[i];
+                }
             }
+            Console.WriteLine($"\nSum of Matching Elements : {matchedElements} = {sumOfMatchedElements}");
         }
     }
 }
+
