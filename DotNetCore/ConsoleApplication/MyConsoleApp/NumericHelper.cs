@@ -441,12 +441,15 @@ namespace MyConsoleApp
                 Console.WriteLine($"{array1[i]} - {count}");
                 if (count > 0)
                 {
-                    matchedElements += $"{array1[i]} ";
-                    //matchedElements += " " + array1[i];
-                    sumOfMatchedElements += array1[i];
+                    if (!string.IsNullOrEmpty(matchedElements))
+                    {
+                        matchedElements = $"{matchedElements} + ";
+                    }
+                    matchedElements = matchedElements + array1[i];
+                    sumOfMatchedElements = sumOfMatchedElements + array1[i];
                 }
             }
-            Console.WriteLine($"\nSum of Matching Elements : {matchedElements} = {sumOfMatchedElements}");
+            Console.WriteLine($"\nSum Of Matching Elements : {matchedElements} = {sumOfMatchedElements}");
         }
     }
 }
