@@ -415,41 +415,62 @@ namespace MyConsoleApp
         //    }
         //}
 
-        public static void GetCountAndSumOfMatchedElements()
+        //public static void GetCountAndSumOfMatchedElements()
+        //{
+        //    // Find total count and sum of matched elements which is not duplicate element in array1 and array2
+        //    int[] array1 = { 1, 2, 3, 4, 5, 6 };
+        //    int[] array2 = { 7, 4, 3, 2, 2, 8 };
+
+        //    Console.WriteLine("Array1: " + string.Join(", ", array1));
+        //    Console.WriteLine("Array2: " + string.Join(", ", array2));
+
+        //    int sumOfMatchedElements = 0;
+        //    Console.WriteLine("\nTotal Count of Matching Array Elements:");
+
+        //    string matchedElements = "";
+        //    for (int i = 0; i < array1.Length; i++)
+        //    {
+        //        int count = 0;
+        //        for (int j = 0; j < array2.Length; j++)
+        //        {
+        //            if (array1[i] == array2[j])
+        //            {
+        //                count++;
+        //            }
+        //        }
+        //        Console.WriteLine($"{array1[i]} - {count}");
+        //        if (count > 0)
+        //        {
+        //            if (!string.IsNullOrEmpty(matchedElements))
+        //            {
+        //                matchedElements = $"{matchedElements} + ";
+        //            }
+        //            matchedElements = matchedElements + array1[i];
+        //            sumOfMatchedElements = sumOfMatchedElements + array1[i];
+        //        }
+        //    }
+        //    Console.WriteLine($"\nSum Of Matching Elements : {matchedElements} = {sumOfMatchedElements}");
+        //}
+
+        public static void GetMatchedIndexAndElements()
         {
-            // Find total count and sum of matched elements which is not duplicate element in array1 and array2
-            int[] array1 = { 1, 2, 3, 4, 5, 6 };
-            int[] array2 = { 7, 4, 3, 2, 2, 8 };
+            ////Find only those elements which is matched and have same index position between two arrays
+
+            int[] array1 = { 10, 20, 30, 40, 50, 60 };
+            int[] array2 = { 10, 30, 20, 40, 50, 10, 70, 10, 60 };
 
             Console.WriteLine("Array1: " + string.Join(", ", array1));
             Console.WriteLine("Array2: " + string.Join(", ", array2));
 
-            int sumOfMatchedElements = 0;
-            Console.WriteLine("\nTotal Count of Matching Array Elements:");
+            Console.WriteLine("\n Matched Elements at Same Index:");
 
-            string matchedElements = "";
             for (int i = 0; i < array1.Length; i++)
             {
-                int count = 0;
-                for (int j = 0; j < array2.Length; j++)
+                if (i < array2.Length && array1[i] == array2[i])
                 {
-                    if (array1[i] == array2[j])
-                    {
-                        count++;
-                    }
-                }
-                Console.WriteLine($"{array1[i]} - {count}");
-                if (count > 0)
-                {
-                    if (!string.IsNullOrEmpty(matchedElements))
-                    {
-                        matchedElements = $"{matchedElements} + ";
-                    }
-                    matchedElements = matchedElements + array1[i];
-                    sumOfMatchedElements = sumOfMatchedElements + array1[i];
+                    Console.WriteLine($"\n Index {i}: {array1[i]}");
                 }
             }
-            Console.WriteLine($"\nSum Of Matching Elements : {matchedElements} = {sumOfMatchedElements}");
         }
     }
 }

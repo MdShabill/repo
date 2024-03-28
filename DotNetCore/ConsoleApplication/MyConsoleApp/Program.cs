@@ -87,8 +87,11 @@ namespace MyConsoleApp
             //Console.WriteLine("\n");
 
             ////Find total count and sum of matched elements in array1 and array2
-            NumericHelper.GetCountAndSumOfMatchedElements();
+            //NumericHelper.GetCountAndSumOfMatchedElements();
+            //Console.WriteLine("\n");
 
+            ////Find only those elements which is matched and have same index position between two arrays
+            NumericHelper.GetMatchedIndexAndElements();
         }
     }
 }
