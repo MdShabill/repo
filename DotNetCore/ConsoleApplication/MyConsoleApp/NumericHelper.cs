@@ -482,7 +482,7 @@ namespace MyConsoleApp
             Console.WriteLine("\n Printing 'Hello World' 20 times with a 2-second gap between each print ");
             for (int i = 1; i < 20; i++)
             {
-                Console.WriteLine("\nHello World"); System.Net.Http.HttpRequestException: 'No connection could be made because the target machine actively refused it. (localhost:7073)'
+                Console.WriteLine("\nHello World");
 
                 Thread.Sleep(2000);
             }
@@ -491,7 +491,7 @@ namespace MyConsoleApp
         public async Task CallApi()
         {
             // Define the API URL
-            string apiUrl = "https://localhost:7073/api/Products/GetProductCount";
+            string apiUrl = "https://qa-member.astm.org/m1c/api/v1/value";
 
             // Create an instance of HttpClient
             using (HttpClient client = new HttpClient())
