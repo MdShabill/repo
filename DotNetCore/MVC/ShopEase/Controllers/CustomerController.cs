@@ -45,7 +45,7 @@ namespace ShopEase.Controllers
 
         public IActionResult ShowMyData()
         {
-            ViewBag.ShowMyData = "Hello World...";
+            ViewBag.DisplayMessage = "Hello World....";
             return View();
         }
 
