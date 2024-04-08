@@ -43,9 +43,31 @@ namespace ShopEase.Controllers
             return View(customersVm);
         }
 
-        public IActionResult ShowMyData()
+        public async Task<IActionResult> ShowMyData()
         {
-            ViewBag.DisplayMessage = "Hello World....";
+            // Define the API URL
+            string apiUrl = "https://qa-member.astm.org/m1c/api/v1/value";
+
+            string apiResult = string.Empty; // Placeholder for the API response content
+
+            // Create an instance of HttpClient
+            using (HttpClient client = new HttpClient())
+            {
+                // Make a GET request to the API URL
+                HttpResponseMessage response = await client.GetAsync(apiUrl);
+
+                // Check if the request was successful
+                if (response.IsSuccessStatusCode)
+                {
+                    apiResult = await response.Content.ReadAsStringAsync();
+                }
+                else
+                {
+                    apiResult = $"Failed to get data. Status code: {response.StatusCode}";
+                }
+            }
+            ViewBag.ApiResult = apiResult;
+
             return View();
         }
 
