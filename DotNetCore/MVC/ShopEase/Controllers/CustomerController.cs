@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using ShopEase.DataModels.Address;
 using ShopEase.DataModels.Customer;
 using ShopEase.Repositories;
 using ShopEase.ViewModels;
+using ShopEase.ViewModels.Customer;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Transactions;
@@ -45,28 +47,25 @@ namespace ShopEase.Controllers
 
         public async Task<IActionResult> ShowMyData()
         {
-            // Define the API URL
-            string apiUrl = "https://qa-member.astm.org/m1c/api/v1/value";
+            string apiUrl = "https://localhost:7073/api/Doctors/GetAllDoctors";
+            List<ShowMyData> showMyDataList = null;
 
-            string apiResult = string.Empty; // Placeholder for the API response content
-
-            // Create an instance of HttpClient
             using (HttpClient client = new HttpClient())
             {
-                // Make a GET request to the API URL
                 HttpResponseMessage response = await client.GetAsync(apiUrl);
 
-                // Check if the request was successful
                 if (response.IsSuccessStatusCode)
                 {
-                    apiResult = await response.Content.ReadAsStringAsync();
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    showMyDataList = JsonConvert.DeserializeObject<List<ShowMyData>>(jsonResponse);
                 }
                 else
                 {
-                    apiResult = $"Failed to get data. Status code: {response.StatusCode}";
+                    showMyDataList = new List<ShowMyData>();
                 }
             }
-            ViewBag.ApiResult = apiResult;
+
+            ViewBag.ApiResponse = showMyDataList;
 
             return View();
         }

@@ -1,3 +1,25 @@
-﻿
+﻿@{
+    var apiResponseList = ViewBag.ApiResponse as List<ShopEase.ViewModels.Customer.ShowMyData>;
+}
 
-<span><b>@ViewBag.ApiResult</b></span>
+@if (apiResponseList != null)
+{
+    <div>
+        <h2>Show My API Data</h2>
+        @foreach (var item in apiResponseList)
+        {
+            <div>
+                <p>
+                    <b>
+                        @item.Id, @item.FullName, @item.Gender, @item.Email,
+                        @item.RegistrationNumber, @item.Department, @item.City
+                    </b>
+                </p>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Could not retrieve Api data.</p>
+}
