@@ -43,6 +43,12 @@ namespace ShopEase.Controllers
             return View(customersVm);
         }
 
+        public IActionResult ShowMyData()
+        {
+            ViewBag.ShowMyData = "Hello World...";
+            return View();
+        }
+
         public IActionResult MyProfile()
         {
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));
