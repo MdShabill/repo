@@ -9,6 +9,14 @@ var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .Build();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://example.com")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader());
+});
+
 
 string ShopEaseDBConnectionString = configuration.GetConnectionString("ShopEaseDBConnection");
 
@@ -85,6 +93,8 @@ if (!app.Environment.IsDevelopment())
 app.UseSession();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseRouting();
 

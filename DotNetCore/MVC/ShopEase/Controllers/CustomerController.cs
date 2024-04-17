@@ -75,6 +75,11 @@ namespace ShopEase.Controllers
             return View();
         }
 
+        public IActionResult ShowMyApiDataUSingAJAX()
+        {
+            return View();
+        }
+
         public IActionResult MyProfile()
         {
             int customerId = Convert.ToInt32(HttpContext.Session.GetInt32("CustomerId"));

@@ -1,0 +1,49 @@
+﻿<div>
+    <h2>Show My API Data</h2>
+    <div id="apiDataContainer">
+    </div>
+    <div style="margin-left: 2px;">
+        <button id="fetchDataBtn" class="btn btn-primary">Fetch API Data</button>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Function to fetch API data
+        async function fetchApiData() {
+            try {
+                const response = await fetch("https://localhost:7073/api/Doctors/GetAllDoctors");
+                if (!response.ok) {
+                    throw new Error("Could not retrieve API data.");
+                }
+                const data = await response.json();
+                renderData(data);
+            } catch (error) {
+                debugger;
+                $("#apiDataContainer").html("<p>Failed to fetch API data: " + error.message + "</p>");
+                console.error(error);
+            }
+        }
+
+        // Function to render data on the UI
+        function renderData(apiResponse) {
+            const container = $("#apiDataContainer");
+            let html = "";
+            if (apiResponse && apiResponse.length > 0) {
+                apiResponse.forEach(item => {
+                    html += `<div><p><b>${item.Id}, ${item.FullName}, 
+                                        ${item.Gender}, ${item.Email}, 
+                                        ${item.RegistrationNumber}, 
+                                        ${item.Department}, 
+                                        ${item.City}</b></p></div>`;
+                });
+            } else {
+                html = "<p>No data available.</p>";
+            }
+            container.html(html);
+        }
+
+        // Event listener for fetch data button
+        $("#fetchDataBtn").click(fetchApiData);
+    </script>
+}
