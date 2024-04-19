@@ -1,8 +1,8 @@
 CREATE TABLE Departments 
 (
-    ID INT IDENTITY(1,1),
+    Id INT IDENTITY(1,1),
     DepartmentName NVARCHAR(100) NOT NULL,
     Location NVARCHAR(255) NOT NULL,
-    Phone NVARCHAR(20) NOT NULL,
+    Phone NVARCHAR(200) NOT NULL,
 	PRIMARY KEY (ID)
 )

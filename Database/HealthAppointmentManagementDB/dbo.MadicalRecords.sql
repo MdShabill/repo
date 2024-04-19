@@ -1,17 +1,17 @@
 CREATE TABLE MedicalRecords 
 (
-    ID INT IDENTITY(1,1),
-    PatientID INT NOT NULL,
-	DoctorID INT NOT NULL,
-	AppointmentID INT NOT NULL,
+    Id INT IDENTITY(1,1),
+    PatientId INT NOT NULL,
+	DoctorId INT NOT NULL,
+	AppointmentId INT NOT NULL,
 	Height DECIMAL(5, 2) NOT NULL,
 	Weight DECIMAL(5, 2) NOT NULL, 
     VisitDate DATETIME NOT NULL,
     Treatment NVARCHAR(255) NOT NULL,
-	PRIMARY KEY (ID),
-    FOREIGN KEY (PatientID) REFERENCES Patients(ID),
-    FOREIGN KEY (DoctorID) REFERENCES Doctors(ID)
+	PRIMARY KEY (Id),
+    FOREIGN KEY (PatientId) REFERENCES Patients(Id),
+    FOREIGN KEY (DoctorId) REFERENCES Doctors(Id)
 )
 
 ALTER TABLE MedicalRecords
-ADD FOREIGN KEY (AppointmentID) REFERENCES Appointments(ID)
+ADD FOREIGN KEY (AppointmentId) REFERENCES Appointments(Id)
