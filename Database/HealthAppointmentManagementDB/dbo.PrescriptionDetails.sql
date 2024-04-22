@@ -1,10 +1,16 @@
 CREATE TABLE PrescriptionDetails
 (
     Id INT IDENTITY(1,1),
-    PrescriptionId INT NOT NULL,
+    MadicalRecordId INT NOT NULL,
+	MedicineCategoryId INT NOT NULL,
     Medicine NVARCHAR(200) NOT NULL,
-    Dosage NVARCHAR(200) NOT NULL,
-    Frequency NVARCHAR(200) NOT NULL,
+    Strength NVARCHAR(200) NULL,
+	AdditionalFrequency NVARCHAR(200) NULL,
+    FrequencyMorning Bit NULL,
+	FrequencyAfternoon Bit NULL,
+	FrequencyNight Bit NULL,
+	Instruction NVARCHAR(200) NULL,
 	PRIMARY KEY (Id),
-    FOREIGN KEY (PrescriptionId) REFERENCES PrescriptionDetails(Id)
+	FOREIGN KEY (MadicalRecordId) REFERENCES MedicalRecords(Id),
+	FOREIGN KEY (MedicineCategoryId) REFERENCES MedicineCategories(Id)
 )

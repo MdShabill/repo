@@ -8,10 +8,9 @@ CREATE TABLE MedicalRecords
 	Weight DECIMAL(5, 2) NOT NULL, 
     VisitDate DATETIME NOT NULL,
     Treatment NVARCHAR(255) NOT NULL,
+	Advice NVARCHAR(200) Not Null,
 	PRIMARY KEY (Id),
     FOREIGN KEY (PatientId) REFERENCES Patients(Id),
-    FOREIGN KEY (DoctorId) REFERENCES Doctors(Id)
+    FOREIGN KEY (DoctorId) REFERENCES Doctors(Id),
+	FOREIGN KEY (AppointmentId) REFERENCES Appointments(Id)
 )
-
-ALTER TABLE MedicalRecords
-ADD FOREIGN KEY (AppointmentId) REFERENCES Appointments(Id)
