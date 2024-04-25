@@ -80,6 +80,13 @@ builder.Services.AddTransient<ICustomerRepository>((svc) =>
     return new CustomerRepository(ShopEaseDBConnectionString);
 });
 
+builder.Services.AddTransient<IHealthManagementRepository>((svc) =>
+{
+    string sqlConnectionString = configuration.GetConnectionString("HealthAppointmentManagementDBConnection");
+    return new HealthManagementRepository(sqlConnectionString);
+});
+
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
