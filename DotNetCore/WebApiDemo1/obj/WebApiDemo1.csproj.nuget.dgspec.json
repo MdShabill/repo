@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Development\\C-Sharp\\WebApiProject\\repo\\DotNetCore\\WebApiDemo1\\WebApiDemo1.csproj": {}
+    "D:\\Development\\repo\\DotNetCore\\WebApiDemo1\\WebApiDemo1.csproj": {}
   },
   "projects": {
-    "D:\\Development\\C-Sharp\\WebApiProject\\repo\\DotNetCore\\WebApiDemo1\\WebApiDemo1.csproj": {
+    "D:\\Development\\repo\\DotNetCore\\WebApiDemo1\\WebApiDemo1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Development\\C-Sharp\\WebApiProject\\repo\\DotNetCore\\WebApiDemo1\\WebApiDemo1.csproj",
+        "projectUniqueName": "D:\\Development\\repo\\DotNetCore\\WebApiDemo1\\WebApiDemo1.csproj",
         "projectName": "WebApiDemo1",
-        "projectPath": "D:\\Development\\C-Sharp\\WebApiProject\\repo\\DotNetCore\\WebApiDemo1\\WebApiDemo1.csproj",
+        "projectPath": "D:\\Development\\repo\\DotNetCore\\WebApiDemo1\\WebApiDemo1.csproj",
         "packagesPath": "C:\\Users\\mdsha\\.nuget\\packages\\",
-        "outputPath": "D:\\Development\\C-Sharp\\WebApiProject\\repo\\DotNetCore\\WebApiDemo1\\obj\\",
+        "outputPath": "D:\\Development\\repo\\DotNetCore\\WebApiDemo1\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\mdsha\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -80,7 +80,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.404\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -9,6 +9,14 @@ IConfigurationRoot? configuration = new ConfigurationBuilder()
 
 string EcommerceDBConnectionString = configuration.GetConnectionString("EcommerceDBConnection");
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://example.com")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader());
+});
+
 builder.Services.AddTransient<ICustomerRepository>((svc) =>
 {   
     return new CustomerRepository(EcommerceDBConnectionString);
@@ -71,6 +79,8 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
 

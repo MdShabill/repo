@@ -68,6 +68,7 @@ namespace WebApiDemo1.Controllers
             return Ok(customerCount);
         }
 
+       
         [HttpGet]
         [Route("GetCustomerById/{id}")]
         public IActionResult GetCustomerById(int id)

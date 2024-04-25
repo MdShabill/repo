@@ -54,6 +54,15 @@ namespace WebApplication1.Controllers
             return Ok(productCount);
         }
 
+        //[HttpGet]
+        //[Route("GetProductCount")]
+        //public IActionResult GetProductCount()
+        //{
+        //    // Directly call the existing GetProductCount method.
+        //    var result = GetProductCount();
+        //    return result;
+        //}
+
         [HttpGet]
         [Route("GetProductDetailById/{productId}")]
         public IActionResult GetProductDetailById(int productId)

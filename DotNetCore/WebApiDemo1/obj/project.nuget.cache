@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+bwKF2Ztb5LVf9BTs7/ApGdwPUeO53aKBH6nw1yRbr2vfTMUnQ15fYijg7ZuFN1nMpuuJeIdRYLd6zIHxN5k0g==",
+  "dgSpecHash": "Nf5Tx3cK858Ce2ze6Ge/1YIc9c5qS/bAbnrOTGx9+qPkhBFcgFqFGKbwwiYyfznu+yT04Qc9C5Qd0K9Pf56AAg==",
   "success": true,
-  "projectFilePath": "D:\\Development\\C-Sharp\\WebApiProject\\repo\\DotNetCore\\WebApiDemo1\\WebApiDemo1.csproj",
+  "projectFilePath": "D:\\Development\\repo\\DotNetCore\\WebApiDemo1\\WebApiDemo1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mdsha\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\mdsha\\.nuget\\packages\\automapper.collection\\9.0.0\\automapper.collection.9.0.0.nupkg.sha512",
