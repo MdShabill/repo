@@ -2,7 +2,6 @@
 {
     public class HealthManagement
     {
-        public int Id { get; set; }
         public string PatientFirstName { get; set; }
         public string PatientLastName { get; set; }
         public DateTime DOB { get; set; }
@@ -11,6 +10,7 @@
         public string ContactNumber { get; set; }
         public string Email { get; set; }
         public int MadicalRecordId { get; set;}
+        public DateTime VisitDate { get; set;}
         public int MedicineCategoryId { get; set;}
         public string Medicine { get; set; }
         public string Strength { get; set; }

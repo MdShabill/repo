@@ -4,6 +4,7 @@ namespace ShopEase.Repositories
 {
     public interface IHealthManagementRepository
     {
-        public List<HealthManagement> GetPatientMedicineDetailByIdByVesitDate(int madicalRecordId);
+        public List<HealthManagement> GetPatientMedicineDetailBymadicalRecordId(int madicalRecordId);
+        public List<HealthManagement> GetDoctorPrescriptionBymadicalRecordId(int madicalRecordId);
     }
 }

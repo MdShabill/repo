@@ -1,0 +1,59 @@
+﻿@model List<ShopEase.ViewModels.HealthManagement.HealthManagementVm>
+
+<div class="text-left" style="margin-left: 200px;">
+    <h1>Group Details</h1>
+</div>
+
+<div>
+    <p>@Model.FirstOrDefault()?.VisitDate.ToString("yyyy-MM-dd")</p>
+    <p><b>Visited Dr.OPD 1</b></p>
+    <p>Dr.OPD 1 shared records for @Model.FirstOrDefault()?.PatientFirstName @Model.FirstOrDefault()?.PatientLastName</p>
+</div>
+
+<hr class="w-50" />
+
+<div class="d-flex justify-content-left mb-3" style="margin-right: 10px;">
+    <div>
+        <p style="margin-bottom: 5px;">Book an appointment with</p>
+        <p><b>Derma Circles Clinic</b></p>
+    </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary" style="margin-left: 20px;">Book</button>
+    </div>
+</div>
+
+<hr class="w-50" />
+
+<h3>Prescription by Dr.OPD 1</h3>
+
+<hr class="w-50" />
+@foreach (var item in Model)
+{
+    <div>
+        <p>
+            <b>@Html.DisplayFor(modelItem => item.Medicine)</b>
+            @Html.DisplayFor(modelItem => item.MedicineType) <b>.</b>
+            @Html.DisplayFor(modelItem => item.Strength)
+        </p>
+        <p>
+            @if (!string.IsNullOrEmpty(item.AdditionalFrequency))
+            {
+                @Html.DisplayFor(modelItem => item.AdditionalFrequency)
+            }
+            else
+            {
+                <text>
+                    @(item.FrequencyMorning ? "Morning: 1" : "")
+                    @(item.FrequencyAfternoon ? " - Afternoon: 1" : "")
+                    @(item.FrequencyNight ? " - Night: 1" : "")
+                </text>
+            }
+        </p>
+        <p>For 30 day(s)</p>
+        <hr class="w-50" />
+    </div>
+}
+<div class="text-left" style="margin-left: 200px;">
+    <b>View Original</b>
+</div>

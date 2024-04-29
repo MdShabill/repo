@@ -31,10 +31,7 @@
             <td><b>S.no</b></td>
             <td><b>Drug Name</b></td>
             <td><b>Strength</b></td>
-            <td><b>Additional Frequency</b></td>
-            <td><b>Frequency Morning</b></td>
-            <td><b>Frequency Afternoon</b></td>
-            <td><b>Frequency Night</b></td>
+            <td><b>Frequency</b></td>
             <td><b>Instruction</b></td>
         </tr>
 
@@ -44,10 +41,21 @@
                 <td>@(i + 1)</td>
                 <td>@Html.DisplayFor(modelItem => Model[i].Medicine)</td>
                 <td>@Html.DisplayFor(modelItem => Model[i].Strength)</td>
-                <td>@Html.DisplayFor(modelItem => Model[i].AdditionalFrequency)</td>
-                <td>@Html.DisplayFor(modelItem => Model[i].FrequencyMorning)</td>
-                <td>@Html.DisplayFor(modelItem => Model[i].FrequencyAfternoon)</td>
-                <td>@Html.DisplayFor(modelItem => Model[i].FrequencyNight)</td>
+                <td>
+                    @{
+                        if (Model[i].Medicine.Contains("AdditionalFrequency"))
+                        {
+                            @Model[i].AdditionalFrequency
+                        }
+                        else
+                        {
+                            @Model[i].AdditionalFrequency @(Model[i].FrequencyMorning ? "Morning: 1" : "")
+                            @(Model[i].FrequencyAfternoon ? "-  Afternoon: 1" : "")
+                            @(Model[i].FrequencyNight ? "-  Night: 1" : "")
+                        }
+                    }
+                </td>
+
                 <td>@Html.DisplayFor(modelItem => Model[i].Instruction)</td>
             </tr>
         }

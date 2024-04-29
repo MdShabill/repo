@@ -31,7 +31,16 @@ namespace ShopEase.Controllers
 
         public IActionResult GetPatientMedicineDetails(int madicalRecordId) 
         {
-            List<HealthManagement> healthManagements = _healthManagementRepository.GetPatientMedicineDetailByIdByVesitDate(madicalRecordId);
+            List<HealthManagement> healthManagements = _healthManagementRepository.GetPatientMedicineDetailBymadicalRecordId(madicalRecordId);
+
+            List<HealthManagementVm> healthManagementVm = _imapper.Map<List<HealthManagement>, List<HealthManagementVm>>(healthManagements);
+
+            return View(healthManagementVm);
+        }
+
+        public IActionResult GetDoctorPrescription(int madicalRecordId)
+        {
+            List<HealthManagement> healthManagements = _healthManagementRepository.GetDoctorPrescriptionBymadicalRecordId(madicalRecordId);
 
             List<HealthManagementVm> healthManagementVm = _imapper.Map<List<HealthManagement>, List<HealthManagementVm>>(healthManagements);
 
