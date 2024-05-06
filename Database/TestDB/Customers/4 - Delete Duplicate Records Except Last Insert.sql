@@ -16,13 +16,3 @@ Where Id NOT IN (
     From Customers
     Group By FirstName, LastName
 )
-
-
-
-
-
-
-
-
-
-Truncate Table Customers
