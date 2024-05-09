@@ -1,5 +1,6 @@
--- Fetch All Employees First Department and Current Department Position?
---Approach: 1
+-- Fetch All Employees previous and Current Department Position?
+
+--Approach: 1 here we use CTE and Window function
 WITH DepartmentChanges AS (
     SELECT 
         Id, FullName, FromDepartment,
@@ -24,7 +25,7 @@ WHERE
     AND LastChange.LastChangeRank = 1
 ORDER BY JoiningDate
 
---Approach: 2
+--Approach: 2 Here we use SubQuery and Window function
 SELECT
     FirstChange.JoiningDate,
     FirstChange.FullName,
