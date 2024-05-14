@@ -78,19 +78,14 @@ SELECT DISTINCT
      FROM Employees2 
      WHERE Employees2.FullName = EmployeeRecord.FullName AND 
            Employees2.JoiningDate = EmployeeRecord.JoiningDate AND 
-           Employees2.Id = (SELECT MIN(Id) 
-                            FROM Employees2 
-                            WHERE FullName = EmployeeRecord.FullName AND 
-                                  JoiningDate = EmployeeRecord.JoiningDate)
+           Employees2.Id = MIN(EmployeeRecord.Id) 
     ) AS FromDepartment,
     (SELECT Department
      FROM Employees2
      WHERE Employees2.FullName = EmployeeRecord.FullName AND 
            Employees2.JoiningDate = EmployeeRecord.JoiningDate AND 
-           Employees2.Id = (SELECT MAX(Id) 
-                            FROM Employees2 
-                            WHERE FullName = EmployeeRecord.FullName AND 
-                                  JoiningDate = EmployeeRecord.JoiningDate)
+           Employees2.Id =  MAX(EmployeeRecord.Id) 
     ) AS ToDepartment
 FROM Employees2 AS EmployeeRecord
+group by EmployeeRecord.JoiningDate, EmployeeRecord.FullName 
 ORDER BY EmployeeRecord.JoiningDate

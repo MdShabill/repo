@@ -47,7 +47,8 @@ namespace ShopEase.Controllers
 
         public async Task<IActionResult> ShowMyData()
         {
-            string apiUrl = "https://localhost:7073/api/Doctors/GetAllDoctors";
+            //string apiUrl = "https://localhost:7073/api/Doctors/GetAllDoctors";
+            string apiUrl = "https://qa-member.astm.org/m1c/api/v1/value";
             List<ShowMyData> showMyDataList = null;
 
             using (HttpClient client = new HttpClient())
