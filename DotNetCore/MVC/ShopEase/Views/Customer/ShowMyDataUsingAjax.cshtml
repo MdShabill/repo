@@ -12,7 +12,11 @@
         function performAction(buttonId) {
             $.ajax({
                 type: "GET",
-                url: "https://localhost:7073/api/Doctors/GetAllDoctors",
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                }
+                url: "https://qa-member.astm.org/m1c/api/v1/value",
+                // url: "https://localhost:7073/api/Doctors/GetAllDoctors",
                 success: function (response) {
 
                     debugger;

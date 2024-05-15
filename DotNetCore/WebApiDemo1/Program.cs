@@ -72,6 +72,18 @@ builder.Services.AddTransient<IMovieRepository>((svc) =>
     return new MovieRepository(sqlConnectionString);
 });
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyHeader();
+        policy.AllowAnyOrigin();
+        policy.AllowAnyMethod();
+        policy.AllowCredentials();
+    });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -80,7 +92,8 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-app.UseCors("AllowSpecificOrigin");
+//app.UseCors("AllowSpecificOrigin");
+
 
 app.UseHttpsRedirection();
 
