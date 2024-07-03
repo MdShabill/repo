@@ -1,0 +1,29 @@
+﻿@model List<ShopEase.ViewModels.Restaurant.RestaurantVm>
+<html>
+<span class="text-success"><b>@ViewBag.successMessage</b></span>
+    <body>
+        <table border="3px" class="table">
+            <tr class="table1">
+                <td><b>Restaurant Name</b></td>
+                <td><b>Mobile Number</b></td>
+                <td><b>Location</b></td>
+                <td><b>Rating</b></td>
+            </tr>
+
+            @foreach (ShopEase.ViewModels.Restaurant.RestaurantVm restaurantVm in Model)
+            {
+                <tr class="table1">
+                    <td><b><a asp-controller="Restaurant" asp-action="View" asp-route-id="@restaurantVm.Id">@restaurantVm.RestaurantName</a></b></td>
+                    <td><b>@restaurantVm.MobileNumber</b></td>
+                    <td><b>@restaurantVm.Location</b></td>
+                    <td><b>@restaurantVm.Rating</b></td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = restaurantVm.Id }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = restaurantVm.Id })
+                    </td>
+                </tr>
+            }
+        </table>
+        <b><a asp-controller="Restaurant" asp-action="Add">Add New Restaurant</a></b>
+    </body>
+</html>

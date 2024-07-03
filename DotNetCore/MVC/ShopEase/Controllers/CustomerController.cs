@@ -71,15 +71,15 @@ namespace ShopEase.Controllers
             return View();
         }
 
-        public IActionResult ShowMyDataUSingAJAX()
-        {
-            return View();
-        }
+        //public IActionResult ShowMyDataUSingAJAX()
+        //{
+        //    return View();
+        //}
 
-        public IActionResult ShowMyApiDataUSingAJAX()
-        {
-            return View();
-        }
+        //public IActionResult ShowMyApiDataUSingAJAX()
+        //{
+        //    return View();
+        //}
 
         public IActionResult MyProfile()
         {

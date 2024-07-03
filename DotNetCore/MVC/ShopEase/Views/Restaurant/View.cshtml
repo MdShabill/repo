@@ -1,0 +1,30 @@
+﻿@model ShopEase.ViewModels.Restaurant.RestaurantVm
+<html
+    <body>
+        <h2 class="heading">View Restaurant</h2>
+        <input type="hidden" name="Id" value="@Model.Id" id="Id" />
+        <table class="table" style="width:600px;">
+            <tr>
+                <td><b>Restaurant Name:</b></td>
+                <td>@Model.RestaurantName</td>
+            </tr>
+            <br />
+            <tr>
+                <td><b>Mobile Number:</b></td>
+                <td>@Model.MobileNumber</td>
+            </tr>
+            <br />
+            <tr>
+                <td><b>Location:</b></td>
+                <td>@Model.Location</td>
+            </tr>
+            <br />
+            <tr>
+                <td><b>Rating:</b></td>
+                <td>@Model.Rating</td>
+            </tr>
+        </table>
+        <br />
+    <b><a asp-controller="Restaurant" asp-action="ViewAll">Back</a></b>
+    </body>
+</html>

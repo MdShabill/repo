@@ -1,3 +1,4 @@
+using ShopEase.Controllers;
 using ShopEase.Repositories;
 
 
@@ -86,6 +87,11 @@ builder.Services.AddTransient<IHealthManagementRepository>((svc) =>
     return new HealthManagementRepository(sqlConnectionString);
 });
 
+builder.Services.AddTransient<IRestaurantRepository>((svc) =>
+{
+    string sqlConnectionString = configuration.GetConnectionString("FoodDeliveryDBConnection");
+    return new RestaurantRepository(sqlConnectionString);
+});
 
 WebApplication app = builder.Build();
 

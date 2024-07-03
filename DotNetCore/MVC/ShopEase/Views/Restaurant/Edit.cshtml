@@ -1,0 +1,41 @@
+﻿@model ShopEase.ViewModels.Restaurant.RestaurantVm
+<html>
+<h2 class="heading">Edit Details</h2>
+<body>
+    <form asp-action="Update" method="post">
+        <table class="table" style="width:600px;">
+            <label style="visibility:hidden;" for="id">Id:</label>
+            <br>
+            <input style="visibility:hidden;" type="text" id="id" name="id" value="@Model.Id">
+            <br>
+            <tr>
+                <td><label for="RestaurantName"><b>Restaurant Name:</b></label></td>
+                <td><input type="text" id="RestaurantName" name="RestaurantName" value="@Model.RestaurantName"></td>
+            </tr>
+            <br />
+            <tr>
+                <td><label for="MobileNumber"><b>Mobile Number:</b></label></td>
+                <td><input type="text" id="MobileNumber" name="MobileNumber" value="@Model.MobileNumber"></td>
+            </tr>
+            <br />
+            <tr>
+                <td><label for="Location"><b>Location:</b></label></td>
+                <td><textarea id="Location" name="Location" style="width: 300px;">@Model.Location</textarea></td>
+            </tr>
+            <br />
+            <tr>
+                <td><label for="Rating"><b>Rating:</b></label></td>
+                <td><input type="text" id="Rating" name="Rating" value="@Model.Rating"></td>
+            </tr>
+        </table>
+        <br />
+        <div class="form-group">
+            <input type="submit" value="Update" class="btn btn-primary" />
+        </div>
+    </form>
+    <br />
+    <div>
+        <a asp-action="ViewAll"><b>Back</b></a>
+    </div>
+</body>
+</html>
