@@ -34,6 +34,7 @@ namespace ShopEase.Controllers
             return View(restaurantVm);
         }
 
+        //hello
         public IActionResult View(int id)
         {
             Restaurant restaurant = _restaurantRepository.GetRestaurantById(id);
