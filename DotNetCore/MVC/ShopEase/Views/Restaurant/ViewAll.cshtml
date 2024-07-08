@@ -4,10 +4,10 @@
     <body>
         <table border="3px" class="table">
             <tr class="table1">
-                <td><b>Restaurant Name</b></td>
-                <td><b>Mobile Number</b></td>
-                <td><b>Location</b></td>
-                <td><b>Rating</b></td>
+            <td><b><a asp-action="ViewAll" asp-route-sortColumnName="RestaurantName" asp-route-sortOrder="ASC">Restaurant Name</a></b></td>
+            <td><b><a asp-action="ViewAll" asp-route-sortColumnName="MobileNumber" asp-route-sortOrder="ASC">Mobile Number</a></b></td>
+            <td><b><a asp-action="ViewAll" asp-route-sortColumnName="Location" asp-route-sortOrder="ASC">Location</a></b></td>
+            <td><b><a asp-action="ViewAll" asp-route-sortColumnName="Rating" asp-route-sortOrder="ASC">Rating</a></b></td>
             </tr>
 
             @foreach (ShopEase.ViewModels.Restaurant.RestaurantVm restaurantVm in Model)

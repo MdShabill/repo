@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShopEase.DataModels.Restaurant;
 using ShopEase.Repositories;
@@ -25,16 +26,48 @@ namespace ShopEase.Controllers
             _imapper = configuration.CreateMapper();
         }
 
-        public IActionResult ViewAll()
+        public IActionResult ViewAll(string sortColumnName, string sortOrder)
         {
-            List<Restaurant> restaurants = _restaurantRepository.GetAll();
+            if (string.IsNullOrEmpty(sortColumnName))
+            {
+                sortColumnName = "RestaurantName";
+            }
+
+            if (string.IsNullOrEmpty(sortOrder))
+            {
+                sortOrder = "ASC";
+            }
+
+            string SessionSortColumnName = HttpContext.Session.GetString("SortColumnName");
+            string SessionSortOrder = HttpContext.Session.GetString("SortOrder");
+
+            if (!string.IsNullOrEmpty(SessionSortColumnName) && !string.IsNullOrEmpty(SessionSortOrder)
+                && SessionSortColumnName == sortColumnName)
+            {
+                if (HttpContext.Session.GetString("SortOrder") == "ASC")
+                {
+                    sortOrder = "DESC";
+                    HttpContext.Session.SetString("SortOrder", sortOrder);
+                }
+                else if (HttpContext.Session.GetString("SortOrder") == "DESC")
+                {
+                    sortOrder = "ASC";
+                    HttpContext.Session.SetString("SortOrder", sortOrder);
+                }
+            }
+            else
+            {
+                HttpContext.Session.SetString("SortColumnName", sortColumnName);
+                HttpContext.Session.SetString("SortOrder", sortOrder);
+            }
+
+            List<Restaurant> restaurants = _restaurantRepository.GetAllSortedresult(sortColumnName, sortOrder);
 
             List<RestaurantVm> restaurantVm = _imapper.Map<List<Restaurant>, List<RestaurantVm>>(restaurants);
 
             return View(restaurantVm);
         }
 
-        //hello
         public IActionResult View(int id)
         {
             Restaurant restaurant = _restaurantRepository.GetRestaurantById(id);

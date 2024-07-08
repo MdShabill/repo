@@ -50,7 +50,7 @@ namespace ShopEase.Controllers
         public IActionResult Index(string sortColumnName, string sortOrder)
         {
             if (string.IsNullOrEmpty(sortColumnName))
-                sortColumnName = "ProductName";
+                sortColumnName = "Title";
 
             if (string.IsNullOrEmpty(sortOrder))
                 sortOrder = "ASC";

@@ -14,16 +14,36 @@ namespace ShopEase.Repositories
             _connectionString = connectionString;
         }
 
-        public List<Restaurant> GetAll()
+        public List<Restaurant> GetAllSortedresult(string? sortColumnName, string? sortOrder)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
+                if (string.IsNullOrEmpty(sortColumnName))
+                {
+                    sortColumnName = "RestaurantName";
+                }
+
+                if (string.IsNullOrEmpty(sortOrder))
+                {
+                    sortOrder = "ASC";
+                }
+
                 string sqlQuery = @"Select Id,
                            RestaurantName, MobileNumber,  
                            Location, Rating
                            From 
                            Restaurants";
+
+                if (!string.IsNullOrEmpty(sortColumnName) && !string.IsNullOrEmpty(sortOrder))
+                {
+                    sqlQuery += " ORDER BY " + @sortColumnName + " " + @sortOrder;
+                }
+
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sortColumnName", sortColumnName);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@sortOrder", sortOrder);
+
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 

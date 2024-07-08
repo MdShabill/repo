@@ -20,7 +20,7 @@ namespace ShopEase.Repositories
             {
                 if (string.IsNullOrEmpty(sortColumnName))
                 {
-                    sortColumnName = "ProductName";
+                    sortColumnName = "Title";
                 }
 
                 if (string.IsNullOrEmpty(sortOrder))
