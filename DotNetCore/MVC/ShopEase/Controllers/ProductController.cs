@@ -285,5 +285,11 @@ namespace ShopEase.Controllers
             List<ProductSupplier> productSuppliers = _productSupplierRepository.GetSuppliers();
             ViewBag.Suppliers = new SelectList(productSuppliers, "Id", "SupplierName");
         }
+
+        public ActionResult FirstAction()
+        {
+            TempData["Message"] = "Hello from FirstAction!";
+            return RedirectToAction("SecondAction", "Customer");
+        }
     }
 }

@@ -1,0 +1,14 @@
+﻿<!-- SecondAction.cshtml -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Display TempData</title>
+</head>
+<body>
+    <h1>Display TempData</h1>
+    @if (!string.IsNullOrEmpty(ViewBag.Message))
+    {
+        <p>@ViewBag.Message</p>
+    }
+</body>
+</html>

@@ -332,5 +332,17 @@ namespace ShopEase.Controllers
             }
             return View();
         }
+
+        public ActionResult SecondAction()
+        {
+            if (TempData.ContainsKey("Message"))
+            {
+                string message = TempData["Message"] as string;
+                // Now do something with the message
+                ViewBag.Message = message;
+            }
+            return View();
+        }
+
     }
 }
