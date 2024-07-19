@@ -1,0 +1,34 @@
+﻿@model ConstructionApplication.ViewModels.CostMasterVm.CostMasterVm
+
+<h4>CostMasterVm</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Add">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <span class="text-success"> <b> @ViewBag.successMessage </b> </span>
+
+            <div class="form-group">
+                <label asp-for="MasterMasonCost" class="control-label"><b>Master Mason Cost</b></label>
+                <input asp-for="MasterMasonCost" class="form-control" />
+                <span asp-validation-for="MasterMasonCost" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="LabourCost" class="control-label"><b>Labour Cost</b></label>
+                <input asp-for="LabourCost" class="form-control" />
+                <span asp-validation-for="LabourCost" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Date" class="control-label"><b>Date</b></label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Add" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
