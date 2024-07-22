@@ -19,6 +19,11 @@ builder.Services.AddTransient<ICostMasterRepository>((svc) =>
     return new CostMasterRepository(CostConstructDBConnectionString);
 });
 
+builder.Services.AddTransient<IDailyAttendanceRepository>((svc) =>
+{
+    return new DailyAttendanceRepository(CostConstructDBConnectionString);
+});
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.

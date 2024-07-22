@@ -6,3 +6,9 @@ Create Table DailyAttendance
 	TotalLabour Int Not Null,
 	Primary Key (Id),
 )
+
+Alter Table DailyAttendance
+Add
+	MasterMasonAmount Decimal(10,2), 
+	LabourAmount Decimal(10,2),
+	TotalAmount Decimal(10,2)
