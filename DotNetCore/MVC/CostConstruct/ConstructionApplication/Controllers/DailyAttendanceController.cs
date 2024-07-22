@@ -60,5 +60,38 @@ namespace ConstructionApplication.Controllers
 
             return View();
         }
+
+        public IActionResult AddUsingAjax()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddUsingAjax(DailyAttendanceVm dailyAttendanceVm)
+        {
+            DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
+
+            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail();
+
+            if (costMaster != null)
+            {
+                dailyAttendance.MasterMasonAmount = dailyAttendance.TotalMasterMason * costMaster.MasterMasonCost;
+                dailyAttendance.LabourAmount = dailyAttendance.TotalLabour * costMaster.LabourCost;
+                dailyAttendance.TotalAmount = dailyAttendance.MasterMasonAmount + dailyAttendance.LabourAmount;
+
+                int affectedRowCount = _dailyAttendanceRepository.Create(dailyAttendance);
+                if (affectedRowCount > 0)
+                {
+                    ViewBag.successMessage = "Add New Daily Attendance Successful";
+                }
+
+            }
+            else
+            {
+                ViewBag.errorMessage = "No active CostMaster record found ";
+            }
+
+            return View();
+        }
     }
 }

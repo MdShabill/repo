@@ -1,0 +1,70 @@
+﻿@model ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm
+
+<h1>Add Using Ajax</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddUsingAjax">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <span class="text-success"> <b> @ViewBag.successMessage </b> </span>
+
+            <div class="form-group">
+                <label asp-for="Date" class="control-label"><b>Date</b></label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <br/>
+            <div class="form-group">
+                <label asp-for="TotalMasterMason" class="control-label"><b>Total Master Mason</b></label>
+                <input asp-for="TotalMasterMason" class="form-control" />
+                <span asp-validation-for="TotalMasterMason" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <label asp-for="TotalLabour" class="control-label"><b>Total Labour</b></label>
+                    <input asp-for="TotalLabour" class="form-control" />
+                    <span asp-validation-for="TotalLabour" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 d-flex align-items-center" style="margin-left: 10px;">
+                    <a href="#" id="viewCostLink"><b>View Cost</b></a>
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <label><b>Master Mason Cost</b></label>
+                <input id="MasterMasonCost" class="form-control" readonly />
+            </div>
+            <br />
+            <div class="form-group">
+                <label><b>Labour Cost</b></label>
+                <input id="LabourCost" class="form-control" readonly />
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Add" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#viewCostLink").click(function(event) {
+            event.preventDefault();
+
+            $.ajax({
+                url: '@Url.Action("GetActiveCost", "CostMaster")',
+                type: 'GET',
+                success: function(response) {
+                    $("#MasterMasonCost").val(response.masterMasonCost);
+                    $("#LabourCost").val(response.labourCost);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error occurred while fetching costs: " + error);
+                }
+            });
+        });
+    });
+</script>
