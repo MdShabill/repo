@@ -90,7 +90,6 @@ namespace ConstructionApplication.Controllers
             {
                 ViewBag.errorMessage = "No active CostMaster record found ";
             }
-
             return View();
         }
     }

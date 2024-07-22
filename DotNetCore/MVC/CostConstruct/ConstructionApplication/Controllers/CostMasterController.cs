@@ -29,6 +29,7 @@ namespace ConstructionApplication.Controllers
         {
             CostMaster costMaster = _costMasterRepository.GetActiveCostDetail();
             CostMasterVm costMasterVm = _imapper.Map<CostMaster, CostMasterVm>(costMaster);
+
             return Json(costMasterVm);
         }
 

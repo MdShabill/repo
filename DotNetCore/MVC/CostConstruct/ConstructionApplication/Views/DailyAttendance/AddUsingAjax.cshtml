@@ -15,32 +15,38 @@
             </div>
             <br/>
             <div class="form-group">
-                <label asp-for="TotalMasterMason" class="control-label"><b>Total Master Mason</b></label>
-                <input asp-for="TotalMasterMason" class="form-control" />
-                <span asp-validation-for="TotalMasterMason" class="text-danger"></span>
+                <label asp-for="MasterMasonCount" class="control-label"><b>Master Mason Count</b></label>
+                <input asp-for="MasterMasonCount" class="form-control" />
+                <span asp-validation-for="MasterMasonCount" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group row">
                 <div class="col-md-6">
-                    <label asp-for="TotalLabour" class="control-label"><b>Total Labour</b></label>
-                    <input asp-for="TotalLabour" class="form-control" />
-                    <span asp-validation-for="TotalLabour" class="text-danger"></span>
+                    <label asp-for="LabourCount" class="control-label"><b>Total Labour Count</b></label>
+                    <input asp-for="LabourCount" class="form-control123" />
+                    <span asp-validation-for="LabourCount" class="text-danger"></span>
                 </div>
                 <div class="col-md-4 d-flex align-items-center" style="margin-left: 10px;">
-                    <a href="#" id="viewCostLink"><b>View Cost</b></a>
+                    <a href="#" id="calculateCost"><b>Calculate Cost</b></a>
                 </div>
             </div>
             <br />
             <div class="form-group">
-                <label><b>Master Mason Cost</b></label>
-                <input id="MasterMasonCost" class="form-control" readonly />
+                <label><b>Total Master Mason Amount</b></label>
+                <input id="txtTotalMasterMasonAmount" class="form-control" readonly />
             </div>
             <br />
             <div class="form-group">
-                <label><b>Labour Cost</b></label>
-                <input id="LabourCost" class="form-control" readonly />
+                <label><b>Total Labour Amount</b></label>
+                <input id="txtTotalLabourAmount" class="form-control" readonly />
             </div>
             <br />
+            <div class="form-group">
+                <label><b>Total Amount</b></label>
+                <input id="txtTotalAmount" class="form-control" readonly />
+            </div>
+            <br />
+
             <div class="form-group">
                 <input type="submit" value="Add" class="btn btn-primary" />
             </div>
@@ -51,15 +57,17 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        $("#viewCostLink").click(function(event) {
+        $("#calculateCost").click(function (event) {
             event.preventDefault();
 
             $.ajax({
                 url: '@Url.Action("GetActiveCost", "CostMaster")',
                 type: 'GET',
                 success: function(response) {
-                    $("#MasterMasonCost").val(response.masterMasonCost);
-                    $("#LabourCost").val(response.labourCost);
+                    
+                    $("#txtTotalMasterMasonAmount").val(response.masterMasonCost * $("#MasterMasonCount").val());
+                    $("#txtTotalLabourAmount").val(response.labourCost * $("#LabourCount").val());
+                    $("#txtTotalAmount").val( parseInt( $("#txtTotalMasterMasonAmount").val() ) + parseInt($("#txtTotalLabourAmount").val()));
                 },
                 error: function(xhr, status, error) {
                     console.error("Error occurred while fetching costs: " + error);

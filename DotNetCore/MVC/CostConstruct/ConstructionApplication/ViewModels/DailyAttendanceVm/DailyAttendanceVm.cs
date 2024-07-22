@@ -3,7 +3,7 @@
     public class DailyAttendanceVm
     {
         public DateTime Date { get; set; }
-        public int TotalMasterMason { get; set;}
-        public int TotalLabour { get; set;}
+        public int MasterMasonCount { get; set;}
+        public int LabourCount { get; set;}
     }
 }
