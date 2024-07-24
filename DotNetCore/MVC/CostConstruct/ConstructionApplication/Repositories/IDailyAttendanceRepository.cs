@@ -4,6 +4,7 @@ namespace ConstructionApplication.Repositories
 {
     public interface IDailyAttendanceRepository
     {
+        public List<DailyAttendance> GetAll();
         public int Create(DailyAttendance dailyAttendance);
     }
 }

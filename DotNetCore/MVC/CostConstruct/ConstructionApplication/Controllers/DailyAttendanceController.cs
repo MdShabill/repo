@@ -22,12 +22,20 @@ namespace ConstructionApplication.Controllers
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<DailyAttendanceVm, DailyAttendance>();
+                cfg.CreateMap<DailyAttendance, DailyAttendanceVm>();
             });
 
             _imapper = configuration.CreateMapper();
             _costMasterRepository = costMasterRepository;
         }
 
+        public IActionResult Index()
+        {
+            List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll();
+            List<DailyAttendanceVm> dailyAttendanceVm = _imapper.Map<List<DailyAttendance>, List<DailyAttendanceVm>>(dailyAttendances);
+            return View(dailyAttendanceVm);
+        }
+            
         public IActionResult Add()
         {
             return View();
@@ -46,8 +54,10 @@ namespace ConstructionApplication.Controllers
                 dailyAttendance.LabourAmount = dailyAttendance.TotalLabour * costMaster.LabourCost;
                 dailyAttendance.TotalAmount = dailyAttendance.MasterMasonAmount + dailyAttendance.LabourAmount;
 
-                int affectedRowCount = _dailyAttendanceRepository.Create(dailyAttendance);
-                if (affectedRowCount > 0)
+                HttpContext.Session.SetInt32("AttendanceId", dailyAttendance.Id);
+
+                dailyAttendance.Id = _dailyAttendanceRepository.Create(dailyAttendance);
+                if (dailyAttendance.Id > 0)
                 {
                     ViewBag.successMessage = "Add New Daily Attendance Successful";
                 }
@@ -79,8 +89,8 @@ namespace ConstructionApplication.Controllers
                 dailyAttendance.LabourAmount = dailyAttendance.TotalLabour * costMaster.LabourCost;
                 dailyAttendance.TotalAmount = dailyAttendance.MasterMasonAmount + dailyAttendance.LabourAmount;
 
-                int affectedRowCount = _dailyAttendanceRepository.Create(dailyAttendance);
-                if (affectedRowCount > 0)
+                dailyAttendance.Id = _dailyAttendanceRepository.Create(dailyAttendance);
+                if (dailyAttendance.Id > 0)
                 {
                     ViewBag.successMessage = "Add New Daily Attendance Successful";
                 }
