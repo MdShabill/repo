@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+    <body>
+        <h1>Calculation</h1>
+        <br />
+        <table>
+            <tr>
+                <td><b>Number 1:</b></td>
+                <td><input type="text" id="Num1" name="Num1" /></td>
+            </tr>
+            <tr>
+                <td><b>Number 2:</b></td>
+                <td><input type="text" id="Num2" name="Num2" /></td>
+            </tr>
+            <tr>
+                <td><b>Result:</b></td>
+                <td><input type="text" id="Result" name="Result" disabled /></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center;">
+                    <button id="calculateAdd" data-operation="Add" class="btn btn-primary" style="margin-left: 4px;"><b>Add</b></button>
+                    <button id="calculateSubtract" data-operation="Subtract" class="btn btn-primary" style="margin-left: 4px;"><b>Subtract</b></button>
+                    <button id="calculateMultiply" data-operation="Multiply" class="btn btn-primary" style="margin-left: 4px;"><b>Multiply</b></button>
+                    <button id="calculateDivide" data-operation="Divide" class="btn btn-primary" style="margin-left: 4px;"><b>Divide</b></button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        function calculateAdd() {
+            $('#Result').val(parseFloat($("#Num1").val()) + parseFloat($("#Num2").val()));
+        }
+
+        $("#calculateAdd").click(function (event) {
+            calculateAdd();
+        });
+
+        function calculateSubtract() {
+            $('#Result').val(parseFloat($("#Num1").val()) - parseFloat($("#Num2").val()));
+        }
+
+        $("#calculateSubtract").click(function (event) {
+            calculateSubtract();
+        });
+
+        function calculateMultiply() {
+            $('#Result').val(parseFloat($("#Num1").val()) * parseFloat($("#Num2").val()));
+        }
+
+        $("#calculateMultiply").click(function (event) {
+            calculateMultiply();
+        });
+
+        function calculateDivide() {
+            $('#Result').val(parseFloat($("#Num1").val()) / parseFloat($("#Num2").val()));
+        }
+
+        $("#calculateDivide").click(function (event) {
+            calculateDivide();
+        });
+    });
+</script>
+
