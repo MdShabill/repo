@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+    <body>
+        <h1>Calculate With Switch 3</h1>
+        <table>
+            <tr>
+                <td><b>Num 1:</b></td>
+                <td><input type="text" id="num1" /></td>
+            </tr>
+
+            <tr>
+                <td><b>Num 2:</b></td>
+                <td><input type="text" id="num2" /></td>
+            </tr>
+
+            <tr>
+                <td><b>Result:</b></td>
+                <td><input type="text" id="result" disabled /></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <button id="calculateAdd" class="btn-primary" style="margin-left: 5px"><b>Add</b></button>
+                    <button id="calculateSubtract" class="btn-primary" style="margin-left: 5px"><b>Subtract</b></button>
+                    <button id="calculateMultiply" class="btn-primary" style="margin-left: 5px"><b>Multiply</b></button>
+                    <button id="calculateDivide" class="btn-primary" style="margin-left: 5px"><b>Divide</b></button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#calculateAdd").click(function () { calculateWithSwitch("Add"); });
+        $("#calculateSubtract").click(function () { calculateWithSwitch("Subtract"); });
+        $("#calculateMultiply").click(function () { calculateWithSwitch("Multiply"); });
+        $("#calculateDivide").click(function () { calculateWithSwitch("Divide"); });
+
+        function calculateWithSwitch(operation) {
+            var num1 = parseFloat($("#num1").val());
+            var num2 = parseFloat($("#num2").val());
+            var result;
+
+            switch (operation) {
+                case "Add":
+                    result = num1 + num2;
+                    break;
+                case "Subtract":
+                    result = num1 - num2;
+                    break;
+                case "Multiply":
+                    result = num1 * num2;
+                    break;
+                case "Divide":
+                    result = num1 / num2;
+                    break;
+                default:
+                    result = "Invalid Operation";
+                    break;
+            }
+            $('#result').val(result);
+        }
+    })
+
+</script>

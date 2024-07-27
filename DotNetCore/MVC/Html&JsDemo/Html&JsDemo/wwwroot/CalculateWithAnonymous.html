@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+    <body>
+        <h1>Calculate With Anonymous</h1>
+        <table>
+            <tr>
+                <td><b>Num 1:</b></td>
+                <td><input type="text" id="num1" /></td>
+            </tr>
+
+            <tr>
+                <td><b>Num 2:</b></td>
+                <td><input type="text" id="num2" /></td>
+            </tr>
+
+            <tr>
+                <td><b>Result:</b></td>
+                <td><input type="text" id="result" disabled /></td>
+            </tr>
+
+            <tr>
+                <td>
+                    <button id="calculateAdd" class="btn-primary" ><b>Add</b></button>
+                    <button id="calculateSubtract" class="btn-primary" ><b>Subtract</b></button>
+                    <button id="calculateMultiply" class="btn-primary" ><b>Multiply</b></button>
+                    <button id="calculateDivide" class="btn-primary" ><b>Divide</b></button>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        //$("#calculateAdd").click(function () {
+        //    var num1 = parseFloat($("#num1").val());
+        //    var num2 = parseFloat($("#num2").val());
+        //    var result = num1 + num2;
+        //    $('#result').val(result);
+        //});
+
+        $("#calculateAdd").click(function () {
+            $('#result').val(parseFloat($("#num1").val()) + parseFloat($("#num2").val()));
+        });
+
+        $("#calculateSubtract").click(function () {
+            $('#result').val(parseFloat($("#num1").val()) - parseFloat($("#num2").val()));
+        });
+
+        $("#calculateMultiply").click(function () {
+            $('#result').val(parseFloat($("#num1").val()) * parseFloat($("#num2").val()));
+        });
+
+        $("#calculateDivide").click(function () {
+            $('#result').val(parseFloat($("#num1").val()) / parseFloat($("#num2").val()));
+        });
+    })
+</script>
