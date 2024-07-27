@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<body>
+    <h1>Calculation 2</h1>
+    <br />
+    <table>
+        <tr>
+            <td><b>Number 1:</b></td>
+            <td><input type="text" id="Num1" name="Num1" value="2" /></td>
+        </tr>
+
+        <tr>
+            <td><b>Number 2:</b></td>
+            <td><input type="text" id="Num2" name="Num2" value="4" /></td>
+        </tr>
+
+        <tr>
+            <td><b>Result:</b></td>
+            <td><input type="text" id="Result" name="Result" disabled /></td>
+        </tr>
+
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                
+                <button id="calculateAdd" class="btn btn-primary" style="margin-left: 4px;"><b>Add</b></button>
+                
+                <button id="calculateSubtract" class="btn btn-primary" style="margin-left: 4px;"><b>Subtract</b></button>
+                <button id="calculateMultiply" class="btn btn-primary" style="margin-left: 4px;"><b>Multiply</b></button>
+                <button id="calculateDivide" class="btn btn-primary" style="margin-left: 4px;"><b>Divide</b></button>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+        $("#calculateAdd").click(function () { calculate("Add"); });
+
+        $("#calculateSubtract").click(function () { calculate("Subtract"); });
+
+        $("#calculateMultiply").click(function () { calculate("Multiply"); });
+
+        $("#calculateDivide").click(function () { calculate("Divide"); });
+
+
+        //Methods
+        function calculate(operation) {
+
+            var num1 = parseFloat($("#Num1").val());
+            var num2 = parseFloat($("#Num2").val());
+            var result;
+
+            if (operation == "Add") {
+                result = num1 + num2;
+            }
+            else if (operation == "Subtract") {
+                result = num1 - num2;
+            }
+            else if (operation == "Multiply") {
+                result = num1 * num2;
+            }
+            else if (operation == "Divide") {
+                result = num1 / num2;
+            }
+            else {
+                result = "Invalid Operation";
+            }
+
+            $('#Result').val(result);
+        }
+    });
+</script>
+
