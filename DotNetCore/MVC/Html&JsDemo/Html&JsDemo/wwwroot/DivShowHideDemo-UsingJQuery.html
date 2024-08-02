@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="lib/bootstrap/dist/css/bootstrap.rtl.min.css" rel="stylesheet" />
+    <link href="lib/bootstrap/dist/css/bootstrap.rtl.css" rel="stylesheet" />
+    <link href="lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+
+<body>
+    <h1>Div Show Hide Demo Using JQuery</h1>
+    <br />
+    <div id="mainDiv">
+        <input type="button" id="btn1" class="btn btn-primary" value="Show Div 1" />
+        <input type="button" id="btn2" class="btn btn-primary" value="Show Div 2" />
+        <input type="button" id="btn3" class="btn btn-primary" value="Show Div 3" />
+    </div>
+
+    <div id="div1" style="display:none">
+        <b>This is div 1</b>
+    </div>
+
+    <div id="div2" style="display:none">
+        <b>This is div 2</b>
+    </div>
+
+    <div id="div3" style="display:none">
+        <b>This is div 3</b>
+    </div>
+</body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#btn1').click(function () {
+            $('#div1').toggle();
+            $('#div2').hide();
+            $('#div3').hide();
+        });
+
+        $('#btn2').click(function () {
+            $('#div1').hide();
+            $('#div2').toggle();
+            $('#div3').hide();
+        });
+
+        $('#btn3').click(function () {
+            $('#div1').hide();
+            $('#div2').hide();
+            $('#div3').toggle();
+        });
+    });
+</script>
