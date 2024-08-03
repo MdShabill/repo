@@ -8,7 +8,7 @@ namespace MyConsoleApp
     {
         static async Task Main(string[] args)
         {
-            NumericHelper numericHelper = new();
+            //NumericHelper numericHelper = new();
 
             //////CheckExistsNumber
             //numericHelper.ValidateGivenNumberExistsInArray();
@@ -93,10 +93,16 @@ namespace MyConsoleApp
             //Console.WriteLine("\n");
 
             ////Display Hello World 20 times with 2 second gap between each print
-            NumericHelper.DisplayTextWithTwoSecondGap();
+            //NumericHelper.DisplayTextWithTwoSecondGap();
 
-            //// Call the method to make the API request
-            await numericHelper.CallApi();
+            // Call the method to make the API request
+            //await numericHelper.CallApi();
+
+            StringHelper stringHelper = new ();
+
+            stringHelper.GetTotalCountOfString();
+
+            stringHelper.GetDomainExtentation();
         }
     }
 }
