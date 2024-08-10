@@ -207,36 +207,36 @@
 //            }
 //        }
 
-//        public void CheckHowManyTimesAnArrayElementFoundAndWhichIndexPositions()
+//public void CheckHowManyTimesAnArrayElementFoundAndWhichIndexPositions()
+//{
+//    //// Write a program to check if a specific number exists in an array,
+//    //// count how many times it occurs, and find the index positions of those occurrences
+
+//    int[] numbers = { 15, 10, 25, 30, 10, 15, 60, 70, 80, 10 };
+
+//    Console.Write("Enter Number to search: ");
+//    int inputNumber = int.Parse(Console.ReadLine());
+
+//    int count = 0;
+
+//    if (Array.IndexOf(numbers, inputNumber) != -1)
+//    {
+//        Console.Write($"{inputNumber} found at index: ");
+//        for (int i = 0; i < numbers.Length; i++)
 //        {
-//            //// Write a program to check if a specific number exists in an array,
-//            //// count how many times it occurs, and find the index positions of those occurrences
-
-//            int[] numbers = { 15, 10, 25, 30, 10, 15, 60, 70, 80, 10 };
-
-//            Console.Write("Enter Number to search: ");
-//            int inputNumber = int.Parse(Console.ReadLine());
-
-//            int count = 0;
-
-//            if (Array.IndexOf(numbers, inputNumber) != -1)
+//            if (numbers[i] == inputNumber)
 //            {
-//                Console.Write($"{inputNumber} found at index: ");
-//                for (int i = 0; i < numbers.Length; i++)
-//                {
-//                    if (numbers[i] == inputNumber)
-//                    {
-//                        count++;
-//                        Console.Write($"{i} ");
-//                    }
-//                }
-//                Console.WriteLine($"\n{inputNumber} This Number Found {count} Times ");
-//            }
-//            else
-//            {
-//                Console.WriteLine($"\n{inputNumber} This Number is Not Found ");
+//                count++;
+//                Console.Write($"{i} ");
 //            }
 //        }
+//        Console.WriteLine($"\n{inputNumber} This Number Found {count} Times ");
+//    }
+//    else
+//    {
+//        Console.WriteLine($"\n{inputNumber} This Number is Not Found ");
+//    }
+//}
 
 //        public void GenerateStarPattern()
 //        {

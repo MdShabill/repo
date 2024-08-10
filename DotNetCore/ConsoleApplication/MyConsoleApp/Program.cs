@@ -100,9 +100,17 @@ namespace MyConsoleApp
 
             StringHelper stringHelper = new ();
 
-            stringHelper.GetTotalCountOfString();
+            //stringHelper.GetTotalCountOfString();
 
-            stringHelper.GetDomainExtentation();
+            //stringHelper.GetIdFromEmail();
+
+            //stringHelper.GetDomainExtension();
+
+            //stringHelper.GetFirstOccurrenceOfIndex();
+
+            stringHelper.GetFirstOccurrence();
+
+            stringHelper.CountTotalOccurrence();
         }
     }
 }
