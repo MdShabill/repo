@@ -1,0 +1,66 @@
+﻿@model Html_JsDemo.ViewModels.CustomerVm
+
+<h4>Customer Register</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <span class="text-success"><b>@ViewBag.SuccessMessage</b></span>
+        <div class="form-group">
+            <label asp-for="FullName" class="control-label"><b>Full Name</b></label>
+            <input asp-for="FullName" id="fullName" value="Salman" class="form-control" />
+        </div>
+        <br />
+        <div class="form-group">
+            <label asp-for="Email" class="control-label"><b>Email</b></label>
+            <input asp-for="Email" id="email" value="salman08@gmail.com" class="form-control" />
+        </div>
+        <br />
+        <div class="form-group">
+            <label asp-for="Gender" class="control-label"><b>Gender</b></label>
+            <input asp-for="Gender" id="gender" value="Male" class="form-control" />
+        </div>
+        <br />
+        <div class="form-group">
+            <label asp-for="Age" class="control-label"><b>Age</b></label>
+            <input asp-for="Age" id="age" value="23" class="form-control" />
+        </div>
+        <br />
+        <div class="form-group">
+            <input type="button" id="Add" value="Add" class="btn btn-primary" />
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        // Event handler for click event on the Add button
+        $("#Add").click(function () {
+            // Collect values from input fields based on id
+            var customer = {
+                FullName: $("#fullName").val(),
+                Email: $("#email").val(),
+                Gender: $("#gender").val(),
+                Age: $("#age").val()
+            };
+
+            // Send AJAX POST request to /Customer/Register with customer data
+            $.ajax({
+                type: "POST",
+                url: "/Customer/Register",
+                data: customer,
+                success: function (response) {
+                    alert("Customer Added successfully...\nFull Name: " + response.fullName + "\nEmail: " + response.email +
+                        "\nGender: " + response.gender + "\nAge: " + response.age);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        });
+    });
+</script>
