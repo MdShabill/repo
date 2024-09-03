@@ -29,10 +29,12 @@ namespace ConstructionApplication.Controllers
             _costMasterRepository = costMasterRepository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(DateTime? DateFrom, DateTime? DateTo)
         {
-            List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll();
+            List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll(DateFrom, DateTo);
             List<DailyAttendanceVm> dailyAttendanceVm = _imapper.Map<List<DailyAttendance>, List<DailyAttendanceVm>>(dailyAttendances);
+            ViewBag.DateFrom = DateFrom?.ToString("yyyy-MM-dd");
+            ViewBag.DateTo = DateTo?.ToString("yyyy-MM-dd");
             return View(dailyAttendanceVm);
         }
             
@@ -94,7 +96,6 @@ namespace ConstructionApplication.Controllers
                 {
                     ViewBag.successMessage = "Add New Daily Attendance Successful";
                 }
-
             }
             else
             {

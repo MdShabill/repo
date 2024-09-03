@@ -1,32 +1,38 @@
 ﻿@model List<ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm>
 
 <h1>Atendance Report</h1>
-
+<br/>
 <html>
     <body>
-        <form>
-            <table border="3px" class="table">
-                <tr class="table1">
-                    <td><b>Date</b></td>
-                    <td><b>Master Mason Count</b></td>
-                    <td><b>Total Labour Count</b></td>
-                    <td><b>Total Master Mason Amount</b></td>
-                    <td><b>Total Labour Amount</b></td>
-                    <td><b>Total Amount</b></td>
-                </tr>
 
-                @foreach (ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm dailyAttendanceVm in Model)
-                {
-                    <tr class="table1">
-                    <td><b>@dailyAttendanceVm.Date</b></td>
-                    <td><b>@dailyAttendanceVm.TotalMasterMason</b></td>
-                    <td><b>@dailyAttendanceVm.TotalLabour</b></td>
-                    <td><b>@dailyAttendanceVm.MasterMasonAmount</b></td>
-                    <td><b>@dailyAttendanceVm.LabourAmount</b></td>
-                    <td><b>@dailyAttendanceVm.TotalAmount</b></td>
-                    </tr>
-                }
-            </table>
+        <form method="get" asp-action="Index">
+            <label><b>Range:</b></label>
+            <input type="date" name="DateFrom" value="@ViewBag.DateFrom" />
+            <input type="date" name="DateTo" value="@ViewBag.DateTo" />
+            <button type="submit" class="btn btn-primary">Go</button>
         </form>
+        <br/>
+        <table border="3px" class="table">
+            <tr class="table1">
+                <td><b>Date</b></td>
+                <td><b>Master Mason Count</b></td>
+                <td><b>Total Labour Count</b></td>
+                <td><b>Total Master Mason Amount</b></td>
+                <td><b>Total Labour Amount</b></td>
+                <td><b>Total Amount</b></td>
+            </tr>
+
+            @foreach (ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm dailyAttendanceVm in Model)
+            {
+                <tr class="table1">
+                <td><b>@dailyAttendanceVm.Date.ToString("dd-MMMM-yyyy")</b></td>
+                <td><b>@dailyAttendanceVm.TotalMasterMason</b></td>
+                <td><b>@dailyAttendanceVm.TotalLabour</b></td>
+                <td><b>@dailyAttendanceVm.MasterMasonAmount</b></td>
+                <td><b>@dailyAttendanceVm.LabourAmount</b></td>
+                <td><b>@dailyAttendanceVm.TotalAmount</b></td>
+                </tr>
+            }
+        </table>
     </body>
 </html>

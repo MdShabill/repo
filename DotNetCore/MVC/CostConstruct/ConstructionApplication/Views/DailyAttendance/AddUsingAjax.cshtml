@@ -15,16 +15,16 @@
             </div>
             <br/>
             <div class="form-group">
-                <label asp-for="MasterMasonCount" class="control-label"><b>Master Mason Count</b></label>
-                <input asp-for="MasterMasonCount" class="form-control" value="3" />
-                <span asp-validation-for="MasterMasonCount" class="text-danger"></span>
+                <label asp-for="TotalMasterMason" class="control-label"><b>Master Mason Count</b></label>
+                <input asp-for="TotalMasterMason" class="form-control" value="3" />
+                <span asp-validation-for="TotalMasterMason" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group row">
                 <div class="col-md-6">
-                    <label asp-for="LabourCount" class="control-label"><b>Total Labour Count</b></label>
-                    <input asp-for="LabourCount" class="form-control" value="5" />
-                    <span asp-validation-for="LabourCount" class="text-danger"></span>
+                    <label asp-for="TotalLabour" class="control-label"><b>Total Labour Count</b></label>
+                    <input asp-for="TotalLabour" class="form-control" value="5" />
+                    <span asp-validation-for="TotalLabour" class="text-danger"></span>
                 </div>
                 <div class="col-md-4 d-flex align-items-center" style="margin-left: 10px;">
                     <a href="#" id="calculateCost"><b>Calculate Cost</b></a>
@@ -33,17 +33,20 @@
             <br />
             <div class="form-group">
                 <label><b>Total Master Mason Amount</b></label>
-                <input id="txtTotalMasterMasonAmount" class="form-control" readonly />
+                <input asp-for="MasterMasonAmount" class="form-control" readonly />
+                @* <input id="MasterMasonAmount" class="form-control" readonly /> *@
             </div>
             <br />
             <div class="form-group">
                 <label><b>Total Labour Amount</b></label>
-                <input id="txtTotalLabourAmount" class="form-control" readonly />
+                <input asp-for="LabourAmount" class="form-control" readonly />
+                @* <input id="LabourAmount" class="form-control" readonly /> *@
             </div>
             <br />
             <div class="form-group">
                 <label><b>Total Amount</b></label>
-                <input id="txtTotalAmount" class="form-control" readonly />
+                <input asp-for="TotalAmount" class="form-control" readonly />
+                @* <input id="TotalAmount" class="form-control" readonly /> *@
             </div>
             <br />
 
@@ -65,9 +68,9 @@
                 type: 'GET',
                 success: function(response) {
                     
-                    $("#txtTotalMasterMasonAmount").val(response.masterMasonCost * $("#MasterMasonCount").val());
-                    $("#txtTotalLabourAmount").val(response.labourCost * $("#LabourCount").val());
-                    $("#txtTotalAmount").val( parseInt( $("#txtTotalMasterMasonAmount").val() ) + parseInt($("#txtTotalLabourAmount").val()));
+                    $("#MasterMasonAmount").val(response.masterMasonCost * $("#TotalMasterMason").val());
+                    $("#LabourAmount").val(response.labourCost * $("#TotalLabour").val());
+                    $("#TotalAmount").val(parseInt($("#MasterMasonAmount").val()) + parseInt($("#LabourAmount").val()));
                 },
                 error: function(xhr, status, error) {
                     console.error("Error occurred while fetching costs: " + error);

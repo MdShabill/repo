@@ -17,4 +17,3 @@ JOIN
     )
 ORDER BY
     DailyAttendance.Date
-

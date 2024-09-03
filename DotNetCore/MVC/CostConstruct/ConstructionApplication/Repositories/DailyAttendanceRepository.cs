@@ -15,7 +15,7 @@ namespace ConstructionApplication.Repositories
             _connectionString = connectionString;
         }
 
-        public List<DailyAttendance> GetAll()
+        public List<DailyAttendance> GetAll(DateTime? DateFrom, DateTime? DateTo)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -24,8 +24,14 @@ namespace ConstructionApplication.Repositories
                            TotalLabour, MasterMasonAmount,
                            LabourAmount, TotalAmount
                            From 
-                           DailyAttendance ";
+                           DailyAttendance
+                           Where
+                           (@DateFrom IS NULL OR Date >= @DateFrom) 
+                           AND 
+                           (@DateTo IS NULL OR Date <= @DateTo) ";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@DateFrom", (object)DateFrom ?? DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@DateTo", (object)DateTo ?? DBNull.Value);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
