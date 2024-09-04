@@ -4,6 +4,7 @@ Create Table DailyAttendance
 	Date Date Not Null,
 	TotalMasterMason Int Not Null,
 	TotalLabour Int Not Null,
+	TotalCount Int Not Null,
 	Primary Key (Id),
 )
 

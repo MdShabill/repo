@@ -21,7 +21,7 @@ namespace ConstructionApplication.Repositories
             {
                 string sqlQuery = @"Select 
                            Date, TotalMasterMason,  
-                           TotalLabour, MasterMasonAmount,
+                           TotalLabour, TotalCount, MasterMasonAmount,
                            LabourAmount, TotalAmount
                            From 
                            DailyAttendance
@@ -44,6 +44,7 @@ namespace ConstructionApplication.Repositories
                         Date = (DateTime)dataTable.Rows[i]["Date"],
                         TotalMasterMason = (int)dataTable.Rows[i]["TotalMasterMason"],
                         TotalLabour = (int)dataTable.Rows[i]["TotalLabour"],
+                        TotalCount = (int)dataTable.Rows[i]["TotalCount"],
                         MasterMasonAmount = (decimal)dataTable.Rows[i]["MasterMasonAmount"],
                         LabourAmount = (decimal)dataTable.Rows[i]["LabourAmount"],
                         TotalAmount = (decimal)dataTable.Rows[i]["TotalAmount"],
