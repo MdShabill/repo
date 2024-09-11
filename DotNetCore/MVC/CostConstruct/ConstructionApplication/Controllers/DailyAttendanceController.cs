@@ -31,21 +31,21 @@ namespace ConstructionApplication.Controllers
 
         public IActionResult Index(DateTime? DateFrom, DateTime? DateTo)
         {
-            DateTime currentDate = DateTime.Now;
+            //DateTime currentDate = DateTime.Now;
 
-            // If both DateFrom and DateTo are chosen, make sure DateFrom is not later than DateTo.
-            // This makes sure the 'From' date comes before or is the same as the 'To' date.
-            if (DateFrom != null && DateTo != null && DateFrom > DateTo)
-            {
-                ViewBag.errorMessage = "FROM DATE cannot be greater than TO DATE ";
-            }
+            //// If both DateFrom and DateTo are chosen, make sure DateFrom is not greater than DateTo.
+            //// This makes sure the 'From' date comes before or is the same as the 'To' date.
+            //if (DateFrom != null && DateTo != null && DateFrom > DateTo)
+            //{
+            //    ViewBag.errorMessage = "FROM DATE cannot be greater than TO DATE ";
+            //}
 
-            // Check if either DateFrom or DateTo is in the future.
-            // This makes sure that both the 'From' date and 'To' date are not after today.
-            if (DateFrom > currentDate || DateTo > currentDate)
-            {
-                ViewBag.errorMessage = "The FROM DATE nad TO DATE cannot be in the future ";
-            }
+            //// Check if either DateFrom or DateTo is in the future.
+            //// This makes sure that both the 'From' date and 'To' date are not after today.
+            //if (DateFrom > currentDate || DateTo > currentDate)
+            //{
+            //    ViewBag.errorMessage = "The FROM DATE and TO DATE cannot be in the future ";
+            //}
 
             List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll(DateFrom, DateTo);
             List<DailyAttendanceVm> dailyAttendanceVm = _imapper.Map<List<DailyAttendance>, List<DailyAttendanceVm>>(dailyAttendances);
