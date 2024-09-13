@@ -4,9 +4,7 @@
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int BrandId { get; set; }
-        public string BrandName { get; set; }
-        public int SupplierId {  get; set; }
-        public string SupplierName {  get; set; }
+        public string UnitOfMeasure { get; set; }
+        public decimal UnitPrice { get; set; }
     }
 }

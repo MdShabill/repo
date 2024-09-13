@@ -9,32 +9,55 @@
             <span class="text-success"> <b> @ViewBag.SuccessMessage </b> </span>
 
             <div class="form-group">
-                <label asp-for="MaterialId" class="control-label"><b>Matrials</b></label>
-                @Html.DropDownListFor(model => model.MaterialId, (SelectList)ViewBag.Materials, "-- Select Material --", new { @class = "form-control" })
-                <span asp-validation-for="MaterialId" class="text-danger"></span>
+                <label asp-for="SupplierId" class="control-label"><b>Supplier/Vendor</b></label>
+                @Html.DropDownListFor(model => model.SupplierId, (SelectList)ViewBag.Supplier, "-- Select Material --", new { @class = "form-control" })
+                <span asp-validation-for="SupplierId" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">
-                <label asp-for="Quantity" class="control-label"><b>Quantity</b></label>
-                <input asp-for="Quantity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
+                <div class="d-flex align-items-center" style="margin-left: 10px;">
+                    <div class="mr-10">
+                        <label asp-for="MaterialId" class="control-label"><b>Materials</b></label>
+                        @Html.DropDownListFor(model => model.MaterialId, (SelectList)ViewBag.Materials, "-- Select Material --", new { @class = "form-control" })
+                        <span asp-validation-for="MaterialId" class="text-danger"></span>
+                    </div>
+                    <a href="#" id="getUnitData" class="btn btn-link"><b>Get Unit Data</b></a>
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="BrandId" class="control-label"><b>Brands</b></label>
+                @Html.DropDownListFor(model => model.BrandId, (SelectList)ViewBag.Brands, "-- Select Material --", new { @class = "form-control" })
+                <span asp-validation-for="BrandId" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">
                 <label asp-for="UnitOfMeasure" class="control-label"><b>Unit Of Measure</b></label>
-                <input asp-for="UnitOfMeasure" class="form-control" />
+                <input asp-for="UnitOfMeasure" id="unitOfMeasure" class="form-control" readonly />
                 <span asp-validation-for="UnitOfMeasure" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">
+                <label asp-for="UnitPrice" class="control-label"><b>Unit Price</b></label>
+                <input asp-for="UnitPrice" id="unitPrice" class="form-control" />
+                <span asp-validation-for="UnitPrice" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
                 <label asp-for="Date" class="control-label"><b>Date</b></label>
-                <input asp-for="Date" class="form-control" />
+                <input asp-for="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" type="datetime-local" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">
+                <label asp-for="Quantity" class="control-label"><b>Quantity</b></label>
+                <input asp-for="Quantity" id="quantity" class="form-control" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
                 <label asp-for="MaterialCost" class="control-label"><b>Material Cost</b></label>
-                <input asp-for="MaterialCost" id="materialCost" class="form-control" />
+                <input asp-for="MaterialCost" id="materialCost" class="form-control" readonly />
                 <span asp-validation-for="MaterialCost" class="text-danger"></span>
             </div>
             <br />
@@ -61,14 +84,50 @@
     </div>
 </div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-    function calculateTotal(event) {
+    // Function to calculate MaterialCost and update the field
+    function updateMaterialCost() {
+        var unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
+        var quantity = parseFloat(document.getElementById('quantity').value) || 0;
 
+        var materialCost = unitPrice * quantity;
+        document.getElementById('materialCost').value = materialCost.toFixed(2);
+    }
+    document.getElementById('unitPrice').addEventListener('input', updateMaterialCost);
+    document.getElementById('quantity').addEventListener('input', updateMaterialCost);
+
+    // Function to calculate TotalAmount and update the field
+    function calculateTotal(event) {
+        
         var materialCost = parseFloat(document.getElementById('materialCost').value) || 0;
         var deliveryCharge = parseFloat(document.getElementById('deliveryCharge').value) || 0;
 
         var totalAmount = materialCost + deliveryCharge;
-
         document.getElementById('totalAmount').value = totalAmount.toFixed(2);
     }
+    document.getElementById('calculate').addEventListener('click', calculateTotal);
+
+    $('#getUnitData').click(function (e) {
+        
+        var materialId = $('#MaterialId').val();
+
+        if (materialId > 0) {
+            $.ajax({
+                url: '/MaterialPurchase/Add',
+                type: 'GET',
+                data: { id: materialId },
+                success: function (response) {
+                    // Update UnitOfMeasure and UnitPrice fields with the data from the server
+                    $('#unitOfMeasure').val(response.unitOfMeasure);
+                    $('#unitPrice').val(response.unitPrice);
+
+                    // Trigger recalculation of MaterialCost
+                    updateMaterialCost();
+                }
+            });
+        } else {
+            alert("Please select material first");
+        }
+    });
 </script>

@@ -17,13 +17,7 @@ namespace ConstructionApplication.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"SELECT 
-                       Materials.Id, Materials.Name,
-                       Materials.BrandId, Brands.Name As BrandName,
-                       Materials.SupplierId, Suppliers.Name As SupplierName 
-                       FROM Materials
-                       JOIN Brands ON Materials.BrandId = Brands.Id
-                       JOIN Suppliers  ON Materials.SupplierId = Suppliers.Id";
+                string sqlQuery = "SELECT Id, Name FROM Materials";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -35,16 +29,36 @@ namespace ConstructionApplication.Repositories
                     Material material = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
-                        Name = (string)dataTable.Rows[i]["Name"],
-                        BrandId = (int)dataTable.Rows[i]["BrandId"],
-                        BrandName = (string)dataTable.Rows[i]["BrandName"],
-                        SupplierId = (int)dataTable.Rows[i]["SupplierId"],
-                        SupplierName = (string)dataTable.Rows[i]["SupplierName"]
+                        Name = (string)dataTable.Rows[i]["Name"]
                     };
-                    material.Name = $"{material.Name} - {material.BrandName} - {material.SupplierName}";
                     materials.Add(material);
                 }
                 return materials;
+            }
+        }
+
+        public Material GetMaterialInfo(int Id)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"SELECT Id, UnitOfMeasure, UnitPrice 
+                                    FROM Materials
+                                    Where Id = @id ";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", Id);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<Material> materials = new();
+
+
+                Material material = new()
+                {
+                    Id = (int)dataTable.Rows[0]["Id"],
+                    UnitOfMeasure = (string)dataTable.Rows[0]["UnitOfMeasure"],
+                    UnitPrice = (decimal)dataTable.Rows[0]["UnitPrice"]
+                };
+                return material;
             }
         }
     }

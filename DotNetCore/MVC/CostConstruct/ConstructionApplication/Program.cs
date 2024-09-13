@@ -39,6 +39,16 @@ builder.Services.AddTransient<IMaterialRepository>((svc) =>
     return new MaterialRepository(CostConstructDBConnectionString);
 });
 
+builder.Services.AddTransient<ISupplierRepository>((svc) =>
+{
+    return new SupplierRepository(CostConstructDBConnectionString);
+});
+
+builder.Services.AddTransient<IBrandRepository>((svc) =>
+{
+    return new BrandRepository(CostConstructDBConnectionString);
+});
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.

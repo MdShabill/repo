@@ -3,9 +3,12 @@
     public class MaterialPurchaseVm
     {
         public int Id { get; set; }
+        public int SupplierId { get; set; }
         public int MaterialId { get; set; }
+        public int BrandId { get; set; }
         public int Quantity { get; set; }
         public string UnitOfMeasure { get; set; }
+        public decimal UnitPrice { get; set; }
         public DateTime Date { get; set; }
         public decimal MaterialCost { get; set; }
         public decimal DeliveryCharge { get; set; }

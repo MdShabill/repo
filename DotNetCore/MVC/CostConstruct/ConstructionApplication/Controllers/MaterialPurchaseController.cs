@@ -1,27 +1,31 @@
 ﻿using AutoMapper;
-using ConstructionApplication.DataModels.CostMaster;
+using ConstructionApplication.DataModels.Brands;
 using ConstructionApplication.DataModels.Material;
 using ConstructionApplication.DataModels.MaterialPurchase;
+using ConstructionApplication.DataModels.Suppliers;
 using ConstructionApplication.Repositories;
-using ConstructionApplication.ViewModels.CostMasterVm;
 using ConstructionApplication.ViewModels.MaterialPurchaseVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Diagnostics.Metrics;
 
 namespace ConstructionApplication.Controllers
 {
     public class MaterialPurchaseController : Controller
     {
         IMaterialPurchaseRepository _materialPurchaseRepository;
+        ISupplierRepository _supplierRepository;
         IMaterialRepository _materialRepository;
+        IBrandRepository _brandRepository;
         IMapper _imapper;
 
-        public MaterialPurchaseController(IMaterialPurchaseRepository materialPurchaseRepository, 
-            IMaterialRepository materialRepository)
+        public MaterialPurchaseController(IMaterialPurchaseRepository materialPurchaseRepository,
+                  ISupplierRepository supplierRepository, IMaterialRepository materialRepository, 
+                  IBrandRepository brandRepository)
         {
             _materialPurchaseRepository = materialPurchaseRepository;
+            _supplierRepository = supplierRepository;
             _materialRepository = materialRepository;
+            _brandRepository = brandRepository;
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<MaterialPurchaseVm, MaterialPurchase>();
@@ -31,18 +35,26 @@ namespace ConstructionApplication.Controllers
             _materialRepository = materialRepository;
         }
 
-        public IActionResult Add()
+        public IActionResult Add(int Id = 0)
         {
-            List<Material> materials = _materialRepository.GetAll();
-            ViewBag.Materials = new SelectList(materials, "Id", "Name");
+            if(Id > 0)
+            {
+                Material material = _materialRepository.GetMaterialInfo(Id);
+
+                if (material != null)
+                {
+                    // Return JSON result containing UnitOfMeasure and UnitPrice for AJAX calls
+                    return new JsonResult(new { unitOfMeasure = material.UnitOfMeasure, unitPrice = material.UnitPrice });
+                }
+            }
+            DropDownSelectList();
             return View();
         }
 
         [HttpPost]
         public IActionResult Add(MaterialPurchaseVm materialPurchaseVm) 
         {
-            List<Material> materials = _materialRepository.GetAll();
-            ViewBag.Materials = new SelectList(materials, "Id", "Name");
+            DropDownSelectList();
 
             MaterialPurchase materialPurchase = _imapper.Map<MaterialPurchaseVm, MaterialPurchase>(materialPurchaseVm);
             int affectedRowCount = _materialPurchaseRepository.Create(materialPurchase);
@@ -51,6 +63,18 @@ namespace ConstructionApplication.Controllers
                 ViewBag.SuccessMessage = "Add Successfuly In Material Purchase";
             }
             return View();
+        }
+
+        private void DropDownSelectList()
+        {
+            List<Supplier> suppliers = _supplierRepository.GetAll();
+            ViewBag.Supplier = new SelectList(suppliers, "Id", "Name");
+
+            List<Material> materials = _materialRepository.GetAll();
+            ViewBag.Materials = new SelectList(materials, "Id", "Name");
+
+            List<Brand> brands = _brandRepository.GetAll();
+            ViewBag.Brands = new SelectList(brands, "Id", "Name");
         }
     }
 }
