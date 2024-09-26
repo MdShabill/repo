@@ -25,6 +25,15 @@ namespace ConstructionApplication.Controllers
         }
 
         [HttpGet]
+        public IActionResult Index()
+        {
+            List<CostMaster> costMasters = _costMasterRepository.GetAll();
+
+            List<CostMasterVm> costMasterVm = _imapper.Map<List<CostMaster>, List<CostMasterVm>>(costMasters);
+            return View(costMasterVm);
+        }
+
+        [HttpGet]
         public JsonResult GetActiveCost()
         {
             CostMaster costMaster = _costMasterRepository.GetActiveCostDetail();

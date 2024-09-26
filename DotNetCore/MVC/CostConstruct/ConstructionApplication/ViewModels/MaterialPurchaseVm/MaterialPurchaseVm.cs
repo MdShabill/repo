@@ -6,7 +6,7 @@
         public int MaterialId { get; set; }
         public string MaterialName { get; set; }
         public int SupplierId { get; set; }
-        public string SupplirName { get; set; }
+        public string SupplierName { get; set; }
         public int BrandId { get; set; }
         public string BrandName { get; set; }
         public int Quantity { get; set; }

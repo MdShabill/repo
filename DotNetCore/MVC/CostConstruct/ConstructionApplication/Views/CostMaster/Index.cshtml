@@ -1,0 +1,63 @@
+﻿@model List<ConstructionApplication.ViewModels.CostMasterVm.CostMasterVm>
+
+<h1 style="text-align: center;">Cost Master Report</h1>
+<br />
+<div class="bottom-section">
+    <a href="https://localhost:7212/Costmaster/Add" style="text-decoration: none; padding: 10px 15px; background-color: lightgray; border-radius: 5px;">
+        <b>Add New Cost Master</b>
+    </a>
+</div>
+<html>
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+
+        tr, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+            tr:nth-child(even) {
+                background-color: yellowgreen;
+            }
+
+        td {
+            border: 1px solid black;
+            padding: 8px 12px;
+        }
+
+        .header-row {
+            text-align: center;
+        }
+
+        .bottom-section {
+            margin-top: 20px;
+            text-align: right;
+        }
+    </style>
+</head>
+    <body>
+        <table>
+            <tr class="header-row">
+                <td><b>Date</b></td>
+                <td><b>Master Mason Cost</b></td>
+                <td><b>Labour Cost</b></td>
+                <td><b>Is Active</b></td>
+            </tr>
+
+            @foreach (ConstructionApplication.ViewModels.CostMasterVm.CostMasterVm costMasterVm in Model)
+            {
+                <tr class="table1">
+                    <td>@costMasterVm.Date.ToString("dd-MMMM-yyyy")</td>
+                    <td>@costMasterVm.MasterMasonCost</td>
+                    <td>@costMasterVm.LabourCost</td>
+                    <td>@costMasterVm.IsActive</td>
+                </tr>
+            }
+        </table>
+    </body>
+</html>

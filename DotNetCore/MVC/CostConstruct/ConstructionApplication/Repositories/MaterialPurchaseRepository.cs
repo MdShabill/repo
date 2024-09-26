@@ -19,13 +19,13 @@ namespace ConstructionApplication.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"SELECT MaterialPurchase.Id, 
-                       Materials.Name As MaterialName, Suppliers.Name As SupplirName, 
+                       Materials.Name As MaterialName, Suppliers.Name As SupplierName, 
                        Brands.Name As BrandName, MaterialPurchase.Quantity, 
                        MaterialPurchase.UnitOfMeasure, Materials.UnitPrice, MaterialPurchase.Date,
                        MaterialPurchase.MaterialCost, MaterialPurchase.DeliveryCharge
                        FROM MaterialPurchase
                        Inner Join Materials On MaterialPurchase.MaterialId = Materials.Id                
-                       Inner Join Suppliers On MaterialPurchase.SupplirId = Suppliers.Id                    
+                       Inner Join Suppliers On MaterialPurchase.SupplierId = Suppliers.Id                    
                        Inner Join Brands On MaterialPurchase.BrandId = Brands.Id 
                        Order By MaterialPurchase.Date DESC";
 
@@ -41,7 +41,7 @@ namespace ConstructionApplication.Repositories
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
                         MaterialName = (string)dataTable.Rows[i]["MaterialName"],
-                        SupplirName = (string)dataTable.Rows[i]["SupplirName"],
+                        SupplierName = (string)dataTable.Rows[i]["SupplierName"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         Quantity = (int)dataTable.Rows[i]["Quantity"],
                         UnitOfMeasure = (string)dataTable.Rows[i]["UnitOfMeasure"],
