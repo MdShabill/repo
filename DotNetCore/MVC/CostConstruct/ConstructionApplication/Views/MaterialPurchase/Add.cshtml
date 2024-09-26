@@ -38,7 +38,10 @@
                         <label asp-for="UnitPrice" class="control-label"><b>Unit Price</b></label>
                         <div class="input-group">
                             <input asp-for="UnitPrice" id="unitPrice" class="form-control" />
-                            <span><b id="unitOfMeasureText" style="display: none;"> /</b><span id="unitOfMeasureDisplay">@Model?.UnitOfMeasure</span></span>
+                            <span style="display: flex; align-items: center;">
+                                <b id="unitOfMeasureText" style="display: none;">&nbsp; /</b>
+                                <span id="unitOfMeasureDisplay" style="margin-left: 5px;">@Model?.UnitOfMeasure</span>
+                            </span>
                             <input type="hidden" id="unitOfMeasure" name="UnitOfMeasure" value="@Model?.UnitOfMeasure" />
                         </div>
                         <span asp-validation-for="UnitPrice" class="text-danger"></span>

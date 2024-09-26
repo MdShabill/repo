@@ -8,22 +8,22 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <span class="text-success"> <b> @ViewBag.successMessage </b> </span>
 
-            <div class="form-group">
+            <div class="form-group" style="width: 60%;">
                 <label asp-for="Date" class="control-label"><b>Date</b></label>
                 <input asp-for="Date" class="form-control" value="@DateTime.Now.ToString(" yyyy-MM-dd")" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
             <br/>
-            <div class="form-group">
+            <div class="form-group" style="width: 60%;">
                 <label asp-for="TotalMasterMason" class="control-label"><b>Master Mason Count</b></label>
-                <input asp-for="TotalMasterMason" class="form-control" value="3" />
+                <input asp-for="TotalMasterMason" class="form-control" />
                 <span asp-validation-for="TotalMasterMason" class="text-danger"></span>
             </div>
             <br />
-            <div class="form-group row">
+            <div class="form-group row" style="width: 95%;">
                 <div class="col-md-6">
                     <label asp-for="TotalLabour" class="control-label"><b>Total Labour Count</b></label>
-                    <input asp-for="TotalLabour" class="form-control" value="5" />
+                    <input asp-for="TotalLabour" class="form-control" />
                     <span asp-validation-for="TotalLabour" class="text-danger"></span>
                 </div>
                 <div class="col-md-4 d-flex align-items-center" style="margin-left: 10px;">
@@ -31,22 +31,24 @@
                 </div>
             </div>
             <br />
-            <div class="form-group">
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="TotalCount"><b>Total Count(Master Mason + Labour)</b></label>
+                <input asp-for="TotalCount" class="form-control" readonly />
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
                 <label><b>Total Master Mason Amount</b></label>
                 <input asp-for="MasterMasonAmount" class="form-control" readonly />
-                @* <input id="MasterMasonAmount" class="form-control" readonly /> *@
             </div>
             <br />
-            <div class="form-group">
+            <div class="form-group" style="width: 60%;">
                 <label><b>Total Labour Amount</b></label>
                 <input asp-for="LabourAmount" class="form-control" readonly />
-                @* <input id="LabourAmount" class="form-control" readonly /> *@
             </div>
             <br />
-            <div class="form-group">
+            <div class="form-group" style="width: 60%;">
                 <label><b>Total Amount</b></label>
                 <input asp-for="TotalAmount" class="form-control" readonly />
-                @* <input id="TotalAmount" class="form-control" readonly /> *@
             </div>
             <br />
 
@@ -60,6 +62,18 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+
+        function calculateTotalCount() {
+            var totalMasterMason = parseInt($("#TotalMasterMason").val()) || 0;
+            var totalLabour = parseInt($("#TotalLabour").val()) || 0;
+            var totalCount = totalMasterMason + totalLabour;
+            $("#TotalCount").val(totalCount);
+        }
+
+        $("#TotalMasterMason, #TotalLabour").on('input', function () {
+            calculateTotalCount();
+        });
+
         $("#calculateCost").click(function (event) {
             event.preventDefault();
 

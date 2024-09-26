@@ -1,12 +1,118 @@
-﻿@* @{
-    ViewData["Title"] = "Home Page";
-}
+﻿<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Brief Intro Section Above Image -->
+<div class="container-fluid bg-light py-4">
+    <div class="container text-center">
+        <h1 class="display-4 font-weight-bold">Your Partner in Construction Management</h1>
+        <p class="lead">
+            Manage your construction material purchases, track expenses, and optimize your resources with ease.
+            Our app simplifies construction operations from start to finish.
+        </p>
+        <a href="#" class="btn btn-outline-primary btn-lg">Learn More</a>
+    </div>
 </div>
- *@
 
-@* <span><img src="/UploadedImage/Construction.png" style="width: 1200px; height: 500px;" /></span>
- *@
+<div class="container-fluid p-0">
+    <img src="/UploadedImage/HomeImage.png" class="img-fluid rounded shadow-lg w-100" style="height: 500px; object-fit: cover;" alt="Construction Image" />
+</div>
+
+<div class="container mt-5">
+    <!-- Introduction Section -->
+    <div class="row justify-content-center text-center">
+        <div class="col-md-8">
+            <h2 class="mb-4 font-weight-bold">Welcome to Our Construction Application</h2>
+            <img src="/UploadedImage/NavbarLogo.jpg" alt="Company Logo" style="height: 100px;" class="d-inline-block align-text-top">
+            <p class="lead">
+                Streamline your construction material purchases with our powerful tool. Track suppliers, brands, materials, and costs in real-time, ensuring efficiency and accuracy in every transaction. Easily generate reports, calculate expenses, and monitor deliveries for a seamless construction experience.
+            </p>
+            <a href="#" class="btn btn-primary btn-lg mt-3">Get Started</a>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row text-center mt-5">
+        <div class="col-md-4">
+            <div class="card border-1 shadow-sm" style="background-color:lightblue">
+                <div class="card-body">
+                    <i class="fas fa-truck fa-3x mb-3 text-primary"></i>
+                    <h5 class="card-title">Track Deliveries</h5>
+                    <p class="card-text">Monitor material deliveries in real-time, ensuring timely and smooth operations on-site.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm" style="background-color:yellowgreen">
+                <div class="card-body">
+                    <i class="fas fa-file-invoice-dollar fa-3x mb-3 text-primary"></i>
+                    <h5 class="card-title">Manage Costs</h5>
+                    <p class="card-text">Keep track of expenses and calculate total costs effortlessly for better budgeting.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm" style="background-color:skyblue">
+                <div class="card-body">
+                    <i class="fas fa-tools fa-3x mb-3 text-primary"></i>
+                    <h5 class="card-title">Material Tracking</h5>
+                    <p class="card-text">Easily manage materials, suppliers, and brands to ensure the best quality for your projects.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center text-center mt-5">
+        <div class="col-md-8">
+            <h3 class="mb-4 font-weight-bold">Ready to Get Started?</h3>
+            <p class="lead">Experience the most efficient way to manage your construction resources. Sign up now and start optimizing your processes today.</p>
+            <a href="#" class="btn btn-success btn-lg">Sign Up Now</a>
+        </div>
+    </div>
+</div>
+
+<!-- Footer Section -->
+<footer class="bg-dark text-white mt-5">
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>About Us</h5>
+                <p>India's No.1 tech-enabled construction company that aims to make construction simple, transparent, and reliable. We provide end-to-end aka design-to-build construction services.</p>
+                <p>We execute projects on a turnkey basis and provide real-time tracking, communication, quality checks, and updates on projects from day one till the handover of the keys.</p>
+            </div>
+            <div class="col-md-2">
+                <h5>Menu</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white">About Us</a></li>
+                    <li><a href="#" class="text-white">Projects</a></li>
+                    <li><a href="#" class="text-white">Cost Master</a></li>
+                    <li><a href="#" class="text-white">Attendance</a></li>
+                    <li><a href="#" class="text-white">Material Report</a></li>
+                    <li><a href="#" class="text-white">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Follow Us</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white">Facebook</a></li>
+                    <li><a href="#" class="text-white">Instagram</a></li>
+                    <li><a href="#" class="text-white">LinkedIn</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Camp Office Contact</h5>
+                <ul class="list-unstyled">
+                    <li>Shaktinagar: 05446-233928</li>
+                    <li>Obra: 05446-262264</li>
+                    <li>Lucknow: 0522-3200260</li>
+                </ul>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <small>&copy; 2024 Ashoka Construction Company. All Rights Reserved.</small>
+        </div>
+    </div>
+</footer>
+
+
+<!-- FontAwesome for Icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>

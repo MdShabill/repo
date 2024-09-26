@@ -29,10 +29,20 @@ namespace ConstructionApplication.Controllers
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<MaterialPurchaseVm, MaterialPurchase>();
+                cfg.CreateMap<MaterialPurchase, MaterialPurchaseVm>();
             });
 
             _imapper = configuration.CreateMapper();
             _materialRepository = materialRepository;
+        }
+
+        public IActionResult Index()
+        {
+            List<MaterialPurchase> materialPurchases = _materialPurchaseRepository.GetAll();
+
+            List<MaterialPurchaseVm> materialPurchaseVm = _imapper.Map<List<MaterialPurchase>, List<MaterialPurchaseVm>>(materialPurchases);
+            ViewBag.materialPurchaseCount = materialPurchaseVm.Count;
+            return View(materialPurchaseVm);
         }
 
         public IActionResult Add(int Id = 0)

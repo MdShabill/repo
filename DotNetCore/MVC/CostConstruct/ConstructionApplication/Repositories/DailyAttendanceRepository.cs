@@ -28,7 +28,8 @@ namespace ConstructionApplication.Repositories
                            Where
                            (@DateFrom IS NULL OR Date >= @DateFrom) 
                            AND 
-                           (@DateTo IS NULL OR Date <= @DateTo) ";
+                           (@DateTo IS NULL OR Date <= @DateTo)
+                           Order By Date DESC";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@DateFrom", (object)DateFrom ?? DBNull.Value);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@DateTo", (object)DateTo ?? DBNull.Value);
@@ -60,15 +61,16 @@ namespace ConstructionApplication.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into DailyAttendance
-                       (Date, TotalMasterMason, TotalLabour, MasterMasonAmount, LabourAmount, TotalAmount)
+                       (Date, TotalMasterMason, TotalLabour, TotalCount, MasterMasonAmount, LabourAmount, TotalAmount)
                        Values
-                       (@date, @totalMasterMason, @totalLabour, @masterMasonAmount, @labourAmount, @totalAmount)
+                       (@date, @totalMasterMason, @totalLabour, @totalCount, @masterMasonAmount, @labourAmount, @totalAmount)
                         SELECT SCOPE_IDENTITY() ";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@date", dailyAttendance.Date);
                 sqlCommand.Parameters.AddWithValue("@totalMasterMason", dailyAttendance.TotalMasterMason);
                 sqlCommand.Parameters.AddWithValue("@totalLabour", dailyAttendance.TotalLabour);
+                sqlCommand.Parameters.AddWithValue("@totalCount", dailyAttendance.TotalCount);
                 sqlCommand.Parameters.AddWithValue("@masterMasonAmount", dailyAttendance.MasterMasonAmount);
                 sqlCommand.Parameters.AddWithValue("@labourAmount", dailyAttendance.LabourAmount);
                 sqlCommand.Parameters.AddWithValue("@totalAmount", dailyAttendance.TotalAmount);

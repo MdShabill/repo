@@ -1,24 +1,64 @@
 ﻿@model List<ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm>
 
-<h1>Attendance Report</h1>
+<h1 style="text-align: center;">Attendance Report</h1>
 <br/>
-<a href="https://localhost:7212/DailyAttendance/Add" style="margin-left: 1000px;"><b>Add New Daily Attendance</b></a>
+<div class="bottom-section">
+    <a href="https://localhost:7212/DailyAttendance/Add" style="text-decoration: none; padding: 8px 12px; background-color: lightgray; border-radius: 5px;">
+        <b>Add New Daily Attendance</b></a>
+</div>
 <br />
-<br />
-<a href="https://localhost:7212/DailyAttendance/AddUsingAjax" style="margin-left: 900px;"><b>Add New Daily (Attendance Using AJAX)</b></a>
+<div class="bottom-section">
+    <a href="https://localhost:7212/DailyAttendance/AddUsingAjax" style="text-decoration: none; padding: 8px 12px; background-color: lightgray; border-radius: 5px;">
+        <b>Add New Daily (Attendance Using AJAX)</b></a>
+</div>
 <html>
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+
+        tr, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+            tr:nth-child(even) {
+                background-color: lightblue;
+            }
+
+        td {
+            border: 1px solid black;
+            padding: 8px 12px;
+        }
+
+        .header-row {
+            text-align: center;
+        }
+
+        .bottom-section {
+            margin-top: 20px;
+            text-align: right;
+        }
+    </style>
+</head>
     <body>
     <br />
         <form method="get" asp-action="Index" onsubmit="return validateDates()">
-            <label><b>Range:</b></label>
-            <input type="date" name="DateFrom" value="@ViewBag.DateFrom" />
+            <label><b>From:</b></label>
+            <input type="date" name="DateFrom" value="@ViewBag.DateFrom"/>
+            &nbsp;&nbsp;&nbsp;
+            <label><b>To:</b></label>
             <input type="date" name="DateTo" value="@ViewBag.DateTo" />
+            &nbsp;&nbsp;&nbsp;
             <button type="submit" class="btn btn-primary">Go</button>
         </form>
         <span id="errorMessage" class="text-danger"></span>
         <br/>
-        <table border="3px" class="table">
-            <tr class="table1">
+        <table>
+            <tr class="header-row">
                 <td><b>Date</b></td>
                 <td><b>Total Count(Master Mason + Labour)</b></td>
                 <td><b>Total Master Mason Amount</b></td>
@@ -29,11 +69,11 @@
             @foreach (ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm dailyAttendanceVm in Model)
             {
                 <tr class="table1">
-                <td><b>@dailyAttendanceVm.Date.ToString("dd-MMMM-yyyy")</b></td>
-                <td><b>@dailyAttendanceVm.TotalCount</b><i>(@dailyAttendanceVm.TotalMasterMason + @dailyAttendanceVm.TotalLabour)</i></td>
-                <td><b>@dailyAttendanceVm.MasterMasonAmount</b></td>
-                <td><b>@dailyAttendanceVm.LabourAmount</b></td>
-                <td><b>@dailyAttendanceVm.TotalAmount</b></td>
+                    <td>@dailyAttendanceVm.Date.ToString("dd-MMMM-yyyy")</td>
+                    <td>@dailyAttendanceVm.TotalCount<i>(@dailyAttendanceVm.TotalMasterMason + @dailyAttendanceVm.TotalLabour)</i></td>
+                    <td>@dailyAttendanceVm.MasterMasonAmount</td>
+                    <td>@dailyAttendanceVm.LabourAmount</td>
+                    <td>@dailyAttendanceVm.TotalAmount</td>
                 </tr>
             }
         </table>

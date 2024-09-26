@@ -2,6 +2,8 @@ Create Table MaterialPurchase
 (
 	Id Int Identity(1,1),
 	MaterialId Int Not Null,
+	SupplirId Int Not Null,
+	BrandId Int Not NUll,
 	Quantity Int Not Null,
 	UnitOfMeasure NVarchar(200) Not Null,
 	Date DateTime Not Null,
@@ -10,5 +12,7 @@ Create Table MaterialPurchase
 	PaymentStatus NVarchar(200) Null,
 
 	Primary Key (Id),
-	FOREIGN KEY (MaterialId) REFERENCES Materials(Id)
+	FOREIGN KEY (MaterialId) REFERENCES Materials(Id),
+	FOREIGN KEY (SupplirId) REFERENCES Suppliers(Id),
+	FOREIGN KEY (BrandId) REFERENCES Brands(Id)
 )

@@ -1,0 +1,77 @@
+﻿@model List<ConstructionApplication.ViewModels.MaterialPurchaseVm.MaterialPurchaseVm>
+
+<h1 style="text-align: center;">Material Purchase Report</h1>
+<br />
+<html>
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+
+        tr, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #D6EEEE;
+        }
+
+        td {
+            border: 1px solid black;
+            padding: 8px 12px;
+        }
+
+        .header-row {
+            text-align: center;
+        }
+
+        .bottom-section {
+            margin-top: 20px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="bottom-section">
+        <a href="https://localhost:7212/MaterialPurchase/Add" style="text-decoration: none; padding: 8px 12px; background-color: lightgray; border-radius: 5px;">
+            <b>Add New Material Purchase</b></a>
+    </div>
+
+    <div style="text-align: left; margin: 20px 0;">
+        <b>Total Material: @ViewBag.materialPurchaseCount</b>
+    </div>
+
+    <table>
+        <tr class="header-row">
+            <td><b>Date</b></td>
+            <td><b>Supplier Name</b></td>
+            <td><b>Brand Name</b></td>
+            <td><b>Material Name</b></td>
+            <td><b>Unit Price</b></td>
+            <td><b>Quantity</b></td>
+            <td><b>Material Cost</b></td>
+            <td><b>Delivery Charge</b></td>
+            <td><b>Total Amount</b></td>
+        </tr>
+        @foreach (var materialPurchaseVm in Model)
+        {
+            var totalAmount = materialPurchaseVm.MaterialCost + materialPurchaseVm.DeliveryCharge;
+            <tr>
+                <td>@materialPurchaseVm.Date.ToString("dd-MMMM-yyyy")</td>
+                <td>@materialPurchaseVm.SupplirName</td>
+                <td>@materialPurchaseVm.BrandName</td>
+                <td>@materialPurchaseVm.MaterialName</td>
+                <td>@materialPurchaseVm.UnitPrice.ToString("0.00") / <i>@materialPurchaseVm.UnitOfMeasure</i></td>
+                <td>@materialPurchaseVm.Quantity</td>
+                <td>@materialPurchaseVm.MaterialCost</td>
+                <td>@materialPurchaseVm.DeliveryCharge</td>
+                <td>@totalAmount</td>
+            </tr>
+        }
+    </table>
+</body>
+</html>
