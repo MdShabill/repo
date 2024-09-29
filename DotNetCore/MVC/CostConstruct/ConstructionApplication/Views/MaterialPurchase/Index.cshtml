@@ -1,6 +1,6 @@
 ﻿@model List<ConstructionApplication.ViewModels.MaterialPurchaseVm.MaterialPurchaseVm>
 
-<h1 style="text-align: center;">Material Purchase Report</h1>
+<h3 style="text-align: center;">Material Purchase Report</h3>
 <br />
 <html>
 <head>
@@ -17,7 +17,7 @@
         }
 
         tr:nth-child(even) {
-            background-color: #D6EEEE;
+             background-color: lightblue;
         }
 
         td {
@@ -42,15 +42,15 @@
     </div>
 
     <div style="text-align: left; margin: 20px 0;">
-        <b>Total Material: @ViewBag.materialPurchaseCount</b>
+        <b>Total Purchase: @ViewBag.materialPurchaseCount</b>
     </div>
 
     <table>
         <tr class="header-row">
             <td><b>Date</b></td>
-            <td><b>Supplier Name</b></td>
-            <td><b>Brand Name</b></td>
-            <td><b>Material Name</b></td>
+            <td><b>Supplier</b></td>
+            <td><b>Brand</b></td>
+            <td><b>Material</b></td>
             <td><b>Unit Price</b></td>
             <td><b>Quantity</b></td>
             <td><b>Material Cost</b></td>
@@ -66,7 +66,7 @@
                 <td>@materialPurchaseVm.BrandName</td>
                 <td>@materialPurchaseVm.MaterialName</td>
                 <td>@materialPurchaseVm.UnitPrice.ToString("0.00") / <i>@materialPurchaseVm.UnitOfMeasure</i></td>
-                <td>@materialPurchaseVm.Quantity</td>
+                <td>@materialPurchaseVm.Quantity.ToString("0.00") / <i>@materialPurchaseVm.UnitOfMeasure</i></td>
                 <td>@materialPurchaseVm.MaterialCost</td>
                 <td>@materialPurchaseVm.DeliveryCharge</td>
                 <td>@totalAmount</td>

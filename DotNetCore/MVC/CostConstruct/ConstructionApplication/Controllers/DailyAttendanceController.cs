@@ -91,6 +91,16 @@ namespace ConstructionApplication.Controllers
 
         public IActionResult AddUsingAjax()
         {
+            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail();
+            if (costMaster != null)
+            {
+                ViewBag.MasterMasonCost = costMaster.MasterMasonCost;
+                ViewBag.LabourCost = costMaster.LabourCost;
+            }
+            else
+            {
+                ViewBag.errorMessage = "No active CostMaster record found.";
+            }
             return View();
         }
 
