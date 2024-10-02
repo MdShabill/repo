@@ -56,6 +56,16 @@ namespace ConstructionApplication.Controllers
             
         public IActionResult Add()
         {
+            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail();
+            if (costMaster != null)
+            {
+                ViewBag.MasterMasonCost = costMaster.MasterMasonCost;
+                ViewBag.LabourCost = costMaster.LabourCost;
+            }
+            else
+            {
+                ViewBag.errorMessage = "No active CostMaster record found.";
+            }
             return View();
         }
 
@@ -71,8 +81,6 @@ namespace ConstructionApplication.Controllers
                 dailyAttendance.MasterMasonAmount = dailyAttendance.TotalMasterMason * costMaster.MasterMasonCost;
                 dailyAttendance.LabourAmount = dailyAttendance.TotalLabour * costMaster.LabourCost;
                 dailyAttendance.TotalAmount = dailyAttendance.MasterMasonAmount + dailyAttendance.LabourAmount;
-
-                HttpContext.Session.SetInt32("AttendanceId", dailyAttendance.Id);
 
                 dailyAttendance.Id = _dailyAttendanceRepository.Create(dailyAttendance);
                 if (dailyAttendance.Id > 0)
@@ -91,16 +99,6 @@ namespace ConstructionApplication.Controllers
 
         public IActionResult AddUsingAjax()
         {
-            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail();
-            if (costMaster != null)
-            {
-                ViewBag.MasterMasonCost = costMaster.MasterMasonCost;
-                ViewBag.LabourCost = costMaster.LabourCost;
-            }
-            else
-            {
-                ViewBag.errorMessage = "No active CostMaster record found.";
-            }
             return View();
         }
 

@@ -36,12 +36,16 @@ namespace ConstructionApplication.Controllers
             _materialRepository = materialRepository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(DateTime? DateFrom, DateTime? DateTo, int? MaterialId, int? SupplierId)
         {
-            List<MaterialPurchase> materialPurchases = _materialPurchaseRepository.GetAll();
+            DropDownSelectList();
+
+            List<MaterialPurchase> materialPurchases = _materialPurchaseRepository.GetAll(DateFrom, DateTo, MaterialId, SupplierId);
 
             List<MaterialPurchaseVm> materialPurchaseVm = _imapper.Map<List<MaterialPurchase>, List<MaterialPurchaseVm>>(materialPurchases);
             ViewBag.materialPurchaseCount = materialPurchaseVm.Count;
+            ViewBag.DateFrom = DateFrom?.ToString("yyyy-MM-dd");
+            ViewBag.DateTo = DateTo?.ToString("yyyy-MM-dd");
             return View(materialPurchaseVm);
         }
 

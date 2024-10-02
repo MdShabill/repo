@@ -44,7 +44,29 @@
     <div style="text-align: left; margin: 20px 0;">
         <b>Total Purchase: @ViewBag.materialPurchaseCount</b>
     </div>
-
+    <span id="errorMessage" class="text-danger"></span>
+    <form method="get" asp-action="Index" onsubmit="return validateDates()" style="display: flex; align-items: center; justify-content: flex-start;">
+        <div style="margin-right: 10px;">
+            <label><b>From:</b></label>
+            <input type="date" id="DateFrom" name="DateFrom" value="@ViewBag.DateFrom" />
+        </div>
+        <div style="margin-right: 10px;">
+            <label><b>To:</b></label>
+            <input type="date" id="DateTo" name="DateTo" value="@ViewBag.DateTo" />
+        </div>
+        <div class="form-group" style="margin-right: 10px;">
+            <label><b>Materials:</b></label>
+            @Html.DropDownList("MaterialId", (SelectList)ViewBag.Materials, "-- Select Material --", new { @class = "form-control", style = "display: inline; width: 160px;" })
+            <span class="text-danger"></span>
+        </div>
+        <div class="form-group" style="margin-right: 10px;">
+            <label><b>Supplier:</b></label>
+            @Html.DropDownList("SupplierId", (SelectList)ViewBag.Supplier, "-- Select Supplier --", new { @class = "form-control", style = "display: inline; width: 160px;" })
+            <span class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Go</button>
+    </form>
+    <br />
     <table>
         <tr class="header-row">
             <td><b>Date</b></td>
@@ -73,5 +95,32 @@
             </tr>
         }
     </table>
+    <script>
+        function validateDates() {
+            // Get the date values
+            var dateFrom = document.getElementById("DateFrom").value;
+            var dateTo = document.getElementById("DateTo").value;
+            var errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerHTML = "";
+
+            // Convert date strings to Date objects
+            var currentDate = new Date().toISOString().split('T')[0];
+            var fromDate = dateFrom ? new Date(dateFrom) : null;
+            var toDate = dateTo ? new Date(dateTo) : null;
+
+            // Check if DateFrom is greater than DateTo (when both are provided)
+            if (fromDate && toDate && fromDate > toDate) {
+                errorMessage.innerHTML = "FROM DATE cannot be greater than TO DATE.";
+                return false;
+            }
+
+            // Check both DateFrom and DateTo is in the future
+            if (dateTo && dateFrom > currentDate || dateFrom && dateTo > currentDate) {
+                errorMessage.innerHTML = "FROM DATE and TO DATE cannot be in the future.";
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 </html>

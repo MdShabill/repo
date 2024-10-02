@@ -1,34 +1,91 @@
 ﻿@model ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm
 
-<h4>Daily Attendance</h4>
-<hr />
+<h1>Daily Attendance</h1>
+<br />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Add">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <span class="text-success"> <b> @ViewBag.successMessage </b> </span>
 
-            <div class="form-group">
+            <div class="form-group" style="width: 60%;">
                 <label asp-for="Date" class="control-label"><b>Date</b></label>
-                <input asp-for="Date" class="form-control" />
+                <input asp-for="Date" class="form-control" value="@DateTime.Now.ToString(" yyyy-MM-dd")" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
-            <br/>
-            <div class="form-group">
-                <label asp-for="TotalMasterMason" class="control-label"><b>Total Master Mason</b></label>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="TotalMasterMason" class="control-label"><b>Master Mason Count</b></label>
                 <input asp-for="TotalMasterMason" class="form-control" />
                 <span asp-validation-for="TotalMasterMason" class="text-danger"></span>
             </div>
-            <br/>
-            <div class="form-group">
-                <label asp-for="TotalLabour" class="control-label"><b>Total Labour</b></label>
+            <br />
+            <div class="form-group row" style="width: 60%;">
+                <label asp-for="TotalLabour" class="control-label"><b>Total Labour Count</b></label>
                 <input asp-for="TotalLabour" class="form-control" />
                 <span asp-validation-for="TotalLabour" class="text-danger"></span>
             </div>
-            <br/>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="TotalCount"><b>Total Count(Master Mason + Labour)</b></label>
+                <input asp-for="TotalCount" class="form-control" readonly />
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label><b>Total Master Mason Amount</b></label>
+                <input asp-for="MasterMasonAmount" class="form-control" readonly value="@ViewBag.MasterMasonCost" />
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label><b>Total Labour Amount</b></label>
+                <input asp-for="LabourAmount" class="form-control" readonly value="@ViewBag.LabourCost" />
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label><b>Total Amount</b></label>
+                <input asp-for="TotalAmount" class="form-control" readonly
+                       value="@(Convert.ToDecimal(ViewBag.MasterMasonCost ?? 0) + Convert.ToDecimal(ViewBag.LabourCost ?? 0))" />
+            </div>
+            <br />
+
             <div class="form-group">
                 <input type="submit" value="Add" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var masterMasonCost = @ViewBag.MasterMasonCost;
+        var labourCost = @ViewBag.LabourCost;
+
+        function calculateCosts() {
+            var totalMasterMason = parseInt($("#TotalMasterMason").val()) || 0;
+            var totalLabour = parseInt($("#TotalLabour").val()) || 0;
+
+            // Calculate individual and total costs
+            var masterMasonAmount = masterMasonCost * totalMasterMason;
+            var labourAmount = labourCost * totalLabour;
+            var totalAmount = masterMasonAmount + labourAmount;
+
+            // Set values to the fields
+            $("#MasterMasonAmount").val(masterMasonAmount.toFixed(2));
+            $("#LabourAmount").val(labourAmount.toFixed(2));
+            $("#TotalAmount").val(totalAmount.toFixed(2));
+        }
+
+        function calculateTotalCount() {
+            var totalMasterMason = parseInt($("#TotalMasterMason").val()) || 0;
+            var totalLabour = parseInt($("#TotalLabour").val()) || 0;
+            var totalCount = totalMasterMason + totalLabour;
+            $("#TotalCount").val(totalCount);
+        }
+
+        $("#TotalMasterMason, #TotalLabour").on('input', function () {
+            calculateTotalCount();
+            calculateCosts();
+        });
+    });
+</script>

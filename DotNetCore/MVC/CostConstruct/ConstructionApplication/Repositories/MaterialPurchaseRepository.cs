@@ -14,7 +14,7 @@ namespace ConstructionApplication.Repositories
             _connectionString = connectionString;
         }
 
-        public List<MaterialPurchase> GetAll()
+        public List<MaterialPurchase> GetAll(DateTime? DateFrom, DateTime? DateTo, int? MaterialId, int? SupplierId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -26,10 +26,21 @@ namespace ConstructionApplication.Repositories
                        FROM MaterialPurchase
                        Inner Join Materials On MaterialPurchase.MaterialId = Materials.Id                
                        Inner Join Suppliers On MaterialPurchase.SupplierId = Suppliers.Id                    
-                       Inner Join Brands On MaterialPurchase.BrandId = Brands.Id 
+                       Inner Join Brands On MaterialPurchase.BrandId = Brands.Id
+                       Where (@DateFrom IS NULL OR MaterialPurchase.Date >= @DateFrom) 
+                             AND 
+                             (@DateTo IS NULL OR MaterialPurchase.Date <= @DateTo)
+                             AND 
+                             (@MaterialId IS NULL OR MaterialPurchase.MaterialId = @MaterialId)
+                             AND
+                             (@SupplierId IS NULL OR MaterialPurchase.SupplierId = @SupplierId)
                        Order By MaterialPurchase.Date DESC";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@DateFrom", (object)DateFrom ?? DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@DateTo", (object)DateTo ?? DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@MaterialId", (object)MaterialId ?? DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@SupplierId", (object)SupplierId ?? DBNull.Value);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
