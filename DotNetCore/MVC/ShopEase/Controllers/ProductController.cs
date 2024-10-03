@@ -250,7 +250,7 @@ namespace ShopEase.Controllers
                 Directory.CreateDirectory(dir);
             }
 
-            string uniqueFileName = GetUniqueFileName(productAddVm.ImageFile.FileName);
+            string uniqueFileName = this.GetUniqueFileName(productAddVm.ImageFile.FileName);
             string filePath = Path.Combine(dir, uniqueFileName);
 
             productAddVm.ImageFile.CopyToAsync(new FileStream(filePath, FileMode.Create));

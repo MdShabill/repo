@@ -13,7 +13,7 @@ namespace ShopEase.Controllers
         [HttpPost]
         public JsonResult AjaxMethod(string productId, int quantity)
         {
-            Product product = new Product
+            Product product = new()
             {
                 ProductId = productId,
                 Quantity = quantity,
