@@ -1,7 +1,6 @@
 ﻿@model List<ConstructionApplication.ViewModels.MaterialPurchaseVm.MaterialPurchaseVm>
 
 <h3 style="text-align: center;">Material Purchase Report</h3>
-<br />
 <html>
 <head>
     <style>
@@ -9,41 +8,77 @@
             width: 100%;
             border-collapse: collapse;
             margin: 20px auto;
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        tr, td {
-            text-align: left;
-            padding: 8px;
-        }
-
-        tr:nth-child(even) {
-             background-color: lightblue;
+        tr {
+            background-color: lightblue;
         }
 
         td {
-            border: 1px solid black;
-            padding: 8px 12px;
+            padding: 8px 10px;
+            text-align: center;
+            border: 1px solid #ddd;
         }
 
         .header-row {
-            text-align: center;
+            background-color: #007bff;
+            color: white;
+            font-size: 15px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e6f7ff;
         }
 
         .bottom-section {
             margin-top: 20px;
             text-align: right;
+            font-size: 20px;
         }
+
+        #errorMessage {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .no-record {
+            background-color: lightblue;
+            text-align: center;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 10px;
+            margin: 20px auto;
+            width: 50%;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
     </style>
 </head>
 <body>
     <div class="bottom-section">
-        <a href="https://localhost:7212/MaterialPurchase/Add" style="text-decoration: none; padding: 8px 12px; background-color: lightgray; border-radius: 5px;">
-            <b>Add New Material Purchase</b></a>
+        <a href="https://localhost:7212/MaterialPurchase/Add">Add New Material Purchase</a>
     </div>
 
-    <div style="text-align: left; margin: 20px 0;">
-        <b>Total Purchase: @ViewBag.materialPurchaseCount</b>
-    </div>
+    <b style="text-align: left; margin: 20px 0;">Total Purchase: @ViewBag.materialPurchaseCount</b>
+
     <span id="errorMessage" class="text-danger"></span>
     <form method="get" asp-action="Index" onsubmit="return validateDates()" style="display: flex; align-items: center; justify-content: flex-start;">
         <div style="margin-right: 10px;">
@@ -55,46 +90,59 @@
             <input type="date" id="DateTo" name="DateTo" value="@ViewBag.DateTo" />
         </div>
         <div class="form-group" style="margin-right: 10px;">
-            <label><b>Materials:</b></label>
-            @Html.DropDownList("MaterialId", (SelectList)ViewBag.Materials, "-- Select Material --", new { @class = "form-control", style = "display: inline; width: 160px;" })
+            <label><b>Supplier:</b></label>
+            @Html.DropDownList("SupplierId", (SelectList)ViewBag.Supplier, "-- Select Supplier --", new { @class = "form-control", style = "display: inline; width: 165px;" })
             <span class="text-danger"></span>
         </div>
         <div class="form-group" style="margin-right: 10px;">
-            <label><b>Supplier:</b></label>
-            @Html.DropDownList("SupplierId", (SelectList)ViewBag.Supplier, "-- Select Supplier --", new { @class = "form-control", style = "display: inline; width: 160px;" })
+            <label><b>Brand:</b></label>
+            @Html.DropDownList("BrandId", (SelectList)ViewBag.Brands, "-- Select Brand --", new { @class = "form-control", style = "display: inline; width: 165px;" })
+            <span class="text-danger"></span>
+        </div>
+        <div class="form-group" style="margin-right: 10px;">
+            <label><b>Material:</b></label>
+            @Html.DropDownList("MaterialId", (SelectList)ViewBag.Materials, "-- Select Material --", new { @class = "form-control", style = "display: inline; width: 165px;" })
             <span class="text-danger"></span>
         </div>
         <button type="submit" class="btn btn-primary">Go</button>
     </form>
-    <br />
-    <table>
-        <tr class="header-row">
-            <td><b>Date</b></td>
-            <td><b>Supplier</b></td>
-            <td><b>Brand</b></td>
-            <td><b>Material</b></td>
-            <td><b>Unit Price</b></td>
-            <td><b>Quantity</b></td>
-            <td><b>Material Cost</b></td>
-            <td><b>Delivery Charge</b></td>
-            <td><b>Total Amount</b></td>
-        </tr>
-        @foreach (var materialPurchaseVm in Model)
-        {
-            var totalAmount = materialPurchaseVm.MaterialCost + materialPurchaseVm.DeliveryCharge;
-            <tr>
-                <td>@materialPurchaseVm.Date.ToString("dd-MMMM-yyyy")</td>
-                <td>@materialPurchaseVm.SupplierName</td>
-                <td>@materialPurchaseVm.BrandName</td>
-                <td>@materialPurchaseVm.MaterialName</td>
-                <td>@materialPurchaseVm.UnitPrice.ToString("0.00") / <i>@materialPurchaseVm.UnitOfMeasure</i></td>
-                <td>@materialPurchaseVm.Quantity.ToString("0.00") / <i>@materialPurchaseVm.UnitOfMeasure</i></td>
-                <td>@materialPurchaseVm.MaterialCost</td>
-                <td>@materialPurchaseVm.DeliveryCharge</td>
-                <td>@totalAmount</td>
+    @if (Model != null && Model.Count > 0)
+    {
+        <table>
+            <tr class="header-row">
+                <td><b>Date</b></td>
+                <td><b>Supplier</b></td>
+                <td><b>Brand</b></td>
+                <td><b>Material</b></td>
+                <td><b>Unit Price</b></td>
+                <td><b>Quantity</b></td>
+                <td><b>Material Cost</b></td>
+                <td><b>Delivery Charge</b></td>
+                <td><b>Total Amount</b></td>
             </tr>
-        }
-    </table>
+            @foreach (var materialPurchaseVm in Model)
+            {
+                var totalAmount = materialPurchaseVm.MaterialCost + materialPurchaseVm.DeliveryCharge;
+                <tr>
+                    <td>@materialPurchaseVm.Date.ToString("dd-MMMM-yyyy")</td>
+                    <td>@materialPurchaseVm.SupplierName</td>
+                    <td>@materialPurchaseVm.BrandName</td>
+                    <td>@materialPurchaseVm.MaterialName</td>
+                    <td>@materialPurchaseVm.UnitPrice.ToString("0.00") / <i>@materialPurchaseVm.UnitOfMeasure</i></td>
+                    <td>@materialPurchaseVm.Quantity.ToString("0.00") / <i>@materialPurchaseVm.UnitOfMeasure</i></td>
+                    <td>@materialPurchaseVm.MaterialCost</td>
+                    <td>@materialPurchaseVm.DeliveryCharge</td>
+                    <td>@totalAmount</td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <div class="no-record">
+            <b>No Record Found</b>
+        </div>
+    }
     <script>
         function validateDates() {
             // Get the date values

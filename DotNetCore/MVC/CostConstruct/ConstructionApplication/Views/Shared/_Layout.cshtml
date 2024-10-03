@@ -44,12 +44,6 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <div id="aboutUsContent" class="text-center mx-auto" style="display:none; padding: 10px; background-color: #add8e6; margin-top: 10px; max-width: 1000px;">
-            <p>India's No.1 tech-enabled construction company that aims to make construction simple, transparent, and reliable. We provide end-to-end aka design-to-build construction services.</p>
-            <p>We execute projects on a turnkey basis and provide real-time tracking, communication, quality checks, and updates on projects from day one till the handover of the keys.</p>
-        </div>
-    </div>
 
     <div class="container">
         <main role="main" class="pb-3">
@@ -66,16 +60,5 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-
-    <script>
-        function toggleAboutUs() {
-            var aboutUsContent = document.getElementById('aboutUsContent');
-            if (aboutUsContent.style.display === "none" || aboutUsContent.style.display === "") {
-                aboutUsContent.style.display = "block";
-            } else {
-                aboutUsContent.style.display = "none";
-            }
-        }
-    </script>
 </body>
 </html>

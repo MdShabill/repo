@@ -14,7 +14,7 @@ namespace ConstructionApplication.Repositories
             _connectionString = connectionString;
         }
 
-        public List<MaterialPurchase> GetAll(DateTime? DateFrom, DateTime? DateTo, int? MaterialId, int? SupplierId)
+        public List<MaterialPurchase> GetAll(DateTime? DateFrom, DateTime? DateTo, int? MaterialId, int? SupplierId, int? BrandId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -34,6 +34,8 @@ namespace ConstructionApplication.Repositories
                              (@MaterialId IS NULL OR MaterialPurchase.MaterialId = @MaterialId)
                              AND
                              (@SupplierId IS NULL OR MaterialPurchase.SupplierId = @SupplierId)
+                             AND
+                             (@BrandId IS NULL OR MaterialPurchase.BrandId = @BrandId)
                        Order By MaterialPurchase.Date DESC";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
@@ -41,6 +43,7 @@ namespace ConstructionApplication.Repositories
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@DateTo", (object)DateTo ?? DBNull.Value);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@MaterialId", (object)MaterialId ?? DBNull.Value);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@SupplierId", (object)SupplierId ?? DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@BrandId", (object)BrandId ?? DBNull.Value);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
