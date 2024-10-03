@@ -108,9 +108,17 @@ namespace MyConsoleApp
 
             //stringHelper.GetFirstOccurrenceOfIndex();
 
-            stringHelper.GetFirstOccurrence();
+            //stringHelper.GetFirstOccurrence();
 
-            stringHelper.CountTotalOccurrence();
+            //stringHelper.CountTotalOccurrence();
+
+            //stringHelper.GetMetchElementBetweenArray1andArray2();
+
+            //stringHelper.GetMatchElementsBetween3Array();
+
+            //stringHelper.GetUniqueCharacters();
+
+            stringHelper.RemoveDuplicateCharacters();
         }
     }
 }
