@@ -49,6 +49,11 @@ builder.Services.AddTransient<IBrandRepository>((svc) =>
     return new BrandRepository(CostConstructDBConnectionString);
 });
 
+builder.Services.AddTransient<IJobCategoryRepository>((svc) =>
+{
+    return new JobCategoryRepository(CostConstructDBConnectionString);
+});
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.

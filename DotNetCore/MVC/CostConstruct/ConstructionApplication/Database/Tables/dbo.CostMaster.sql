@@ -1,9 +1,10 @@
 Create Table CostMaster
 (
 	Id Int Identity(1,1),
-	MasterMasonCost Decimal(10,2) Not Null,
-	LabourCost Decimal(10,2) Not Null,
+	JobCategoryId Int Not Null,
+	Cost Decimal(10,0) Not Null,
 	Date Date Null,
 
-	Primary Key(Id)
+	Primary Key(Id),
+	FOREIGN KEY (JobCategoryId) REFERENCES JobCategories(Id)
 )

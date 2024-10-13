@@ -93,9 +93,9 @@
             <table>
                 <tr class="header-row">
                     <td><b>Date</b></td>
-                    <td><b>Total Count(Master Mason + Labour)</b></td>
-                    <td><b>Total Master Mason Amount</b></td>
-                    <td><b>Total Labour Amount</b></td>
+                    <td><b>Job Category Name</b></td>
+                    <td><b>Total Worker</b></td>
+                    <td><b>Amount Per Worker</b></td>
                     <td><b>Total Amount</b></td>
                 </tr>
 
@@ -103,9 +103,9 @@
                 {
                     <tr class="table1">
                         <td>@dailyAttendanceVm.Date.ToString("dd-MMMM-yyyy")</td>
-                        <td>@dailyAttendanceVm.TotalCount<i>(@dailyAttendanceVm.TotalMasterMason + @dailyAttendanceVm.TotalLabour)</i></td>
-                        <td>@dailyAttendanceVm.MasterMasonAmount</td>
-                        <td>@dailyAttendanceVm.LabourAmount</td>
+                        <td>@dailyAttendanceVm.Name</td>
+                        <td>@dailyAttendanceVm.TotalWorker</td>
+                        <td>@dailyAttendanceVm.AmountPerWorker</td>
                         <td>@dailyAttendanceVm.TotalAmount</td>
                     </tr>
                 }

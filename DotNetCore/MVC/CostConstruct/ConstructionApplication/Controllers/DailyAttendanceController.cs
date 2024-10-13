@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using ConstructionApplication.DataModels.CostMaster;
 using ConstructionApplication.DataModels.DailyAttendance;
+using ConstructionApplication.DataModels.JobCategory;
+using ConstructionApplication.DataModels.Material;
 using ConstructionApplication.Repositories;
 using ConstructionApplication.ViewModels.CostMasterVm;
 using ConstructionApplication.ViewModels.DailyAttendance;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ConstructionApplication.Controllers
 {
@@ -12,10 +15,12 @@ namespace ConstructionApplication.Controllers
     {
         IDailyAttendanceRepository _dailyAttendanceRepository;
         ICostMasterRepository _costMasterRepository;
+        IJobCategoryRepository _jobCategoryRepository;
         IMapper _imapper;
 
         public DailyAttendanceController(IDailyAttendanceRepository dailyAttendanceRepository, 
-                                         ICostMasterRepository costMasterRepository)
+                                         ICostMasterRepository costMasterRepository,
+                                         IJobCategoryRepository jobCategoryRepository)
         {
             _dailyAttendanceRepository = dailyAttendanceRepository;
 
@@ -27,6 +32,7 @@ namespace ConstructionApplication.Controllers
 
             _imapper = configuration.CreateMapper();
             _costMasterRepository = costMasterRepository;
+            _jobCategoryRepository = jobCategoryRepository;
         }
 
         public IActionResult Index(DateTime? DateFrom, DateTime? DateTo)
@@ -53,34 +59,38 @@ namespace ConstructionApplication.Controllers
             ViewBag.DateTo = DateTo?.ToString("yyyy-MM-dd");
             return View(dailyAttendanceVm);
         }
-            
+
         public IActionResult Add()
         {
-            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail();
-            if (costMaster != null)
+            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+
+            var jobCategoryCosts = jobCategories.Select(jobCategory => new
             {
-                ViewBag.MasterMasonCost = costMaster.MasterMasonCost;
-                ViewBag.LabourCost = costMaster.LabourCost;
-            }
-            else
-            {
-                ViewBag.errorMessage = "No active CostMaster record found.";
-            }
+                JobCategoryId = jobCategory.Id,
+                JobCategoryName = jobCategory.Name,
+                Cost = _costMasterRepository.GetActiveCostDetail(jobCategory.Id)?.Cost ?? 0 
+            }).ToList();
+
+            ViewBag.JobCategoryCosts = jobCategoryCosts;
+
             return View();
         }
+
 
         [HttpPost]
         public IActionResult Add(DailyAttendanceVm dailyAttendanceVm)
         {
+            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+
             DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
 
-            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail();
+            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.JobCategoryId);
             
-            if(costMaster != null)
+            if (costMaster != null)
             {
-                dailyAttendance.MasterMasonAmount = dailyAttendance.TotalMasterMason * costMaster.MasterMasonCost;
-                dailyAttendance.LabourAmount = dailyAttendance.TotalLabour * costMaster.LabourCost;
-                dailyAttendance.TotalAmount = dailyAttendance.MasterMasonAmount + dailyAttendance.LabourAmount;
+                dailyAttendance.TotalAmount = dailyAttendance.TotalWorker * costMaster.Cost;
 
                 dailyAttendance.Id = _dailyAttendanceRepository.Create(dailyAttendance);
                 if (dailyAttendance.Id > 0)
@@ -97,24 +107,36 @@ namespace ConstructionApplication.Controllers
             return View();
         }
 
-        public IActionResult AddUsingAjax()
+        [HttpGet]
+        public IActionResult AddUsingAjax(int jobCategoryId = 0)
         {
+            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+
+            if (jobCategoryId > 0)
+            {
+                CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(jobCategoryId);
+                if (costMaster != null)
+                {
+                    return new JsonResult(new { cost = costMaster.Cost });
+                }
+                return new JsonResult(new { cost = 0 });
+            }
             return View();
         }
 
         [HttpPost]
         public IActionResult AddUsingAjax(DailyAttendanceVm dailyAttendanceVm)
         {
+            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+
             DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
 
-            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail();
+            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.JobCategoryId);
 
             if (costMaster != null)
             {
-                dailyAttendance.MasterMasonAmount = dailyAttendance.TotalMasterMason * costMaster.MasterMasonCost;
-                dailyAttendance.LabourAmount = dailyAttendance.TotalLabour * costMaster.LabourCost;
-                dailyAttendance.TotalAmount = dailyAttendance.MasterMasonAmount + dailyAttendance.LabourAmount;
-
                 dailyAttendance.Id = _dailyAttendanceRepository.Create(dailyAttendance);
                 if (dailyAttendance.Id > 0)
                 {

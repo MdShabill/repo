@@ -15,40 +15,30 @@
             </div>
             <br/>
             <div class="form-group" style="width: 60%;">
-                <label asp-for="TotalMasterMason" class="control-label"><b>Master Mason Count</b></label>
-                <input asp-for="TotalMasterMason" class="form-control" />
-                <span asp-validation-for="TotalMasterMason" class="text-danger"></span>
+                <label asp-for="JobCategoryId" class="control-label"><b>Job Categories</b></label>
+                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, "-- Select Job Category --", new { @class = "form-control", @id = "JobCategoryId" })
+                <span asp-validation-for="JobCategoryId" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group row" style="width: 95%;">
                 <div class="col-md-6">
-                    <label asp-for="TotalLabour" class="control-label"><b>Total Labour Count</b></label>
-                    <input asp-for="TotalLabour" class="form-control" />
-                    <span asp-validation-for="TotalLabour" class="text-danger"></span>
+                    <label asp-for="TotalWorker" class="control-label"><b>Total Worker</b></label>
+                    <input asp-for="TotalWorker" id="totalWorker" class="form-control" />
+                    <span asp-validation-for="TotalWorker" class="text-danger"></span>
                 </div>
-                <div class="col-md-4 d-flex align-items-center" style="margin-left: 10px;">
+                @* <div class="col-md-4 d-flex align-items-center" style="margin-left: 10px;">
                     <a href="#" id="calculateCost"><b>Calculate Cost</b></a>
-                </div>
+                </div> *@
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
-                <label asp-for="TotalCount"><b>Total Count(Master Mason + Labour)</b></label>
-                <input asp-for="TotalCount" class="form-control" readonly />
-            </div>
-            <br />
-            <div class="form-group" style="width: 60%;">
-                <label><b>Total Master Mason Amount</b></label>
-                <input asp-for="MasterMasonAmount" class="form-control" readonly />
-            </div>
-            <br />
-            <div class="form-group" style="width: 60%;">
-                <label><b>Total Labour Amount</b></label>
-                <input asp-for="LabourAmount" class="form-control" readonly />
+                <label asp-for="AmountPerWorker"><b>Amount Per Worker</b></label>
+                <input asp-for="AmountPerWorker" id="amountPerWorker" class="form-control" readonly />
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
                 <label><b>Total Amount</b></label>
-                <input asp-for="TotalAmount" class="form-control" readonly />
+                <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly />
             </div>
             <br />
 
@@ -60,6 +50,48 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#JobCategoryId').change(function () {
+            console.log('Dropdown value changed');
+            var jobCategoryId = $(this).val();
+
+            if (jobCategoryId > 0) {
+                $.ajax({
+                    url: '@Url.Action("AddUsingAjax", "DailyAttendance")',
+                    type: 'GET',
+                    data: { jobCategoryId: jobCategoryId },
+                    success: function (response) {
+                        $('#amountPerWorker').val(response.cost);
+                        updateTotalAmount();
+                    },
+                    error: function () {
+                        alert('Error retrieving cost details.');
+                    }
+                });
+            } else {
+                alert("Please select a Job Category.");
+            }
+        });
+
+        // Function to update total amount when TotalWorker changes
+        function updateTotalAmount() {
+            var amountPerWorker = parseFloat($('#amountPerWorker').val()) || 0;
+            var totalWorker = parseFloat($('#totalWorker').val()) || 0;
+            var totalAmount = amountPerWorker * totalWorker;
+            $('#totalAmount').val(totalAmount.toFixed(2));
+        }
+
+        // Trigger update when TotalWorker input changes
+        $('#totalWorker').on('input', function () {
+            updateTotalAmount();
+        });
+    });
+</script>
+
+
+
+@* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
 
@@ -92,4 +124,4 @@
             });
         });
     });
-</script>
+</script> *@

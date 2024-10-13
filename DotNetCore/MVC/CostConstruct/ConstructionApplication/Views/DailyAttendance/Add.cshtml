@@ -15,36 +15,25 @@
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
-                <label asp-for="TotalMasterMason" class="control-label"><b>Master Mason Count</b></label>
-                <input asp-for="TotalMasterMason" class="form-control" />
-                <span asp-validation-for="TotalMasterMason" class="text-danger"></span>
+                <label asp-for="JobCategoryId" class="control-label"><b>Job Categories</b></label>
+                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, "Select Job Category", new { @class = "form-control",@id = "jobCategory" })
+                <span asp-validation-for="JobCategoryId" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group row" style="width: 60%;">
-                <label asp-for="TotalLabour" class="control-label"><b>Total Labour Count</b></label>
-                <input asp-for="TotalLabour" class="form-control" />
-                <span asp-validation-for="TotalLabour" class="text-danger"></span>
+                <label asp-for="TotalWorker" class="control-label"><b>Total Worker</b></label>
+                <input asp-for="TotalWorker" id="totalWorker" class="form-control" />
+                <span asp-validation-for="TotalWorker" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
-                <label asp-for="TotalCount"><b>Total Count(Master Mason + Labour)</b></label>
-                <input asp-for="TotalCount" class="form-control" readonly />
-            </div>
-            <br />
-            <div class="form-group" style="width: 60%;">
-                <label><b>Total Master Mason Amount</b></label>
-                <input asp-for="MasterMasonAmount" class="form-control" readonly value="@ViewBag.MasterMasonCost" />
-            </div>
-            <br />
-            <div class="form-group" style="width: 60%;">
-                <label><b>Total Labour Amount</b></label>
-                <input asp-for="LabourAmount" class="form-control" readonly value="@ViewBag.LabourCost" />
+                <label asp-for="AmountPerWorker"><b>Amount Per Worker</b></label>
+                <input asp-for="AmountPerWorker" id="AmountPerWorker" class="form-control" readonly value="@ViewBag.Cost" />
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
                 <label><b>Total Amount</b></label>
-                <input asp-for="TotalAmount" class="form-control" readonly
-                       value="@(Convert.ToDecimal(ViewBag.MasterMasonCost ?? 0) + Convert.ToDecimal(ViewBag.LabourCost ?? 0))" />
+                <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly />
             </div>
             <br />
 
@@ -55,11 +44,44 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Preload job category costs passed from the controller
+    const jobCategoryCosts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.JobCategoryCosts));
+
+    document.getElementById('jobCategory').addEventListener('change', function () {
+        const selectedJobCategoryId = parseInt(this.value);
+
+        // Find the matching JobCategoryId in the jobCategoryCosts array
+        const selectedJobCategory = jobCategoryCosts.find(category => category.JobCategoryId === selectedJobCategoryId);
+
+        if (selectedJobCategory) {
+            // Set the AmountPerWorker field value based on the selected JobCategory's Cost
+            document.getElementById('AmountPerWorker').value = selectedJobCategory.Cost;
+
+            // Optionally calculate Total Amount if TotalWorker is already filled
+            const totalWorker = document.getElementById('totalWorker').value;
+            if (totalWorker) {
+                document.getElementById('totalAmount').value = selectedJobCategory.Cost * totalWorker;
+            }
+        }
+    });
+
+    // Update Total Amount when TotalWorker input changes
+    document.getElementById('totalWorker').addEventListener('input', function () {
+        const totalWorker = this.value;
+        const amountPerWorker = document.getElementById('AmountPerWorker').value;
+
+        if (amountPerWorker && totalWorker) {
+            document.getElementById('totalAmount').value = amountPerWorker * totalWorker;
+        }
+    });
+</script>
+
+@* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        var masterMasonCost = @ViewBag.MasterMasonCost;
-        var labourCost = @ViewBag.LabourCost;
+        var Cost = @ViewBag.Cost;
+        //var labourCost = @ViewBag.LabourCost;
 
         function calculateCosts() {
             var totalMasterMason = parseInt($("#TotalMasterMason").val()) || 0;
@@ -88,4 +110,4 @@
             calculateCosts();
         });
     });
-</script>
+</script> *@

@@ -1,6 +1,6 @@
 ﻿@model ConstructionApplication.ViewModels.CostMasterVm.CostMasterVm
 
-<h4>Cost Master</h4>
+<h4>Add Cost</h4>
 <br />
 <div class="row">
     <div>
@@ -8,22 +8,22 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <span class="text-success"> <b> @ViewBag.successMessage </b> </span>
 
-            <div class="form-group" style="width: 150px;">
-                <label asp-for="MasterMasonCost" class="control-label"><b>Master Mason Cost</b></label>
-                <input asp-for="MasterMasonCost" class="form-control" />
-                <span asp-validation-for="MasterMasonCost" class="text-danger"></span>
-            </div>
-            <br />
-            <div class="form-group" style="width: 150px;">
-                <label asp-for="LabourCost" class="control-label"><b>Labour Cost</b></label>
-                <input asp-for="LabourCost" class="form-control" />
-                <span asp-validation-for="LabourCost" class="text-danger"></span>
-            </div>
-            <br />
-            <div class="form-group" style="width: 150px;">
+            <div class="form-group" style="width: 200px;">
                 <label asp-for="Date" class="control-label"><b>Date</b></label>
                 <input asp-for="Date" class="form-control" />
                 <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 200px;">
+                <label asp-for="JobCategoryId" class="control-label"><b>Job Categories</b></label>
+                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, "-- Select Job Categories--", new { @class = "form-control", id = "jobCategorySelect", onchange = "updateCost()" })
+                <span asp-validation-for="JobCategoryId" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 200px;">
+                <label asp-for="Cost" class="control-label"><b>Cost</b></label>
+                <input asp-for="Cost" class="form-control" id="Cost" />
+                <span asp-validation-for="Cost" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">
@@ -32,3 +32,25 @@
         </form>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function updateCost() {
+        var jobCategoryId = $('#jobCategorySelect').val();
+        if (jobCategoryId) {
+            $.ajax({
+                url: '@Url.Action("Add", "CostMaster")', // Replace with your actual controller name
+                type: 'GET',
+                data: { jobCategoryId: jobCategoryId },
+                success: function (result) {
+                    $('#Cost').val(result.cost); // Assuming your input for Cost has id="Cost"
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching cost: ' + error);
+                }
+            });
+        } else {
+            $('#Cost').val(''); // Clear the Cost field if no category is selected
+        }
+    }
+</script>
