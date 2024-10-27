@@ -15,8 +15,8 @@
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
-                <label asp-for="JobCategoryId" class="control-label"><b>Job Categories</b></label>
-                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, "Select Job Category", new { @class = "form-control",@id = "jobCategory" })
+                <label asp-for="JobCategoryId" class="control-label"><b>Job Category</b></label>
+                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, null, new { @class = "form-control",@id = "jobCategory" })
                 <span asp-validation-for="JobCategoryId" class="text-danger"></span>
             </div>
             <br />
@@ -76,38 +76,3 @@
         }
     });
 </script>
-
-@* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        var Cost = @ViewBag.Cost;
-        //var labourCost = @ViewBag.LabourCost;
-
-        function calculateCosts() {
-            var totalMasterMason = parseInt($("#TotalMasterMason").val()) || 0;
-            var totalLabour = parseInt($("#TotalLabour").val()) || 0;
-
-            // Calculate individual and total costs
-            var masterMasonAmount = masterMasonCost * totalMasterMason;
-            var labourAmount = labourCost * totalLabour;
-            var totalAmount = masterMasonAmount + labourAmount;
-
-            // Set values to the fields
-            $("#MasterMasonAmount").val(masterMasonAmount.toFixed(2));
-            $("#LabourAmount").val(labourAmount.toFixed(2));
-            $("#TotalAmount").val(totalAmount.toFixed(2));
-        }
-
-        function calculateTotalCount() {
-            var totalMasterMason = parseInt($("#TotalMasterMason").val()) || 0;
-            var totalLabour = parseInt($("#TotalLabour").val()) || 0;
-            var totalCount = totalMasterMason + totalLabour;
-            $("#TotalCount").val(totalCount);
-        }
-
-        $("#TotalMasterMason, #TotalLabour").on('input', function () {
-            calculateTotalCount();
-            calculateCosts();
-        });
-    });
-</script> *@

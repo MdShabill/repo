@@ -73,26 +73,75 @@
             .btn-primary:hover {
                 background-color: #0056b3;
             }
-    </style>
-</head>
-    <body>
-        <table>
-            <tr class="header-row">
-                <td><b>Date</b></td>
-                <td><b>Name</b></td>
-                <td><b>Cost</b></td>
-                <td><b>Is Active</b></td>
-            </tr>
 
-            @foreach (ConstructionApplication.ViewModels.CostMasterVm.CostMasterVm costMasterVm in Model)
+        .dropdown-section {
+            margin-bottom: 20px;
+        }
+
+            .dropdown-section select {
+                padding: 5px;
+                border-radius: 5px;
+            }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="dropdown-section" style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="width: 200px;">
+            <form method="get" action="/CostMaster/Index">
+                <label for="jobCategoryId"><b>Select Job Type:</b></label>
+                <select id="jobCategoryId" name="jobCategoryId" onchange="this.form.submit()">
+                    @foreach (var item in ViewBag.JobCategory as SelectList)
+                    {
+                        if (item.Selected)
+                        {
+                            <option value="@item.Value" selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <table>
+        <tr class="header-row">
+            <td><b>Date</b></td>
+            <td><b>Job Type</b></td>
+            <td><b>Cost</b></td>
+            <td><b>Is Active</b></td>
+        </tr>
+
+        @if (Model != null && Model.Count > 0)
+        {
+            @foreach (var costMasterVm in Model)
             {
                 <tr class="table1">
                     <td>@costMasterVm.Date.ToString("dd-MMMM-yyyy")</td>
                     <td>@costMasterVm.Name</td>
                     <td>@costMasterVm.Cost</td>
-                    <td>@costMasterVm.IsActive</td>
+                    <td>
+                        @if (costMasterVm.IsActive)
+                        {
+                            <i class="fas fa-check-circle" style="color:green;"></i>
+                        }
+                        else
+                        {
+                            <i class="fas fa-times-circle" style="color:red;"></i>
+                        }
+                    </td>
                 </tr>
             }
-        </table>
-    </body>
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="no-record">No records found for the selected Job Category.</td>
+            </tr>
+        }
+    </table>
+</body>
 </html>

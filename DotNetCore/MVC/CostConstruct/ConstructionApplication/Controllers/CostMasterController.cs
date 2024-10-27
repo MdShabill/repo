@@ -22,7 +22,7 @@ namespace ConstructionApplication.Controllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<CostMasterVm, CostMaster>();
+                cfg.CreateMap<AddNewCostMasterVm, CostMaster>();
                 cfg.CreateMap<CostMaster, CostMasterVm>();
             });
 
@@ -30,11 +30,23 @@ namespace ConstructionApplication.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(int? jobCategoryId)
         {
-            List<CostMaster> costMasters = _costMasterRepository.GetAll();
+            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name", jobCategoryId);
+
+            List<CostMaster> costMasters;
+            if (jobCategoryId.HasValue && jobCategoryId.Value > 0)
+            {
+                costMasters = _costMasterRepository.GetByJobCategory(jobCategoryId.Value);
+            }
+            else
+            {
+                costMasters = _costMasterRepository.GetByJobCategory(jobCategories.First().Id);
+            }
 
             List<CostMasterVm> costMasterVm = _imapper.Map<List<CostMaster>, List<CostMasterVm>>(costMasters);
+
             return View(costMasterVm);
         }
 
@@ -47,30 +59,31 @@ namespace ConstructionApplication.Controllers
             return Json(costMasterVm);
         }
 
-        public IActionResult Add(int jobCategoryId)
+        public IActionResult Add()
         {
             List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
             ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
-
-            if (jobCategoryId > 0)
-            {
-                CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(jobCategoryId);
-                if (costMaster != null)
-                {
-                    return new JsonResult(new { cost = costMaster.Cost });
-                }
-                return new JsonResult(new { cost = 0 });
-            }
             return View();
         }
 
         [HttpPost]
-        public IActionResult Add(CostMasterVm costMasterVm)
+        public IActionResult Add(AddNewCostMasterVm costMasterVm)
         {
             List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
             ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
 
-            CostMaster costMaster = _imapper.Map<CostMasterVm, CostMaster>(costMasterVm);
+            if (costMasterVm.Date == null || 
+                costMasterVm.Date == default(DateTime) || 
+                costMasterVm.Date > DateTime.Now ||
+                costMasterVm.JobCategoryId == 0 || 
+                costMasterVm.Cost == null || 
+                costMasterVm.Cost <= 0)
+            {
+                ViewBag.ErrorMessage = "Page not submitted, please enter correct values";
+                return View(costMasterVm);
+            }
+
+            CostMaster costMaster = _imapper.Map<AddNewCostMasterVm, CostMaster>(costMasterVm);
             int affectedRowCount = _costMasterRepository.Create(costMaster);
             if (affectedRowCount > 0)
             {

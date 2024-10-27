@@ -20,12 +20,13 @@ namespace ConstructionApplication.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Select 
-                           DailyAttendance.Date, JobCategories.Name,
+                           DailyAttendance.Date, JobCategories.Name, Contractors.Name As ContractorName,
                            DailyAttendance.TotalWorker, DailyAttendance.AmountPerWorker,
                            DailyAttendance.TotalAmount
                            From 
                            DailyAttendance
                            Join JobCategories ON DailyAttendance.JobCategoryId = JobCategories.Id
+                           Join Contractors ON DailyAttendance.ContractorId = Contractors.Id
                            Where
                            (@DateFrom IS NULL OR DailyAttendance.Date >= @DateFrom) 
                            AND 
@@ -45,6 +46,7 @@ namespace ConstructionApplication.Repositories
                     {
                         Date = (DateTime)dataTable.Rows[i]["Date"],
                         Name = (string)dataTable.Rows[i]["Name"],
+                        ContractorName = (string)dataTable.Rows[i]["ContractorName"],
                         TotalWorker = (int)dataTable.Rows[i]["TotalWorker"],
                         AmountPerWorker = (decimal)dataTable.Rows[i]["AmountPerWorker"],
                         TotalAmount = (decimal)dataTable.Rows[i]["TotalAmount"],

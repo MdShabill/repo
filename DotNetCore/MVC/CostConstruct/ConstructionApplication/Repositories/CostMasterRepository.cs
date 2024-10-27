@@ -1,4 +1,5 @@
 ﻿using ConstructionApplication.DataModels.CostMaster;
+using ConstructionApplication.DataModels.JobCategory;
 using ConstructionApplication.DataModels.Material;
 using System.Data;
 using System.Data.SqlClient;
@@ -14,26 +15,29 @@ namespace ConstructionApplication.Repositories
             _connectionString = connectionString;
         }
 
-        public List<CostMaster> GetAll()
+        public List<CostMaster> GetByJobCategory(int jobCategoryId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"SELECT CostMaster.Id, JobCategories.Name, 
-                                    CostMaster.Cost, CostMaster.Date, CostMaster.IsActive
-                                    FROM CostMaster
-                                    Join JobCategories ON CostMaster.JobCategoryId = JobCategories.Id
-                                    Order By CostMaster.Date DESC";
+                string sqlQuery = @"SELECT CostMaster.Id, CostMaster.JobCategoryId, JobCategories.Name, 
+                            CostMaster.Cost, CostMaster.Date, CostMaster.IsActive
+                            FROM CostMaster
+                            Join JobCategories ON CostMaster.JobCategoryId = JobCategories.Id
+                            WHERE CostMaster.JobCategoryId = @jobCategoryId
+                            ORDER BY CostMaster.Date DESC";
+
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", jobCategoryId);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
                 List<CostMaster> costMasters = new();
-
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
                     CostMaster costMaster = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
+                        JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
                         Name = (string)dataTable.Rows[i]["Name"],
                         Cost = (decimal)dataTable.Rows[i]["Cost"],
                         Date = (DateTime)dataTable.Rows[i]["Date"],

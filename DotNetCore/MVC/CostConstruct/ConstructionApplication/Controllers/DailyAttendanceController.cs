@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ConstructionApplication.DataModels.Contractor;
 using ConstructionApplication.DataModels.CostMaster;
 using ConstructionApplication.DataModels.DailyAttendance;
 using ConstructionApplication.DataModels.JobCategory;
@@ -16,11 +17,13 @@ namespace ConstructionApplication.Controllers
         IDailyAttendanceRepository _dailyAttendanceRepository;
         ICostMasterRepository _costMasterRepository;
         IJobCategoryRepository _jobCategoryRepository;
+        IContractorRepository _contractorRepository;
         IMapper _imapper;
 
         public DailyAttendanceController(IDailyAttendanceRepository dailyAttendanceRepository, 
                                          ICostMasterRepository costMasterRepository,
-                                         IJobCategoryRepository jobCategoryRepository)
+                                         IJobCategoryRepository jobCategoryRepository,
+                                         IContractorRepository contractorRepository)
         {
             _dailyAttendanceRepository = dailyAttendanceRepository;
 
@@ -33,6 +36,7 @@ namespace ConstructionApplication.Controllers
             _imapper = configuration.CreateMapper();
             _costMasterRepository = costMasterRepository;
             _jobCategoryRepository = jobCategoryRepository;
+            _contractorRepository = contractorRepository;
         }
 
         public IActionResult Index(DateTime? DateFrom, DateTime? DateTo)
@@ -60,10 +64,14 @@ namespace ConstructionApplication.Controllers
             return View(dailyAttendanceVm);
         }
 
-        public IActionResult Add()
+        public IActionResult Add(int? jobCategoryId)
         {
             List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+            if (jobCategories.Count > 0 && jobCategoryId == 0)
+            {
+                jobCategoryId = jobCategories[0].Id;
+            }
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name", jobCategoryId);
 
             var jobCategoryCosts = jobCategories.Select(jobCategory => new
             {
@@ -76,7 +84,6 @@ namespace ConstructionApplication.Controllers
 
             return View();
         }
-
 
         [HttpPost]
         public IActionResult Add(DailyAttendanceVm dailyAttendanceVm)
@@ -108,22 +115,32 @@ namespace ConstructionApplication.Controllers
         }
 
         [HttpGet]
-        public IActionResult AddUsingAjax(int jobCategoryId = 0)
+        public IActionResult AddUsingAjax()
         {
             List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
             ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
 
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult GetDataByJobCategoryId(int jobCategoryId = 0)
+        {
             if (jobCategoryId > 0)
             {
                 CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(jobCategoryId);
-                if (costMaster != null)
-                {
-                    return new JsonResult(new { cost = costMaster.Cost });
-                }
-                return new JsonResult(new { cost = 0 });
+                List<Contractor> contractors = _contractorRepository.GetAllContractors(jobCategoryId);
+ 
+                return new JsonResult(new 
+                { 
+                    cost = costMaster.Cost,
+                    contractors = contractors
+                });
             }
+
             return View();
         }
+
 
         [HttpPost]
         public IActionResult AddUsingAjax(DailyAttendanceVm dailyAttendanceVm)
