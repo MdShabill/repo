@@ -71,7 +71,7 @@
                         var s = '<option value="-1">SELECT</option>';
                         
                         for (var i = 0; i < response.contractors.length; i++) {
-                            s += '<option value="' + response.contractors[i].contractorId + '">' + response.contractors[i].name + '</option>';
+                            s += '<option value="' + response.contractors[i].contractorId + '">' + response.contractors[i].contractorName + '</option>';
                         }
                         $("#contractorId").html(s);
 

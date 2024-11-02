@@ -128,16 +128,17 @@ namespace ConstructionApplication.Controllers
         {
             if (jobCategoryId > 0)
             {
+
                 CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(jobCategoryId);
-                List<Contractor> contractors = _contractorRepository.GetAllContractors(jobCategoryId);
+                List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, null);
  
                 return new JsonResult(new 
                 { 
                     cost = costMaster.Cost,
                     contractors = contractors
                 });
-            }
 
+            }
             return View();
         }
 

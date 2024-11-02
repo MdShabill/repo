@@ -1,8 +1,8 @@
 ﻿using ConstructionApplication.Enums;
 
-namespace ConstructionApplication.DataModels.Contractor
+namespace ConstructionApplication.ViewModels.ContractorVm
 {
-    public class Contractor
+    public class ContractorVm
     {
         public int ContractorId { get; set; }
         public string ContractorName { get; set; }
@@ -10,13 +10,14 @@ namespace ConstructionApplication.DataModels.Contractor
         public string JobTypes { get; set; }
         public GenderTypes Gender { get; set; }
         public DateTime DOB { get; set; }
-        public string? ImageName { get; set; }
+        public IFormFile? ImageFile { get; set; }
         public string MobileNumber { get; set; }
-        public string AddressLine1 { get; set; }
-        public int AddressTypeId { get; set; }
+
+        public int? AddressTypeId { get; set; }
         public string AddressTypes { get; set; }
-        public int CountryId { get; set; }  
+        public int? CountryId { get; set; }
         public string CountryName { get; set; }
-        public int PinCode { get; set; }
+        public string? AddressLine1 { get; set; }
+        public int? PinCode { get; set; }
     }
 }

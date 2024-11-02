@@ -81,5 +81,18 @@ namespace ConstructionApplication.Repositories
                 return dailyAttendance.Id;
             }
         }
+
+        public void Delete(int ContractorId)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string deleteAddressesQuery = @"DELETE FROM DailyAttendance WHERE ContractorId = @contractorId";
+                SqlCommand deleteAddressesCommand = new(deleteAddressesQuery, sqlConnection);
+                deleteAddressesCommand.Parameters.AddWithValue("@contractorId", ContractorId);
+                sqlConnection.Open();
+                deleteAddressesCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+            }
+        }
     }
 }

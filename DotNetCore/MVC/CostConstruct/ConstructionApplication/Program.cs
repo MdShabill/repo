@@ -59,6 +59,20 @@ builder.Services.AddTransient<IContractorRepository>((svc) =>
     return new ContractorRepository(CostConstructDBConnectionString);
 });
 
+builder.Services.AddTransient<IAddressRepository>((svc) =>
+{
+    return new AddressRepository(CostConstructDBConnectionString);
+});
+
+builder.Services.AddTransient<ICountryRepository>((svc) =>
+{
+    return new CountryRepository(CostConstructDBConnectionString);
+});
+
+builder.Services.AddTransient<IAddressTypeRepository>((svc) =>
+{
+    return new AddressTypeRepository(CostConstructDBConnectionString);
+});
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
