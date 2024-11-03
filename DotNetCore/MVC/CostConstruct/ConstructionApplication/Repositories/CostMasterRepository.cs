@@ -79,24 +79,46 @@ namespace ConstructionApplication.Repositories
 
         public int Create(CostMaster costMaster)
         {
-            using (SqlConnection sqlConnection = new(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = @"Insert Into CostMaster
-                                 (JobCategoryId, Cost, Date)
-                                 Values
-                                 (@jobCategoryId, @cost, @date) ";
-
-                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@jobCategoryId", costMaster.JobCategoryId);
-                sqlCommand.Parameters.AddWithValue("@cost", costMaster.Cost);
-                sqlCommand.Parameters.AddWithValue("@date", costMaster.Date);
-
                 sqlConnection.Open();
-                int affectedRowCount = sqlCommand.ExecuteNonQuery();
-                sqlConnection.Close();
+                using (SqlTransaction transaction = sqlConnection.BeginTransaction())
+                {
+                    try
+                    {
+                        string updateQuery = @"UPDATE CostMaster 
+                                       SET IsActive = 0 
+                                       WHERE JobCategoryId = @jobCategoryId 
+                                         AND IsActive = 1";
+                        SqlCommand updateCommand = new SqlCommand(updateQuery, sqlConnection, transaction);
+                        updateCommand.Parameters.AddWithValue("@jobCategoryId", costMaster.JobCategoryId);
+                        updateCommand.ExecuteNonQuery();
 
-                return affectedRowCount;
+                        string insertQuery = @"INSERT INTO CostMaster
+                                       (JobCategoryId, Cost, Date, IsActive)
+                                       VALUES
+                                       (@jobCategoryId, @cost, @date, 1)";
+                        SqlCommand insertCommand = new SqlCommand(insertQuery, sqlConnection, transaction);
+                        insertCommand.Parameters.AddWithValue("@jobCategoryId", costMaster.JobCategoryId);
+                        insertCommand.Parameters.AddWithValue("@cost", costMaster.Cost);
+                        insertCommand.Parameters.AddWithValue("@date", costMaster.Date);
+                        int affectedRowCount = insertCommand.ExecuteNonQuery();
+
+                        transaction.Commit();
+                        return affectedRowCount;
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                    finally
+                    {
+                        sqlConnection.Close();
+                    }
+                }
             }
         }
+
     }
 }

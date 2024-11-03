@@ -58,14 +58,7 @@ namespace ConstructionApplication.Controllers
         [HttpGet]
         public IActionResult Add()
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
-
-            List<AddressType> addressTypes = _addressTypeRepository.GetAll();
-            ViewBag.AddressTypes = new SelectList(addressTypes, "Id", "Name");
-
-            List<Country> countries = _countryRepository.GetAllCountries();
-            ViewBag.Countries = new SelectList(countries, "Id", "Name");
+            DropDownSelectList();
 
             return View();
         }
@@ -73,14 +66,7 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult Add(ContractorVm contractorVm)
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
-
-            List<AddressType> addressTypes = _addressTypeRepository.GetAll();
-            ViewBag.AddressTypes = new SelectList(addressTypes, "Id", "Name");
-
-            List<Country> countries = _countryRepository.GetAllCountries();
-            ViewBag.Countries = new SelectList(countries, "Id", "Name");
+            DropDownSelectList();
 
             const int maxFileSizeInMB = 2;
             const int maxFileSizeInBytes = maxFileSizeInMB * 1024 * 1024;
@@ -103,53 +89,43 @@ namespace ConstructionApplication.Controllers
             }
 
 
-            using (TransactionScope transactionScope = new())
+            string uniqueFileName = null;
+            if (contractorVm.ImageFile != null && contractorVm.ImageFile.Length > 0)
             {
-                try
+                string dir = Path.Combine(_env.WebRootPath, "UploadedImage");
+                if (!Directory.Exists(dir))
                 {
-                    string uniqueFileName = null;
-                    if (contractorVm.ImageFile != null && contractorVm.ImageFile.Length > 0)
-                    {
-                        string dir = Path.Combine(_env.WebRootPath, "UploadedImage");
-                        if (!Directory.Exists(dir))
-                        {
-                            Directory.CreateDirectory(dir);
-                        }
-
-                        uniqueFileName = GetUniqueFileName(contractorVm.ImageFile.FileName);
-                        string filePath = Path.Combine(dir, uniqueFileName);
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            contractorVm.ImageFile.CopyTo(fileStream);
-                        }
-                    }
-
-                    Contractor contractor = _imapper.Map<ContractorVm, Contractor>(contractorVm);
-                    contractor.ImageName = uniqueFileName;
-                    contractor.ContractorId = _contractorRepository.Add(contractor);
-                    if(contractor.ContractorId > 0) 
-                    {
-                        if (contractorVm.AddressTypeId != null || contractorVm.CountryId != null ||
-                            !string.IsNullOrEmpty(contractorVm.AddressLine1) || contractorVm.PinCode != null)
-                        {
-                            Address address = new()
-                            {
-                                ContractorId = contractor.ContractorId,
-                                AddressLine1 = contractorVm.AddressLine1,
-                                AddressTypeId = contractorVm.AddressTypeId ?? 0,
-                                CountryId = contractorVm.CountryId ?? 0,
-                                PinCode = contractorVm.PinCode ?? 0
-                            };
-                            _addressRepository.Add(address);
-                            TempData["AddSuccessMessage"] = "Your Data Added successfully.";
-                            return RedirectToAction("Index");
-                        }
-                        transactionScope.Complete();
-                    }
+                    Directory.CreateDirectory(dir);
                 }
-                catch (TransactionException ex)
+
+                uniqueFileName = GetUniqueFileName(contractorVm.ImageFile.FileName);
+                string filePath = Path.Combine(dir, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    transactionScope.Dispose();
+                    contractorVm.ImageFile.CopyTo(fileStream);
+                }
+            }
+
+            Contractor contractor = _imapper.Map<ContractorVm, Contractor>(contractorVm);
+            contractor.ImageName = uniqueFileName;
+            contractor.ContractorId = _contractorRepository.Add(contractor);
+            if(contractor.ContractorId > 0) 
+            {
+                if (contractorVm.AddressTypeId != null || contractorVm.CountryId != null ||
+                    !string.IsNullOrEmpty(contractorVm.AddressLine1) || contractorVm.PinCode != null)
+                {
+                    Address address = new()
+                    {
+                        ContractorId = contractor.ContractorId,
+                        AddressLine1 = contractorVm.AddressLine1,
+                        AddressTypeId = contractorVm.AddressTypeId ?? 0,
+                        CountryId = contractorVm.CountryId ?? 0,
+                        PinCode = contractorVm.PinCode ?? 0
+                    };
+                    _addressRepository.Add(address);
+                    TempData["AddSuccessMessage"] = "Your Data Added successfully.";
+                    return RedirectToAction("Index");
                 }
             }
             return View();
@@ -185,47 +161,28 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult Update(ContractorVm contractorVm)
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+            DropDownSelectList();
 
-            List<AddressType> addressTypes = _addressTypeRepository.GetAll();
-            ViewBag.AddressTypes = new SelectList(addressTypes, "Id", "Name");
+            Contractor contractor = _imapper.Map<ContractorVm, Contractor>(contractorVm);
+            int affectedRowCount = _contractorRepository.Update(contractor);
 
-            List<Country> countries = _countryRepository.GetAllCountries();
-            ViewBag.Countries = new SelectList(countries, "Id", "Name");
-
-            using (TransactionScope transactionScope = new())
+            if (affectedRowCount > 0)
             {
-                try
+                if (contractorVm.AddressTypeId != null || contractorVm.CountryId != null ||
+                    !string.IsNullOrEmpty(contractorVm.AddressLine1) || contractorVm.PinCode != null)
                 {
-                    Contractor contractor = _imapper.Map<ContractorVm, Contractor>(contractorVm);
-                    int affectedRowCount = _contractorRepository.Update(contractor);
-
-                    if (affectedRowCount > 0)
+                    Address address = new()
                     {
-                        if (contractorVm.AddressTypeId != null || contractorVm.CountryId != null ||
-                            !string.IsNullOrEmpty(contractorVm.AddressLine1) || contractorVm.PinCode != null)
-                        {
-                            Address address = new()
-                            {
-                                ContractorId = contractor.ContractorId,
-                                AddressLine1 = contractorVm.AddressLine1,
-                                AddressTypeId = contractorVm.AddressTypeId ?? 0,
-                                CountryId = contractorVm.CountryId ?? 0,
-                                PinCode = contractorVm.PinCode ?? 0
-                            };
-                            _addressRepository.Update(address);
-                        }
-                        transactionScope.Complete();
-                        TempData["UpdateSuccessMessage"] = "Your Data updated successfully.";
-                        return RedirectToAction("Index");
-                    }
+                        ContractorId = contractor.ContractorId,
+                        AddressLine1 = contractorVm.AddressLine1,
+                        AddressTypeId = contractorVm.AddressTypeId ?? 0,
+                        CountryId = contractorVm.CountryId ?? 0,
+                        PinCode = contractorVm.PinCode ?? 0
+                    };
+                    _addressRepository.InsertOrUpdateAddress(address);
                 }
-                catch (TransactionException ex)
-                {
-                    transactionScope.Dispose();
-                    ModelState.AddModelError("", "An error occurred while updating contractor data.");
-                }
+                TempData["UpdateSuccessMessage"] = "Your Data updated successfully.";
+                return RedirectToAction("Index");
             }
             return View();
         }
@@ -263,6 +220,18 @@ namespace ConstructionApplication.Controllers
                    + "_"
                    + Guid.NewGuid().ToString().Substring(0, 4)
                    + Path.GetExtension(fileName);
+        }
+
+        private void DropDownSelectList()
+        {
+            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+
+            List<AddressType> addressTypes = _addressTypeRepository.GetAll();
+            ViewBag.AddressTypes = new SelectList(addressTypes, "Id", "Name");
+
+            List<Country> countries = _countryRepository.GetAllCountries();
+            ViewBag.Countries = new SelectList(countries, "Id", "Name");
         }
     }
 }

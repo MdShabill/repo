@@ -24,9 +24,10 @@ namespace ConstructionApplication.Repositories
             {
                 string sqlQuery = @"
                             SELECT 
-                                Contractors.Id As ContractorId, JobCategories.Name As JobTypes, 
+                                Contractors.Id As ContractorId, Contractors.JobCategoryId, JobCategories.Name As JobTypes, 
                                 Contractors.Name As ContractorName, Contractors.Gender, Contractors.DOB, 
-                                Contractors.MobileNumber, Addresses.AddressLine1, AddressTypes.Name As AddressTypes,
+                                Contractors.MobileNumber, Addresses.AddressLine1, Addresses.AddressTypeId,
+                                AddressTypes.Name As AddressTypes, Addresses.CountryId,
 	                            Countries.Name As CountryName, Addresses.PinCode
                             FROM Contractors
                             LEFT JOIN JobCategories ON Contractors.JobCategoryId = JobCategories.Id
@@ -48,16 +49,20 @@ namespace ConstructionApplication.Repositories
                 {
                     Contractor contractor = new()
                     {
+                        JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
                         JobTypes = (string)dataTable.Rows[i]["JobTypes"],
                         ContractorId = (int)dataTable.Rows[i]["ContractorId"],
                         ContractorName = (string)dataTable.Rows[i]["ContractorName"],
                         Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
                         DOB = (DateTime)dataTable.Rows[i]["DOB"],
                         MobileNumber = (string)dataTable.Rows[i]["MobileNumber"],
-                        AddressLine1 = (string)dataTable.Rows[i]["AddressLine1"],
-                        AddressTypes = (string)dataTable.Rows[i]["AddressTypes"],
-                        CountryName = (string)dataTable.Rows[i]["CountryName"],
-                        PinCode = (int)dataTable.Rows[i]["PinCode"]
+
+                        AddressLine1 = dataTable.Rows[i]["AddressLine1"] != DBNull.Value ? (string)dataTable.Rows[i]["AddressLine1"] : null,
+                        AddressTypeId = dataTable.Rows[i]["AddressTypeId"] != DBNull.Value ? (int)dataTable.Rows[i]["AddressTypeId"] : 0,
+                        AddressTypes = dataTable.Rows[i]["AddressTypes"] != DBNull.Value ? (string)dataTable.Rows[i]["AddressTypes"] : null,
+                        CountryId = dataTable.Rows[i]["CountryId"] != DBNull.Value ? (int)dataTable.Rows[i]["CountryId"] : 0,
+                        CountryName = dataTable.Rows[i]["CountryName"] != DBNull.Value ? (string)dataTable.Rows[i]["CountryName"] : null,
+                        PinCode = dataTable.Rows[i]["PinCode"] != DBNull.Value ? (int)dataTable.Rows[i]["PinCode"] : 0
                     };
                     contractors.Add(contractor);
                 }

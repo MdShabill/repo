@@ -51,6 +51,12 @@
             <!-- Hidden Address Fields -->
             <div id="dvAddressFields" style="display: none;">
                 <div class="form-group" style="width: 60%;">
+                    <label asp-for="AddressLine1" class="control-label"><b>Address</b></label>
+                    <input asp-for="AddressLine1" class="form-control" />
+                    <span asp-validation-for="AddressLine1" class="text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group" style="width: 60%;">
                     <label asp-for="AddressTypeId"><b>Address Type</b></label>
                     @Html.DropDownListFor(model => model.AddressTypeId, (SelectList)ViewBag.AddressTypes, "-- Select --", new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
@@ -60,12 +66,6 @@
                     <label asp-for="CountryId"><b>Country Name</b></label>
                     @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
-                </div>
-                <br />
-                <div class="form-group" style="width: 60%;">
-                    <label asp-for="AddressLine1" class="control-label"><b>Address</b></label>
-                    <input asp-for="AddressLine1" class="form-control" />
-                    <span asp-validation-for="AddressLine1" class="text-danger"></span>
                 </div>
                 <br />
                 <div class="form-group" style="width: 60%;">

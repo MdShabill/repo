@@ -10,7 +10,7 @@
 
             <div class="form-group" style="width: 60%;">
                 <label asp-for="Date" class="control-label"><b>Date</b></label>
-                <input asp-for="Date" class="form-control" value="@DateTime.Now.ToString(" yyyy-MM-dd")" />
+                <input asp-for="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" type="datetime-local" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
             <br/>
@@ -65,9 +65,7 @@
                     data: { jobCategoryId: jobCategoryId },
                     success: function (response) {
                         $('#amountPerWorker').val(response.cost);
-                        debugger;
-                        //$('#ContractorName').val(response.contractors);
-
+                        
                         var s = '<option value="-1">SELECT</option>';
                         
                         for (var i = 0; i < response.contractors.length; i++) {

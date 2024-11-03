@@ -14,8 +14,8 @@
             </div>
 
             <div class="form-group mb-3" style="width: 20%;">
-                <label asp-for="JobCategoryId" class="control-label"><b>Job Category</b></label>
-                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, "-- SELECT --", new { @class = "form-control", @id = "JobCategoryId" })
+                <label for="JobCategoryId" class="control-label"><b>Job Category</b></label>
+                @Html.DropDownListFor(model => model.JobCategoryId, ViewBag.JobCategory as SelectList, "-- SELECT --", new { @class = "form-control" })
                 <span asp-validation-for="JobCategoryId" class="text-danger"></span>
             </div>
 
@@ -56,13 +56,13 @@
             <div id="dvAddressFields" style="display: none;">
                 <div class="form-group mb-3" style="width: 20%;">
                     <label asp-for="AddressTypeId" class="control-label"><b>Address Type</b></label>
-                    @Html.DropDownListFor(model => model.AddressTypeId, (SelectList)ViewBag.AddressTypes, "-- Select --", new { @class = "form-control", @id = "AddressTypeId" })
+                    @Html.DropDownListFor(model => model.AddressTypeId, ViewBag.AddressTypes as SelectList, "-- Select --", new { @class = "form-control" })
                     <span asp-validation-for="AddressTypeId" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3" style="width: 20%;">
                     <label asp-for="CountryId" class="control-label"><b>Country Name</b></label>
-                    @Html.DropDownListFor(model => model.CountryId, (SelectList)ViewBag.Countries, "-- Select --", new { @class = "form-control", @id = "CountryId" })
+                    @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", new { @class = "form-control" })
                     <span asp-validation-for="CountryId" class="text-danger"></span>
                 </div>
 

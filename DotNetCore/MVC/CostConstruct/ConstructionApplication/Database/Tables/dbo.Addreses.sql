@@ -1,10 +1,10 @@
 Create Table Addresses
 (
 	Id Int Identity(1,1),
+	AddressLine1 NVarchar(200) Not Null,
 	ContractorId Int Not Null,
 	AddressTypeId Int Not Null,
 	CountryId Int Not Null,
-	Address NVarchar(200) Not Null,
 	PinCode Int Not Null,
 	
 	Primary Key (Id),

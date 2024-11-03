@@ -75,12 +75,14 @@ namespace ConstructionApplication.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into MaterialPurchase
-                       (MaterialId, Quantity, UnitOfMeasure, Date, MaterialCost, DeliveryCharge)
+                       (MaterialId, SupplierId, BrandId, Quantity, UnitOfMeasure, Date, MaterialCost, DeliveryCharge)
                        Values
-                       (@materialId, @quantity, @unitOfMeasure, @date, @materialCost, @deliveryCharge) ";
+                       (@materialId, @supplierId, @brandId, @quantity, @unitOfMeasure, @date, @materialCost, @deliveryCharge) ";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@materialId", materialPurchase.MaterialId);
+                sqlCommand.Parameters.AddWithValue("@supplierId", materialPurchase.SupplierId);
+                sqlCommand.Parameters.AddWithValue("@brandId", materialPurchase.BrandId);
                 sqlCommand.Parameters.AddWithValue("@quantity", materialPurchase.Quantity);
                 sqlCommand.Parameters.AddWithValue("@unitOfMeasure", materialPurchase.UnitOfMeasure);
                 sqlCommand.Parameters.AddWithValue("@date", materialPurchase.Date);

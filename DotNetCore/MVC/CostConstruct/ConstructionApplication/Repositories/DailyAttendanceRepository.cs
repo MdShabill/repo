@@ -16,7 +16,7 @@ namespace ConstructionApplication.Repositories
         }
 
         public List<DailyAttendance> GetAll(DateTime? DateFrom, DateTime? DateTo)
-        {
+            {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Select 
@@ -62,14 +62,15 @@ namespace ConstructionApplication.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into DailyAttendance
-                       (Date, JobCategoryId, TotalWorker, AmountPerWorker, TotalAmount)
+                       (Date, JobCategoryId, ContractorId, TotalWorker, AmountPerWorker, TotalAmount)
                        Values
-                       (@date, @jobCategoryId, @totalWorker, @amountPerWorker, @totalAmount)
+                       (@date, @jobCategoryId, @contractorId, @totalWorker, @amountPerWorker, @totalAmount)
                         SELECT SCOPE_IDENTITY() ";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@date", dailyAttendance.Date);
                 sqlCommand.Parameters.AddWithValue("@jobCategoryId", dailyAttendance.JobCategoryId);
+                sqlCommand.Parameters.AddWithValue("@contractorId", dailyAttendance.ContractorId);
                 sqlCommand.Parameters.AddWithValue("@totalWorker", dailyAttendance.TotalWorker);
                 sqlCommand.Parameters.AddWithValue("@amountPerWorker", dailyAttendance.AmountPerWorker);
                 sqlCommand.Parameters.AddWithValue("@totalAmount", dailyAttendance.TotalAmount);

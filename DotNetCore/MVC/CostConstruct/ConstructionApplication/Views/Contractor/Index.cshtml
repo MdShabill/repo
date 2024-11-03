@@ -90,14 +90,10 @@
     <thead>
         <tr class="header-row">
             <th>Job Types</th>
-            <th>Contractors</th>
+            <th>Name</th>
             <th>Gender</th>
-            <th>DOB</th>
-            <th>Mobile.No</th>
+            <th>Mobile Number</th>
             <th>Address</th>
-            <th>Address Types</th>
-            <th>Countries</th>
-            <th>PinCode</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -110,12 +106,10 @@
                     <td>@contractorVm.JobTypes</td>
                     <td>@contractorVm.ContractorName</td>
                     <td>@contractorVm.Gender</td>
-                    <td>@contractorVm.DOB.ToString("dd-MMMM-yyyy")</td>
                     <td>@contractorVm.MobileNumber</td>
-                    <td>@contractorVm.AddressLine1</td>
-                    <td>@contractorVm.AddressTypes</td>
-                    <td>@contractorVm.CountryName</td>
-                    <td>@contractorVm.PinCode</td>
+                    <td>
+                        @($"{contractorVm.AddressTypes} - {contractorVm.AddressLine1} - {contractorVm.CountryName} - {contractorVm.PinCode}")
+                    </td>
                     <td>
                         <a href="@Url.Action("Edit", "Contractor", new { id = contractorVm.ContractorId })" class="btn-action">Edit</a>
                         |

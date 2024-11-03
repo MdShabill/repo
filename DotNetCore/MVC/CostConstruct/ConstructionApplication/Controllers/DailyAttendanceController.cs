@@ -117,9 +117,6 @@ namespace ConstructionApplication.Controllers
         [HttpGet]
         public IActionResult AddUsingAjax()
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
-
             return View();
         }
 
