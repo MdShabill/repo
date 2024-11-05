@@ -9,6 +9,7 @@ using ConstructionApplication.DataModels.Material;
 using ConstructionApplication.DataModels.Suppliers;
 using ConstructionApplication.Repositories;
 using ConstructionApplication.ViewModels.ContractorVm;
+using ConstructionApplication.ViewModels.MaterialPurchaseVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Transactions;
@@ -67,6 +68,12 @@ namespace ConstructionApplication.Controllers
         public IActionResult Add(ContractorVm contractorVm)
         {
             DropDownSelectList();
+
+            if (contractorVm.DOB > DateTime.Today)
+            {
+                ViewBag.errorMessage = "Date Of Birth cannot be in the future.";
+                return View(contractorVm);
+            }
 
             const int maxFileSizeInMB = 2;
             const int maxFileSizeInBytes = maxFileSizeInMB * 1024 * 1024;

@@ -117,6 +117,9 @@ namespace ConstructionApplication.Controllers
         [HttpGet]
         public IActionResult AddUsingAjax()
         {
+            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+
             return View();
         }
 
@@ -145,6 +148,12 @@ namespace ConstructionApplication.Controllers
         {
             List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
             ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+
+            if (dailyAttendanceVm.Date > DateTime.Today)
+            {
+                ViewBag.errorMessage = "Date cannot be in the future.";
+                return View(dailyAttendanceVm);
+            }
 
             DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
 

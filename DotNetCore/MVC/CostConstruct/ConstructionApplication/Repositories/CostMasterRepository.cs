@@ -89,7 +89,7 @@ namespace ConstructionApplication.Repositories
                         string updateQuery = @"UPDATE CostMaster 
                                        SET IsActive = 0 
                                        WHERE JobCategoryId = @jobCategoryId 
-                                         AND IsActive = 1";
+                                       AND IsActive = 1";
                         SqlCommand updateCommand = new SqlCommand(updateQuery, sqlConnection, transaction);
                         updateCommand.Parameters.AddWithValue("@jobCategoryId", costMaster.JobCategoryId);
                         updateCommand.ExecuteNonQuery();

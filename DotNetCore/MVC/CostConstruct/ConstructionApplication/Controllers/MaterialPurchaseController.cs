@@ -4,6 +4,7 @@ using ConstructionApplication.DataModels.Material;
 using ConstructionApplication.DataModels.MaterialPurchase;
 using ConstructionApplication.DataModels.Suppliers;
 using ConstructionApplication.Repositories;
+using ConstructionApplication.ViewModels.DailyAttendance;
 using ConstructionApplication.ViewModels.MaterialPurchaseVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -66,9 +67,15 @@ namespace ConstructionApplication.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(MaterialPurchaseVm materialPurchaseVm) 
+        public IActionResult Add(MaterialPurchaseVm materialPurchaseVm)
         {
             DropDownSelectList();
+
+            if (materialPurchaseVm.Date > DateTime.Today)
+            {
+                ViewBag.errorMessage = "Date cannot be in the future.";
+                return View(materialPurchaseVm);
+            }
 
             MaterialPurchase materialPurchase = _imapper.Map<MaterialPurchaseVm, MaterialPurchase>(materialPurchaseVm);
             int affectedRowCount = _materialPurchaseRepository.Create(materialPurchase);

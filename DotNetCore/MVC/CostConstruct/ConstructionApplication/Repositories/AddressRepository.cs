@@ -81,8 +81,10 @@ namespace ConstructionApplication.Repositories
                 else
                 {
                     string insertQuery = @"
-                               INSERT INTO Addresses (ContractorId, AddressLine1, AddressTypeId, CountryId, PinCode)
-                                VALUES (@contractorId, @addressLine1, @addressTypeId, @countryId, @pinCode)";
+                               INSERT INTO Addresses 
+                                      (ContractorId, AddressLine1, AddressTypeId, CountryId, PinCode)
+                                VALUES 
+                                      (@contractorId, @addressLine1, @addressTypeId, @countryId, @pinCode)";
 
                     SqlCommand insertCommand = new SqlCommand(insertQuery, sqlConnection);
                     insertCommand.Parameters.AddWithValue("@contractorId", address.ContractorId);

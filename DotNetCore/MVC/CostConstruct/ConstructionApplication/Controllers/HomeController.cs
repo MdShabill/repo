@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.Models;
+﻿using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
