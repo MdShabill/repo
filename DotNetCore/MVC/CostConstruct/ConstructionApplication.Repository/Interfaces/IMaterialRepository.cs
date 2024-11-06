@@ -1,6 +1,6 @@
 ﻿using ConstructionApplication.Core.DataModels.Material;
 
-namespace ConstructionApplication.Repositories
+namespace ConstructionApplication.Repository.Interfaces
 {
     public interface IMaterialRepository
     {

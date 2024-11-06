@@ -1,6 +1,6 @@
 ﻿using ConstructionApplication.Core.DataModels.DailyAttendance;
 
-namespace ConstructionApplication.Repositories
+namespace ConstructionApplication.Repository.Interfaces
 {
     public interface IDailyAttendanceRepository
     {

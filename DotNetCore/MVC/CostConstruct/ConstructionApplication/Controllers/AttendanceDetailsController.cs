@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ConstructionApplication.Core.DataModels.AttendanceDetails;
 using ConstructionApplication.Core.DataModels.CostMaster;
-using ConstructionApplication.Repositories;
+using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels.AttendanceDetailsVm;
 using ConstructionApplication.ViewModels.CostMasterVm;
 using Microsoft.AspNetCore.Mvc;

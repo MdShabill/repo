@@ -1,5 +1,6 @@
 ﻿using ConstructionApplication.Core.DataModels.AttendanceDetails;
 using ConstructionApplication.Core.DataModels.CostMaster;
+using ConstructionApplication.Repository.Interfaces;
 using System.Data.SqlClient;
 
 namespace ConstructionApplication.Repositories

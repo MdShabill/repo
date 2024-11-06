@@ -1,6 +1,5 @@
-﻿using ConstructionApplication.Core.DataModels.CostMaster;
-using ConstructionApplication.Core.DataModels.DailyAttendance;
-using ConstructionApplication.ViewModels.CostMasterVm;
+﻿using ConstructionApplication.Core.DataModels.DailyAttendance;
+using ConstructionApplication.Repository.Interfaces;
 using System.Data;
 using System.Data.SqlClient;
 

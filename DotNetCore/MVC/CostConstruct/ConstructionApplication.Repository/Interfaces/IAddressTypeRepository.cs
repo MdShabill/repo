@@ -1,7 +1,7 @@
 ﻿using ConstructionApplication.Core.DataModels.AddressType;
 using System.Reflection.Metadata.Ecma335;
 
-namespace ConstructionApplication.Repositories
+namespace ConstructionApplication.Repository.Interfaces
 {
     public interface IAddressTypeRepository
     {

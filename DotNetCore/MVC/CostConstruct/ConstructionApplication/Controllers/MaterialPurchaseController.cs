@@ -3,7 +3,7 @@ using ConstructionApplication.Core.DataModels.Brands;
 using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Core.DataModels.MaterialPurchase;
 using ConstructionApplication.Core.DataModels.Suppliers;
-using ConstructionApplication.Repositories;
+using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels.DailyAttendance;
 using ConstructionApplication.ViewModels.MaterialPurchaseVm;
 using Microsoft.AspNetCore.Mvc;

@@ -1,6 +1,6 @@
 ﻿using ConstructionApplication.Core.DataModels.Brands;
 
-namespace ConstructionApplication.Repositories
+namespace ConstructionApplication.Repository.Interfaces
 {
     public interface IBrandRepository
     {

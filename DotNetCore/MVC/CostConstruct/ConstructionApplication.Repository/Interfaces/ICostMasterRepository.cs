@@ -1,6 +1,6 @@
 ﻿using ConstructionApplication.Core.DataModels.CostMaster;
 
-namespace ConstructionApplication.Repositories
+namespace ConstructionApplication.Repository.Interfaces
 {
     public interface ICostMasterRepository
     {

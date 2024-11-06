@@ -1,6 +1,6 @@
 ﻿using ConstructionApplication.Core.DataModels.JobCategory;
 
-namespace ConstructionApplication.Repositories
+namespace ConstructionApplication.Repository.Interfaces
 {
     public interface IJobCategoryRepository
     {

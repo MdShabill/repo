@@ -2,7 +2,7 @@
 using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Core.DataModels.JobCategory;
 using ConstructionApplication.Core.DataModels.Suppliers;
-using ConstructionApplication.Repositories;
+using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels.CostMasterVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

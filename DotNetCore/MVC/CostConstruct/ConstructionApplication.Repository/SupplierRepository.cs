@@ -2,8 +2,9 @@
 using ConstructionApplication.Core.DataModels.Suppliers;
 using System.Data.SqlClient;
 using System.Data;
+using ConstructionApplication.Repository.Interfaces;
 
-namespace ConstructionApplication.Repositories
+namespace ConstructionApplication.Repository
 {
     public class SupplierRepository : ISupplierRepository
     {

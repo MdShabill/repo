@@ -1,4 +1,5 @@
 ﻿using ConstructionApplication.Core.DataModels.Address;
+using ConstructionApplication.Repository.Interfaces;
 using System.Data.SqlClient;
 
 namespace ConstructionApplication.Repositories

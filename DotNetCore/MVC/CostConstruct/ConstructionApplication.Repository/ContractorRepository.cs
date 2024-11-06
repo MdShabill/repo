@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 using System.Data;
 using ConstructionApplication.Core.DataModels.Brands;
 using ConstructionApplication.Core.Enums;
-using ConstructionApplication.ViewModels.ContractorVm;
+using ConstructionApplication.Repository.Interfaces;
 
 namespace ConstructionApplication.Repositories
 {

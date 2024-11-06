@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.Enums;
+﻿using ConstructionApplication.Core.Enums;
 
 namespace ConstructionApplication.ViewModels.ContractorVm
 {

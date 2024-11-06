@@ -1,4 +1,6 @@
 using ConstructionApplication.Repositories;
+using ConstructionApplication.Repository;
+using ConstructionApplication.Repository.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

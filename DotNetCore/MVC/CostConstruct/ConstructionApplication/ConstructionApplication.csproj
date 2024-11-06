@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ConstructionApplication.Core\ConstructionApplication.Core.csproj" />
+    <ProjectReference Include="..\ConstructionApplication.Repository\ConstructionApplication.Repository.csproj" />
   </ItemGroup>
 
 </Project>

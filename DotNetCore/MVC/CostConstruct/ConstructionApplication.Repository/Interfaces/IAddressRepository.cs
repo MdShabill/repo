@@ -1,6 +1,6 @@
 ﻿using ConstructionApplication.Core.DataModels.Address;
 
-namespace ConstructionApplication.Repositories
+namespace ConstructionApplication.Repository.Interfaces
 {
     public interface IAddressRepository
     {

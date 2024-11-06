@@ -1,6 +1,7 @@
 ﻿using ConstructionApplication.Core.DataModels.Material;
 using System.Data.SqlClient;
 using System.Data;
+using ConstructionApplication.Repository.Interfaces;
 
 namespace ConstructionApplication.Repositories
 {

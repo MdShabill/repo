@@ -1,6 +1,7 @@
 ﻿using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Core.DataModels.JobCategory;
 using ConstructionApplication.Core.DataModels.Material;
+using ConstructionApplication.Repository.Interfaces;
 using System.Data;
 using System.Data.SqlClient;
 

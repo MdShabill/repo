@@ -1,40 +1,41 @@
-﻿using ConstructionApplication.Core.DataModels.AddressType;
-using ConstructionApplication.Core.DataModels.Country;
+﻿using ConstructionApplication.Core.DataModels.CostMaster;
+using ConstructionApplication.Core.DataModels.JobCategory;
 using System.Data.SqlClient;
 using System.Data;
+using ConstructionApplication.Repository.Interfaces;
 
 namespace ConstructionApplication.Repositories
 {
-    public class AddressTypeRepository : IAddressTypeRepository
+    public class JobCategoryRepository : IJobCategoryRepository
     {
         private readonly string _connectionString;
 
-        public AddressTypeRepository(string connectionString)
+        public JobCategoryRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public List<AddressType> GetAll()
+        public List<JobCategory> GetAll()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "Select Id, Name From AddressTypes";
+                string sqlQuery = "SELECT Id, Name FROM JobCategories ";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<AddressType> addressTypes = new();
+                List<JobCategory> jobCategories = new();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    AddressType addressType = new()
+                    JobCategory jobCategory = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
                         Name = (string)dataTable.Rows[i]["Name"]
                     };
-                    addressTypes.Add(addressType);
+                    jobCategories.Add(jobCategory);
                 }
-                return addressTypes;
+                return jobCategories;
             }
         }
     }

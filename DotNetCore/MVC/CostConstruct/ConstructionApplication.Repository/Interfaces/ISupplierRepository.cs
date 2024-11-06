@@ -1,6 +1,6 @@
 ﻿using ConstructionApplication.Core.DataModels.Suppliers;
 
-namespace ConstructionApplication.Repositories
+namespace ConstructionApplication.Repository.Interfaces
 {
     public interface ISupplierRepository
     {
