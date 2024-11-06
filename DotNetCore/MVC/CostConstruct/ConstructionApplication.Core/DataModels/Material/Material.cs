@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.DataModels.Material
+﻿namespace ConstructionApplication.Core.DataModels.Material
 {
     public class Material
     {

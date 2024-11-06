@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.DataModels.Country;
+﻿using ConstructionApplication.Core.DataModels.Country;
 using System.Data.SqlClient;
 using System.Data;
 

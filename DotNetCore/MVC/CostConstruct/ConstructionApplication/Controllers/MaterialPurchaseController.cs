@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using ConstructionApplication.DataModels.Brands;
-using ConstructionApplication.DataModels.Material;
-using ConstructionApplication.DataModels.MaterialPurchase;
-using ConstructionApplication.DataModels.Suppliers;
+using ConstructionApplication.Core.DataModels.Brands;
+using ConstructionApplication.Core.DataModels.Material;
+using ConstructionApplication.Core.DataModels.MaterialPurchase;
+using ConstructionApplication.Core.DataModels.Suppliers;
 using ConstructionApplication.Repositories;
 using ConstructionApplication.ViewModels.DailyAttendance;
 using ConstructionApplication.ViewModels.MaterialPurchaseVm;

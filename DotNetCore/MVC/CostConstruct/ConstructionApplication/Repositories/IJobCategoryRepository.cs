@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.DataModels.JobCategory;
+﻿using ConstructionApplication.Core.DataModels.JobCategory;
 
 namespace ConstructionApplication.Repositories
 {

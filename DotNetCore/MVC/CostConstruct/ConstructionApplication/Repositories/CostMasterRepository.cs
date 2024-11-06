@@ -1,6 +1,6 @@
-﻿using ConstructionApplication.DataModels.CostMaster;
-using ConstructionApplication.DataModels.JobCategory;
-using ConstructionApplication.DataModels.Material;
+﻿using ConstructionApplication.Core.DataModels.CostMaster;
+using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.Material;
 using System.Data;
 using System.Data.SqlClient;
 

@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.DataModels.Material;
+﻿using ConstructionApplication.Core.DataModels.Material;
 using System.Data.SqlClient;
 using System.Data;
 

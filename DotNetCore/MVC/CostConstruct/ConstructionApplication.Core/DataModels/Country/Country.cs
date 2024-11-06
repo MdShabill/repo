@@ -1,6 +1,6 @@
-﻿namespace ConstructionApplication.DataModels.Suppliers
+﻿namespace ConstructionApplication.Core.DataModels.Country
 {
-    public class Supplier
+    public class Country
     {
         public int Id { get; set; }
         public string Name { get; set; }

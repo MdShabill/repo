@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.DataModels.Contractor;
+﻿using ConstructionApplication.Core.DataModels.Contractor;
 
 namespace ConstructionApplication.Repositories
 {

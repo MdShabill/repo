@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.DataModels.DailyAttendance;
+﻿using ConstructionApplication.Core.DataModels.DailyAttendance;
 
 namespace ConstructionApplication.Repositories
 {

@@ -1,5 +1,5 @@
-﻿using ConstructionApplication.DataModels.AddressType;
-using ConstructionApplication.DataModels.Country;
+﻿using ConstructionApplication.Core.DataModels.AddressType;
+using ConstructionApplication.Core.DataModels.Country;
 using System.Data.SqlClient;
 using System.Data;
 

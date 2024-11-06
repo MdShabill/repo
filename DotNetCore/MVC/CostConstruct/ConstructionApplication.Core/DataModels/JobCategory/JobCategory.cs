@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.DataModels.JobCategory
+﻿namespace ConstructionApplication.Core.DataModels.JobCategory
 {
     public class JobCategory
     {

@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.DataModels.CostMaster;
+﻿using ConstructionApplication.Core.DataModels.CostMaster;
 
 namespace ConstructionApplication.Repositories
 {

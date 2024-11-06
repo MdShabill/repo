@@ -16,4 +16,8 @@
     <Folder Include="wwwroot\UploadedImage\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ConstructionApplication.Core\ConstructionApplication.Core.csproj" />
+  </ItemGroup>
+
 </Project>

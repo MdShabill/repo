@@ -1,10 +1,10 @@
-﻿using ConstructionApplication.DataModels.Contractor;
-using ConstructionApplication.DataModels.CostMaster;
-using ConstructionApplication.DataModels.JobCategory;
+﻿using ConstructionApplication.Core.DataModels.Contractor;
+using ConstructionApplication.Core.DataModels.CostMaster;
+using ConstructionApplication.Core.DataModels.JobCategory;
 using System.Data.SqlClient;
 using System.Data;
-using ConstructionApplication.DataModels.Brands;
-using ConstructionApplication.Enums;
+using ConstructionApplication.Core.DataModels.Brands;
+using ConstructionApplication.Core.Enums;
 using ConstructionApplication.ViewModels.ContractorVm;
 
 namespace ConstructionApplication.Repositories

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using ConstructionApplication.DataModels.Contractor;
-using ConstructionApplication.DataModels.CostMaster;
-using ConstructionApplication.DataModels.DailyAttendance;
-using ConstructionApplication.DataModels.JobCategory;
-using ConstructionApplication.DataModels.Material;
+using ConstructionApplication.Core.DataModels.Contractor;
+using ConstructionApplication.Core.DataModels.CostMaster;
+using ConstructionApplication.Core.DataModels.DailyAttendance;
+using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Repositories;
 using ConstructionApplication.ViewModels.CostMasterVm;
 using ConstructionApplication.ViewModels.DailyAttendance;

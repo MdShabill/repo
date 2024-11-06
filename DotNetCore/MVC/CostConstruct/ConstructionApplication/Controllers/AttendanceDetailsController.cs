@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using ConstructionApplication.DataModels.AttendanceDetails;
-using ConstructionApplication.DataModels.CostMaster;
+using ConstructionApplication.Core.DataModels.AttendanceDetails;
+using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Repositories;
 using ConstructionApplication.ViewModels.AttendanceDetailsVm;
 using ConstructionApplication.ViewModels.CostMasterVm;

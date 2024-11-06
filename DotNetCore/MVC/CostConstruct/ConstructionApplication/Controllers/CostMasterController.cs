@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using ConstructionApplication.DataModels.CostMaster;
-using ConstructionApplication.DataModels.JobCategory;
-using ConstructionApplication.DataModels.Suppliers;
+using ConstructionApplication.Core.DataModels.CostMaster;
+using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.Suppliers;
 using ConstructionApplication.Repositories;
 using ConstructionApplication.ViewModels.CostMasterVm;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.DataModels.Brands;
+﻿using ConstructionApplication.Core.DataModels.Brands;
 
 namespace ConstructionApplication.Repositories
 {

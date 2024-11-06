@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.DataModels.Suppliers;
+﻿using ConstructionApplication.Core.DataModels.Suppliers;
 
 namespace ConstructionApplication.Repositories
 {

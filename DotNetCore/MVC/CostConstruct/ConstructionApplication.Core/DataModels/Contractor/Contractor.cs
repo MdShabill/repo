@@ -1,6 +1,6 @@
-﻿using ConstructionApplication.Enums;
+﻿using ConstructionApplication.Core.Enums;
 
-namespace ConstructionApplication.DataModels.Contractor
+namespace ConstructionApplication.Core.DataModels.Contractor
 {
     public class Contractor
     {
@@ -15,7 +15,7 @@ namespace ConstructionApplication.DataModels.Contractor
         public string AddressLine1 { get; set; }
         public int AddressTypeId { get; set; }
         public string AddressTypes { get; set; }
-        public int CountryId { get; set; }  
+        public int CountryId { get; set; }
         public string CountryName { get; set; }
         public int PinCode { get; set; }
     }

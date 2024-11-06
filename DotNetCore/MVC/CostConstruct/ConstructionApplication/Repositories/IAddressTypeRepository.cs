@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.DataModels.AddressType;
+﻿using ConstructionApplication.Core.DataModels.AddressType;
 using System.Reflection.Metadata.Ecma335;
 
 namespace ConstructionApplication.Repositories

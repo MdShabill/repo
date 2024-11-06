@@ -1,5 +1,5 @@
-﻿using ConstructionApplication.DataModels.Brands;
-using ConstructionApplication.DataModels.Suppliers;
+﻿using ConstructionApplication.Core.DataModels.Brands;
+using ConstructionApplication.Core.DataModels.Suppliers;
 using System.Data.SqlClient;
 using System.Data;
 

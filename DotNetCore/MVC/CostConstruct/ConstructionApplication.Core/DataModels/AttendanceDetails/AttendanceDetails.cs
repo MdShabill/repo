@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.DataModels.AttendanceDetails
+﻿namespace ConstructionApplication.Core.DataModels.AttendanceDetails
 {
     public class AttendanceDetails
     {

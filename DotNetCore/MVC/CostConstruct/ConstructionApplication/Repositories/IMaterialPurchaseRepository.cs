@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.DataModels.MaterialPurchase;
+﻿using ConstructionApplication.Core.DataModels.MaterialPurchase;
 
 namespace ConstructionApplication.Repositories
 {

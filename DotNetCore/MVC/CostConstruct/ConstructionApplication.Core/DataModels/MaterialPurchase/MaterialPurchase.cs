@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.DataModels.MaterialPurchase
+﻿namespace ConstructionApplication.Core.DataModels.MaterialPurchase
 {
     public class MaterialPurchase
     {
