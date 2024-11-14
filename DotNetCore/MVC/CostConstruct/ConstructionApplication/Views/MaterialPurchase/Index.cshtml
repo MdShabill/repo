@@ -67,11 +67,45 @@
             border-radius: 5px;
         }
 
-            .btn-primary:hover {
-                background-color: #0056b3;
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        @@media (max-width: 768px) {
+            form {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
             }
+
+            form > div {
+                margin-bottom: 10px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            td, .header-row {
+                font-size: 14px;
+                padding: 6px 8px;
+            }
+
+            .bottom-section {
+                text-align: center;
+                font-size: 18px;
+            }
+
+            .no-record {
+                font-size: 16px;
+                width: 80%;
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="bottom-section">
         <a asp-controller="MaterialPurchase" asp-action="Add">Add New Material Purchase</a>

@@ -12,12 +12,15 @@ using ConstructionApplication.ViewModels.ContractorVm;
 using ConstructionApplication.ViewModels.MaterialPurchaseVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Configuration;
 using System.Transactions;
 
 namespace ConstructionApplication.Controllers
 {
     public class ContractorController : Controller
     {
+        private IConfiguration _config;
+
         IAddressTypeRepository _addressTypeRepository;
         ICountryRepository _countryRepository;
         IJobCategoryRepository _jobCategoryRepository;
@@ -25,13 +28,17 @@ namespace ConstructionApplication.Controllers
         IContractorRepository _contractorRepository;
         IDailyAttendanceRepository _dailyAttendanceRepository;
         IMapper _imapper;
+        private object iConfig;
         private readonly IWebHostEnvironment _env;
 
-        public ContractorController(IContractorRepository contractorRepository,  IAddressRepository addressRepository,
+        public ContractorController(IConfiguration iConfig,
+            IContractorRepository contractorRepository,  
+            IAddressRepository addressRepository,
                                   ICountryRepository countryRepository, IJobCategoryRepository jobCategoryRepository,
                                   IAddressTypeRepository addressTypeRepository, IWebHostEnvironment env, 
                                   IDailyAttendanceRepository dailyAttendanceRepository)
         {
+            _config = iConfig;
             _contractorRepository = contractorRepository;
             _jobCategoryRepository = jobCategoryRepository;
             _addressRepository = addressRepository;
@@ -75,26 +82,25 @@ namespace ConstructionApplication.Controllers
                 return View(contractorVm);
             }
 
-            const int maxFileSizeInMB = 2;
-            const int maxFileSizeInBytes = maxFileSizeInMB * 1024 * 1024;
-
             if (contractorVm.ImageFile != null)
             {
                 var fileExtension = Path.GetExtension(contractorVm.ImageFile.FileName).ToLower();
 
-                if (fileExtension != ".jpg" && fileExtension != ".jpeg" && fileExtension != ".png")
+                string extensions = _config.GetValue<string>("ApplicationSettings:fileExtension");
+                string[] allowedExtensions = extensions.Split(',');
+                if (!allowedExtensions.Contains(fileExtension))
                 {
-                    ViewBag.errorMessage = "ImageFile Only .jpg, .jpeg, and .png files are allowed.";
+                    ViewBag.errorMessage = "Only .jpg, .jpeg, and .png files are allowed.";
                     return View(contractorVm);
                 }
 
+                int maxFileSizeInBytes = _config.GetValue<int>("ApplicationSettings:maxFileSizeInBytes");
                 if (contractorVm.ImageFile.Length > maxFileSizeInBytes)
                 {
-                    ViewBag.errorMessage = "ImageFile size must not exceed 2 MB.";
+                    ViewBag.errorMessage = $"ImageFile size must not exceed {maxFileSizeInBytes} bytes";
                     return View(contractorVm);
                 }
             }
-
 
             string uniqueFileName = null;
             if (contractorVm.ImageFile != null && contractorVm.ImageFile.Length > 0)
