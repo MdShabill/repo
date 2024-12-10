@@ -78,7 +78,7 @@ namespace ConstructionApplication.Controllers
 
             if (contractorVm.DOB > DateTime.Today)
             {
-                ViewBag.errorMessage = "Date Of Birth cannot be in the future.";
+                ViewBag.errorMessage = "Date Of Birth cannot be in the future....OK.";
                 return View(contractorVm);
             }
 
@@ -94,10 +94,10 @@ namespace ConstructionApplication.Controllers
                     return View(contractorVm);
                 }
 
-                int maxFileSizeInBytes = _config.GetValue<int>("ApplicationSettings:maxFileSizeInBytes");
-                if (contractorVm.ImageFile.Length > maxFileSizeInBytes)
+                int maxFileSizeInByte = _config.GetValue<int>("ApplicationSettings:maxFileSizeInBytes");
+                if (contractorVm.ImageFile.Length > maxFileSizeInByte)
                 {
-                    ViewBag.errorMessage = $"ImageFile size must not exceed {maxFileSizeInBytes} bytes";
+                    ViewBag.errorMessage = $"ImageFile size must not exceed {maxFileSizeInByte} bytes";
                     return View(contractorVm);
                 }
             }
