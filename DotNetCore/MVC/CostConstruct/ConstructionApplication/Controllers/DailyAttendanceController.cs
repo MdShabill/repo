@@ -142,7 +142,7 @@ namespace ConstructionApplication.Controllers
             return View();
         }
 
-
+        //Insert Data with the using AJAX in DailyAttendance
         [HttpPost]
         public IActionResult AddUsingAjax(DailyAttendanceVm dailyAttendanceVm)
         {
