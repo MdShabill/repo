@@ -26,7 +26,7 @@ namespace ConstructionApplication.Repositories
                             SELECT 
                                 Contractors.Id As ContractorId, Contractors.JobCategoryId, JobCategories.Name As JobTypes, 
                                 Contractors.Name As ContractorName, Contractors.Gender, Contractors.DOB, 
-                                Contractors.MobileNumber, Addresses.AddressLine1, Addresses.AddressTypeId,
+                                Contractors.MobileNumber, Contractors.ReferredBy, Addresses.AddressLine1, Addresses.AddressTypeId,
                                 AddressTypes.Name As AddressTypes, Addresses.CountryId,
 	                            Countries.Name As CountryName, Addresses.PinCode
                             FROM Contractors
@@ -56,6 +56,7 @@ namespace ConstructionApplication.Repositories
                         Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
                         DOB = (DateTime)dataTable.Rows[i]["DOB"],
                         MobileNumber = (string)dataTable.Rows[i]["MobileNumber"],
+                        ReferredBy = dataTable.Rows[i]["ReferredBy"] != DBNull.Value ? (string)dataTable.Rows[i]["ReferredBy"] : null,
 
                         AddressLine1 = dataTable.Rows[i]["AddressLine1"] != DBNull.Value ? (string)dataTable.Rows[i]["AddressLine1"] : null,
                         AddressTypeId = dataTable.Rows[i]["AddressTypeId"] != DBNull.Value ? (int)dataTable.Rows[i]["AddressTypeId"] : 0,
@@ -75,9 +76,9 @@ namespace ConstructionApplication.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into Contractors
-                       (JobCategoryId, Name, Gender, DOB, ImageName, MobileNumber)
+                       (JobCategoryId, Name, Gender, DOB, ImageName, MobileNumber, ReferredBy)
                        Values
-                       (@jobCategoryId, @name, @gender, @dOB, @imageName, @mobileNumber)
+                       (@jobCategoryId, @name, @gender, @dOB, @imageName, @mobileNumber, @referredBy)
                        Select Scope_Identity()";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
@@ -91,6 +92,7 @@ namespace ConstructionApplication.Repositories
                     sqlCommand.Parameters.AddWithValue("@imageName", contractor.ImageName);
 
                 sqlCommand.Parameters.AddWithValue("@mobileNumber", contractor.MobileNumber);
+                sqlCommand.Parameters.AddWithValue("@referredBy", contractor.ReferredBy);
                 
                 sqlConnection.Open();
                 contractor.ContractorId = Convert.ToInt32(sqlCommand.ExecuteScalar());
@@ -122,7 +124,8 @@ namespace ConstructionApplication.Repositories
                             Name = @name,
                             Gender = @gender,
                             DOB = @dob,
-                            MobileNumber = @mobileNumber
+                            MobileNumber = @mobileNumber,
+                            ReferredBy = @referredBy
                             WHERE Id = @id";
 
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, sqlConnection)) 
@@ -133,6 +136,7 @@ namespace ConstructionApplication.Repositories
                     sqlCommand.Parameters.AddWithValue("@gender", contractor.Gender);
                     sqlCommand.Parameters.AddWithValue("@dob", contractor.DOB);
                     sqlCommand.Parameters.AddWithValue("@mobileNumber", contractor.MobileNumber);
+                    sqlCommand.Parameters.AddWithValue("@referredBy", contractor.ReferredBy);
 
                     sqlConnection.Open();
                     int affectedRowCount = sqlCommand.ExecuteNonQuery();
