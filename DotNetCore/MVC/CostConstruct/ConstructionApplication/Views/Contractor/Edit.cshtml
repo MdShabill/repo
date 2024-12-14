@@ -50,6 +50,12 @@
                 <input type="text" id="MobileNumber" name="MobileNumber" value="@Model.MobileNumber" class="form-control" />
             </div>
 
+            <div class="form-group" style="width: 20%;">
+                <label asp-for="ReferredBy" class="control-label"><b>Referred By</b></label>
+                <input asp-for="ReferredBy" class="form-control" />
+                <span asp-validation-for="ReferredBy" class="text-danger"></span>
+            </div>
+            <br />
             <button type="button" id="btnToggleAddressButton" class="btn btn-secondary mb-3" onclick="toggleAddressFields()">Tap for Address</button>
 
             <!-- Hidden Address Fields -->

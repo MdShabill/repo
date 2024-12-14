@@ -93,6 +93,7 @@
             <th>Name</th>
             <th>Gender</th>
             <th>Mobile Number</th>
+            <th>Referred By</th>
             <th>Address</th>
             <th>Actions</th>
         </tr>
@@ -107,6 +108,7 @@
                     <td>@contractorVm.ContractorName</td>
                     <td>@contractorVm.Gender</td>
                     <td>@contractorVm.MobileNumber</td>
+                    <td>@contractorVm.ReferredBy</td>
                     <td>
                         @($"{contractorVm.AddressTypes} - {contractorVm.AddressLine1} - {contractorVm.CountryName} - {contractorVm.PinCode}")
                     </td>

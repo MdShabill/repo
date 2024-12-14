@@ -12,6 +12,7 @@ namespace ConstructionApplication.ViewModels.ContractorVm
         public DateTime DOB { get; set; }
         public IFormFile? ImageFile { get; set; }
         public string MobileNumber { get; set; }
+        public string ReferredBy { get; set; }
 
         public int? AddressTypeId { get; set; }
         public string AddressTypes { get; set; }
