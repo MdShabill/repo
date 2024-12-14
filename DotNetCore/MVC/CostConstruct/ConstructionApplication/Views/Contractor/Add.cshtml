@@ -40,6 +40,12 @@
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
+                <label asp-for="ReferredBy" class="control-label"><b>Referred By</b></label>
+                <input asp-for="ReferredBy" class="form-control" />
+                <span asp-validation-for="ReferredBy" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
                 <label asp-for="JobCategoryId" class="control-label"><b>Job Category</b></label>
                 @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, "-- SELECT --", new { @class = "form-control"})
                 <span asp-validation-for="JobCategoryId" class="text-danger"></span>
