@@ -22,6 +22,12 @@
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
+                <label asp-for="PhoneNumber" class="control-label"><b>Supplier Contact</b></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
                 <label asp-for="BrandId" class="control-label"><b>Brands</b></label>
                 @Html.DropDownListFor(model => model.BrandId, (SelectList)ViewBag.Brands, "-- Select Brand --", new { @class = "form-control" })
                 <span asp-validation-for="BrandId" class="text-danger"></span>
