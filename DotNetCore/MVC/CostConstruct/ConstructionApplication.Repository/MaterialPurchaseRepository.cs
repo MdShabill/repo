@@ -21,7 +21,7 @@ namespace ConstructionApplication.Repositories
             {
                 string sqlQuery = @"SELECT MaterialPurchase.Id, 
                        Materials.Name As MaterialName, Suppliers.Name As SupplierName, 
-                       Brands.Name As BrandName, MaterialPurchase.Quantity, 
+                       Suppliers.PhoneNumber, Brands.Name As BrandName, MaterialPurchase.Quantity, 
                        MaterialPurchase.UnitOfMeasure, Materials.UnitPrice, MaterialPurchase.Date,
                        MaterialPurchase.MaterialCost, MaterialPurchase.DeliveryCharge
                        FROM MaterialPurchase
@@ -57,6 +57,7 @@ namespace ConstructionApplication.Repositories
                         Id = (int)dataTable.Rows[i]["Id"],
                         MaterialName = (string)dataTable.Rows[i]["MaterialName"],
                         SupplierName = (string)dataTable.Rows[i]["SupplierName"],
+                        PhoneNumber = (string)dataTable.Rows[i]["PhoneNumber"],
                         BrandName = (string)dataTable.Rows[i]["BrandName"],
                         Quantity = (int)dataTable.Rows[i]["Quantity"],
                         UnitOfMeasure = (string)dataTable.Rows[i]["UnitOfMeasure"],
@@ -76,13 +77,14 @@ namespace ConstructionApplication.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into MaterialPurchase
-                       (MaterialId, SupplierId, BrandId, Quantity, UnitOfMeasure, Date, MaterialCost, DeliveryCharge)
+                       (MaterialId, SupplierId, PhoneNumber, BrandId, Quantity, UnitOfMeasure, Date, MaterialCost, DeliveryCharge)
                        Values
-                       (@materialId, @supplierId, @brandId, @quantity, @unitOfMeasure, @date, @materialCost, @deliveryCharge) ";
+                       (@materialId, @supplierId, @phoneNumber, @brandId, @quantity, @unitOfMeasure, @date, @materialCost, @deliveryCharge) ";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@materialId", materialPurchase.MaterialId);
                 sqlCommand.Parameters.AddWithValue("@supplierId", materialPurchase.SupplierId);
+                sqlCommand.Parameters.AddWithValue("@phoneNumber", materialPurchase.PhoneNumber);
                 sqlCommand.Parameters.AddWithValue("@brandId", materialPurchase.BrandId);
                 sqlCommand.Parameters.AddWithValue("@quantity", materialPurchase.Quantity);
                 sqlCommand.Parameters.AddWithValue("@unitOfMeasure", materialPurchase.UnitOfMeasure);
