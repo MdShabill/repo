@@ -71,7 +71,7 @@ namespace ConstructionApplication.Controllers
         {
             DropDownSelectList();
 
-            if (materialPurchaseVm.Date > DateTime.Today)
+            if (materialPurchaseVm.Date > DateTime.Now)
             {
                 ViewBag.errorMessage = "Date cannot be in the future.";
                 return View(materialPurchaseVm);
