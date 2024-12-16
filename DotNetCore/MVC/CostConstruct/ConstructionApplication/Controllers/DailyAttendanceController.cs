@@ -91,13 +91,6 @@ namespace ConstructionApplication.Controllers
             List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
             ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
 
-            if (dailyAttendanceVm.JobCategoryId == 0 || dailyAttendanceVm.TotalWorker == 0 || dailyAttendanceVm.TotalWorker <= 0)
-            {
-                ViewBag.errorMessage = "Please provide valid inputs. Job Category and Total Worker are required.";
-                return View(dailyAttendanceVm);
-            }
-
-
             DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
 
             CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.JobCategoryId);
@@ -117,6 +110,7 @@ namespace ConstructionApplication.Controllers
             {
                 ViewBag.errorMessage = "No active CostMaster record found ";
             }
+
             return View();
         }
 
@@ -155,7 +149,7 @@ namespace ConstructionApplication.Controllers
             List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
             ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
 
-            if (dailyAttendanceVm.Date > DateTime.Now)
+            if (dailyAttendanceVm.Date > DateTime.Today)
             {
                 ViewBag.errorMessage = "Date cannot be in the future.";
                 return View(dailyAttendanceVm);

@@ -76,7 +76,7 @@ namespace ConstructionApplication.Controllers
         {
             DropDownSelectList();
 
-            if (contractorVm.DOB > DateTime.Now)
+            if (contractorVm.DOB > DateTime.Today)
             {
                 ViewBag.errorMessage = "Date Of Birth cannot be in the future.";
                 return View(contractorVm);
@@ -101,25 +101,6 @@ namespace ConstructionApplication.Controllers
                     return View(contractorVm);
                 }
             }
-
-            if (string.IsNullOrEmpty(contractorVm.ContractorName))
-            {
-                ViewBag.errorMessage = "Contractor Name is required.";  
-                return View(contractorVm);
-            }
-
-            if (contractorVm.JobCategoryId == null || contractorVm.JobCategoryId == 0)
-            {
-                ViewBag.errorMessage = "Job Category is required.";
-                return View(contractorVm);
-            }
-
-            if (string.IsNullOrEmpty(contractorVm.MobileNumber))
-            {
-                ViewBag.errorMessage = "Mobile Number is required.";
-                return View(contractorVm);
-            }
-
 
             string uniqueFileName = null;
             if (contractorVm.ImageFile != null && contractorVm.ImageFile.Length > 0)

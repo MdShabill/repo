@@ -84,7 +84,7 @@ namespace ConstructionApplication.Repositories
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@materialId", materialPurchase.MaterialId);
                 sqlCommand.Parameters.AddWithValue("@supplierId", materialPurchase.SupplierId);
-                sqlCommand.Parameters.AddWithValue("@phoneNumber", materialPurchase.PhoneNumber );
+                sqlCommand.Parameters.AddWithValue("@phoneNumber", materialPurchase.PhoneNumber);
                 sqlCommand.Parameters.AddWithValue("@brandId", materialPurchase.BrandId);
                 sqlCommand.Parameters.AddWithValue("@quantity", materialPurchase.Quantity);
                 sqlCommand.Parameters.AddWithValue("@unitOfMeasure", materialPurchase.UnitOfMeasure);
