@@ -71,17 +71,9 @@ namespace ConstructionApplication.Controllers
         {
             DropDownSelectList();
 
-            if (materialPurchaseVm.MaterialId <= 0 || materialPurchaseVm.SupplierId <= 0 ||
-                string.IsNullOrEmpty(materialPurchaseVm.PhoneNumber) ||
-                materialPurchaseVm.BrandId <= 0 ||
-                materialPurchaseVm.Quantity <= 0 ||
-                string.IsNullOrEmpty(materialPurchaseVm.UnitOfMeasure) ||
-                materialPurchaseVm.Date == default ||
-                materialPurchaseVm.Date > DateTime.Now ||
-                materialPurchaseVm.MaterialCost <= 0 ||
-                materialPurchaseVm.DeliveryCharge < 0)
+            if (materialPurchaseVm.Date > DateTime.Now)
             {
-                ViewBag.ErrorMessage = "Please provide valid input for all fields.";
+                ViewBag.errorMessage = "Date cannot be in the future.";
                 return View(materialPurchaseVm);
             }
 

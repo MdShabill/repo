@@ -49,8 +49,6 @@ namespace ConstructionApplication.Repositories
                 {
                     Contractor contractor = new()
                     {
-
-
                         JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
                         JobTypes = (string)dataTable.Rows[i]["JobTypes"],
                         ContractorId = (int)dataTable.Rows[i]["ContractorId"],
