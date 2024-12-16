@@ -109,7 +109,7 @@ namespace ConstructionApplication.Controllers
                 dailyAttendance.Id = _dailyAttendanceRepository.Create(dailyAttendance);
                 if (dailyAttendance.Id > 0)
                 {
-                    ViewBag.successMessage = "Add New Daily Attendance Successful";
+                    TempData["SuccessMessage"] = "Add New Daily Attendance Successful";
                 }
 
             }
@@ -117,7 +117,7 @@ namespace ConstructionApplication.Controllers
             {
                 ViewBag.errorMessage = "No active CostMaster record found ";
             }
-            return View();
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -170,14 +170,14 @@ namespace ConstructionApplication.Controllers
                 dailyAttendance.Id = _dailyAttendanceRepository.Create(dailyAttendance);
                 if (dailyAttendance.Id > 0)
                 {
-                    ViewBag.successMessage = "Add New Daily Attendance Successful";
+                    TempData["SuccessMessage"] = "Add New Daily Attendance Successful";
                 }
             }
             else
             {
                 ViewBag.errorMessage = "No active CostMaster record found ";
             }
-            return View();
+            return RedirectToAction("Index");
         }
     }
 }

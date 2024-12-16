@@ -89,9 +89,9 @@ namespace ConstructionApplication.Controllers
             int affectedRowCount = _materialPurchaseRepository.Create(materialPurchase);
             if (affectedRowCount > 0) 
             {
-                ViewBag.SuccessMessage = "Add Successfuly In Material Purchase";
+                TempData["SuccessMessage"] = "Added successfully in Material Purchase";
             }
-            return View();
+            return RedirectToAction("Index");
         }
 
         private void DropDownSelectList()
