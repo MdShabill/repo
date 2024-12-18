@@ -87,9 +87,9 @@ namespace ConstructionApplication.Controllers
             int affectedRowCount = _costMasterRepository.Create(costMaster);
             if (affectedRowCount > 0)
             {
-                ViewBag.successMessage = "Add New Cost Master Successful";
+                TempData["SuccessMessage"] = "Add New Cost Master Successful";
             }
-            return View();
+            return RedirectToAction("Index");
         }
     }
 }
