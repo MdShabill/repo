@@ -156,7 +156,7 @@ namespace ConstructionApplication.Controllers
                         PinCode = contractorVm.PinCode ?? 0
                     };
                     _addressRepository.Add(address);
-                    TempData["AddSuccessMessage"] = "Your Data Added successfully.";
+                    TempData["AddSuccessMessage"] = "Your Contractor Data Added successfully.";
                     return RedirectToAction("Index");
                 }
             }
