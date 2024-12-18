@@ -148,7 +148,6 @@ namespace ConstructionApplication.Controllers
             return View();
         }
 
-        //Insert Data with the using AJAX in DailyAttendance
         [HttpPost]
         public IActionResult AddUsingAjax(DailyAttendanceVm dailyAttendanceVm)
         {
@@ -158,6 +157,18 @@ namespace ConstructionApplication.Controllers
             if (dailyAttendanceVm.Date > DateTime.Now)
             {
                 ViewBag.errorMessage = "Date cannot be in the future.";
+                return View(dailyAttendanceVm);
+            }
+
+            if (dailyAttendanceVm.JobCategoryId == 0)
+            {
+                ViewBag.errorMessage = "Please select a Job Category.";
+                return View(dailyAttendanceVm);
+            }
+
+            if (dailyAttendanceVm.TotalWorker <= 0)
+            {
+                ViewBag.errorMessage = "Please enter a valid number of Total Workers.";
                 return View(dailyAttendanceVm);
             }
 

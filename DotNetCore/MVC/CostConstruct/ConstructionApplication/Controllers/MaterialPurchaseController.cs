@@ -69,8 +69,6 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult Add(MaterialPurchaseVm materialPurchaseVm)
         {
-            DropDownSelectList();
-
             if (materialPurchaseVm.MaterialId <= 0 || materialPurchaseVm.SupplierId <= 0 ||
                 string.IsNullOrEmpty(materialPurchaseVm.PhoneNumber) ||
                 materialPurchaseVm.BrandId <= 0 ||
@@ -81,7 +79,8 @@ namespace ConstructionApplication.Controllers
                 materialPurchaseVm.MaterialCost <= 0 ||
                 materialPurchaseVm.DeliveryCharge < 0)
             {
-                ViewBag.ErrorMessage = "Please provide valid input for all fields.";
+                ViewBag.ErrorMessage = "Please provide valid input for all requried fields.";
+                DropDownSelectList();
                 return View(materialPurchaseVm);
             }
 
@@ -90,8 +89,10 @@ namespace ConstructionApplication.Controllers
             if (affectedRowCount > 0) 
             {
                 TempData["SuccessMessage"] = "Added successfully in Material Purchase";
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            return View(materialPurchaseVm);
         }
 
         private void DropDownSelectList()

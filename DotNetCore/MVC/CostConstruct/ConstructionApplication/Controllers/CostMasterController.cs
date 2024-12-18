@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
+using ConstructionApplication.Core.DataModels.Brands;
 using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Core.DataModels.Suppliers;
+using ConstructionApplication.Repositories;
+using ConstructionApplication.Repository;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels.CostMasterVm;
 using Microsoft.AspNetCore.Mvc;
@@ -61,17 +65,13 @@ namespace ConstructionApplication.Controllers
 
         public IActionResult Add()
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+            DropDownSelectList();
             return View();
         }
 
         [HttpPost]
         public IActionResult Add(AddNewCostMasterVm costMasterVm)
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
-
             if (costMasterVm.Date == null || 
                 costMasterVm.Date == default(DateTime) || 
                 costMasterVm.Date > DateTime.Now ||
@@ -79,7 +79,8 @@ namespace ConstructionApplication.Controllers
                 costMasterVm.Cost == null || 
                 costMasterVm.Cost <= 0)
             {
-                ViewBag.ErrorMessage = "Page not submitted, please enter correct values";
+                ViewBag.ErrorMessage = "Page not submitted, please enter correct Inputs";
+                DropDownSelectList();
                 return View(costMasterVm);
             }
 
@@ -90,6 +91,12 @@ namespace ConstructionApplication.Controllers
                 TempData["SuccessMessage"] = "Add New Cost Master Successful";
             }
             return RedirectToAction("Index");
+        }
+
+        private void DropDownSelectList()
+        {
+            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
         }
     }
 }

@@ -13,6 +13,7 @@ using ConstructionApplication.ViewModels.MaterialPurchaseVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Configuration;
+using System.Text.RegularExpressions;
 using System.Transactions;
 
 namespace ConstructionApplication.Controllers
@@ -76,9 +77,37 @@ namespace ConstructionApplication.Controllers
         {
             DropDownSelectList();
 
-            if (contractorVm.DOB > DateTime.Now)
+            if (string.IsNullOrEmpty(contractorVm.ContractorName))
             {
-                ViewBag.errorMessage = "Date Of Birth cannot be in the future.";
+                ViewBag.errorMessage = "Contractor Name is required.";
+                return View(contractorVm);
+            }
+            if (!Regex.IsMatch(contractorVm.ContractorName, @"^[a-zA-Z\s]{4,15}$"))
+            {
+                ViewBag.errorMessage = "Contractor Name must be 4 to 15 characters long and contain only alphabets.";
+                return View(contractorVm);
+            }
+
+            if (contractorVm.DOB == null || contractorVm.DOB > DateTime.Now)
+            {
+                ViewBag.errorMessage = "Date Of Birth cannot be null or in the future.";
+                return View(contractorVm);
+            }
+
+            if (string.IsNullOrEmpty(contractorVm.MobileNumber))
+            {
+                ViewBag.errorMessage = "Mobile Number is required.";
+                return View(contractorVm);
+            }
+            if (!Regex.IsMatch(contractorVm.MobileNumber, @"^\d{10}$"))
+            {
+                ViewBag.errorMessage = "Mobile Number must be numeric and exactly 10 digits long.";
+                return View(contractorVm);
+            }
+
+            if (contractorVm.JobCategoryId == 0)
+            {
+                ViewBag.errorMessage = "Job Category is required.";
                 return View(contractorVm);
             }
 
@@ -101,25 +130,6 @@ namespace ConstructionApplication.Controllers
                     return View(contractorVm);
                 }
             }
-
-            if (string.IsNullOrEmpty(contractorVm.ContractorName))
-            {
-                ViewBag.errorMessage = "Contractor Name is required.";  
-                return View(contractorVm);
-            }
-
-            if (contractorVm.JobCategoryId == null || contractorVm.JobCategoryId == 0)
-            {
-                ViewBag.errorMessage = "Job Category is required.";
-                return View(contractorVm);
-            }
-
-            if (string.IsNullOrEmpty(contractorVm.MobileNumber))
-            {
-                ViewBag.errorMessage = "Mobile Number is required.";
-                return View(contractorVm);
-            }
-
 
             string uniqueFileName = null;
             if (contractorVm.ImageFile != null && contractorVm.ImageFile.Length > 0)
