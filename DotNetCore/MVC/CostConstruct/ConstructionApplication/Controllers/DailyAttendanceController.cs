@@ -9,6 +9,8 @@ using ConstructionApplication.ViewModels.CostMasterVm;
 using ConstructionApplication.ViewModels.DailyAttendance;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.RegularExpressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ConstructionApplication.Controllers
 {
@@ -67,11 +69,7 @@ namespace ConstructionApplication.Controllers
         public IActionResult Add(int? jobCategoryId)
         {
             List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            if (jobCategories.Count > 0 && jobCategoryId == 0)
-            {
-                jobCategoryId = jobCategories[0].Id;
-            }
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name", jobCategoryId);
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
 
             var jobCategoryCosts = jobCategories.Select(jobCategory => new
             {
@@ -91,11 +89,30 @@ namespace ConstructionApplication.Controllers
             List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
             ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
 
-            if (dailyAttendanceVm.JobCategoryId == 0 || dailyAttendanceVm.TotalWorker == 0 || dailyAttendanceVm.TotalWorker <= 0)
+            if (dailyAttendanceVm.JobCategoryId == 0 ||
+                dailyAttendanceVm.TotalWorker == 0 || 
+                dailyAttendanceVm.TotalWorker <= 0)
             {
                 ViewBag.errorMessage = "Please provide valid inputs. Job Category and Total Worker are required.";
                 return View(dailyAttendanceVm);
             }
+
+            if (dailyAttendanceVm.Date > DateTime.Now)
+            {
+                ViewBag.errorMessage = "Future dates are not allowed.";
+                return View(dailyAttendanceVm);
+            }
+
+            //This regex accepts only numeric values, special characters and alphabets are not allowed.
+            string totalWorkerPattern = @"^\d+$";
+            if (dailyAttendanceVm.TotalWorker == 0 ||
+                !Regex.IsMatch(dailyAttendanceVm.TotalWorker.ToString(), totalWorkerPattern) ||
+                dailyAttendanceVm.TotalWorker <= 0)
+            {
+                ViewBag.errorMessage = "Total Worker must be a valid positive number and cannot contain any special characters or alphabets.";
+                return View(dailyAttendanceVm);
+            }
+
 
 
             DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
