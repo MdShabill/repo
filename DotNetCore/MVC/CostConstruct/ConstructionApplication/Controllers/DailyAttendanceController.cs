@@ -103,6 +103,7 @@ namespace ConstructionApplication.Controllers
                 return View(dailyAttendanceVm);
             }
 
+            //This regex accepts only numeric values, special characters and alphabets are not allowed.
             string totalWorkerPattern = @"^\d+$";
             if (dailyAttendanceVm.TotalWorker == 0 ||
                 !Regex.IsMatch(dailyAttendanceVm.TotalWorker.ToString(), totalWorkerPattern) ||
