@@ -17,11 +17,11 @@
             <br />
             <div class="form-group" style="width: 60%;">
                 <label asp-for="JobCategoryId" class="control-label"><b>Job Category</b></label>
-                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, null, new { @class = "form-control",@id = "jobCategory" })
+                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, "-- Select Job Category --", new { @class = "form-control",@id = "jobCategory" })
                 <span asp-validation-for="JobCategoryId" class="text-danger"></span>
             </div>
             <br />
-            <div class="form-group row" style="width: 60%;">
+            <div class="form-group" style="width: 60%;">
                 <label asp-for="TotalWorker" class="control-label"><b>Total Worker</b></label>
                 <input asp-for="TotalWorker" id="totalWorker" class="form-control" />
                 <span asp-validation-for="TotalWorker" class="text-danger"></span>
@@ -51,18 +51,30 @@
 
     document.getElementById('jobCategory').addEventListener('change', function () {
         const selectedJobCategoryId = parseInt(this.value);
+        const amountPerWorkerField = document.getElementById('AmountPerWorker');
+        const totalWorkerField = document.getElementById('totalWorker');
+        const totalAmountField = document.getElementById('totalAmount');
+
+        if (!selectedJobCategoryId) {
+            amountPerWorkerField.value = '';
+            totalWorkerField.value = '';
+            totalAmountField.value = '';
+            return;
+        }
+
+        if (!jobCategoryCosts || jobCategoryCosts.length === 0) return;
+
 
         // Find the matching JobCategoryId in the jobCategoryCosts array
         const selectedJobCategory = jobCategoryCosts.find(category => category.JobCategoryId === selectedJobCategoryId);
 
         if (selectedJobCategory) {
             // Set the AmountPerWorker field value based on the selected JobCategory's Cost
-            document.getElementById('AmountPerWorker').value = selectedJobCategory.Cost;
+            amountPerWorkerField.value = selectedJobCategory.Cost;
 
             // Optionally calculate Total Amount if TotalWorker is already filled
-            const totalWorker = document.getElementById('totalWorker').value;
-            if (totalWorker) {
-                document.getElementById('totalAmount').value = selectedJobCategory.Cost * totalWorker;
+            if (totalWorkerField.value) {
+                totalAmountField.value = selectedJobCategory.Cost * totalWorkerField.value;
             }
         }
     });
@@ -74,6 +86,8 @@
 
         if (amountPerWorker && totalWorker) {
             document.getElementById('totalAmount').value = amountPerWorker * totalWorker;
+        } else {
+            document.getElementById('totalAmount').value = '';
         }
     });
 </script>
