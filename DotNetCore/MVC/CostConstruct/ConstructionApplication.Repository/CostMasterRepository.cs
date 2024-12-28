@@ -2,6 +2,7 @@
 using ConstructionApplication.Core.DataModels.JobCategory;
 using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Repository.Interfaces;
+using Microsoft.VisualBasic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -20,8 +21,8 @@ namespace ConstructionApplication.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"SELECT CostMaster.Id, CostMaster.JobCategoryId, JobCategories.Name, 
-                            CostMaster.Cost, CostMaster.Date, CostMaster.IsActive
+                string sqlQuery = @"SELECT CostMaster.Id, CostMaster.JobCategoryId, 
+                            JobCategories.Name, CostMaster.Cost, CostMaster.Date
                             FROM CostMaster
                             Join JobCategories ON CostMaster.JobCategoryId = JobCategories.Id
                             WHERE CostMaster.JobCategoryId = @jobCategoryId
@@ -41,8 +42,7 @@ namespace ConstructionApplication.Repositories
                         JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
                         Name = (string)dataTable.Rows[i]["Name"],
                         Cost = (decimal)dataTable.Rows[i]["Cost"],
-                        Date = (DateTime)dataTable.Rows[i]["Date"],
-                        IsActive = dataTable.Rows[i]["IsActive"] != DBNull.Value && (bool)dataTable.Rows[i]["IsActive"]
+                        Date = (DateTime)dataTable.Rows[i]["Date"]
                     };
                     costMasters.Add(costMaster);
                 }
@@ -55,12 +55,18 @@ namespace ConstructionApplication.Repositories
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
-                        Select CostMaster.JobCategoryId, JobCategories.Name, CostMaster.Cost
+                        Select Top 1 
+                        CostMaster.JobCategoryId, JobCategories.Name, 
+                        CostMaster.Cost, CostMaster.Date
                         From CostMaster 
                         Join JobCategories ON CostMaster.JobCategoryId = JobCategories.Id 
-                        Where CostMaster.IsActive = 1 And CostMaster.JobCategoryId = @jobCategoryId ";
+                        Where CostMaster.JobCategoryId = @jobCategoryId 
+                        And CostMaster.Date <= @currentDate 
+                        ORDER BY CostMaster.Date DESC";
+                        
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", JobCategoryId);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@currentDate", DateTime.Now);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
@@ -82,44 +88,20 @@ namespace ConstructionApplication.Repositories
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
+                string insertQuery = @"INSERT INTO CostMaster
+                                        (JobCategoryId, Cost, Date)
+                                        VALUES
+                                        (@jobCategoryId, @cost, @date)";
+                SqlCommand insertCommand = new SqlCommand(insertQuery, sqlConnection);
+                insertCommand.Parameters.AddWithValue("@jobCategoryId", costMaster.JobCategoryId);
+                insertCommand.Parameters.AddWithValue("@cost", costMaster.Cost);
+                insertCommand.Parameters.AddWithValue("@date", costMaster.Date);
                 sqlConnection.Open();
-                using (SqlTransaction transaction = sqlConnection.BeginTransaction())
-                {
-                    try
-                    {
-                        string updateQuery = @"UPDATE CostMaster 
-                                       SET IsActive = 0 
-                                       WHERE JobCategoryId = @jobCategoryId 
-                                       AND IsActive = 1";
-                        SqlCommand updateCommand = new SqlCommand(updateQuery, sqlConnection, transaction);
-                        updateCommand.Parameters.AddWithValue("@jobCategoryId", costMaster.JobCategoryId);
-                        updateCommand.ExecuteNonQuery();
+                int affectedRowCount = insertCommand.ExecuteNonQuery();
+                sqlConnection.Close();
 
-                        string insertQuery = @"INSERT INTO CostMaster
-                                       (JobCategoryId, Cost, Date, IsActive)
-                                       VALUES
-                                       (@jobCategoryId, @cost, @date, 1)";
-                        SqlCommand insertCommand = new SqlCommand(insertQuery, sqlConnection, transaction);
-                        insertCommand.Parameters.AddWithValue("@jobCategoryId", costMaster.JobCategoryId);
-                        insertCommand.Parameters.AddWithValue("@cost", costMaster.Cost);
-                        insertCommand.Parameters.AddWithValue("@date", costMaster.Date);
-                        int affectedRowCount = insertCommand.ExecuteNonQuery();
-
-                        transaction.Commit();
-                        return affectedRowCount;
-                    }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                        throw;
-                    }
-                    finally
-                    {
-                        sqlConnection.Close();
-                    }
-                }
+                return affectedRowCount;
             }
         }
-
     }
 }

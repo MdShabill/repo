@@ -72,9 +72,10 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult Add(AddNewCostMasterVm costMasterVm)
         {
+            ModelState.Clear();
+
             if (costMasterVm.Date == null || 
                 costMasterVm.Date == default(DateTime) || 
-                costMasterVm.Date > DateTime.Now ||
                 costMasterVm.JobCategoryId == 0 || 
                 costMasterVm.Cost == null || 
                 costMasterVm.Cost <= 0)
