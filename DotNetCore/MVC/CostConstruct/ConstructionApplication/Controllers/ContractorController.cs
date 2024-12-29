@@ -75,39 +75,45 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult Add(ContractorVm contractorVm)
         {
-            DropDownSelectList();
-
+            ModelState.Clear();
+            
             if (string.IsNullOrEmpty(contractorVm.ContractorName))
             {
                 ViewBag.errorMessage = "Contractor Name is required.";
+                DropDownSelectList();
                 return View(contractorVm);
             }
             if (!Regex.IsMatch(contractorVm.ContractorName, @"^[a-zA-Z\s]{4,15}$"))
             {
                 ViewBag.errorMessage = "Contractor Name must be 4 to 15 characters long and contain only alphabets.";
+                DropDownSelectList();
                 return View(contractorVm);
             }
 
             if (contractorVm.DOB == null || contractorVm.DOB > DateTime.Now)
             {
                 ViewBag.errorMessage = "Date Of Birth cannot be null or in the future.";
+                DropDownSelectList();
                 return View(contractorVm);
             }
 
             if (string.IsNullOrEmpty(contractorVm.MobileNumber))
             {
                 ViewBag.errorMessage = "Mobile Number is required.";
+                DropDownSelectList();
                 return View(contractorVm);
             }
             if (!Regex.IsMatch(contractorVm.MobileNumber, @"^\d{10}$"))
             {
                 ViewBag.errorMessage = "Mobile Number must be numeric and exactly 10 digits long.";
+                DropDownSelectList();
                 return View(contractorVm);
             }
 
             if (contractorVm.JobCategoryId == 0)
             {
                 ViewBag.errorMessage = "Job Category is required.";
+                DropDownSelectList();
                 return View(contractorVm);
             }
 
@@ -120,6 +126,7 @@ namespace ConstructionApplication.Controllers
                 if (!allowedExtensions.Contains(fileExtension))
                 {
                     ViewBag.errorMessage = "Only .jpg, .jpeg, and .png files are allowed.";
+                    DropDownSelectList();
                     return View(contractorVm);
                 }
 
@@ -127,6 +134,7 @@ namespace ConstructionApplication.Controllers
                 if (contractorVm.ImageFile.Length > maxFileSizeInBytes)
                 {
                     ViewBag.errorMessage = $"ImageFile size must not exceed {maxFileSizeInBytes} bytes";
+                    DropDownSelectList();
                     return View(contractorVm);
                 }
             }

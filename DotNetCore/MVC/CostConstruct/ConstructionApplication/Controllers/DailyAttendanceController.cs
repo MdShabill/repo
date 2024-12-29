@@ -66,19 +66,9 @@ namespace ConstructionApplication.Controllers
             return View(dailyAttendanceVm);
         }
 
-        public IActionResult Add(int? jobCategoryId)
+        public IActionResult Add()
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
-
-            var jobCategoryCosts = jobCategories.Select(jobCategory => new
-            {
-                JobCategoryId = jobCategory.Id,
-                JobCategoryName = jobCategory.Name,
-                Cost = _costMasterRepository.GetActiveCostDetail(jobCategory.Id)?.Cost ?? 0 
-            }).ToList();
-
-            ViewBag.JobCategoryCosts = jobCategoryCosts;
+            DropDownSelectList();
 
             return View();
         }
@@ -86,20 +76,21 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult Add(DailyAttendanceVm dailyAttendanceVm)
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+            ModelState.Clear();
 
             if (dailyAttendanceVm.JobCategoryId == 0 ||
-                dailyAttendanceVm.TotalWorker == 0 || 
+                dailyAttendanceVm.TotalWorker == 0 ||
                 dailyAttendanceVm.TotalWorker <= 0)
             {
                 ViewBag.errorMessage = "Please provide valid inputs. Job Category and Total Worker are required.";
+                DropDownSelectList();
                 return View(dailyAttendanceVm);
             }
 
             if (dailyAttendanceVm.Date > DateTime.Now)
             {
                 ViewBag.errorMessage = "Future dates are not allowed.";
+                DropDownSelectList();
                 return View(dailyAttendanceVm);
             }
 
@@ -110,15 +101,14 @@ namespace ConstructionApplication.Controllers
                 dailyAttendanceVm.TotalWorker <= 0)
             {
                 ViewBag.errorMessage = "Total Worker must be a valid positive number and cannot contain any special characters or alphabets.";
+                DropDownSelectList();
                 return View(dailyAttendanceVm);
             }
-
-
 
             DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
 
             CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.JobCategoryId);
-            
+
             if (costMaster != null)
             {
                 dailyAttendance.TotalAmount = dailyAttendance.TotalWorker * costMaster.Cost;
@@ -128,11 +118,12 @@ namespace ConstructionApplication.Controllers
                 {
                     TempData["SuccessMessage"] = "Add New Daily Attendance Successful";
                 }
-
             }
             else
             {
                 ViewBag.errorMessage = "No active CostMaster record found ";
+                DropDownSelectList();
+                return View(dailyAttendanceVm);
             }
             return RedirectToAction("Index");
         }
@@ -140,9 +131,7 @@ namespace ConstructionApplication.Controllers
         [HttpGet]
         public IActionResult AddUsingAjax()
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
-
+            DropDownSelectList();
             return View();
         }
 
@@ -168,24 +157,37 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult AddUsingAjax(DailyAttendanceVm dailyAttendanceVm)
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+            ModelState.Clear();
 
             if (dailyAttendanceVm.Date > DateTime.Now)
             {
                 ViewBag.errorMessage = "Date cannot be in the future.";
+                DropDownSelectList();
                 return View(dailyAttendanceVm);
             }
 
             if (dailyAttendanceVm.JobCategoryId == 0)
             {
                 ViewBag.errorMessage = "Please select a Job Category.";
+                DropDownSelectList();
                 return View(dailyAttendanceVm);
             }
 
             if (dailyAttendanceVm.TotalWorker <= 0)
             {
                 ViewBag.errorMessage = "Please enter a valid number of Total Workers.";
+                DropDownSelectList();
+                return View(dailyAttendanceVm);
+            }
+
+            //This regex accepts only numeric values, special characters and alphabets are not allowed.
+            string totalWorkerPattern = @"^\d+$";
+            if (dailyAttendanceVm.TotalWorker == 0 ||
+                !Regex.IsMatch(dailyAttendanceVm.TotalWorker.ToString(), totalWorkerPattern) ||
+                dailyAttendanceVm.TotalWorker <= 0)
+            {
+                ViewBag.errorMessage = "Total Worker must be a valid positive number and cannot contain any special characters or alphabets.";
+                DropDownSelectList();
                 return View(dailyAttendanceVm);
             }
 
@@ -204,8 +206,25 @@ namespace ConstructionApplication.Controllers
             else
             {
                 ViewBag.errorMessage = "No active CostMaster record found ";
+                DropDownSelectList();
+                return View(dailyAttendanceVm);
             }
             return RedirectToAction("Index");
+        }
+
+        private void DropDownSelectList()
+        {
+            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+
+            var jobCategoryCosts = jobCategories.Select(jobCategory => new
+            {
+                JobCategoryId = jobCategory.Id,
+                JobCategoryName = jobCategory.Name,
+                Cost = _costMasterRepository.GetActiveCostDetail(jobCategory.Id)?.Cost ?? 0
+            }).ToList();
+
+            ViewBag.JobCategoryCosts = jobCategoryCosts;
         }
     }
 }

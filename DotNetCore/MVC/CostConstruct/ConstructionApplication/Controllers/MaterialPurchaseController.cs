@@ -4,10 +4,12 @@ using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Core.DataModels.MaterialPurchase;
 using ConstructionApplication.Core.DataModels.Suppliers;
 using ConstructionApplication.Repository.Interfaces;
+using ConstructionApplication.ViewModels.ContractorVm;
 using ConstructionApplication.ViewModels.DailyAttendance;
 using ConstructionApplication.ViewModels.MaterialPurchaseVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
@@ -69,8 +71,9 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult Add(MaterialPurchaseVm materialPurchaseVm)
         {
+            ModelState.Clear();
+
             if (materialPurchaseVm.MaterialId <= 0 || materialPurchaseVm.SupplierId <= 0 ||
-                string.IsNullOrEmpty(materialPurchaseVm.PhoneNumber) ||
                 materialPurchaseVm.BrandId <= 0 ||
                 materialPurchaseVm.Quantity <= 0 ||
                 string.IsNullOrEmpty(materialPurchaseVm.UnitOfMeasure) ||
@@ -80,6 +83,30 @@ namespace ConstructionApplication.Controllers
                 materialPurchaseVm.DeliveryCharge < 0)
             {
                 ViewBag.ErrorMessage = "Please provide valid input for all requried fields.";
+                DropDownSelectList();
+                return View(materialPurchaseVm);
+            }
+
+            if (string.IsNullOrEmpty(materialPurchaseVm.PhoneNumber) || 
+                !Regex.IsMatch(materialPurchaseVm.PhoneNumber, @"^\d{10}$"))
+            {
+                ViewBag.errorMessage = "Supplier Phone Number must be numeric and exactly 10 digits long.";
+                DropDownSelectList();
+                return View(materialPurchaseVm);
+            }
+
+            if (materialPurchaseVm.Quantity <= 0 ||
+                !Regex.IsMatch(materialPurchaseVm.Quantity.ToString(), @"^\d+$"))
+            {
+                ViewBag.ErrorMessage = "Quantity must be a positive integer and cannot contain alphabets or special characters.";
+                DropDownSelectList();
+                return View(materialPurchaseVm);
+            }
+
+            if (materialPurchaseVm.DeliveryCharge < 0 ||
+                !Regex.IsMatch(materialPurchaseVm.DeliveryCharge.ToString(), @"^\d+(\.\d{1,2})?$"))
+            {
+                ViewBag.ErrorMessage = "Delivery Charge must be a non-negative decimal value.";
                 DropDownSelectList();
                 return View(materialPurchaseVm);
             }

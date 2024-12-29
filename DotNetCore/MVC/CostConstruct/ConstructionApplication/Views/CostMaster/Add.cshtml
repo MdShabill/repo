@@ -39,7 +39,7 @@
         var jobCategoryId = $('#jobCategorySelect').val();
         if (jobCategoryId) {
             $.ajax({
-                url: '@Url.Action("Add", "CostMaster")', // Replace with your actual controller name
+                url: '@Url.Action("GetCostByJobCategory", "CostMaster")', // Replace with your actual controller name
                 type: 'GET',
                 data: { jobCategoryId: jobCategoryId },
                 success: function (result) {
