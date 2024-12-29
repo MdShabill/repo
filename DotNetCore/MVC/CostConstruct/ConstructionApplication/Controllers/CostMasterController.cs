@@ -10,6 +10,7 @@ using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels.CostMasterVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
@@ -74,16 +75,24 @@ namespace ConstructionApplication.Controllers
         {
             ModelState.Clear();
 
-            if (costMasterVm.Date == null || 
-                costMasterVm.Date == default(DateTime) || 
-                costMasterVm.JobCategoryId == 0 || 
-                costMasterVm.Cost == null || 
-                costMasterVm.Cost <= 0)
+            if (costMasterVm.Date == null ||
+                costMasterVm.Date == default(DateTime) ||
+                costMasterVm.JobCategoryId == 0)
             {
                 ViewBag.ErrorMessage = "Page not submitted, please enter correct Inputs";
                 DropDownSelectList();
                 return View(costMasterVm);
             }
+
+            if (costMasterVm.Cost == null ||
+                costMasterVm.Cost <= 0 ||
+                !Regex.IsMatch(costMasterVm.Cost.ToString(), @"^\d+$"))
+            {
+                ViewBag.ErrorMessage = "Cost must be a positive integer and cannot contain alphabets, decimals, or special characters.";
+                DropDownSelectList();
+                return View(costMasterVm);
+            }
+
 
             CostMaster costMaster = _imapper.Map<AddNewCostMasterVm, CostMaster>(costMasterVm);
             int affectedRowCount = _costMasterRepository.Create(costMaster);
