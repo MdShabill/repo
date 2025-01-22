@@ -93,7 +93,6 @@ namespace ConstructionApplication.Controllers
                 return View(costMasterVm);
             }
 
-
             CostMaster costMaster = _imapper.Map<AddNewCostMasterVm, CostMaster>(costMasterVm);
             int affectedRowCount = _costMasterRepository.Create(costMaster);
             if (affectedRowCount > 0)

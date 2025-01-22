@@ -120,7 +120,7 @@ namespace ConstructionApplication.Controllers
                 TempData["SuccessMessage"] = "Added successfully in Material Purchase";
                 return RedirectToAction("Index");
             }
-
+            DropDownSelectList();
             return View(materialPurchaseVm);
         }
 

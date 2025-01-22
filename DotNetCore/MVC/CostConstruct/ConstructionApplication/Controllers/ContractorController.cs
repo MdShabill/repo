@@ -170,6 +170,8 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult Update(ContractorVm contractorVm)
         {
+            ModelState.Clear();
+
             if (!ValidateContractorDetails(contractorVm))
             {
                 DropDownSelectList();
