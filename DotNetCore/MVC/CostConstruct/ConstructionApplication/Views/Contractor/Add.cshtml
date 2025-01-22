@@ -9,7 +9,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group" style="width: 60%;">
                 <label asp-for="ContractorName" class="control-label"><b>Contractor Name</b></label>
-                <input asp-for="ContractorName" class="form-control" />
+                <input asp-for="ContractorName" class="form-control" maxlength="15" class="form-control" required />
                 <span asp-validation-for="ContractorName" class="text-danger"></span>
             </div>
             <br />
@@ -35,13 +35,13 @@
             <br />
             <div class="form-group" style="width: 60%;">
                 <label asp-for="MobileNumber" class="control-label"><b>Mobile Number</b></label>
-                <input asp-for="MobileNumber" class="form-control" />
+                <input asp-for="MobileNumber" maxlength="10" minlength="10" class="form-control" required />
                 <span asp-validation-for="MobileNumber" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
                 <label asp-for="ReferredBy" class="control-label"><b>Referred By</b></label>
-                <input asp-for="ReferredBy" class="form-control" />
+                <input asp-for="ReferredBy" maxlength="15" minlength="3" class="form-control" required />
                 <span asp-validation-for="ReferredBy" class="text-danger"></span>
             </div>
             <br />

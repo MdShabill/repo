@@ -76,43 +76,9 @@ namespace ConstructionApplication.Controllers
         public IActionResult Add(ContractorVm contractorVm)
         {
             ModelState.Clear();
-            
-            if (string.IsNullOrEmpty(contractorVm.ContractorName))
-            {
-                ViewBag.errorMessage = "Contractor Name is required.";
-                DropDownSelectList();
-                return View(contractorVm);
-            }
-            if (!Regex.IsMatch(contractorVm.ContractorName, @"^[a-zA-Z\s]{4,15}$"))
-            {
-                ViewBag.errorMessage = "Contractor Name must be 4 to 15 characters long and contain only alphabets.";
-                DropDownSelectList();
-                return View(contractorVm);
-            }
 
-            if (contractorVm.DOB == null || contractorVm.DOB > DateTime.Now)
+            if (!ValidateContractorDetails(contractorVm))
             {
-                ViewBag.errorMessage = "Date Of Birth cannot be null or in the future.";
-                DropDownSelectList();
-                return View(contractorVm);
-            }
-
-            if (string.IsNullOrEmpty(contractorVm.MobileNumber))
-            {
-                ViewBag.errorMessage = "Mobile Number is required.";
-                DropDownSelectList();
-                return View(contractorVm);
-            }
-            if (!Regex.IsMatch(contractorVm.MobileNumber, @"^\d{10}$"))
-            {
-                ViewBag.errorMessage = "Mobile Number must be numeric and exactly 10 digits long.";
-                DropDownSelectList();
-                return View(contractorVm);
-            }
-
-            if (contractorVm.JobCategoryId == 0)
-            {
-                ViewBag.errorMessage = "Job Category is required.";
                 DropDownSelectList();
                 return View(contractorVm);
             }
@@ -165,20 +131,20 @@ namespace ConstructionApplication.Controllers
                 if (contractorVm.AddressTypeId != null || contractorVm.CountryId != null ||
                     !string.IsNullOrEmpty(contractorVm.AddressLine1) || contractorVm.PinCode != null)
                 {
-                    Address address = new()
-                    {
-                        ContractorId = contractor.ContractorId,
-                        AddressLine1 = contractorVm.AddressLine1,
-                        AddressTypeId = contractorVm.AddressTypeId ?? 0,
-                        CountryId = contractorVm.CountryId ?? 0,
-                        PinCode = contractorVm.PinCode ?? 0
-                    };
+                    Address address = new Address(
+                        contractor.ContractorId,
+                        contractorVm.AddressLine1,
+                        contractorVm.AddressTypeId ?? 0,
+                        contractorVm.CountryId ?? 0,
+                        contractorVm.PinCode ?? 0
+                    );
                     _addressRepository.Add(address);
-                    TempData["AddSuccessMessage"] = "Your Contractor Data Added successfully.";
-                    return RedirectToAction("Index");
                 }
+                TempData["AddSuccessMessage"] = "Your Contractor Data Added successfully.";
+                return RedirectToAction("Index");
             }
-            return View();
+            DropDownSelectList();
+            return View(contractorVm);
         }
 
         public IActionResult Edit(int? id) 
@@ -196,14 +162,7 @@ namespace ConstructionApplication.Controllers
 
             ContractorVm contractorVm = _imapper.Map<ContractorVm>(contractors.First());
 
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name", contractorVm.JobCategoryId);
-
-            List<AddressType> addressTypes = _addressTypeRepository.GetAll();
-            ViewBag.AddressTypes = new SelectList(addressTypes, "Id", "Name", contractorVm.AddressTypeId);
-
-            List<Country> countries = _countryRepository.GetAllCountries();
-            ViewBag.Countries = new SelectList(countries, "Id", "Name", contractorVm.CountryId);
+            DropDownSelectList();
 
             return View(contractorVm);
         }
@@ -211,7 +170,11 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult Update(ContractorVm contractorVm)
         {
-            DropDownSelectList();
+            if (!ValidateContractorDetails(contractorVm))
+            {
+                DropDownSelectList();
+                return View(contractorVm);
+            }
 
             Contractor contractor = _imapper.Map<ContractorVm, Contractor>(contractorVm);
             int affectedRowCount = _contractorRepository.Update(contractor);
@@ -234,7 +197,8 @@ namespace ConstructionApplication.Controllers
                 TempData["UpdateSuccessMessage"] = "Your Data updated successfully.";
                 return RedirectToAction("Index");
             }
-            return View();
+            DropDownSelectList();
+            return View(contractorVm);
         }
 
         [HttpPost]
@@ -270,6 +234,56 @@ namespace ConstructionApplication.Controllers
                    + "_"
                    + Guid.NewGuid().ToString().Substring(0, 4)
                    + Path.GetExtension(fileName);
+        }
+
+        private bool ValidateContractorDetails(ContractorVm contractorVm)
+        {
+            if (string.IsNullOrEmpty(contractorVm.ContractorName))
+            {
+                ViewBag.errorMessage = "Contractor Name is required.";
+                return false;
+            }
+
+            if (contractorVm.ContractorName.Length > 15 || contractorVm.ContractorName.Length < 4 ||
+                !Regex.IsMatch(contractorVm.ContractorName, @"^[a-zA-Z\s]+$"))
+            {
+                ViewBag.errorMessage = "Contractor Name must be between 4 to 15 characters and contain only alphabets.";
+                return false;
+            }
+
+            if (contractorVm.DOB == null || contractorVm.DOB > DateTime.Now)
+            {
+                ViewBag.errorMessage = "Date Of Birth cannot be null or in the future.";
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(contractorVm.MobileNumber) || contractorVm.MobileNumber.Length != 10 ||
+                !Regex.IsMatch(contractorVm.MobileNumber, @"^\d{10}$"))
+            {
+                ViewBag.errorMessage = "Mobile Number must be numeric and exactly 10 digits long.";
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(contractorVm.ReferredBy))
+            {
+                ViewBag.errorMessage = "Referred name is required.";
+                return false;
+            }
+
+            if (contractorVm.ReferredBy.Length > 15 || contractorVm.ReferredBy.Length < 3 ||
+                !Regex.IsMatch(contractorVm.ReferredBy, @"^[a-zA-Z\s]+$"))
+            {
+                ViewBag.errorMessage = "Referred name must be between 3 to 15 characters and contain only alphabets.";
+                return false;
+            }
+
+            if (contractorVm.JobCategoryId == 0)
+            {
+                ViewBag.errorMessage = "Job Category is required.";
+                return false;
+            }
+
+            return true;
         }
 
         private void DropDownSelectList()

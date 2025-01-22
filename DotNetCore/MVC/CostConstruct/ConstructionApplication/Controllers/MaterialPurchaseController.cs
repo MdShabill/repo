@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ConstructionApplication.Core.DataModels.Brands;
+using ConstructionApplication.Core.DataModels.Contractor;
 using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Core.DataModels.MaterialPurchase;
 using ConstructionApplication.Core.DataModels.Suppliers;
@@ -87,7 +88,8 @@ namespace ConstructionApplication.Controllers
                 return View(materialPurchaseVm);
             }
 
-            if (string.IsNullOrEmpty(materialPurchaseVm.PhoneNumber) || 
+            if (string.IsNullOrEmpty(materialPurchaseVm.PhoneNumber) ||
+                materialPurchaseVm.PhoneNumber.Length != 10 ||
                 !Regex.IsMatch(materialPurchaseVm.PhoneNumber, @"^\d{10}$"))
             {
                 ViewBag.errorMessage = "Supplier Phone Number must be numeric and exactly 10 digits long.";
