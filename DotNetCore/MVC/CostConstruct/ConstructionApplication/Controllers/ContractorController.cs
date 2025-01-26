@@ -7,6 +7,7 @@ using ConstructionApplication.Core.DataModels.Country;
 using ConstructionApplication.Core.DataModels.JobCategory;
 using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Core.DataModels.Suppliers;
+using ConstructionApplication.Repositories;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels.ContractorVm;
 using ConstructionApplication.ViewModels.MaterialPurchaseVm;
@@ -27,20 +28,22 @@ namespace ConstructionApplication.Controllers
         IJobCategoryRepository _jobCategoryRepository;
         IAddressRepository _addressRepository;
         IContractorRepository _contractorRepository;
+        IContractorCRUD _contractorCRUD;
         IDailyAttendanceRepository _dailyAttendanceRepository;
         IMapper _imapper;
         private object iConfig;
         private readonly IWebHostEnvironment _env;
 
         public ContractorController(IConfiguration iConfig,
-            IContractorRepository contractorRepository,  
+            IContractorRepository contractorRepository, IContractorCRUD contractorCRUD,
             IAddressRepository addressRepository,
-                                  ICountryRepository countryRepository, IJobCategoryRepository jobCategoryRepository,
-                                  IAddressTypeRepository addressTypeRepository, IWebHostEnvironment env, 
-                                  IDailyAttendanceRepository dailyAttendanceRepository)
+            ICountryRepository countryRepository, IJobCategoryRepository jobCategoryRepository,
+            IAddressTypeRepository addressTypeRepository, IWebHostEnvironment env, 
+            IDailyAttendanceRepository dailyAttendanceRepository)
         {
             _config = iConfig;
             _contractorRepository = contractorRepository;
+            _contractorCRUD = contractorCRUD;
             _jobCategoryRepository = jobCategoryRepository;
             _addressRepository = addressRepository;
             _countryRepository = countryRepository;
@@ -59,7 +62,8 @@ namespace ConstructionApplication.Controllers
 
         public IActionResult Index(int? jobCategoryId, int? id)
         {
-            List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, id);
+            //List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, id);
+            List<Contractor> contractors = _contractorCRUD.GetAll(jobCategoryId, id);
             List<ContractorVm> contractorVm = _imapper.Map<List<Contractor>, List<ContractorVm>>(contractors);
             return View(contractorVm);
         }
@@ -83,63 +87,14 @@ namespace ConstructionApplication.Controllers
                 return View(contractorVm);
             }
 
-            if (contractorVm.ImageFile != null)
-            {
-                var fileExtension = Path.GetExtension(contractorVm.ImageFile.FileName).ToLower();
-
-                string extensions = _config.GetValue<string>("ApplicationSettings:fileExtension");
-                string[] allowedExtensions = extensions.Split(',');
-                if (!allowedExtensions.Contains(fileExtension))
-                {
-                    ViewBag.errorMessage = "Only .jpg, .jpeg, and .png files are allowed.";
-                    DropDownSelectList();
-                    return View(contractorVm);
-                }
-
-                int maxFileSizeInBytes = _config.GetValue<int>("ApplicationSettings:maxFileSizeInBytes");
-                if (contractorVm.ImageFile.Length > maxFileSizeInBytes)
-                {
-                    ViewBag.errorMessage = $"ImageFile size must not exceed {maxFileSizeInBytes} bytes";
-                    DropDownSelectList();
-                    return View(contractorVm);
-                }
-            }
-
-            string uniqueFileName = null;
-            if (contractorVm.ImageFile != null && contractorVm.ImageFile.Length > 0)
-            {
-                string dir = Path.Combine(_env.WebRootPath, "UploadedImage");
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
-
-                uniqueFileName = GetUniqueFileName(contractorVm.ImageFile.FileName);
-                string filePath = Path.Combine(dir, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    contractorVm.ImageFile.CopyTo(fileStream);
-                }
-            }
-
+            string uniqueFileName = ValidateAndUploadFile(contractorVm);
+            
             Contractor contractor = _imapper.Map<ContractorVm, Contractor>(contractorVm);
             contractor.ImageName = uniqueFileName;
             contractor.ContractorId = _contractorRepository.Add(contractor);
-            if(contractor.ContractorId > 0) 
+            if (contractor.ContractorId > 0)
             {
-                if (contractorVm.AddressTypeId != null || contractorVm.CountryId != null ||
-                    !string.IsNullOrEmpty(contractorVm.AddressLine1) || contractorVm.PinCode != null)
-                {
-                    Address address = new Address(
-                        contractor.ContractorId,
-                        contractorVm.AddressLine1,
-                        contractorVm.AddressTypeId ?? 0,
-                        contractorVm.CountryId ?? 0,
-                        contractorVm.PinCode ?? 0
-                    );
-                    _addressRepository.Add(address);
-                }
+                AddAddressIfPresent(contractor.ContractorId, contractorVm);
                 TempData["AddSuccessMessage"] = "Your Contractor Data Added successfully.";
                 return RedirectToAction("Index");
             }
@@ -183,19 +138,7 @@ namespace ConstructionApplication.Controllers
 
             if (affectedRowCount > 0)
             {
-                if (contractorVm.AddressTypeId != null || contractorVm.CountryId != null ||
-                    !string.IsNullOrEmpty(contractorVm.AddressLine1) || contractorVm.PinCode != null)
-                {
-                    Address address = new()
-                    {
-                        ContractorId = contractor.ContractorId,
-                        AddressLine1 = contractorVm.AddressLine1,
-                        AddressTypeId = contractorVm.AddressTypeId ?? 0,
-                        CountryId = contractorVm.CountryId ?? 0,
-                        PinCode = contractorVm.PinCode ?? 0
-                    };
-                    _addressRepository.InsertOrUpdateAddress(address);
-                }
+                AddAddressIfPresent(contractor.ContractorId, contractorVm);
                 TempData["UpdateSuccessMessage"] = "Your Data updated successfully.";
                 return RedirectToAction("Index");
             }
@@ -240,6 +183,8 @@ namespace ConstructionApplication.Controllers
 
         private bool ValidateContractorDetails(ContractorVm contractorVm)
         {
+            ModelState.Clear();
+
             if (string.IsNullOrEmpty(contractorVm.ContractorName))
             {
                 ViewBag.errorMessage = "Contractor Name is required.";
@@ -286,6 +231,62 @@ namespace ConstructionApplication.Controllers
             }
 
             return true;
+        }
+
+        private string ValidateAndUploadFile(ContractorVm contractorVm)
+            {
+            if (contractorVm.ImageFile == null || contractorVm.ImageFile.Length == 0)
+            {
+                return null;
+            }
+
+            var fileExtension = Path.GetExtension(contractorVm.ImageFile.FileName).ToLower();
+            string extensions = _config.GetValue<string>("ApplicationSettings:fileExtension");
+            string[] allowedExtensions = extensions.Split(',');
+
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                ViewBag.errorMessage = $"Only the following file types are allowed: {string.Join(", ", allowedExtensions)}.";
+                return null;
+            }
+
+            int maxFileSizeInBytes = _config.GetValue<int>("ApplicationSettings:maxFileSizeInBytes");
+            if (contractorVm.ImageFile.Length > maxFileSizeInBytes)
+            {
+                ViewBag.errorMessage = $"ImageFile size must not exceed {maxFileSizeInBytes} bytes.";
+                return null;
+            }
+
+            string dir = Path.Combine(_env.WebRootPath, "UploadedImage");
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            string uniqueFileName = GetUniqueFileName(contractorVm.ImageFile.FileName);
+            string filePath = Path.Combine(dir, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                contractorVm.ImageFile.CopyTo(fileStream);
+            }
+            return uniqueFileName;
+        }
+
+        private void AddAddressIfPresent(int contractorId, ContractorVm contractorVm)
+        {
+            if (contractorVm.AddressTypeId != null || contractorVm.CountryId != null ||
+                !string.IsNullOrEmpty(contractorVm.AddressLine1) || contractorVm.PinCode != null)
+            {
+                Address address = new Address(
+                    contractorId,
+                    contractorVm.AddressLine1,
+                    contractorVm.AddressTypeId ?? 0,
+                    contractorVm.CountryId ?? 0,
+                    contractorVm.PinCode ?? 0
+                );
+                _addressRepository.Add(address);
+            }
         }
 
         private void DropDownSelectList()

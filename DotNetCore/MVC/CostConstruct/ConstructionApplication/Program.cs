@@ -61,6 +61,11 @@ builder.Services.AddTransient<IContractorRepository>((svc) =>
     return new ContractorRepository(CostConstructDBConnectionString);
 });
 
+builder.Services.AddTransient<IContractorCRUD>((svc) =>
+{
+    return new ContractorCRUD(CostConstructDBConnectionString);
+});
+
 builder.Services.AddTransient<IAddressRepository>((svc) =>
 {
     return new AddressRepository(CostConstructDBConnectionString);
