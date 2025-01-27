@@ -6,11 +6,11 @@ using System.Data;
 
 namespace ConstructionApplication.Repositories
 {
-    public class ContractorCRUD : IContractorRepository
+    public class ContractorRepositoryUsingSp : IContractorRepository
     {
         private readonly string _connectionString;
 
-        public ContractorCRUD(string connectionString)
+        public ContractorRepositoryUsingSp(string connectionString)
         {
             _connectionString = connectionString;
         }

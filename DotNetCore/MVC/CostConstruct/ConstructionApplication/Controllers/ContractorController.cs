@@ -28,14 +28,13 @@ namespace ConstructionApplication.Controllers
         IJobCategoryRepository _jobCategoryRepository;
         IAddressRepository _addressRepository;
         IContractorRepository _contractorRepository;
-        IContractorRepository _contractorCRUD;
         IDailyAttendanceRepository _dailyAttendanceRepository;
         IMapper _imapper;
         private object iConfig;
         private readonly IWebHostEnvironment _env;
 
         public ContractorController(IConfiguration iConfig,
-            IContractorRepository contractorRepository, IContractorRepository contractorCRUD,
+            IContractorRepository contractorRepository,
             IAddressRepository addressRepository,
             ICountryRepository countryRepository, IJobCategoryRepository jobCategoryRepository,
             IAddressTypeRepository addressTypeRepository, IWebHostEnvironment env, 
@@ -43,7 +42,6 @@ namespace ConstructionApplication.Controllers
         {
             _config = iConfig;
             _contractorRepository = contractorRepository;
-            _contractorCRUD = contractorCRUD;
             _jobCategoryRepository = jobCategoryRepository;
             _addressRepository = addressRepository;
             _countryRepository = countryRepository;
@@ -62,8 +60,7 @@ namespace ConstructionApplication.Controllers
 
         public IActionResult Index(int? jobCategoryId, int? id)
         {
-            //List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, id);
-            List<Contractor> contractors = _contractorCRUD.GetAll(jobCategoryId, id);
+            List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, id);
             List<ContractorVm> contractorVm = _imapper.Map<List<Contractor>, List<ContractorVm>>(contractors);
             return View(contractorVm);
         }

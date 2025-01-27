@@ -56,15 +56,16 @@ builder.Services.AddTransient<IJobCategoryRepository>((svc) =>
     return new JobCategoryRepository(CostConstructDBConnectionString);
 });
 
-builder.Services.AddTransient<IContractorRepository>((svc) =>
-{
-    return new ContractorRepository(CostConstructDBConnectionString);
-});
+//builder.Services.AddTransient<IContractorRepository>((svc) =>
+//{
+//    return new ContractorRepository(CostConstructDBConnectionString);
+//});
 
 builder.Services.AddTransient<IContractorRepository>((svc) =>
 {
-    return new ContractorCRUD(CostConstructDBConnectionString);
+    return new ContractorRepositoryUsingSp(CostConstructDBConnectionString);
 });
+
 
 builder.Services.AddTransient<IAddressRepository>((svc) =>
 {
