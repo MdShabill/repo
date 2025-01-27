@@ -28,14 +28,14 @@ namespace ConstructionApplication.Controllers
         IJobCategoryRepository _jobCategoryRepository;
         IAddressRepository _addressRepository;
         IContractorRepository _contractorRepository;
-        IContractorCRUD _contractorCRUD;
+        IContractorRepository _contractorCRUD;
         IDailyAttendanceRepository _dailyAttendanceRepository;
         IMapper _imapper;
         private object iConfig;
         private readonly IWebHostEnvironment _env;
 
         public ContractorController(IConfiguration iConfig,
-            IContractorRepository contractorRepository, IContractorCRUD contractorCRUD,
+            IContractorRepository contractorRepository, IContractorRepository contractorCRUD,
             IAddressRepository addressRepository,
             ICountryRepository countryRepository, IJobCategoryRepository jobCategoryRepository,
             IAddressTypeRepository addressTypeRepository, IWebHostEnvironment env, 
