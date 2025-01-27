@@ -6,6 +6,7 @@ using ConstructionApplication.Core.DataModels.Contractor;
 using ConstructionApplication.Core.DataModels.Country;
 using ConstructionApplication.Core.DataModels.JobCategory;
 using ConstructionApplication.Core.DataModels.Material;
+using ConstructionApplication.Core.DataModels.MaterialPurchase;
 using ConstructionApplication.Core.DataModels.Suppliers;
 using ConstructionApplication.Repositories;
 using ConstructionApplication.Repository.Interfaces;
@@ -62,6 +63,7 @@ namespace ConstructionApplication.Controllers
         {
             List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, id);
             List<ContractorVm> contractorVm = _imapper.Map<List<Contractor>, List<ContractorVm>>(contractors);
+            ViewBag.ContractorCount = contractorVm.Count;
             return View(contractorVm);
         }
 

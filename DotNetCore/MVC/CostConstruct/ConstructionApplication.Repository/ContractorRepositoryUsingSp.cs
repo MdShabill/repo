@@ -19,9 +19,12 @@ namespace ConstructionApplication.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "EXEC GetContractors";
+                string sqlQuery = "GetContractors";
 
-                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection)
+                {
+                    SelectCommand = { CommandType = CommandType.StoredProcedure }
+                };
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", jobCategoryId ?? (object)DBNull.Value);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id ?? (object)DBNull.Value);
                 DataTable dataTable = new();
@@ -33,10 +36,8 @@ namespace ConstructionApplication.Repositories
                 {
                     Contractor contractor = new()
                     {
-
-
-                        JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
-                        JobTypes = (string)dataTable.Rows[i]["JobTypes"],
+                        JobCategoryId = dataTable.Rows[i]["JobCategoryId"] != DBNull.Value ? (int)dataTable.Rows[i]["JobCategoryId"] : 0,
+                        JobTypes = dataTable.Rows[i]["JobTypes"] != DBNull.Value ? (string)dataTable.Rows[i]["JobTypes"] : null,
                         ContractorId = (int)dataTable.Rows[i]["ContractorId"],
                         ContractorName = (string)dataTable.Rows[i]["ContractorName"],
                         Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
@@ -61,13 +62,12 @@ namespace ConstructionApplication.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Insert Into Contractors
-                       (JobCategoryId, Name, Gender, DOB, ImageName, MobileNumber, ReferredBy)
-                       Values
-                       (@jobCategoryId, @name, @gender, @dOB, @imageName, @mobileNumber, @referredBy)
-                       Select Scope_Identity()";
+                string sqlQuery = "sp_AddContractor";
 
-                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
                 sqlCommand.Parameters.AddWithValue("@jobCategoryId", contractor.JobCategoryId);
                 sqlCommand.Parameters.AddWithValue("@name", contractor.ContractorName);
                 sqlCommand.Parameters.AddWithValue("@gender", contractor.Gender);
@@ -90,42 +90,45 @@ namespace ConstructionApplication.Repositories
 
         public void Delete(int contractorId)
         {
-            using (SqlConnection sqlConnection = new(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string deleteContractorQuery = @"DELETE FROM Contractors WHERE Id = @ContractorId";
-                SqlCommand deleteContractorCommand = new(deleteContractorQuery, sqlConnection);
-                deleteContractorCommand.Parameters.AddWithValue("@ContractorId", contractorId);
-                sqlConnection.Open();
-                deleteContractorCommand.ExecuteNonQuery();
-                sqlConnection.Close();
+                string storedProcedureName = "sp_DeleteContractor";
+
+                using (SqlCommand deleteContractorCommand = new SqlCommand(storedProcedureName, sqlConnection))
+                {
+                    // Set the command type to StoredProcedure
+                    deleteContractorCommand.CommandType = CommandType.StoredProcedure;
+
+                    deleteContractorCommand.Parameters.AddWithValue("@ContractorId", contractorId);
+                    sqlConnection.Open();
+                    deleteContractorCommand.ExecuteNonQuery();
+                    sqlConnection.Close();
+                }
             }
         }
+
 
         public int Update(Contractor contractor)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = @"UPDATE Contractors SET
-                            JobCategoryId = @jobCategoryId,
-                            Name = @name,
-                            Gender = @gender,
-                            DOB = @dob,
-                            MobileNumber = @mobileNumber,
-                            ReferredBy = @referredBy
-                            WHERE Id = @id";
+                string sqlQuery = "sp_UpdateContractor";
 
-                using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, sqlConnection))
+                using (SqlCommand sqlUpdateCommand = new SqlCommand(sqlQuery, sqlConnection))
                 {
-                    sqlCommand.Parameters.AddWithValue("@id", contractor.ContractorId);
-                    sqlCommand.Parameters.AddWithValue("@jobCategoryId", contractor.JobCategoryId);
-                    sqlCommand.Parameters.AddWithValue("@name", contractor.ContractorName);
-                    sqlCommand.Parameters.AddWithValue("@gender", contractor.Gender);
-                    sqlCommand.Parameters.AddWithValue("@dob", contractor.DOB);
-                    sqlCommand.Parameters.AddWithValue("@mobileNumber", contractor.MobileNumber);
-                    sqlCommand.Parameters.AddWithValue("@referredBy", contractor.ReferredBy);
+                    // Set the command type to StoredProcedure
+                    sqlUpdateCommand.CommandType = CommandType.StoredProcedure;
+
+                    sqlUpdateCommand.Parameters.AddWithValue("@id", contractor.ContractorId);
+                    sqlUpdateCommand.Parameters.AddWithValue("@jobCategoryId", contractor.JobCategoryId);
+                    sqlUpdateCommand.Parameters.AddWithValue("@name", contractor.ContractorName);
+                    sqlUpdateCommand.Parameters.AddWithValue("@gender", contractor.Gender);
+                    sqlUpdateCommand.Parameters.AddWithValue("@dob", contractor.DOB);
+                    sqlUpdateCommand.Parameters.AddWithValue("@mobileNumber", contractor.MobileNumber);
+                    sqlUpdateCommand.Parameters.AddWithValue("@referredBy", contractor.ReferredBy);
 
                     sqlConnection.Open();
-                    int affectedRowCount = sqlCommand.ExecuteNonQuery();
+                    int affectedRowCount = sqlUpdateCommand.ExecuteNonQuery();
                     sqlConnection.Close();
                     return affectedRowCount;
                 }
