@@ -19,12 +19,13 @@ namespace ConstructionApplication.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "GetContractors";
+                string sqlQuery = "SP_ConreactorCRUD";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection)
                 {
                     SelectCommand = { CommandType = CommandType.StoredProcedure }
                 };
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@Mode", 2);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", jobCategoryId ?? (object)DBNull.Value);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id ?? (object)DBNull.Value);
                 DataTable dataTable = new();
@@ -62,12 +63,13 @@ namespace ConstructionApplication.Repositories
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "sp_AddContractor";
+                string sqlQuery = "SP_ConreactorCRUD";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
+                sqlCommand.Parameters.AddWithValue("@Mode", 1);
                 sqlCommand.Parameters.AddWithValue("@jobCategoryId", contractor.JobCategoryId);
                 sqlCommand.Parameters.AddWithValue("@name", contractor.ContractorName);
                 sqlCommand.Parameters.AddWithValue("@gender", contractor.Gender);
@@ -92,14 +94,15 @@ namespace ConstructionApplication.Repositories
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string storedProcedureName = "sp_DeleteContractor";
+                string storedProcedureName = "SP_ConreactorCRUD";
 
                 using (SqlCommand deleteContractorCommand = new SqlCommand(storedProcedureName, sqlConnection))
                 {
                     // Set the command type to StoredProcedure
                     deleteContractorCommand.CommandType = CommandType.StoredProcedure;
 
-                    deleteContractorCommand.Parameters.AddWithValue("@ContractorId", contractorId);
+                    deleteContractorCommand.Parameters.AddWithValue("@Mode", 4);
+                    deleteContractorCommand.Parameters.AddWithValue("@Id", contractorId);
                     sqlConnection.Open();
                     deleteContractorCommand.ExecuteNonQuery();
                     sqlConnection.Close();
@@ -112,13 +115,14 @@ namespace ConstructionApplication.Repositories
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = "sp_UpdateContractor";
+                string sqlQuery = "SP_ConreactorCRUD";
 
                 using (SqlCommand sqlUpdateCommand = new SqlCommand(sqlQuery, sqlConnection))
                 {
                     // Set the command type to StoredProcedure
                     sqlUpdateCommand.CommandType = CommandType.StoredProcedure;
 
+                    sqlUpdateCommand.Parameters.AddWithValue("@Mode", 3);
                     sqlUpdateCommand.Parameters.AddWithValue("@id", contractor.ContractorId);
                     sqlUpdateCommand.Parameters.AddWithValue("@jobCategoryId", contractor.JobCategoryId);
                     sqlUpdateCommand.Parameters.AddWithValue("@name", contractor.ContractorName);
@@ -128,8 +132,9 @@ namespace ConstructionApplication.Repositories
                     sqlUpdateCommand.Parameters.AddWithValue("@referredBy", contractor.ReferredBy);
 
                     sqlConnection.Open();
-                    int affectedRowCount = sqlUpdateCommand.ExecuteNonQuery();
+                    object result = sqlUpdateCommand.ExecuteScalar();
                     sqlConnection.Close();
+                    int affectedRowCount = (result != null) ? Convert.ToInt32(result) : 0;
                     return affectedRowCount;
                 }
             }

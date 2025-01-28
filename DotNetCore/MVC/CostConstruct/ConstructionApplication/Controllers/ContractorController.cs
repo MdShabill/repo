@@ -129,7 +129,7 @@ namespace ConstructionApplication.Controllers
             if (!ValidateContractorDetails(contractorVm))
             {
                 DropDownSelectList();
-                return View(contractorVm);
+                return View("Edit", contractorVm);
             }
 
             Contractor contractor = _imapper.Map<ContractorVm, Contractor>(contractorVm);
@@ -137,12 +137,18 @@ namespace ConstructionApplication.Controllers
 
             if (affectedRowCount > 0)
             {
-                AddAddressIfPresent(contractor.ContractorId, contractorVm);
+                if (!string.IsNullOrEmpty(contractorVm.AddressLine1) ||
+                contractorVm.AddressTypeId != null ||
+                contractorVm.CountryId != null ||
+                contractorVm.PinCode != null)
+                {
+                    AddAddressIfPresent(contractor.ContractorId, contractorVm);
+                }
                 TempData["UpdateSuccessMessage"] = "Your Data updated successfully.";
                 return RedirectToAction("Index");
             }
             DropDownSelectList();
-            return View(contractorVm);
+            return View("Edit", contractorVm);
         }
 
         [HttpPost]
@@ -274,8 +280,10 @@ namespace ConstructionApplication.Controllers
 
         private void AddAddressIfPresent(int contractorId, ContractorVm contractorVm)
         {
-            if (contractorVm.AddressTypeId != null || contractorVm.CountryId != null ||
-                !string.IsNullOrEmpty(contractorVm.AddressLine1) || contractorVm.PinCode != null)
+            if (!string.IsNullOrEmpty(contractorVm.AddressLine1) ||
+                contractorVm.AddressTypeId != null ||
+                contractorVm.CountryId != null ||
+                contractorVm.PinCode != null)
             {
                 Address address = new Address(
                     contractorId,

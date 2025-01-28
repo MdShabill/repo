@@ -24,11 +24,11 @@ namespace ConstructionApplication.Repositories
                             (@addressLine1, @contractorId, @addressTypeId, @countryId, @pinCode)";
 
                     SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@addressLine1", address.AddressLine1);
+                    sqlCommand.Parameters.AddWithValue("@addressLine1", address.AddressLine1 ?? (object)DBNull.Value);
                     sqlCommand.Parameters.AddWithValue("@contractorId", address.ContractorId);
-                    sqlCommand.Parameters.AddWithValue("@addressTypeId", address.AddressTypeId);
-                    sqlCommand.Parameters.AddWithValue("@countryId", address.CountryId);
-                    sqlCommand.Parameters.AddWithValue("@pinCode", address.PinCode);
+                    sqlCommand.Parameters.AddWithValue("@addressTypeId", address.AddressTypeId == 0 ? (object)DBNull.Value : address.AddressTypeId);
+                    sqlCommand.Parameters.AddWithValue("@countryId", address.CountryId == 0 ? (object)DBNull.Value : address.CountryId);
+                    sqlCommand.Parameters.AddWithValue("@pinCode", address.PinCode == 0 ? (object)DBNull.Value : address.PinCode);
                     sqlConnection.Open();
                     sqlCommand.ExecuteNonQuery();
                     sqlConnection.Close();
