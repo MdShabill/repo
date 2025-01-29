@@ -16,9 +16,14 @@ string CostConstructDBConnectionString = configuration.GetConnectionString("Cost
 builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
 
+//builder.Services.AddTransient<ICostMasterRepository>((svc) =>
+//{
+//    return new CostMasterRepository(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<ICostMasterRepository>((svc) =>
 {
-    return new CostMasterRepository(CostConstructDBConnectionString);
+    return new CostMasterRepositoryUsingSp(CostConstructDBConnectionString);
 });
 
 builder.Services.AddTransient<IDailyAttendanceRepository>((svc) =>
@@ -66,9 +71,14 @@ builder.Services.AddTransient<IContractorRepository>((svc) =>
     return new ContractorRepositoryUsingSp(CostConstructDBConnectionString);
 });
 
+//builder.Services.AddTransient<IAddressRepository>((svc) =>
+//{
+//    return new AddressRepository(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IAddressRepository>((svc) =>
 {
-    return new AddressRepository(CostConstructDBConnectionString);
+    return new AddressRepositoryUsingSp(CostConstructDBConnectionString);
 });
 
 builder.Services.AddTransient<ICountryRepository>((svc) =>

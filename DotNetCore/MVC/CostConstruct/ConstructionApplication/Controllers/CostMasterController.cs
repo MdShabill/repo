@@ -75,20 +75,10 @@ namespace ConstructionApplication.Controllers
         {
             ModelState.Clear();
 
-            if (costMasterVm.Date == null ||
-                costMasterVm.Date == default(DateTime) ||
-                costMasterVm.JobCategoryId == 0)
+            string validationMessage = ValidationDetail(costMasterVm);
+            if (!string.IsNullOrEmpty(validationMessage))
             {
-                ViewBag.ErrorMessage = "Page not submitted, please enter correct Inputs";
-                DropDownSelectList();
-                return View(costMasterVm);
-            }
-
-            if (costMasterVm.Cost == null ||
-                costMasterVm.Cost <= 0 ||
-                !Regex.IsMatch(costMasterVm.Cost.ToString(), @"^\d+$"))
-            {
-                ViewBag.ErrorMessage = "Cost must be a positive integer and cannot contain alphabets, decimals, or special characters.";
+                ViewBag.ErrorMessage = validationMessage;
                 DropDownSelectList();
                 return View(costMasterVm);
             }
@@ -100,6 +90,25 @@ namespace ConstructionApplication.Controllers
                 TempData["SuccessMessage"] = "Add New Cost Master Successful";
             }
             return RedirectToAction("Index");
+        }
+
+        private string ValidationDetail(AddNewCostMasterVm costMasterVm)
+        {
+            if (costMasterVm.Date == null ||
+                costMasterVm.Date == default(DateTime) ||
+                costMasterVm.JobCategoryId == 0)
+            {
+                return "Page not submitted, please enter correct Inputs";
+            }
+
+            if (costMasterVm.Cost == null ||
+                costMasterVm.Cost <= 0 ||
+                !Regex.IsMatch(costMasterVm.Cost.ToString(), @"^\d+$"))
+            {
+                return "Cost must be a positive integer and cannot contain alphabets, decimals, or special characters.";
+            }
+
+            return string.Empty;
         }
 
         private void DropDownSelectList()

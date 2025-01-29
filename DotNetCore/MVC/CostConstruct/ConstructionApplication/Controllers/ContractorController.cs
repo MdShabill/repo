@@ -137,13 +137,7 @@ namespace ConstructionApplication.Controllers
 
             if (affectedRowCount > 0)
             {
-                if (!string.IsNullOrEmpty(contractorVm.AddressLine1) ||
-                contractorVm.AddressTypeId != null ||
-                contractorVm.CountryId != null ||
-                contractorVm.PinCode != null)
-                {
-                    AddAddressIfPresent(contractor.ContractorId, contractorVm);
-                }
+                AddAddressIfPresent(contractor.ContractorId, contractorVm);
                 TempData["UpdateSuccessMessage"] = "Your Data updated successfully.";
                 return RedirectToAction("Index");
             }
@@ -292,7 +286,11 @@ namespace ConstructionApplication.Controllers
                     contractorVm.CountryId ?? 0,
                     contractorVm.PinCode ?? 0
                 );
-                _addressRepository.Add(address);
+                _addressRepository.InsertOrUpdateAddress(address);
+            }
+            else
+            {
+                _addressRepository.Delete(contractorId);
             }
         }
 
