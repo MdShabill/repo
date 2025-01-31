@@ -6,7 +6,7 @@ CREATE PROCEDURE Sp_AddressCRUD
     @CountryId INT = NULL,
     @PinCode INT = NULL
 AS
-BEGIN
+BEGIN 
     IF @Mode = 'INSERT'
     BEGIN
         INSERT INTO Addresses (ContractorId, AddressLine1, AddressTypeId, CountryId, PinCode)

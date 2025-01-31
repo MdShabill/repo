@@ -26,9 +26,14 @@ builder.Services.AddTransient<ICostMasterRepository>((svc) =>
     return new CostMasterRepositoryUsingSp(CostConstructDBConnectionString);
 });
 
+//builder.Services.AddTransient<IDailyAttendanceRepository>((svc) =>
+//{
+//    return new DailyAttendanceRepository(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IDailyAttendanceRepository>((svc) =>
 {
-    return new DailyAttendanceRepository(CostConstructDBConnectionString);
+    return new DailyAttendanceRepositoryUsingSp(CostConstructDBConnectionString);
 });
 
 builder.Services.AddTransient<IAttendanceDetailsRepository>((svc) =>
@@ -36,14 +41,24 @@ builder.Services.AddTransient<IAttendanceDetailsRepository>((svc) =>
     return new AttendanceDetailsRepository(CostConstructDBConnectionString);
 });
 
+//builder.Services.AddTransient<IMaterialPurchaseRepository>((svc) =>
+//{
+//    return new MaterialPurchaseRepository(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IMaterialPurchaseRepository>((svc) =>
 {
-    return new MaterialPurchaseRepository(CostConstructDBConnectionString);
+    return new MaterialPurchaseRepositoryUsingSp(CostConstructDBConnectionString);
 });
+
+//builder.Services.AddTransient<IMaterialRepository>((svc) =>
+//{
+//    return new MaterialRepository(CostConstructDBConnectionString);
+//});
 
 builder.Services.AddTransient<IMaterialRepository>((svc) =>
 {
-    return new MaterialRepository(CostConstructDBConnectionString);
+    return new MaterialRepositoryUsingSp(CostConstructDBConnectionString);
 });
 
 builder.Services.AddTransient<ISupplierRepository>((svc) =>
@@ -56,9 +71,14 @@ builder.Services.AddTransient<IBrandRepository>((svc) =>
     return new BrandRepository(CostConstructDBConnectionString);
 });
 
+//builder.Services.AddTransient<IJobCategoryRepository>((svc) =>
+//{
+//    return new JobCategoryRepository(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IJobCategoryRepository>((svc) =>
 {
-    return new JobCategoryRepository(CostConstructDBConnectionString);
+    return new JobCategoryRepositoryUsingSp(CostConstructDBConnectionString);
 });
 
 //builder.Services.AddTransient<IContractorRepository>((svc) =>
@@ -86,9 +106,14 @@ builder.Services.AddTransient<ICountryRepository>((svc) =>
     return new CountryRepository(CostConstructDBConnectionString);
 });
 
+//builder.Services.AddTransient<IAddressTypeRepository>((svc) =>
+//{
+//    return new AddressTypeRepository(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IAddressTypeRepository>((svc) =>
 {
-    return new AddressTypeRepository(CostConstructDBConnectionString);
+    return new AddressTypeRepositoryUsingSp(CostConstructDBConnectionString);
 });
 WebApplication app = builder.Build();
 

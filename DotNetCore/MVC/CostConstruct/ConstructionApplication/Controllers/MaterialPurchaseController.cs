@@ -74,41 +74,8 @@ namespace ConstructionApplication.Controllers
         {
             ModelState.Clear();
 
-            if (materialPurchaseVm.MaterialId <= 0 || materialPurchaseVm.SupplierId <= 0 ||
-                materialPurchaseVm.BrandId <= 0 ||
-                materialPurchaseVm.Quantity <= 0 ||
-                string.IsNullOrEmpty(materialPurchaseVm.UnitOfMeasure) ||
-                materialPurchaseVm.Date == default ||
-                materialPurchaseVm.Date > DateTime.Now ||
-                materialPurchaseVm.MaterialCost <= 0 ||
-                materialPurchaseVm.DeliveryCharge < 0)
+            if (!ValidateMaterialPurchase(materialPurchaseVm))
             {
-                ViewBag.ErrorMessage = "Please provide valid input for all requried fields.";
-                DropDownSelectList();
-                return View(materialPurchaseVm);
-            }
-
-            if (string.IsNullOrEmpty(materialPurchaseVm.PhoneNumber) ||
-                materialPurchaseVm.PhoneNumber.Length != 10 ||
-                !Regex.IsMatch(materialPurchaseVm.PhoneNumber, @"^\d{10}$"))
-            {
-                ViewBag.errorMessage = "Supplier Phone Number must be numeric and exactly 10 digits long.";
-                DropDownSelectList();
-                return View(materialPurchaseVm);
-            }
-
-            if (materialPurchaseVm.Quantity <= 0 ||
-                !Regex.IsMatch(materialPurchaseVm.Quantity.ToString(), @"^\d+$"))
-            {
-                ViewBag.ErrorMessage = "Quantity must be a positive integer and cannot contain alphabets or special characters.";
-                DropDownSelectList();
-                return View(materialPurchaseVm);
-            }
-
-            if (materialPurchaseVm.DeliveryCharge < 0 ||
-                !Regex.IsMatch(materialPurchaseVm.DeliveryCharge.ToString(), @"^\d+(\.\d{1,2})?$"))
-            {
-                ViewBag.ErrorMessage = "Delivery Charge must be a non-negative decimal value.";
                 DropDownSelectList();
                 return View(materialPurchaseVm);
             }
@@ -122,6 +89,45 @@ namespace ConstructionApplication.Controllers
             }
             DropDownSelectList();
             return View(materialPurchaseVm);
+        }
+
+        private bool ValidateMaterialPurchase(MaterialPurchaseVm materialPurchaseVm)
+        {
+            if (materialPurchaseVm.MaterialId <= 0 || materialPurchaseVm.SupplierId <= 0 ||
+                materialPurchaseVm.BrandId <= 0 || materialPurchaseVm.Quantity <= 0 ||
+                string.IsNullOrEmpty(materialPurchaseVm.UnitOfMeasure) ||
+                materialPurchaseVm.Date == default ||
+                materialPurchaseVm.Date > DateTime.Now ||
+                materialPurchaseVm.MaterialCost <= 0 ||
+                materialPurchaseVm.DeliveryCharge < 0)
+            {
+                ViewBag.ErrorMessage = "Please provide valid input for all required fields.";
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(materialPurchaseVm.PhoneNumber) ||
+                materialPurchaseVm.PhoneNumber.Length != 10 ||
+                !Regex.IsMatch(materialPurchaseVm.PhoneNumber, @"^\d{10}$"))
+            {
+                ViewBag.ErrorMessage = "Supplier Phone Number must be numeric and exactly 10 digits long.";
+                return false;
+            }
+
+            if (materialPurchaseVm.Quantity <= 0 ||
+                !Regex.IsMatch(materialPurchaseVm.Quantity.ToString(), @"^\d+$"))
+            {
+                ViewBag.ErrorMessage = "Quantity must be a positive integer and cannot contain alphabets or special characters.";
+                return false;
+            }
+
+            if (materialPurchaseVm.DeliveryCharge < 0 ||
+                !Regex.IsMatch(materialPurchaseVm.DeliveryCharge.ToString(), @"^\d+(\.\d{1,2})?$"))
+            {
+                ViewBag.ErrorMessage = "Delivery Charge must be a non-negative decimal value.";
+                return false;
+            }
+
+            return true;
         }
 
         private void DropDownSelectList()

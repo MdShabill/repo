@@ -60,6 +60,7 @@ namespace ConstructionApplication.Repository
                 };
                 command.Parameters.AddWithValue("@Mode", "GET_ACTIVE_COST");
                 command.Parameters.AddWithValue("@JobCategoryId", jobCategoryId);
+                command.Parameters.AddWithValue("@CurrentDate", DateTime.Now);
 
                 SqlDataAdapter sqlDataAdapter = new(command);
                 DataTable dataTable = new();
