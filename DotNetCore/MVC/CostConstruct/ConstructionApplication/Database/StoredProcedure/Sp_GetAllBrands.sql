@@ -1,0 +1,6 @@
+CREATE PROCEDURE Sp_GetAllBrands
+AS
+BEGIN
+    SET NOCOUNT ON
+    SELECT Id, Name FROM Brands
+END

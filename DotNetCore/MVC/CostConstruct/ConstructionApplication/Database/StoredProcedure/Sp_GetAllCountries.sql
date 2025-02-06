@@ -1,0 +1,6 @@
+CREATE PROCEDURE Sp_GetAllCountries
+AS
+BEGIN
+    SET NOCOUNT ON
+    SELECT Id, Name FROM Countries
+END
