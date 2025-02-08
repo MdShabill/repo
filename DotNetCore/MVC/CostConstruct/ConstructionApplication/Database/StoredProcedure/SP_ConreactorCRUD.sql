@@ -1,6 +1,6 @@
 CREATE PROCEDURE SP_ConreactorCRUD
     @Mode INT,
-    @Id INT = NULL,
+	@Id INT OUTPUT,
     @JobCategoryId INT = NULL,
     @Name NVARCHAR(100) = NULL,
     @Gender NVARCHAR(10) = NULL,
@@ -11,14 +11,16 @@ CREATE PROCEDURE SP_ConreactorCRUD
     @FilterJobCategoryId INT = NULL
 AS
 BEGIN
-  
+	IF @Id IS NULL
+        SET @Id = 0;
+
     IF @Mode = 1
     BEGIN
         -- Add Contractor
         INSERT INTO Contractors (JobCategoryId, Name, Gender, DOB, ImageName, MobileNumber, ReferredBy)
         VALUES (@JobCategoryId, @Name, @Gender, @DOB, @ImageName, @MobileNumber, @ReferredBy);
 
-        SELECT SCOPE_IDENTITY() AS ContractorId;
+        SET @Id = SCOPE_IDENTITY();
     END
     ELSE IF @Mode = 2
     BEGIN
@@ -43,8 +45,8 @@ BEGIN
         LEFT JOIN Addresses ON Contractors.Id = Addresses.ContractorId
         LEFT JOIN AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
         LEFT JOIN Countries ON Addresses.CountryId = Countries.Id
-        WHERE (@FilterJobCategoryId IS NULL OR JobCategoryId = @FilterJobCategoryId)
-          AND (@Id IS NULL OR Contractors.Id = @Id);
+        WHERE (ISNULL(@FilterJobCategoryId, 0) = 0 OR Contractors.JobCategoryId = @FilterJobCategoryId)
+		  AND (ISNULL(@Id, 0) = 0 OR Contractors.Id = @Id)
     END
     ELSE IF @Mode = 3
     BEGIN

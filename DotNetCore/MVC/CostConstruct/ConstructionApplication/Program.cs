@@ -96,9 +96,14 @@ builder.Services.AddTransient<IJobCategoryRepository>((svc) =>
 //    return new ContractorRepository(CostConstructDBConnectionString);
 //});
 
+//builder.Services.AddTransient<IContractorRepository>((svc) =>
+//{
+//    return new ContractorRepositoryUsingSp(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IContractorRepository>((svc) =>
 {
-    return new ContractorRepositoryUsingSp(CostConstructDBConnectionString);
+    return new ContractorRepositoryUsingDapper(CostConstructDBConnectionString);
 });
 
 //builder.Services.AddTransient<IAddressRepository>((svc) =>
