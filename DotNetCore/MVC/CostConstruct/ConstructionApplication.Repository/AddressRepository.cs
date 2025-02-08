@@ -13,42 +13,6 @@ namespace ConstructionApplication.Repositories
             _connectionString = connectionString;
         }
 
-        public void Add(Address address)
-        {
-            using (SqlConnection sqlConnection = new(_connectionString))
-            {
-                {
-                    string sqlQuery = @"INSERT INTO Addresses
-                            (AddressLine1, ContractorId, AddressTypeId, CountryId, PinCode)
-                            VALUES 
-                            (@addressLine1, @contractorId, @addressTypeId, @countryId, @pinCode)";
-
-                    SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                    sqlCommand.Parameters.AddWithValue("@addressLine1", address.AddressLine1);
-                    sqlCommand.Parameters.AddWithValue("@contractorId", address.ContractorId);
-                    sqlCommand.Parameters.AddWithValue("@addressTypeId", address.AddressTypeId);
-                    sqlCommand.Parameters.AddWithValue("@countryId", address.CountryId);
-                    sqlCommand.Parameters.AddWithValue("@pinCode", address.PinCode);
-                    sqlConnection.Open();
-                    sqlCommand.ExecuteNonQuery();
-                    sqlConnection.Close();
-                }
-            }
-        }
-
-        public void Delete(int contractorId)
-        {
-            using (SqlConnection sqlConnection = new(_connectionString))
-            {
-                string deleteAddressesQuery = @"DELETE FROM Addresses WHERE ContractorId = @contractorId";
-                SqlCommand deleteAddressesCommand = new(deleteAddressesQuery, sqlConnection);
-                deleteAddressesCommand.Parameters.AddWithValue("@contractorId", contractorId);
-                sqlConnection.Open();
-                deleteAddressesCommand.ExecuteNonQuery();
-                sqlConnection.Close();
-            }
-        }
-
         public void InsertOrUpdateAddress(Address address)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
@@ -95,7 +59,19 @@ namespace ConstructionApplication.Repositories
                     insertCommand.Parameters.AddWithValue("@pinCode", address.PinCode);
                     insertCommand.ExecuteNonQuery();
                 }
+                sqlConnection.Close();
+            }
+        }
 
+        public void Delete(int contractorId)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string deleteAddressesQuery = @"DELETE FROM Addresses WHERE ContractorId = @contractorId";
+                SqlCommand deleteAddressesCommand = new(deleteAddressesQuery, sqlConnection);
+                deleteAddressesCommand.Parameters.AddWithValue("@contractorId", contractorId);
+                sqlConnection.Open();
+                deleteAddressesCommand.ExecuteNonQuery();
                 sqlConnection.Close();
             }
         }

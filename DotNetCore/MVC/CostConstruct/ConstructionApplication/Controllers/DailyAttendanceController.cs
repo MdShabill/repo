@@ -78,29 +78,10 @@ namespace ConstructionApplication.Controllers
         {
             ModelState.Clear();
 
-            if (dailyAttendanceVm.JobCategoryId == 0 ||
-                dailyAttendanceVm.TotalWorker == 0 ||
-                dailyAttendanceVm.TotalWorker <= 0)
+            string validationMessage = ValidateDailyAttendance(dailyAttendanceVm);
+            if (validationMessage != null)
             {
-                ViewBag.errorMessage = "Please provide valid inputs. Job Category and Total Worker are required.";
-                DropDownSelectList();
-                return View(dailyAttendanceVm);
-            }
-
-            if (dailyAttendanceVm.Date > DateTime.Now)
-            {
-                ViewBag.errorMessage = "Future dates are not allowed.";
-                DropDownSelectList();
-                return View(dailyAttendanceVm);
-            }
-
-            //This regex accepts only numeric values, special characters and alphabets are not allowed.
-            string totalWorkerPattern = @"^\d+$";
-            if (dailyAttendanceVm.TotalWorker == 0 ||
-                !Regex.IsMatch(dailyAttendanceVm.TotalWorker.ToString(), totalWorkerPattern) ||
-                dailyAttendanceVm.TotalWorker <= 0)
-            {
-                ViewBag.errorMessage = "Total Worker must be a valid positive number and cannot contain any special characters or alphabets.";
+                ViewBag.errorMessage = validationMessage;
                 DropDownSelectList();
                 return View(dailyAttendanceVm);
             }
@@ -142,16 +123,18 @@ namespace ConstructionApplication.Controllers
             {
 
                 CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(jobCategoryId);
-                List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, null);
- 
+                List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, null)
+                .Where(c => c.JobCategoryId == jobCategoryId)
+                .ToList();
+
                 return new JsonResult(new 
-                { 
-                    cost = costMaster.Cost,
+                {
+                    cost = costMaster?.Cost ?? 0,
                     contractors = contractors
                 });
 
             }
-            return View();
+            return Json(new { cost = 0, contractors = new List<Contractor>() });
         }
 
         [HttpPost]
@@ -159,34 +142,10 @@ namespace ConstructionApplication.Controllers
         {
             ModelState.Clear();
 
-            if (dailyAttendanceVm.Date > DateTime.Now)
+            string validationMessage = ValidateDailyAttendance(dailyAttendanceVm);
+            if (validationMessage != null)
             {
-                ViewBag.errorMessage = "Date cannot be in the future.";
-                DropDownSelectList();
-                return View(dailyAttendanceVm);
-            }
-
-            if (dailyAttendanceVm.JobCategoryId == 0)
-            {
-                ViewBag.errorMessage = "Please select a Job Category.";
-                DropDownSelectList();
-                return View(dailyAttendanceVm);
-            }
-
-            if (dailyAttendanceVm.TotalWorker <= 0)
-            {
-                ViewBag.errorMessage = "Please enter a valid number of Total Workers.";
-                DropDownSelectList();
-                return View(dailyAttendanceVm);
-            }
-
-            //This regex accepts only numeric values, special characters and alphabets are not allowed.
-            string totalWorkerPattern = @"^\d+$";
-            if (dailyAttendanceVm.TotalWorker == 0 ||
-                !Regex.IsMatch(dailyAttendanceVm.TotalWorker.ToString(), totalWorkerPattern) ||
-                dailyAttendanceVm.TotalWorker <= 0)
-            {
-                ViewBag.errorMessage = "Total Worker must be a valid positive number and cannot contain any special characters or alphabets.";
+                ViewBag.errorMessage = validationMessage;
                 DropDownSelectList();
                 return View(dailyAttendanceVm);
             }
@@ -210,6 +169,33 @@ namespace ConstructionApplication.Controllers
                 return View(dailyAttendanceVm);
             }
             return RedirectToAction("Index");
+        }
+
+        private string ValidateDailyAttendance(DailyAttendanceVm dailyAttendanceVm)
+        {
+            if (dailyAttendanceVm.JobCategoryId == 0)
+            {
+                return "Please select a Job Category.";
+            }
+
+            if (dailyAttendanceVm.TotalWorker <= 0)
+            {
+                return "Please enter a valid number of Total Workers.";
+            }
+
+            if (dailyAttendanceVm.Date > DateTime.Now)
+            {
+                return "Date cannot be in the future.";
+            }
+
+            // This regex accepts only numeric values, special characters and alphabets are not allowed.
+            string totalWorkerPattern = @"^\d+$";
+            if (!Regex.IsMatch(dailyAttendanceVm.TotalWorker.ToString(), totalWorkerPattern))
+            {
+                return "Total Worker must be a valid positive number and cannot contain any special characters or alphabets.";
+            }
+
+            return null;
         }
 
         private void DropDownSelectList()
