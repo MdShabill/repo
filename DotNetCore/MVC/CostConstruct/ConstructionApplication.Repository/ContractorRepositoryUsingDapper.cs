@@ -23,119 +23,75 @@ namespace ConstructionApplication.Repository
 
         public List<Contractor> GetAll(int? jobCategoryId, int? id)
         {
-            using (SqlConnection sqlConnection = new(_connectionString))
+            using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = "SP_ConreactorCRUD";
-
-                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection)
-                {
-                    SelectCommand = { CommandType = CommandType.StoredProcedure }
-                };
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@Mode", 2);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", jobCategoryId ?? (object)DBNull.Value);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id ?? (object)DBNull.Value);
-                DataTable dataTable = new();
-                sqlDataAdapter.Fill(dataTable);
-
-                List<Contractor> contractors = new();
-
-                for (int i = 0; i < dataTable.Rows.Count; i++)
-                {
-                    Contractor contractor = new()
-                    {
-                        JobCategoryId = dataTable.Rows[i]["JobCategoryId"] != DBNull.Value ? (int)dataTable.Rows[i]["JobCategoryId"] : 0,
-                        JobTypes = dataTable.Rows[i]["JobTypes"] != DBNull.Value ? (string)dataTable.Rows[i]["JobTypes"] : null,
-                        ContractorId = (int)dataTable.Rows[i]["ContractorId"],
-                        ContractorName = (string)dataTable.Rows[i]["ContractorName"],
-                        Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
-                        DOB = (DateTime)dataTable.Rows[i]["DOB"],
-                        MobileNumber = (string)dataTable.Rows[i]["MobileNumber"],
-                        ReferredBy = dataTable.Rows[i]["ReferredBy"] != DBNull.Value ? (string)dataTable.Rows[i]["ReferredBy"] : null,
-
-                        AddressLine1 = dataTable.Rows[i]["AddressLine1"] != DBNull.Value ? (string)dataTable.Rows[i]["AddressLine1"] : null,
-                        AddressTypeId = dataTable.Rows[i]["AddressTypeId"] != DBNull.Value ? (int)dataTable.Rows[i]["AddressTypeId"] : 0,
-                        AddressTypes = dataTable.Rows[i]["AddressTypes"] != DBNull.Value ? (string)dataTable.Rows[i]["AddressTypes"] : null,
-                        CountryId = dataTable.Rows[i]["CountryId"] != DBNull.Value ? (int)dataTable.Rows[i]["CountryId"] : 0,
-                        CountryName = dataTable.Rows[i]["CountryName"] != DBNull.Value ? (string)dataTable.Rows[i]["CountryName"] : null,
-                        PinCode = dataTable.Rows[i]["PinCode"] != DBNull.Value ? (int)dataTable.Rows[i]["PinCode"] : 0
-                    };
-                    contractors.Add(contractor);
-                }
-                return contractors;
+                string sqlQuery = @"
+                       SELECT 
+                           Contractors.Id AS ContractorId, Contractors.JobCategoryId, JobCategories.Name AS JobTypes, 
+                           Contractors.Name AS ContractorName, Contractors.Gender, Contractors.DOB, 
+                           Contractors.MobileNumber, Contractors.ReferredBy, Addresses.AddressLine1, 
+                           Addresses.AddressTypeId, AddressTypes.Name AS AddressTypes, 
+                           Addresses.CountryId, Countries.Name AS CountryName, Addresses.PinCode
+                       FROM 
+                           Contractors
+                       LEFT JOIN 
+                            JobCategories ON Contractors.JobCategoryId = JobCategories.Id
+                       LEFT JOIN 
+                            Addresses ON Contractors.Id = Addresses.ContractorId
+                       LEFT JOIN 
+                            AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
+                       LEFT JOIN 
+                            Countries ON Addresses.CountryId = Countries.Id
+                       WHERE 
+                           (@jobCategoryId IS NULL OR Contractors.JobCategoryId = @jobCategoryId)
+                       AND (@id IS NULL OR Contractors.Id = @id);";
+                // Execute query and return mapped list
+                return connection.Query<Contractor>(sqlQuery, new { jobCategoryId, id }).ToList();
             }
         }
 
         public int Add(Contractor contractor)
         {
-            // Create a new database connection using Dapper
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                var contractorParameters = new DynamicParameters();
-                contractorParameters.Add("@Mode", 1);
-                contractorParameters.Add("@jobCategoryId", contractor.JobCategoryId);
-                contractorParameters.Add("@name", contractor.ContractorName);
-                contractorParameters.Add("@gender", contractor.Gender);
-                contractorParameters.Add("@dOB", contractor.DOB);
-                contractorParameters.Add("@imageName", string.IsNullOrEmpty(contractor.ImageName) ? null : contractor.ImageName);
-                contractorParameters.Add("@mobileNumber", contractor.MobileNumber);
-                contractorParameters.Add("@referredBy", contractor.ReferredBy);
+                string sqlQuery = @"
+                        INSERT INTO Contractors 
+                               (JobCategoryId, Name, Gender, DOB, ImageName, MobileNumber, ReferredBy)
+                        VALUES 
+                               (@JobCategoryId, @ContractorName, @Gender, @DOB, @ImageName, @MobileNumber, @ReferredBy);
+                        SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
-                // Add output parameter to capture the newly created contractor ID
-                contractorParameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.Output);
-
-                // Execute the stored procedure 'SP_ConreactorCRUD' using the provided parameters
-                connection.Execute("SP_ConreactorCRUD", contractorParameters, commandType: CommandType.StoredProcedure);
-
-                // Return the newly generated contractor ID from the output parameter
-                return contractorParameters.Get<int>("@Id");
+                // Executes the SQL query and returns the newly inserted ContractorId
+                return connection.ExecuteScalar<int>(sqlQuery, contractor);
             }
         }
 
         public void Delete(int contractorId)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string storedProcedureName = "SP_ConreactorCRUD";
-
-                using (SqlCommand deleteContractorCommand = new SqlCommand(storedProcedureName, sqlConnection))
-                {
-                    // Set the command type to StoredProcedure
-                    deleteContractorCommand.CommandType = CommandType.StoredProcedure;
-                    deleteContractorCommand.Parameters.AddWithValue("@Mode", 4);
-                    deleteContractorCommand.Parameters.AddWithValue("@Id", contractorId);
-                    sqlConnection.Open();
-                    deleteContractorCommand.ExecuteNonQuery();
-                    sqlConnection.Close();
-                }
+                string sqlQuery = "DELETE FROM Contractors WHERE Id = @ContractorId";
+                // Executes the delete query
+                connection.Execute(sqlQuery, new { ContractorId = contractorId });
             }
         }
 
+
         public int Update(Contractor contractor)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = "SP_ConreactorCRUD";
-
-                using (SqlCommand sqlUpdateCommand = new SqlCommand(sqlQuery, sqlConnection))
-                {
-                    // Set the command type to StoredProcedure
-                    sqlUpdateCommand.CommandType = CommandType.StoredProcedure;
-
-                    sqlUpdateCommand.Parameters.AddWithValue("@Mode", 3);
-                    sqlUpdateCommand.Parameters.AddWithValue("@id", contractor.ContractorId);
-                    sqlUpdateCommand.Parameters.AddWithValue("@jobCategoryId", contractor.JobCategoryId);
-                    sqlUpdateCommand.Parameters.AddWithValue("@name", contractor.ContractorName);
-                    sqlUpdateCommand.Parameters.AddWithValue("@gender", contractor.Gender);
-                    sqlUpdateCommand.Parameters.AddWithValue("@dob", contractor.DOB);
-                    sqlUpdateCommand.Parameters.AddWithValue("@mobileNumber", contractor.MobileNumber);
-                    sqlUpdateCommand.Parameters.AddWithValue("@referredBy", contractor.ReferredBy);
-
-                    sqlConnection.Open();
-                    object result = sqlUpdateCommand.ExecuteScalar();
-                    sqlConnection.Close();
-                    int affectedRowCount = (result != null) ? Convert.ToInt32(result) : 0;
-                    return affectedRowCount;
-                }
+                string sqlQuery = @"
+                       UPDATE Contractors SET
+                              JobCategoryId = @JobCategoryId,
+                              Name = @ContractorName,
+                              Gender = @Gender,
+                              DOB = @DOB,
+                              MobileNumber = @MobileNumber,
+                              ReferredBy = @ReferredBy
+                       WHERE Id = @ContractorId";
+                // Executes and returns affected rows
+                return connection.Execute(sqlQuery, contractor);
             }
         }
     }
