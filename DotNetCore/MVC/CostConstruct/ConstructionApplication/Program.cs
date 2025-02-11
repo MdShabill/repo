@@ -21,9 +21,14 @@ builder.Services.AddDistributedMemoryCache();
 //    return new CostMasterRepository(CostConstructDBConnectionString);
 //});
 
+//builder.Services.AddTransient<ICostMasterRepository>((svc) =>
+//{
+//    return new CostMasterRepositoryUsingSp(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<ICostMasterRepository>((svc) =>
 {
-    return new CostMasterRepositoryUsingSp(CostConstructDBConnectionString);
+    return new CostMasterRepositoryUsingDapper(CostConstructDBConnectionString);
 });
 
 //builder.Services.AddTransient<IDailyAttendanceRepository>((svc) =>
@@ -31,9 +36,14 @@ builder.Services.AddTransient<ICostMasterRepository>((svc) =>
 //    return new DailyAttendanceRepository(CostConstructDBConnectionString);
 //});
 
+//builder.Services.AddTransient<IDailyAttendanceRepository>((svc) =>
+//{
+//    return new DailyAttendanceRepositoryUsingSp(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IDailyAttendanceRepository>((svc) =>
 {
-    return new DailyAttendanceRepositoryUsingSp(CostConstructDBConnectionString);
+    return new DailyAttendanceRepositoryUsingDapper(CostConstructDBConnectionString);
 });
 
 builder.Services.AddTransient<IAttendanceDetailsRepository>((svc) =>
@@ -111,9 +121,14 @@ builder.Services.AddTransient<IContractorRepository>((svc) =>
 //    return new AddressRepository(CostConstructDBConnectionString);
 //});
 
+//builder.Services.AddTransient<IAddressRepository>((svc) =>
+//{
+//    return new AddressRepositoryUsingSp(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IAddressRepository>((svc) =>
 {
-    return new AddressRepositoryUsingSp(CostConstructDBConnectionString);
+    return new AddressRepositoryUsingDapper(CostConstructDBConnectionString);
 });
 
 //builder.Services.AddTransient<ICountryRepository>((svc) =>
