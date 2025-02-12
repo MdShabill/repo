@@ -6,6 +6,6 @@ namespace ConstructionApplication.Repository.Interfaces
     {
         public List<DailyAttendance> GetAll(DateTime? DateFrom, DateTime? DateTo);
         public int Create(DailyAttendance dailyAttendance);
-        public void Delete(int ContractorId);
+        public void Delete(int contractorId);
     }
 }
