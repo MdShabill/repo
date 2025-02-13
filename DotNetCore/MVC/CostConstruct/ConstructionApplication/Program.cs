@@ -56,9 +56,14 @@ builder.Services.AddTransient<IAttendanceDetailsRepository>((svc) =>
 //    return new MaterialPurchaseRepository(CostConstructDBConnectionString);
 //});
 
+//builder.Services.AddTransient<IMaterialPurchaseRepository>((svc) =>
+//{
+//    return new MaterialPurchaseRepositoryUsingSp(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IMaterialPurchaseRepository>((svc) =>
 {
-    return new MaterialPurchaseRepositoryUsingSp(CostConstructDBConnectionString);
+    return new MaterialPurchaseRepositoryUsingDapper(CostConstructDBConnectionString);
 });
 
 //builder.Services.AddTransient<IMaterialRepository>((svc) =>
@@ -66,9 +71,14 @@ builder.Services.AddTransient<IMaterialPurchaseRepository>((svc) =>
 //    return new MaterialRepository(CostConstructDBConnectionString);
 //});
 
+//builder.Services.AddTransient<IMaterialRepository>((svc) =>
+//{
+//    return new MaterialRepositoryUsingSp(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IMaterialRepository>((svc) =>
 {
-    return new MaterialRepositoryUsingSp(CostConstructDBConnectionString);
+    return new MaterialRepositoryUsingDapper(CostConstructDBConnectionString);
 });
 
 //builder.Services.AddTransient<ISupplierRepository>((svc) =>
@@ -76,9 +86,14 @@ builder.Services.AddTransient<IMaterialRepository>((svc) =>
 //    return new SupplierRepository(CostConstructDBConnectionString);
 //});
 
+//builder.Services.AddTransient<ISupplierRepository>((svc) =>
+//{
+//    return new SupplierRepositoryUsingSp(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<ISupplierRepository>((svc) =>
 {
-    return new SupplierRepositoryUsingSp(CostConstructDBConnectionString);
+    return new SupplierRepositoryUsingDapper(CostConstructDBConnectionString);
 });
 
 //builder.Services.AddTransient<IBrandRepository>((svc) =>
@@ -86,9 +101,14 @@ builder.Services.AddTransient<ISupplierRepository>((svc) =>
 //    return new BrandRepository(CostConstructDBConnectionString);
 //});
 
+//builder.Services.AddTransient<IBrandRepository>((svc) =>
+//{
+//    return new BrandRepositoryUsingSp(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IBrandRepository>((svc) =>
 {
-    return new BrandRepositoryUsingSp(CostConstructDBConnectionString);
+    return new BrandRepositoryUsingDapper(CostConstructDBConnectionString);
 });
 
 //builder.Services.AddTransient<IJobCategoryRepository>((svc) =>
@@ -96,9 +116,14 @@ builder.Services.AddTransient<IBrandRepository>((svc) =>
 //    return new JobCategoryRepository(CostConstructDBConnectionString);
 //});
 
+//builder.Services.AddTransient<IJobCategoryRepository>((svc) =>
+//{
+//    return new JobCategoryRepositoryUsingSp(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IJobCategoryRepository>((svc) =>
 {
-    return new JobCategoryRepositoryUsingSp(CostConstructDBConnectionString);
+    return new JobCategoryRepositoryUsingDapper(CostConstructDBConnectionString);
 });
 
 //builder.Services.AddTransient<IContractorRepository>((svc) =>
@@ -136,9 +161,14 @@ builder.Services.AddTransient<IAddressRepository>((svc) =>
 //    return new CountryRepository(CostConstructDBConnectionString);
 //});
 
+//builder.Services.AddTransient<ICountryRepository>((svc) =>
+//{
+//    return new CountryRepositoryUsingSp(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<ICountryRepository>((svc) =>
 {
-    return new CountryRepositoryUsingSp(CostConstructDBConnectionString);
+    return new CountryRepositoryUsingDapper(CostConstructDBConnectionString);
 });
 
 //builder.Services.AddTransient<IAddressTypeRepository>((svc) =>
@@ -146,9 +176,14 @@ builder.Services.AddTransient<ICountryRepository>((svc) =>
 //    return new AddressTypeRepository(CostConstructDBConnectionString);
 //});
 
+//builder.Services.AddTransient<IAddressTypeRepository>((svc) =>
+//{
+//    return new AddressTypeRepositoryUsingSp(CostConstructDBConnectionString);
+//});
+
 builder.Services.AddTransient<IAddressTypeRepository>((svc) =>
 {
-    return new AddressTypeRepositoryUsingSp(CostConstructDBConnectionString);
+    return new AddressTypeRepositoryUsingDapper(CostConstructDBConnectionString);
 });
 WebApplication app = builder.Build();
 
