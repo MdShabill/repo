@@ -6,7 +6,6 @@
     <div>
         <form asp-action="Add">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <span class="text-success"> <b> @ViewBag.successMessage </b> </span>
             <span class="text-danger"> <b> @ViewBag.ErrorMessage </b> </span>
 
             <div class="form-group" style="width: 200px;">
@@ -40,7 +39,7 @@
         var jobCategoryId = $('#jobCategorySelect').val();
         if (jobCategoryId) {
             $.ajax({
-                url: '@Url.Action("Add", "CostMaster")', // Replace with your actual controller name
+                url: '@Url.Action("GetCostByJobCategory", "CostMaster")', // Replace with your actual controller name
                 type: 'GET',
                 data: { jobCategoryId: jobCategoryId },
                 success: function (result) {

@@ -6,7 +6,6 @@
     <div class="col-md-4">
         <form asp-action="Add">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <span class="text-success"> <b> @ViewBag.SuccessMessage </b> </span>
             <span class="text-danger"> <b> @ViewBag.errorMessage </b> </span>
 
             <div class="form-group" style="width: 60%;">
@@ -23,7 +22,7 @@
             <br />
             <div class="form-group" style="width: 60%;">
                 <label asp-for="PhoneNumber" class="control-label"><b>Supplier Contact</b></label>
-                <input asp-for="PhoneNumber" class="form-control" />
+                <input asp-for="PhoneNumber" maxlength="10" minlength="10" class="form-control" required />
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <br />
@@ -44,12 +43,12 @@
                     <div class="col-md-6">
                         <label asp-for="UnitPrice" class="control-label"><b>Unit Price</b></label>
                         <div class="input-group">
-                            <input asp-for="UnitPrice" id="unitPrice" class="form-control" />
+                            <input asp-for="UnitPrice" id="unitPrice" class="form-control" readonly />
                             <span style="display: flex; align-items: center;">
                                 <b id="unitOfMeasureText" style="display: none;">&nbsp; /</b>
                                 <span id="unitOfMeasureDisplay" style="margin-left: 5px;">@Model?.UnitOfMeasure</span>
                             </span>
-                            <input type="hidden" id="unitOfMeasure" name="UnitOfMeasure" value="@Model?.UnitOfMeasure" />
+                            <input type="hidden" id="unitOfMeasure" name="UnitOfMeasure" value="@Model?.UnitOfMeasure" readonly />
                         </div>
                         <span asp-validation-for="UnitPrice" class="text-danger"></span>
                     </div>

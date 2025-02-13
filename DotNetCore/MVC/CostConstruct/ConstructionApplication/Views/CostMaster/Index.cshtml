@@ -2,7 +2,7 @@
 
 <h3 style="text-align: center;">Cost Master Report</h3>
 <div class="bottom-section">
-    <a asp-controller="Costmaster" asp-action="Add">Add New Cost</a>
+    <a asp-controller="Costmaster" asp-action="Add">Add New</a>
 </div>
 <html>
 <head>
@@ -87,6 +87,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
+    <span class="text-success"><b>@TempData["SuccessMessage"]</b></span>
+
     <div class="dropdown-section" style="display: flex; justify-content: space-between; align-items: center;">
         <div style="width: 200px;">
             <form method="get" action="/CostMaster/Index">
@@ -115,7 +117,6 @@
                 <td><b>Date</b></td>
                 <td><b>Job Type</b></td>
                 <td><b>Cost</b></td>
-                <td><b>Is Active</b></td>
             </tr>
 
             @foreach (var costMasterVm in Model)
@@ -124,16 +125,6 @@
                     <td>@costMasterVm.Date.ToString("dd-MMMM-yyyy")</td>
                     <td>@costMasterVm.Name</td>
                     <td>@costMasterVm.Cost</td>
-                    <td>
-                        @if (costMasterVm.IsActive)
-                        {
-                            <i class="fas fa-check-circle" style="color:green;"></i>
-                        }
-                        else
-                        {
-                            <i class="fas fa-times-circle" style="color:red;"></i>
-                        }
-                    </td>
                 </tr>
             }
         </table>

@@ -7,20 +7,27 @@
         <form asp-action="Add">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <span class="text-success"> <b> @ViewBag.successMessage </b> </span>
+            <span class="text-danger"> <b> @ViewBag.errorMessage </b> </span>
 
             <div class="form-group" style="width: 60%;">
                 <label asp-for="Date" class="control-label"><b>Date</b></label>
-                <input asp-for="Date" class="form-control" value="@DateTime.Now.ToString(" yyyy-MM-dd")" />
+                <input asp-for="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" type="datetime-local" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
                 <label asp-for="JobCategoryId" class="control-label"><b>Job Category</b></label>
-                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, null, new { @class = "form-control",@id = "jobCategory" })
+                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, "-- Select Job Category --", new { @class = "form-control",@id = "jobCategory" })
                 <span asp-validation-for="JobCategoryId" class="text-danger"></span>
             </div>
             <br />
-            <div class="form-group row" style="width: 60%;">
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="ContractorId" class="control-label"><b>Contractor Name</b></label><br />
+                <select id="contractorId" name="contractorId"></select>
+                <span class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
                 <label asp-for="TotalWorker" class="control-label"><b>Total Worker</b></label>
                 <input asp-for="TotalWorker" id="totalWorker" class="form-control" />
                 <span asp-validation-for="TotalWorker" class="text-danger"></span>
@@ -50,20 +57,64 @@
 
     document.getElementById('jobCategory').addEventListener('change', function () {
         const selectedJobCategoryId = parseInt(this.value);
+        const amountPerWorkerField = document.getElementById('AmountPerWorker');
+        const totalWorkerField = document.getElementById('totalWorker');
+        const totalAmountField = document.getElementById('totalAmount');
+        const contractorDropdown = document.getElementById('contractorId');
+
+        if (!selectedJobCategoryId) {
+            // Reset fields if no job category is selected
+            amountPerWorkerField.value = '';
+            totalWorkerField.value = '';
+            totalAmountField.value = '';
+            contractorDropdown.innerHTML = '';
+            contractorDropdown.innerHTML = '<option value="-1">SELECT</option>';
+            return;
+        }
+
+        if (!jobCategoryCosts || jobCategoryCosts.length === 0) return;
 
         // Find the matching JobCategoryId in the jobCategoryCosts array
         const selectedJobCategory = jobCategoryCosts.find(category => category.JobCategoryId === selectedJobCategoryId);
 
         if (selectedJobCategory) {
             // Set the AmountPerWorker field value based on the selected JobCategory's Cost
-            document.getElementById('AmountPerWorker').value = selectedJobCategory.Cost;
+            amountPerWorkerField.value = selectedJobCategory.Cost;
 
             // Optionally calculate Total Amount if TotalWorker is already filled
-            const totalWorker = document.getElementById('totalWorker').value;
-            if (totalWorker) {
-                document.getElementById('totalAmount').value = selectedJobCategory.Cost * totalWorker;
+            if (totalWorkerField.value) {
+                totalAmountField.value = selectedJobCategory.Cost * totalWorkerField.value;
             }
         }
+
+        // Fetch contractors data based on selected job category
+        $.ajax({
+            url: '@Url.Action("GetDataByJobCategoryId", "DailyAttendance")',
+            type: 'GET',
+            data: { jobCategoryId: selectedJobCategoryId },
+            success: function(response) {
+                // Populate contractors dropdown
+                if (response && response.contractors) {
+                    let contractorOptions = '<option value="-1">SELECT</option>';
+                    for (let i = 0; i < response.contractors.length; i++) {
+                        contractorOptions += `<option value="${response.contractors[i].contractorId}">
+                                                  ${response.contractors[i].contractorName}
+                                              </option>`;
+                    }
+                    contractorDropdown.innerHTML = contractorOptions;
+                } else {
+                    contractorDropdown.innerHTML = '<option value="-1">No contractors available</option>';
+                }
+
+                // Optionally, calculate Total Amount if TotalWorker is already filled
+                if (totalWorkerField.value && amountPerWorkerField.value) {
+                    totalAmountField.value = amountPerWorkerField.value * totalWorkerField.value;
+                }
+            },
+            error: function() {
+                alert('Error fetching contractors data.');
+            }
+        });
     });
 
     // Update Total Amount when TotalWorker input changes
@@ -73,6 +124,8 @@
 
         if (amountPerWorker && totalWorker) {
             document.getElementById('totalAmount').value = amountPerWorker * totalWorker;
+        } else {
+            document.getElementById('totalAmount').value = '';
         }
     });
 </script>

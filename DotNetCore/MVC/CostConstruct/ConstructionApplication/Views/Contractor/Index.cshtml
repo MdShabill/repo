@@ -2,7 +2,7 @@
 
 <h3 style="text-align: center;">Contractor List</h3>
 <div class="bottom-section">
-    <a asp-controller="Contractor" asp-action="Add">Add New Contractor</a>
+    <a asp-controller="Contractor" asp-action="Add">Add New</a>
 </div>
 <head>
     <style>
@@ -86,6 +86,7 @@
     @TempData["UpdateSuccessMessage"]
     @TempData["DeleteSuccessMessage"]
 </span>
+<b style="text-align: left; margin: 20px 0;">Total Purchase: @ViewBag.ContractorCount</b>
 <table>
     <thead>
         <tr class="header-row">

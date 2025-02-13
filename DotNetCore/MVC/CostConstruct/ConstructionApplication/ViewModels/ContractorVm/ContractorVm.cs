@@ -9,7 +9,7 @@ namespace ConstructionApplication.ViewModels.ContractorVm
         public int JobCategoryId { get; set; }
         public string JobTypes { get; set; }
         public GenderTypes Gender { get; set; }
-        public DateTime DOB { get; set; }
+        public DateTime? DOB { get; set; }
         public IFormFile? ImageFile { get; set; }
         public string MobileNumber { get; set; }
         public string ReferredBy { get; set; }

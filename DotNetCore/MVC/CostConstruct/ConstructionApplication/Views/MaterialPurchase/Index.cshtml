@@ -107,8 +107,10 @@
 </head>
 
 <body>
+    <span class="text-success"><b>@TempData["SuccessMessage"]</b></span>
+
     <div class="bottom-section">
-        <a asp-controller="MaterialPurchase" asp-action="Add">Add New Material Purchase</a>
+        <a asp-controller="MaterialPurchase" asp-action="Add">Add New</a>
     </div>
 
     <b style="text-align: left; margin: 20px 0;">Total Purchase: @ViewBag.materialPurchaseCount</b>

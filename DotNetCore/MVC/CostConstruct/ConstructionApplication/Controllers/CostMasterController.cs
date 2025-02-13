@@ -1,11 +1,16 @@
 ﻿using AutoMapper;
+using ConstructionApplication.Core.DataModels.Brands;
 using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Core.DataModels.Suppliers;
+using ConstructionApplication.Repositories;
+using ConstructionApplication.Repository;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels.CostMasterVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
@@ -61,25 +66,20 @@ namespace ConstructionApplication.Controllers
 
         public IActionResult Add()
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+            DropDownSelectList();
             return View();
         }
 
         [HttpPost]
         public IActionResult Add(AddNewCostMasterVm costMasterVm)
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+            ModelState.Clear();
 
-            if (costMasterVm.Date == null || 
-                costMasterVm.Date == default(DateTime) || 
-                costMasterVm.Date > DateTime.Now ||
-                costMasterVm.JobCategoryId == 0 || 
-                costMasterVm.Cost == null || 
-                costMasterVm.Cost <= 0)
+            string validationMessage = ValidationDetail(costMasterVm);
+            if (!string.IsNullOrEmpty(validationMessage))
             {
-                ViewBag.ErrorMessage = "Page not submitted, please enter correct values";
+                ViewBag.ErrorMessage = validationMessage;
+                DropDownSelectList();
                 return View(costMasterVm);
             }
 
@@ -87,9 +87,34 @@ namespace ConstructionApplication.Controllers
             int affectedRowCount = _costMasterRepository.Create(costMaster);
             if (affectedRowCount > 0)
             {
-                ViewBag.successMessage = "Add New Cost Master Successful";
+                TempData["SuccessMessage"] = "Add New Cost Master Successful";
             }
-            return View();
+            return RedirectToAction("Index");
+        }
+
+        private string ValidationDetail(AddNewCostMasterVm costMasterVm)
+        {
+            if (costMasterVm.Date == null ||
+                costMasterVm.Date == default(DateTime) ||
+                costMasterVm.JobCategoryId == 0)
+            {
+                return "Page not submitted, please enter correct Inputs";
+            }
+
+            if (costMasterVm.Cost == null ||
+                costMasterVm.Cost <= 0 ||
+                !Regex.IsMatch(costMasterVm.Cost.ToString(), @"^\d+$"))
+            {
+                return "Cost must be a positive integer and cannot contain alphabets, decimals, or special characters.";
+            }
+
+            return string.Empty;
+        }
+
+        private void DropDownSelectList()
+        {
+            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
+            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
         }
     }
 }

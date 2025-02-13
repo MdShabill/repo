@@ -1,9 +1,6 @@
 ﻿using ConstructionApplication.Core.DataModels.Contractor;
-using ConstructionApplication.Core.DataModels.CostMaster;
-using ConstructionApplication.Core.DataModels.JobCategory;
 using System.Data.SqlClient;
 using System.Data;
-using ConstructionApplication.Core.DataModels.Brands;
 using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
 
@@ -36,7 +33,7 @@ namespace ConstructionApplication.Repositories
                             LEFT JOIN Countries ON Addresses.CountryId = Countries.Id
                             WHERE (@jobCategoryId IS NULL OR JobCategoryId = @jobCategoryId)
                             AND (@id IS NULL OR Contractors.Id = @id) ";
-                
+
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", jobCategoryId ?? (object)DBNull.Value);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id ?? (object)DBNull.Value);
@@ -49,6 +46,8 @@ namespace ConstructionApplication.Repositories
                 {
                     Contractor contractor = new()
                     {
+
+
                         JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
                         JobTypes = (string)dataTable.Rows[i]["JobTypes"],
                         ContractorId = (int)dataTable.Rows[i]["ContractorId"],
@@ -93,7 +92,7 @@ namespace ConstructionApplication.Repositories
 
                 sqlCommand.Parameters.AddWithValue("@mobileNumber", contractor.MobileNumber);
                 sqlCommand.Parameters.AddWithValue("@referredBy", contractor.ReferredBy);
-                
+
                 sqlConnection.Open();
                 contractor.ContractorId = Convert.ToInt32(sqlCommand.ExecuteScalar());
                 sqlConnection.Close();
@@ -128,7 +127,7 @@ namespace ConstructionApplication.Repositories
                             ReferredBy = @referredBy
                             WHERE Id = @id";
 
-                using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, sqlConnection)) 
+                using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, sqlConnection))
                 {
                     sqlCommand.Parameters.AddWithValue("@id", contractor.ContractorId);
                     sqlCommand.Parameters.AddWithValue("@jobCategoryId", contractor.JobCategoryId);
