@@ -1,5 +1,6 @@
-using ConstructionApplication.Repositories;
-using ConstructionApplication.Repository;
+using ConstructionApplication.Repository.AdoDotNet;
+using ConstructionApplication.Repository.AdoDotNetUsingSp;
+using ConstructionApplication.Repository.Dapper;
 using ConstructionApplication.Repository.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,11 +45,6 @@ builder.Services.AddTransient<ICostMasterRepository>((svc) =>
 builder.Services.AddTransient<IDailyAttendanceRepository>((svc) =>
 {
     return new DailyAttendanceRepositoryUsingDapper(CostConstructDBConnectionString);
-});
-
-builder.Services.AddTransient<IAttendanceDetailsRepository>((svc) =>
-{
-    return new AttendanceDetailsRepository(CostConstructDBConnectionString);
 });
 
 //builder.Services.AddTransient<IMaterialPurchaseRepository>((svc) =>

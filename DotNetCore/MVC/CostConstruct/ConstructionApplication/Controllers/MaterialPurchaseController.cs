@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using ConstructionApplication.Core.DataModels.Brands;
-using ConstructionApplication.Core.DataModels.Contractor;
 using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Core.DataModels.MaterialPurchase;
 using ConstructionApplication.Core.DataModels.Suppliers;
 using ConstructionApplication.Repository.Interfaces;
-using ConstructionApplication.ViewModels.ContractorVm;
-using ConstructionApplication.ViewModels.DailyAttendance;
 using ConstructionApplication.ViewModels.MaterialPurchaseVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

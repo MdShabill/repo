@@ -1,20 +1,13 @@
 ﻿using AutoMapper;
 using ConstructionApplication.Core.DataModels.Address;
 using ConstructionApplication.Core.DataModels.AddressType;
-using ConstructionApplication.Core.DataModels.Brands;
 using ConstructionApplication.Core.DataModels.Contractor;
 using ConstructionApplication.Core.DataModels.Country;
 using ConstructionApplication.Core.DataModels.JobCategory;
-using ConstructionApplication.Core.DataModels.Material;
-using ConstructionApplication.Core.DataModels.MaterialPurchase;
-using ConstructionApplication.Core.DataModels.Suppliers;
-using ConstructionApplication.Repositories;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels.ContractorVm;
-using ConstructionApplication.ViewModels.MaterialPurchaseVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Configuration;
 using System.Text.RegularExpressions;
 using System.Transactions;
 
