@@ -1,4 +1,4 @@
-CREATE PROCEDURE SP_ConreactorCRUD
+CREATE PROCEDURE SP_ContractorCRUD
     @Mode INT,
 	@ContractorId INT = NULL,
     @JobCategoryId INT = NULL,

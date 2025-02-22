@@ -19,7 +19,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "SP_ConreactorCRUD";
+                string sqlQuery = "SP_ContractorCRUD";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection)
                 {
@@ -63,7 +63,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = "SP_ConreactorCRUD";
+                string sqlQuery = "SP_ContractorCRUD";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection)
                 {
@@ -94,7 +94,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string storedProcedureName = "SP_ConreactorCRUD";
+                string storedProcedureName = "SP_ContractorCRUD";
 
                 using (SqlCommand deleteContractorCommand = new SqlCommand(storedProcedureName, sqlConnection))
                 {
@@ -115,7 +115,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = "SP_ConreactorCRUD";
+                string sqlQuery = "SP_ContractorCRUD";
 
                 using (SqlCommand sqlUpdateCommand = new SqlCommand(sqlQuery, sqlConnection))
                 {

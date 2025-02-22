@@ -24,7 +24,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = "SP_ConreactorCRUD";
+                string sqlQuery = "SP_ContractorCRUD";
                 var parameters = new
                 {
                     Mode = 2,
@@ -40,7 +40,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = "SP_ConreactorCRUD";
+                string sqlQuery = "SP_ContractorCRUD";
                 var parameters = new
                 {
                     Mode = 1,
@@ -62,7 +62,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = "SP_ConreactorCRUD";
+                string sqlQuery = "SP_ContractorCRUD";
                 var parameters = new
                 {
                     Mode = 4,
@@ -77,7 +77,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = "SP_ConreactorCRUD";
+                string sqlQuery = "SP_ContractorCRUD";
                 var parameters = new
                 {
                     Mode = 3,
