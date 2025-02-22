@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using ConstructionApplication.Core.DataModels.Brands;
-using ConstructionApplication.Core.DataModels.Contractor;
 using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Core.DataModels.MaterialPurchase;
 using ConstructionApplication.Core.DataModels.Suppliers;
 using ConstructionApplication.Repository.Interfaces;
-using ConstructionApplication.ViewModels.ContractorVm;
-using ConstructionApplication.ViewModels.DailyAttendance;
 using ConstructionApplication.ViewModels.MaterialPurchaseVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -93,6 +90,8 @@ namespace ConstructionApplication.Controllers
 
         private bool ValidateMaterialPurchase(MaterialPurchaseVm materialPurchaseVm)
         {
+            ModelState.Clear();
+
             if (materialPurchaseVm.MaterialId <= 0 || materialPurchaseVm.SupplierId <= 0 ||
                 materialPurchaseVm.BrandId <= 0 || materialPurchaseVm.Quantity <= 0 ||
                 string.IsNullOrEmpty(materialPurchaseVm.UnitOfMeasure) ||

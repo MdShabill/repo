@@ -1,20 +1,13 @@
 ﻿using AutoMapper;
 using ConstructionApplication.Core.DataModels.Address;
 using ConstructionApplication.Core.DataModels.AddressType;
-using ConstructionApplication.Core.DataModels.Brands;
 using ConstructionApplication.Core.DataModels.Contractor;
 using ConstructionApplication.Core.DataModels.Country;
 using ConstructionApplication.Core.DataModels.JobCategory;
-using ConstructionApplication.Core.DataModels.Material;
-using ConstructionApplication.Core.DataModels.MaterialPurchase;
-using ConstructionApplication.Core.DataModels.Suppliers;
-using ConstructionApplication.Repositories;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels.ContractorVm;
-using ConstructionApplication.ViewModels.MaterialPurchaseVm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Configuration;
 using System.Text.RegularExpressions;
 using System.Transactions;
 
@@ -233,7 +226,7 @@ namespace ConstructionApplication.Controllers
         }
 
         private string ValidateAndUploadFile(ContractorVm contractorVm)
-            {
+        {
             if (contractorVm.ImageFile == null || contractorVm.ImageFile.Length == 0)
             {
                 return null;
@@ -275,9 +268,9 @@ namespace ConstructionApplication.Controllers
         private void AddAddressIfPresent(int contractorId, ContractorVm contractorVm)
         {
             if (!string.IsNullOrEmpty(contractorVm.AddressLine1) ||
-                contractorVm.AddressTypeId != null ||
-                contractorVm.CountryId != null ||
-                contractorVm.PinCode != null)
+               (contractorVm.AddressTypeId.HasValue && contractorVm.AddressTypeId > 0) ||
+               (contractorVm.CountryId.HasValue && contractorVm.CountryId > 0) ||
+               (contractorVm.PinCode.HasValue && contractorVm.PinCode > 0))
             {
                 Address address = new Address(
                     contractorId,

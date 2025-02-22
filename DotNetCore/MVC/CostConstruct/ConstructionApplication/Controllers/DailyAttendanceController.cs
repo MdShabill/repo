@@ -3,14 +3,11 @@ using ConstructionApplication.Core.DataModels.Contractor;
 using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Core.DataModels.DailyAttendance;
 using ConstructionApplication.Core.DataModels.JobCategory;
-using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Repository.Interfaces;
-using ConstructionApplication.ViewModels.CostMasterVm;
 using ConstructionApplication.ViewModels.DailyAttendance;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ConstructionApplication.Controllers
 {
