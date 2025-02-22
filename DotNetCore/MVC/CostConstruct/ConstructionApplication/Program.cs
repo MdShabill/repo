@@ -1,6 +1,7 @@
 using ConstructionApplication.Repository.AdoDotNet;
 using ConstructionApplication.Repository.AdoDotNetUsingSp;
 using ConstructionApplication.Repository.Dapper;
+using ConstructionApplication.Repository.DapperUsingSp;
 using ConstructionApplication.Repository.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +13,7 @@ var configuration = new ConfigurationBuilder()
     .Build();
 
 string CostConstructDBConnectionString = configuration.GetConnectionString("CostConstructDBConnection");
-string repositoryType = configuration["ApplicationSettings:ConnectionString"] ?? "AdoDotNet";
+string repositoryType = configuration["ApplicationSettings:DellTechnology"] ?? "AdoDotNet";
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -132,7 +133,7 @@ else if(repositoryType == "AdoDotNetUsingSp")
         return new AddressTypeRepositoryUsingSp(CostConstructDBConnectionString);
     });
 }
-else
+else if(repositoryType == "Dapper")
 {
     builder.Services.AddTransient<ICostMasterRepository>((svc) =>
     {
@@ -187,6 +188,63 @@ else
     builder.Services.AddTransient<IAddressTypeRepository>((svc) =>
     {
         return new AddressTypeRepositoryUsingDapper(CostConstructDBConnectionString);
+    });
+}
+else
+{
+    builder.Services.AddTransient<ICostMasterRepository>((svc) =>
+    {
+        return new CostMasterRepositoryDapperUsingSp(CostConstructDBConnectionString);
+    });
+
+    builder.Services.AddTransient<IDailyAttendanceRepository>((svc) =>
+    {
+        return new DailyAttendanceRepositoryDapperUsingSp(CostConstructDBConnectionString);
+    });
+
+    builder.Services.AddTransient<IMaterialPurchaseRepository>((svc) =>
+    {
+        return new MaterialPurchaseRepositoryDapperUsingSp(CostConstructDBConnectionString);
+    });
+
+    builder.Services.AddTransient<IMaterialRepository>((svc) =>
+    {
+        return new MaterialRepositoryDapperUsingSp(CostConstructDBConnectionString);
+    });
+
+    builder.Services.AddTransient<ISupplierRepository>((svc) =>
+    {
+        return new SupplierRepositoryDapperUsingSp(CostConstructDBConnectionString);
+    });
+
+    builder.Services.AddTransient<IBrandRepository>((svc) =>
+    {
+        return new BrandRepositoryDapperUsingSp(CostConstructDBConnectionString);
+    });
+
+    builder.Services.AddTransient<IJobCategoryRepository>((svc) =>
+    {
+        return new JobCategoryRepositoryDapperUsingSp(CostConstructDBConnectionString);
+    });
+
+    builder.Services.AddTransient<IContractorRepository>((svc) =>
+    {
+        return new ContractorRepositoryDapperUsingSp(CostConstructDBConnectionString);
+    });
+
+    builder.Services.AddTransient<IAddressRepository>((svc) =>
+    {
+        return new AddressRepositoryDapperUsingSp(CostConstructDBConnectionString);
+    });
+
+    builder.Services.AddTransient<ICountryRepository>((svc) =>
+    {
+        return new CountryRepositoryDapperUsingSp(CostConstructDBConnectionString);
+    });
+
+    builder.Services.AddTransient<IAddressTypeRepository>((svc) =>
+    {
+        return new AddressTypeRepositoryDapperUsingSp(CostConstructDBConnectionString);
     });
 }
 

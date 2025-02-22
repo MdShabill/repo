@@ -90,6 +90,8 @@ namespace ConstructionApplication.Controllers
 
         private bool ValidateMaterialPurchase(MaterialPurchaseVm materialPurchaseVm)
         {
+            ModelState.Clear();
+
             if (materialPurchaseVm.MaterialId <= 0 || materialPurchaseVm.SupplierId <= 0 ||
                 materialPurchaseVm.BrandId <= 0 || materialPurchaseVm.Quantity <= 0 ||
                 string.IsNullOrEmpty(materialPurchaseVm.UnitOfMeasure) ||

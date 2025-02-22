@@ -226,7 +226,7 @@ namespace ConstructionApplication.Controllers
         }
 
         private string ValidateAndUploadFile(ContractorVm contractorVm)
-            {
+        {
             if (contractorVm.ImageFile == null || contractorVm.ImageFile.Length == 0)
             {
                 return null;
@@ -268,9 +268,9 @@ namespace ConstructionApplication.Controllers
         private void AddAddressIfPresent(int contractorId, ContractorVm contractorVm)
         {
             if (!string.IsNullOrEmpty(contractorVm.AddressLine1) ||
-                contractorVm.AddressTypeId != null ||
-                contractorVm.CountryId != null ||
-                contractorVm.PinCode != null)
+               (contractorVm.AddressTypeId.HasValue && contractorVm.AddressTypeId > 0) ||
+               (contractorVm.CountryId.HasValue && contractorVm.CountryId > 0) ||
+               (contractorVm.PinCode.HasValue && contractorVm.PinCode > 0))
             {
                 Address address = new Address(
                     contractorId,

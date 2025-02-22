@@ -1,8 +1,8 @@
 CREATE PROCEDURE SP_ConreactorCRUD
     @Mode INT,
-	@Id INT OUTPUT,
+	@ContractorId INT = NULL,
     @JobCategoryId INT = NULL,
-    @Name NVARCHAR(100) = NULL,
+    @ContractorName NVARCHAR(100) = NULL,
     @Gender NVARCHAR(10) = NULL,
     @DOB DATE = NULL,
     @ImageName NVARCHAR(255) = NULL,
@@ -11,16 +11,13 @@ CREATE PROCEDURE SP_ConreactorCRUD
     @FilterJobCategoryId INT = NULL
 AS
 BEGIN
-	IF @Id IS NULL
-        SET @Id = 0;
-
     IF @Mode = 1
     BEGIN
         -- Add Contractor
         INSERT INTO Contractors (JobCategoryId, Name, Gender, DOB, ImageName, MobileNumber, ReferredBy)
-        VALUES (@JobCategoryId, @Name, @Gender, @DOB, @ImageName, @MobileNumber, @ReferredBy);
+        VALUES (@JobCategoryId, @ContractorName, @Gender, @DOB, @ImageName, @MobileNumber, @ReferredBy);
 
-        SET @Id = SCOPE_IDENTITY();
+        SELECT SCOPE_IDENTITY() AS ContractorId;
     END
     ELSE IF @Mode = 2
     BEGIN
@@ -46,7 +43,7 @@ BEGIN
         LEFT JOIN AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
         LEFT JOIN Countries ON Addresses.CountryId = Countries.Id
         WHERE (ISNULL(@FilterJobCategoryId, 0) = 0 OR Contractors.JobCategoryId = @FilterJobCategoryId)
-		  AND (ISNULL(@Id, 0) = 0 OR Contractors.Id = @Id)
+		  AND (ISNULL(@ContractorId, 0) = 0 OR Contractors.Id = @ContractorId)
     END
     ELSE IF @Mode = 3
     BEGIN
@@ -54,19 +51,19 @@ BEGIN
         UPDATE Contractors
         SET
             JobCategoryId = @JobCategoryId,
-            Name = @Name,
+            Name = @ContractorName,
             Gender = @Gender,
             DOB = @DOB,
             MobileNumber = @MobileNumber,
             ReferredBy = @ReferredBy
-        WHERE Id = @Id;
+        WHERE Id = @ContractorId;
 
     END
     ELSE IF @Mode = 4
     BEGIN
         -- Delete Contractor
         DELETE FROM Contractors 
-        WHERE Id = @Id;
+        WHERE Id = @ContractorId;
     END
 END
 GO

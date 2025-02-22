@@ -27,7 +27,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                 };
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@Mode", 2);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", jobCategoryId ?? (object)DBNull.Value);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id ?? (object)DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@ContractorId", id ?? (object)DBNull.Value);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
@@ -71,7 +71,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                 };
                 sqlCommand.Parameters.AddWithValue("@Mode", 1);
                 sqlCommand.Parameters.AddWithValue("@jobCategoryId", contractor.JobCategoryId);
-                sqlCommand.Parameters.AddWithValue("@name", contractor.ContractorName);
+                sqlCommand.Parameters.AddWithValue("@ContractorName", contractor.ContractorName);
                 sqlCommand.Parameters.AddWithValue("@gender", contractor.Gender);
                 sqlCommand.Parameters.AddWithValue("@dOB", contractor.DOB);
                 if (string.IsNullOrEmpty(contractor.ImageName))
@@ -102,7 +102,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                     deleteContractorCommand.CommandType = CommandType.StoredProcedure;
 
                     deleteContractorCommand.Parameters.AddWithValue("@Mode", 4);
-                    deleteContractorCommand.Parameters.AddWithValue("@Id", contractorId);
+                    deleteContractorCommand.Parameters.AddWithValue("@ContractorId", contractorId);
                     sqlConnection.Open();
                     deleteContractorCommand.ExecuteNonQuery();
                     sqlConnection.Close();
@@ -123,18 +123,18 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                     sqlUpdateCommand.CommandType = CommandType.StoredProcedure;
 
                     sqlUpdateCommand.Parameters.AddWithValue("@Mode", 3);
-                    sqlUpdateCommand.Parameters.AddWithValue("@id", contractor.ContractorId);
+                    sqlUpdateCommand.Parameters.AddWithValue("@ContractorId", contractor.ContractorId);
                     sqlUpdateCommand.Parameters.AddWithValue("@jobCategoryId", contractor.JobCategoryId);
-                    sqlUpdateCommand.Parameters.AddWithValue("@name", contractor.ContractorName);
+                    sqlUpdateCommand.Parameters.AddWithValue("@ContractorName", contractor.ContractorName);
                     sqlUpdateCommand.Parameters.AddWithValue("@gender", contractor.Gender);
                     sqlUpdateCommand.Parameters.AddWithValue("@dob", contractor.DOB);
                     sqlUpdateCommand.Parameters.AddWithValue("@mobileNumber", contractor.MobileNumber);
                     sqlUpdateCommand.Parameters.AddWithValue("@referredBy", contractor.ReferredBy);
 
                     sqlConnection.Open();
-                    object result = sqlUpdateCommand.ExecuteScalar();
+                    int affectedRowCount = sqlUpdateCommand.ExecuteNonQuery();
                     sqlConnection.Close();
-                    int affectedRowCount = result != null ? Convert.ToInt32(result) : 0;
+
                     return affectedRowCount;
                 }
             }
