@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.ViewModels.DailyAttendance
+﻿namespace ConstructionApplication.ViewModels
 {
     public class DailyAttendanceVm
     {

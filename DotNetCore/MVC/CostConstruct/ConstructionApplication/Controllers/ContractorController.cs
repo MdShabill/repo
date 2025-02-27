@@ -5,7 +5,7 @@ using ConstructionApplication.Core.DataModels.Contractor;
 using ConstructionApplication.Core.DataModels.Country;
 using ConstructionApplication.Core.DataModels.JobCategory;
 using ConstructionApplication.Repository.Interfaces;
-using ConstructionApplication.ViewModels.ContractorVm;
+using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;

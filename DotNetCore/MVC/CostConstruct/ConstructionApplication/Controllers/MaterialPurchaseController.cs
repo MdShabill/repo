@@ -4,7 +4,7 @@ using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Core.DataModels.MaterialPurchase;
 using ConstructionApplication.Core.DataModels.Suppliers;
 using ConstructionApplication.Repository.Interfaces;
-using ConstructionApplication.ViewModels.MaterialPurchaseVm;
+using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
