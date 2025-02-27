@@ -21,23 +21,23 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
 
 // Register repositories based on repositoryType
-var repositoryRegistration = new RepositoryRegistration(builder.Services, CostConstructDBConnectionString);
+var repositoryRegistration = new RepositoryRegistration();
 
 if (repositoryType == "AdoDotNet")
 {
-    repositoryRegistration.RegisterAdoDotNetRepositories();
+    repositoryRegistration.RegisterAdoDotNetRepositories(builder.Services, CostConstructDBConnectionString);
 }
 else if(repositoryType == "AdoDotNetUsingSp")
 {
-    repositoryRegistration.RegisterAdoDotNetUsingSpRepositories();
+    repositoryRegistration.RegisterAdoDotNetUsingSpRepositories(builder.Services, CostConstructDBConnectionString);
 }
 else if(repositoryType == "Dapper")
 {
-    repositoryRegistration.RegisterDapperRepositories();
+    repositoryRegistration.RegisterDapperRepositories(builder.Services, CostConstructDBConnectionString);
 }
 else
 {
-    repositoryRegistration.RegisterDapperUsingSpRepositories();
+    repositoryRegistration.RegisterDapperUsingSpRepositories(builder.Services, CostConstructDBConnectionString);
 }
 
 WebApplication app = builder.Build();
