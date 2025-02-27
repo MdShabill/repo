@@ -42,27 +42,53 @@ namespace ConstructionApplication.Repository.AdoDotNet
 
                 List<Contractor> contractors = new();
 
-                for (int i = 0; i < dataTable.Rows.Count; i++)
+                //Approach: 1 = With For Loop
+
+                //for (int i = 0; i < dataTable.Rows.Count; i++)
+                //{
+                //    Contractor contractor = new()
+                //    {
+
+
+                //        JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
+                //        JobTypes = (string)dataTable.Rows[i]["JobTypes"],
+                //        ContractorId = (int)dataTable.Rows[i]["ContractorId"],
+                //        ContractorName = (string)dataTable.Rows[i]["ContractorName"],
+                //        Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
+                //        DOB = (DateTime)dataTable.Rows[i]["DOB"],
+                //        MobileNumber = (string)dataTable.Rows[i]["MobileNumber"],
+                //        ReferredBy = dataTable.Rows[i]["ReferredBy"] != DBNull.Value ? (string)dataTable.Rows[i]["ReferredBy"] : null,
+
+                //        AddressLine1 = dataTable.Rows[i]["AddressLine1"] != DBNull.Value ? (string)dataTable.Rows[i]["AddressLine1"] : null,
+                //        AddressTypeId = dataTable.Rows[i]["AddressTypeId"] != DBNull.Value ? (int)dataTable.Rows[i]["AddressTypeId"] : 0,
+                //        AddressTypes = dataTable.Rows[i]["AddressTypes"] != DBNull.Value ? (string)dataTable.Rows[i]["AddressTypes"] : null,
+                //        CountryId = dataTable.Rows[i]["CountryId"] != DBNull.Value ? (int)dataTable.Rows[i]["CountryId"] : 0,
+                //        CountryName = dataTable.Rows[i]["CountryName"] != DBNull.Value ? (string)dataTable.Rows[i]["CountryName"] : null,
+                //        PinCode = dataTable.Rows[i]["PinCode"] != DBNull.Value ? (int)dataTable.Rows[i]["PinCode"] : 0
+                //    };
+                //    contractors.Add(contractor);
+                //}
+
+                //Approach: 2 = With For Each Loop
+                foreach (DataRow row in dataTable.Rows)
                 {
                     Contractor contractor = new()
                     {
+                        JobCategoryId = (int)row["JobCategoryId"],
+                        JobTypes = (string)row["JobTypes"],
+                        ContractorId = (int)row["ContractorId"],
+                        ContractorName = (string)row["ContractorName"],
+                        Gender = (GenderTypes)row["Gender"],
+                        DOB = (DateTime)row["DOB"],
+                        MobileNumber = (string)row["MobileNumber"],
+                        ReferredBy = row["ReferredBy"] != DBNull.Value ? (string)row["ReferredBy"] : null,
 
-
-                        JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
-                        JobTypes = (string)dataTable.Rows[i]["JobTypes"],
-                        ContractorId = (int)dataTable.Rows[i]["ContractorId"],
-                        ContractorName = (string)dataTable.Rows[i]["ContractorName"],
-                        Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
-                        DOB = (DateTime)dataTable.Rows[i]["DOB"],
-                        MobileNumber = (string)dataTable.Rows[i]["MobileNumber"],
-                        ReferredBy = dataTable.Rows[i]["ReferredBy"] != DBNull.Value ? (string)dataTable.Rows[i]["ReferredBy"] : null,
-
-                        AddressLine1 = dataTable.Rows[i]["AddressLine1"] != DBNull.Value ? (string)dataTable.Rows[i]["AddressLine1"] : null,
-                        AddressTypeId = dataTable.Rows[i]["AddressTypeId"] != DBNull.Value ? (int)dataTable.Rows[i]["AddressTypeId"] : 0,
-                        AddressTypes = dataTable.Rows[i]["AddressTypes"] != DBNull.Value ? (string)dataTable.Rows[i]["AddressTypes"] : null,
-                        CountryId = dataTable.Rows[i]["CountryId"] != DBNull.Value ? (int)dataTable.Rows[i]["CountryId"] : 0,
-                        CountryName = dataTable.Rows[i]["CountryName"] != DBNull.Value ? (string)dataTable.Rows[i]["CountryName"] : null,
-                        PinCode = dataTable.Rows[i]["PinCode"] != DBNull.Value ? (int)dataTable.Rows[i]["PinCode"] : 0
+                        AddressLine1 = row["AddressLine1"] != DBNull.Value ? (string)row["AddressLine1"] : null,
+                        AddressTypeId = row["AddressTypeId"] != DBNull.Value ? (int)row["AddressTypeId"] : 0,
+                        AddressTypes = row["AddressTypes"] != DBNull.Value ? (string)row["AddressTypes"] : null,
+                        CountryId = row["CountryId"] != DBNull.Value ? (int)row["CountryId"] : 0,
+                        CountryName = row["CountryName"] != DBNull.Value ? (string)row["CountryName"] : null,
+                        PinCode = row["PinCode"] != DBNull.Value ? (int)row["PinCode"] : 0
                     };
                     contractors.Add(contractor);
                 }

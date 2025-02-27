@@ -34,15 +34,30 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 sqlDataAdapter.Fill(dataTable);
 
                 List<CostMaster> costMasters = new();
-                for (int i = 0; i < dataTable.Rows.Count; i++)
+                //Approach: 1 = With For Loop
+                //for (int i = 0; i < dataTable.Rows.Count; i++)
+                //{
+                //    CostMaster costMaster = new()
+                //    {
+                //        Id = (int)dataTable.Rows[i]["Id"],
+                //        JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
+                //        Name = (string)dataTable.Rows[i]["Name"],
+                //        Cost = (decimal)dataTable.Rows[i]["Cost"],
+                //        Date = (DateTime)dataTable.Rows[i]["Date"]
+                //    };
+                //    costMasters.Add(costMaster);
+                //}
+
+                //Approach: 2 = With For Each Loop
+                foreach (DataRow row in dataTable.Rows)
                 {
                     CostMaster costMaster = new()
                     {
-                        Id = (int)dataTable.Rows[i]["Id"],
-                        JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
-                        Name = (string)dataTable.Rows[i]["Name"],
-                        Cost = (decimal)dataTable.Rows[i]["Cost"],
-                        Date = (DateTime)dataTable.Rows[i]["Date"]
+                        Id = (int)row["ID"],
+                        JobCategoryId = (int)row["JobCategoryId"],
+                        Name = (string)row["Name"],
+                        Cost = (decimal)row["Cost"],
+                        Date = (DateTime)row["Date"]
                     };
                     costMasters.Add(costMaster);
                 }

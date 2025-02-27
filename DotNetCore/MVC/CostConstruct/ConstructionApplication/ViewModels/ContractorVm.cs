@@ -1,6 +1,6 @@
 ﻿using ConstructionApplication.Core.Enums;
 
-namespace ConstructionApplication.ViewModels.ContractorVm
+namespace ConstructionApplication.ViewModels
 {
     public class ContractorVm
     {

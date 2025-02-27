@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.ViewModels.MaterialPurchaseVm
+﻿namespace ConstructionApplication.ViewModels
 {
     public class MaterialPurchaseVm
     {

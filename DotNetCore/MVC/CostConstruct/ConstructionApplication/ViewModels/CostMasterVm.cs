@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ConstructionApplication.ViewModels.CostMasterVm
+namespace ConstructionApplication.ViewModels
 {
     public class CostMasterVm
     {
@@ -11,7 +11,7 @@ namespace ConstructionApplication.ViewModels.CostMasterVm
         public DateTime Date { get; set; }
         public bool IsActive { get; set; }
     }
-    
+
     public class AddNewCostMasterVm
     {
         public int Id { get; set; }
@@ -19,11 +19,11 @@ namespace ConstructionApplication.ViewModels.CostMasterVm
         [Required(ErrorMessage = "JobCategory is invalid")]
         public int? JobCategoryId { get; set; }
 
-        [Required(ErrorMessage ="Cost is invalid")]
+        [Required(ErrorMessage = "Cost is invalid")]
         public decimal? Cost { get; set; }
 
         [Required(ErrorMessage = "Date is invalid")]
         public DateTime? Date { get; set; }
-        
+
     }
 }
