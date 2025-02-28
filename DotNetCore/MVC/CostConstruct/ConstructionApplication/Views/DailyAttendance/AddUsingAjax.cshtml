@@ -55,7 +55,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
-        var selectedContractorId = '@(ViewBag.SelectedContractorId ?? "-1")';
 
         // When the dropdown value changes, make an AJAX call to fetch the cost.
         $('#JobCategoryId').change(function () {
@@ -71,8 +70,6 @@
                         var s = '<option value="-1">SELECT</option>';
                         
                         for (var i = 0; i < response.contractors.length; i++) {
-                            var contractorId = response.contractors[i].contractorId;
-                            var selected = contractorId == selectedContractorId ? 'selected' : '';
                             s += '<option value="' + response.contractors[i].contractorId + '">' + response.contractors[i].contractorName + '</option>';
                         }
                         $("#contractorId").html(s);
@@ -87,7 +84,6 @@
                 // Clear amount and total amount fields if no valid category is selected.
                 $('#amountPerWorker').val('');
                 $('#totalAmount').val('');
-                $('#contractorId').html('<option value="-1">SELECT</option>');
             }
         });
 
