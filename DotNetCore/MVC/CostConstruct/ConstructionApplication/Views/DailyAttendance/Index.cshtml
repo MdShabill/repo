@@ -1,4 +1,4 @@
-﻿@model List<ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm>
+﻿@model List<DailyAttendanceVm>
 
 <h3 style="text-align: center;">Attendance Report</h3>
 <div class="bottom-section">
@@ -82,10 +82,10 @@
 
         <form method="get" asp-action="Index" onsubmit="return validateDates()">
             <label><b>From:</b></label>
-            <input type="date" name="DateFrom" value="@ViewBag.DateFrom"/>
+            <input type="date" id="DateFrom" name="DateFrom" value="@ViewBag.DateFrom" />
             &nbsp;&nbsp;&nbsp;
             <label><b>To:</b></label>
-            <input type="date" name="DateTo" value="@ViewBag.DateTo" />
+            <input type="date" id="DateTo" name="DateTo" value="@ViewBag.DateTo" />
             &nbsp;&nbsp;&nbsp;
             <button type="submit" class="btn btn-primary">Go</button>
         </form>
@@ -102,7 +102,7 @@
                     <td><b>Total Amount</b></td>
                 </tr>
 
-                @foreach (ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm dailyAttendanceVm in Model)
+                @foreach (DailyAttendanceVm dailyAttendanceVm in Model)
                 {
                     <tr class="table1">
                         <td>@dailyAttendanceVm.Date.ToString("dd-MMMM-yyyy")</td>

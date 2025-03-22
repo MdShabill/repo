@@ -1,5 +1,8 @@
-using ConstructionApplication.Repositories;
-using ConstructionApplication.Repository;
+using ConstructionApplication.Helpers;
+using ConstructionApplication.Repository.AdoDotNet;
+using ConstructionApplication.Repository.AdoDotNetUsingSp;
+using ConstructionApplication.Repository.Dapper;
+using ConstructionApplication.Repository.DapperUsingSp;
 using ConstructionApplication.Repository.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,74 +14,40 @@ var configuration = new ConfigurationBuilder()
     .Build();
 
 string CostConstructDBConnectionString = configuration.GetConnectionString("CostConstructDBConnection");
+string repositoryType = configuration["ApplicationSettings:DalTechnology"] ?? "AdoDotNet";
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
 
-builder.Services.AddTransient<ICostMasterRepository>((svc) =>
-{
-    return new CostMasterRepository(CostConstructDBConnectionString);
-});
+// Register repositories based on repositoryType
+var repositoryRegistration = new RepositoryRegistration();
 
-builder.Services.AddTransient<IDailyAttendanceRepository>((svc) =>
+if (repositoryType == "AdoDotNet")
 {
-    return new DailyAttendanceRepository(CostConstructDBConnectionString);
-});
+    repositoryRegistration.RegisterAdoDotNetRepositories(builder.Services, CostConstructDBConnectionString);
+}
+else if(repositoryType == "AdoDotNetUsingSp")
+{
+    repositoryRegistration.RegisterAdoDotNetUsingSpRepositories(builder.Services, CostConstructDBConnectionString);
+}
+else if(repositoryType == "Dapper")
+{
+    repositoryRegistration.RegisterDapperRepositories(builder.Services, CostConstructDBConnectionString);
+}
+else
+{
+    repositoryRegistration.RegisterDapperUsingSpRepositories(builder.Services, CostConstructDBConnectionString);
+}
 
-builder.Services.AddTransient<IAttendanceDetailsRepository>((svc) =>
-{
-    return new AttendanceDetailsRepository(CostConstructDBConnectionString);
-});
-
-builder.Services.AddTransient<IMaterialPurchaseRepository>((svc) =>
-{
-    return new MaterialPurchaseRepository(CostConstructDBConnectionString);
-});
-
-builder.Services.AddTransient<IMaterialRepository>((svc) =>
-{
-    return new MaterialRepository(CostConstructDBConnectionString);
-});
-
-builder.Services.AddTransient<ISupplierRepository>((svc) =>
-{
-    return new SupplierRepository(CostConstructDBConnectionString);
-});
-
-builder.Services.AddTransient<IBrandRepository>((svc) =>
-{
-    return new BrandRepository(CostConstructDBConnectionString);
-});
-
-builder.Services.AddTransient<IJobCategoryRepository>((svc) =>
-{
-    return new JobCategoryRepository(CostConstructDBConnectionString);
-});
-
-builder.Services.AddTransient<IContractorRepository>((svc) =>
-{
-    return new ContractorRepository(CostConstructDBConnectionString);
-});
-
-builder.Services.AddTransient<IAddressRepository>((svc) =>
-{
-    return new AddressRepository(CostConstructDBConnectionString);
-});
-
-builder.Services.AddTransient<ICountryRepository>((svc) =>
-{
-    return new CountryRepository(CostConstructDBConnectionString);
-});
-
-builder.Services.AddTransient<IAddressTypeRepository>((svc) =>
-{
-    return new AddressTypeRepository(CostConstructDBConnectionString);
-});
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage(); // This shows detailed errors in development mode
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.

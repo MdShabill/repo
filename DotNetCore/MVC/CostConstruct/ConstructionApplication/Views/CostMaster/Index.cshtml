@@ -1,4 +1,4 @@
-﻿@model List<ConstructionApplication.ViewModels.CostMasterVm.CostMasterVm>
+﻿@model List<CostMasterVm>
 
 <h3 style="text-align: center;">Cost Master Report</h3>
 <div class="bottom-section">
@@ -117,7 +117,6 @@
                 <td><b>Date</b></td>
                 <td><b>Job Type</b></td>
                 <td><b>Cost</b></td>
-                <td><b>Is Active</b></td>
             </tr>
 
             @foreach (var costMasterVm in Model)
@@ -126,16 +125,6 @@
                     <td>@costMasterVm.Date.ToString("dd-MMMM-yyyy")</td>
                     <td>@costMasterVm.Name</td>
                     <td>@costMasterVm.Cost</td>
-                    <td>
-                        @if (costMasterVm.IsActive)
-                        {
-                            <i class="fas fa-check-circle" style="color:green;"></i>
-                        }
-                        else
-                        {
-                            <i class="fas fa-times-circle" style="color:red;"></i>
-                        }
-                    </td>
                 </tr>
             }
         </table>

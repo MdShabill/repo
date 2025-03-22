@@ -1,4 +1,4 @@
-﻿@model List<ConstructionApplication.ViewModels.ContractorVm.ContractorVm>
+﻿@model List<ConstructionApplication.ViewModels.ContractorVm>
 
 <h3 style="text-align: center;">Contractor List</h3>
 <div class="bottom-section">
@@ -86,6 +86,7 @@
     @TempData["UpdateSuccessMessage"]
     @TempData["DeleteSuccessMessage"]
 </span>
+<b style="text-align: left; margin: 20px 0;">Total Purchase: @ViewBag.ContractorCount</b>
 <table>
     <thead>
         <tr class="header-row">

@@ -1,15 +1,11 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.Brands;
 using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Core.DataModels.JobCategory;
-using ConstructionApplication.Core.DataModels.Material;
-using ConstructionApplication.Core.DataModels.Suppliers;
-using ConstructionApplication.Repositories;
-using ConstructionApplication.Repository;
 using ConstructionApplication.Repository.Interfaces;
-using ConstructionApplication.ViewModels.CostMasterVm;
+using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
@@ -72,14 +68,12 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult Add(AddNewCostMasterVm costMasterVm)
         {
-            if (costMasterVm.Date == null || 
-                costMasterVm.Date == default(DateTime) || 
-                costMasterVm.Date > DateTime.Now ||
-                costMasterVm.JobCategoryId == 0 || 
-                costMasterVm.Cost == null || 
-                costMasterVm.Cost <= 0)
+            ModelState.Clear();
+
+            string validationMessage = ValidationDetail(costMasterVm);
+            if (!string.IsNullOrEmpty(validationMessage))
             {
-                ViewBag.ErrorMessage = "Page not submitted, please enter correct Inputs";
+                ViewBag.ErrorMessage = validationMessage;
                 DropDownSelectList();
                 return View(costMasterVm);
             }
@@ -91,6 +85,25 @@ namespace ConstructionApplication.Controllers
                 TempData["SuccessMessage"] = "Add New Cost Master Successful";
             }
             return RedirectToAction("Index");
+        }
+
+        private string ValidationDetail(AddNewCostMasterVm costMasterVm)
+        {
+            if (costMasterVm.Date == null ||
+                costMasterVm.Date == default(DateTime) ||
+                costMasterVm.JobCategoryId == 0)
+            {
+                return "Page not submitted, please enter correct Inputs";
+            }
+
+            if (costMasterVm.Cost == null ||
+                costMasterVm.Cost <= 0 ||
+                !Regex.IsMatch(costMasterVm.Cost.ToString(), @"^\d+$"))
+            {
+                return "Cost must be a positive integer and cannot contain alphabets, decimals, or special characters.";
+            }
+
+            return string.Empty;
         }
 
         private void DropDownSelectList()
