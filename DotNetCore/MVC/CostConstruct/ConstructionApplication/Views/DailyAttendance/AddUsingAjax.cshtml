@@ -1,4 +1,4 @@
-﻿@model ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm
+﻿@model DailyAttendanceVm
 
 <h1>Add Using Ajax</h1>
 <hr />
@@ -55,6 +55,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
+
         // When the dropdown value changes, make an AJAX call to fetch the cost.
         $('#JobCategoryId').change(function () {
             var jobCategoryId = $(this).val();
@@ -98,5 +99,10 @@
         $('#totalWorker').on('input', function () {
             updateTotalAmount();
         });
+
+        // Restore dropdown values on page load if validation fails
+        if ($('#JobCategoryId').val() > 0) {
+            $('#JobCategoryId').trigger('change');
+        }
     });
 </script>

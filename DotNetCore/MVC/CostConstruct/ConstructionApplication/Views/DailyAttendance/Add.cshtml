@@ -1,4 +1,4 @@
-﻿@model ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm
+﻿@model DailyAttendanceVm
 
 <h1>Daily Attendance</h1>
 <br />
@@ -23,7 +23,7 @@
             <br />
             <div class="form-group" style="width: 60%;">
                 <label asp-for="ContractorId" class="control-label"><b>Contractor Name</b></label><br />
-                <select id="contractorId" name="contractorId"></select>
+                <select id="contractorId" name="ContractorId"></select>
                 <span class="text-danger"></span>
             </div>
             <br />
@@ -126,6 +126,13 @@
             document.getElementById('totalAmount').value = amountPerWorker * totalWorker;
         } else {
             document.getElementById('totalAmount').value = '';
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const jobCategoryDropdown = document.getElementById('jobCategory');
+        if (jobCategoryDropdown.value) {
+            jobCategoryDropdown.dispatchEvent(new Event('change'));
         }
     });
 </script>
