@@ -4,7 +4,7 @@ using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Core.DataModels.DailyAttendance;
 using ConstructionApplication.Core.DataModels.JobCategory;
 using ConstructionApplication.Repository.Interfaces;
-using ConstructionApplication.ViewModels.DailyAttendance;
+using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;

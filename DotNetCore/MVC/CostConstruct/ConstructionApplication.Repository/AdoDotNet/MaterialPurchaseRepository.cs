@@ -49,22 +49,42 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 sqlDataAdapter.Fill(dataTable);
 
                 List<MaterialPurchase> materialPurchases = new();
+                //Approach: 1 = With For Loop
+                //for (int i = 0; i < dataTable.Rows.Count; i++)
+                //{
+                //    MaterialPurchase materialPurchase = new()
+                //    {
+                //        Id = (int)dataTable.Rows[i]["Id"],
+                //        MaterialName = (string)dataTable.Rows[i]["MaterialName"],
+                //        SupplierName = (string)dataTable.Rows[i]["SupplierName"],
+                //        PhoneNumber = (string)dataTable.Rows[i]["PhoneNumber"],
+                //        BrandName = (string)dataTable.Rows[i]["BrandName"],
+                //        Quantity = (int)dataTable.Rows[i]["Quantity"],
+                //        UnitOfMeasure = (string)dataTable.Rows[i]["UnitOfMeasure"],
+                //        UnitPrice = (decimal)dataTable.Rows[i]["UnitPrice"],
+                //        Date = (DateTime)dataTable.Rows[i]["Date"],
+                //        MaterialCost = (decimal)dataTable.Rows[i]["MaterialCost"],
+                //        DeliveryCharge = (decimal)dataTable.Rows[i]["DeliveryCharge"],
+                //    };
+                //    materialPurchases.Add(materialPurchase);
+                //}
 
-                for (int i = 0; i < dataTable.Rows.Count; i++)
+                //Approach: 2 = With For Each Loop
+                foreach (DataRow row in dataTable.Rows)
                 {
                     MaterialPurchase materialPurchase = new()
                     {
-                        Id = (int)dataTable.Rows[i]["Id"],
-                        MaterialName = (string)dataTable.Rows[i]["MaterialName"],
-                        SupplierName = (string)dataTable.Rows[i]["SupplierName"],
-                        PhoneNumber = (string)dataTable.Rows[i]["PhoneNumber"],
-                        BrandName = (string)dataTable.Rows[i]["BrandName"],
-                        Quantity = (int)dataTable.Rows[i]["Quantity"],
-                        UnitOfMeasure = (string)dataTable.Rows[i]["UnitOfMeasure"],
-                        UnitPrice = (decimal)dataTable.Rows[i]["UnitPrice"],
-                        Date = (DateTime)dataTable.Rows[i]["Date"],
-                        MaterialCost = (decimal)dataTable.Rows[i]["MaterialCost"],
-                        DeliveryCharge = (decimal)dataTable.Rows[i]["DeliveryCharge"],
+                        Id = (int)row["Id"],
+                        MaterialName = (string)row["MaterialName"],
+                        SupplierName = (string)row["SupplierName"],
+                        PhoneNumber = (string)row["PhoneNumber"],
+                        BrandName = (string)row["BrandName"],
+                        Quantity = (int)row["Quantity"],
+                        UnitOfMeasure = (string)row["UnitOfMeasure"],
+                        UnitPrice = (decimal)row["UnitPrice"],
+                        Date = (DateTime)row["Date"],
+                        MaterialCost = (decimal)row["MaterialCost"],
+                        DeliveryCharge = (decimal)row["DeliveryCharge"],
                     };
                     materialPurchases.Add(materialPurchase);
                 }

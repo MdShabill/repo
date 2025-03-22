@@ -1,4 +1,4 @@
-﻿@model List<ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm>
+﻿@model List<DailyAttendanceVm>
 
 <h3 style="text-align: center;">Attendance Report</h3>
 <div class="bottom-section">
@@ -102,7 +102,7 @@
                     <td><b>Total Amount</b></td>
                 </tr>
 
-                @foreach (ConstructionApplication.ViewModels.DailyAttendance.DailyAttendanceVm dailyAttendanceVm in Model)
+                @foreach (DailyAttendanceVm dailyAttendanceVm in Model)
                 {
                     <tr class="table1">
                         <td>@dailyAttendanceVm.Date.ToString("dd-MMMM-yyyy")</td>
