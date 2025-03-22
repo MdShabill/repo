@@ -1,6 +1,0 @@
-CREATE PROCEDURE Sp_GetAllAddressTypes
-AS
-BEGIN
-    SET NOCOUNT ON
-    SELECT Id, Name FROM AddressTypes
-END
