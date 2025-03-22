@@ -1,7 +1,0 @@
-CREATE TABLE Brands 
-(
-    Id INT IDENTITY(1,1),
-    Name VARCHAR(255) NOT NULL,
-
-	PRIMARY KEY (Id)
-)
