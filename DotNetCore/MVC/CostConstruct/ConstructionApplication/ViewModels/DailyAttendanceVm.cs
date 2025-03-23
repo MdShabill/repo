@@ -11,5 +11,6 @@
         public int TotalWorker { get; set; }
         public decimal AmountPerWorker { get; set; }
         public decimal TotalAmount { get; set; }
+        public string Notes { get; set; }
     }
 }
