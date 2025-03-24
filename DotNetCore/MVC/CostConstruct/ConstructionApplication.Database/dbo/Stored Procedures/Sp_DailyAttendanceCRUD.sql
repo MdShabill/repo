@@ -8,7 +8,8 @@
     @AmountPerWorker DECIMAL(18,2) = NULL,
     @TotalAmount DECIMAL(18,2) = NULL,
     @DateFrom DATETIME = NULL,
-    @DateTo DATETIME = NULL
+    @DateTo DATETIME = NULL,
+    @Notes NVARCHAR(200) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -38,9 +39,9 @@ BEGIN
     IF @Mode = 'CREATE'
     BEGIN
         INSERT INTO DailyAttendance
-        (Date, JobCategoryId, ContractorId, TotalWorker, AmountPerWorker, TotalAmount)
+        (Date, JobCategoryId, ContractorId, TotalWorker, AmountPerWorker, TotalAmount, Notes)
         VALUES
-        (@Date, @JobCategoryId, @ContractorId, @TotalWorker, @AmountPerWorker, @TotalAmount);
+        (@Date, @JobCategoryId, @ContractorId, @TotalWorker, @AmountPerWorker, @TotalAmount, @Notes);
         
         SELECT SCOPE_IDENTITY();  -- Return the newly inserted ID
     END
