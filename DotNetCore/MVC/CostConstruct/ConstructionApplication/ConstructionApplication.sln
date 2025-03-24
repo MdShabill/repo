@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConstructionApplication.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstructionApplication.Repository", "..\ConstructionApplication.Repository\ConstructionApplication.Repository.csproj", "{9396D0FD-C7B2-4637-A378-C6E565AD0A4E}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ConstructionApplication.Database", "..\ConstructionApplication.Database\ConstructionApplication.Database.sqlproj", "{390CE53F-5F18-49B9-8DA3-6CE4012B4EC0}"
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ConstructionDB", "..\ConstructionApplication.Database\ConstructionDB.sqlproj", "{390CE53F-5F18-49B9-8DA3-6CE4012B4EC0}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Dev.Database", "..\Dev-Database\Dev.Database.sqlproj", "{BEB16BEB-2D3D-4D87-9889-72CEF5DF7DE6}"
 EndProject

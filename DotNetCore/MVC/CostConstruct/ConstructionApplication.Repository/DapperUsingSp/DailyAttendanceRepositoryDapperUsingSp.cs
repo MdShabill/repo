@@ -39,7 +39,8 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                     dailyAttendance.ContractorId,
                     dailyAttendance.TotalWorker,
                     dailyAttendance.AmountPerWorker,
-                    dailyAttendance.TotalAmount
+                    dailyAttendance.TotalAmount,
+                    dailyAttendance.Notes
                 };
                 return connection.ExecuteScalar<int>("Sp_DailyAttendanceCRUD", parameters, commandType: CommandType.StoredProcedure);
             }
