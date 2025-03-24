@@ -1,7 +1,6 @@
 ﻿@model DailyAttendanceVm
 
 <h1>Add Using Ajax</h1>
-<hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="AddUsingAjax">
@@ -42,6 +41,12 @@
             <div class="form-group" style="width: 40%;">
                 <label><b>Total Amount</b></label>
                 <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly />
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="Notes" class="control-label"><b>Notes</b></label>
+                <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
             </div>
             <br />
 
