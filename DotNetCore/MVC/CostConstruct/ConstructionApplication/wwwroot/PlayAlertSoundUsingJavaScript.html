@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Sound Using JavaScript</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background-color: #45a049;
+            }
+
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Alert Sound System</h1>
+    <button id="alertButton">Start Alert Sound</button>
+    <button id="stopButton" disabled>Stop Alert</button>
+    <div id="status">Alert is not active</div>
+
+    <script>
+        let alertInterval;
+        let isAlertActive = false;
+
+        document.getElementById('alertButton').addEventListener('click', startAlert);
+        document.getElementById('stopButton').addEventListener('click', stopAlert);
+
+        function playBeep() {
+            // Create an AudioContext (for modern browsers)
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const audioContext = new AudioContext();
+
+            // Create an oscillator (the sound generator)
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            // Connect oscillator to gain node to audio context
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // Configure the beep sound
+            oscillator.type = 'sine';  // sine wave (pure tone)
+            oscillator.frequency.value = 800;  // frequency in hertz
+            gainNode.gain.value = 0.1;  // volume
+
+            // Play the sound
+            oscillator.start();
+
+            // Stop the sound after 200ms (short beep)
+            setTimeout(() => {
+                oscillator.stop();
+            }, 200);
+        }
+
+        function startAlert() {
+            if (isAlertActive) return;
+
+            isAlertActive = true;
+            document.getElementById('status').textContent = 'Alert is active - playing every 10 seconds';
+            document.getElementById('alertButton').disabled = true;
+            document.getElementById('stopButton').disabled = false;
+
+            // Play immediately and then every 10 seconds
+            playBeep();
+            alertInterval = setInterval(playBeep, 10000);
+        }
+
+        function stopAlert() {
+            if (!isAlertActive) return;
+
+            clearInterval(alertInterval);
+            isAlertActive = false;
+            document.getElementById('status').textContent = 'Alert is not active';
+            document.getElementById('alertButton').disabled = false;
+            document.getElementById('stopButton').disabled = true;
+        }
+    </script>
+</body>
+</html>
