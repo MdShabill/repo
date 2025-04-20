@@ -19,20 +19,37 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            margin: 0 10px;
         }
 
             button:hover {
                 background-color: #45a049;
             }
 
+            button:disabled {
+                background-color: #cccccc;
+                cursor: not-allowed;
+            }
+
         #status {
             margin-top: 20px;
             font-weight: bold;
+        }
+
+        #iosWarning {
+            color: #ff0000;
+            margin: 20px auto;
+            max-width: 80%;
+            display: none;
         }
     </style>
 </head>
 <body>
     <h1>Alert Sound System</h1>
+    <div id="iosWarning">
+        <strong>iOS Users:</strong> Make sure your device is not in silent mode (toggle the physical switch above volume buttons).
+        Also, Safari requires direct interaction - tap the button to start sounds.
+    </div>
     <button id="alertButton">Start Alert Sound</button>
     <button id="stopButton" disabled>Stop Alert</button>
     <div id="status">Alert is not active</div>
@@ -40,48 +57,103 @@
     <script>
         let alertInterval;
         let isAlertActive = false;
+        let audioContext;
+        let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        // Show iOS warning if needed
+        if (isIOS) {
+            document.getElementById('iosWarning').style.display = 'block';
+        }
 
         document.getElementById('alertButton').addEventListener('click', startAlert);
         document.getElementById('stopButton').addEventListener('click', stopAlert);
 
+        function createAudioContext() {
+            if (!audioContext) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioContext = new AudioContext();
+
+                // iOS requires we resume the audio context after creation
+                if (audioContext.state === 'suspended') {
+                    const resumeAudio = () => {
+                        audioContext.resume().then(() => {
+                            document.removeEventListener('touchend', resumeAudio, false);
+                        });
+                    };
+                    document.addEventListener('touchend', resumeAudio, false);
+                }
+            }
+            return audioContext;
+        }
+
         function playBeep() {
-            // Create an AudioContext (for modern browsers)
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            const audioContext = new AudioContext();
+            try {
+                const context = createAudioContext();
 
-            // Create an oscillator (the sound generator)
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+                // On iOS, we need to check if context is still suspended
+                if (context.state === 'suspended') {
+                    context.resume().then(() => {
+                        // Try playing again after resume
+                        setTimeout(playBeep, 100);
+                    });
+                    return;
+                }
 
-            // Connect oscillator to gain node to audio context
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
+                const oscillator = context.createOscillator();
+                const gainNode = context.createGain();
 
-            // Configure the beep sound
-            oscillator.type = 'sine';  // sine wave (pure tone)
-            oscillator.frequency.value = 800;  // frequency in hertz
-            gainNode.gain.value = 0.1;  // volume
+                oscillator.connect(gainNode);
+                gainNode.connect(context.destination);
 
-            // Play the sound
-            oscillator.start();
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 800;
+                gainNode.gain.value = 0.1;
 
-            // Stop the sound after 200ms (short beep)
-            setTimeout(() => {
-                oscillator.stop();
-            }, 200);
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.stop();
+                }, 200);
+            } catch (error) {
+                console.error('Error playing beep:', error);
+                document.getElementById('status').textContent = 'Error playing sound';
+                if (isIOS) {
+                    document.getElementById('status').textContent += ' (Check silent mode)';
+                }
+            }
         }
 
         function startAlert() {
             if (isAlertActive) return;
+
+            // On iOS, we need to play the first beep immediately as part of the click handler
+            playBeep();
 
             isAlertActive = true;
             document.getElementById('status').textContent = 'Alert is active - playing every 10 seconds';
             document.getElementById('alertButton').disabled = true;
             document.getElementById('stopButton').disabled = false;
 
-            // Play immediately and then every 10 seconds
-            playBeep();
-            alertInterval = setInterval(playBeep, 10000);
+            // For iOS, we use a different approach to ensure sounds play
+            if (isIOS) {
+                let beepCount = 0;
+                alertInterval = setInterval(() => {
+                    beepCount++;
+                    // On iOS, we need to occasionally re-trigger the audio context
+                    if (beepCount % 5 === 0) {
+                        if (audioContext && audioContext.state === 'suspended') {
+                            audioContext.resume().then(playBeep);
+                        } else {
+                            playBeep();
+                        }
+                    } else {
+                        playBeep();
+                    }
+                }, 10000);
+            } else {
+                // Standard approach for other devices
+                alertInterval = setInterval(playBeep, 10000);
+            }
         }
 
         function stopAlert() {
