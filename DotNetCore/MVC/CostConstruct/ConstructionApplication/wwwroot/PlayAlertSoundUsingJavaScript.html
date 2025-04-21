@@ -11,7 +11,7 @@
             margin-top: 50px;
         }
 
-        button {
+        #toggleButton {
             padding: 10px 20px;
             font-size: 16px;
             background-color: #4CAF50;
@@ -20,16 +20,21 @@
             border-radius: 4px;
             cursor: pointer;
             margin: 0 10px;
+            transition: background-color 0.3s;
+            min-width: 150px;
         }
 
-            button:hover {
+            #toggleButton:hover {
                 background-color: #45a049;
             }
 
-            button:disabled {
-                background-color: #cccccc;
-                cursor: not-allowed;
+            #toggleButton.stop {
+                background-color: #f44336;
             }
+
+                #toggleButton.stop:hover {
+                    background-color: #d32f2f;
+                }
 
         #status {
             margin-top: 20px;
@@ -42,6 +47,30 @@
             max-width: 80%;
             display: none;
         }
+
+        .input-container {
+            margin: 20px 0;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        input {
+            padding: 8px;
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .error {
+            color: red;
+            margin-top: 5px;
+            font-size: 14px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -50,8 +79,14 @@
         <strong>iOS Users:</strong> Make sure your device is not in silent mode (toggle the physical switch above volume buttons).
         Also, Safari requires direct interaction - tap the button to start sounds.
     </div>
-    <button id="alertButton">Start Alert Sound</button>
-    <button id="stopButton" disabled>Stop Alert</button>
+
+    <div class="input-container">
+        <label for="intervalTime">Time (seconds):</label>
+        <input type="number" id="intervalTime" value="10" min="10" max="120">
+        <div id="timeError" class="error">Please enter a value between 10 and 120 seconds</div>
+    </div>
+
+    <button id="toggleButton">Start Alert Sound</button>
     <div id="status">Alert is not active</div>
 
     <script>
@@ -66,8 +101,24 @@
             document.getElementById('iosWarning').style.display = 'block';
         }
 
-        document.getElementById('alertButton').addEventListener('click', startAlert);
-        document.getElementById('stopButton').addEventListener('click', stopAlert);
+        document.getElementById('toggleButton').addEventListener('click', toggleAlert);
+        document.getElementById('intervalTime').addEventListener('change', validateTimeInput);
+
+        function validateTimeInput() {
+            const timeInput = document.getElementById('intervalTime');
+            const errorElement = document.getElementById('timeError');
+            const value = parseInt(timeInput.value);
+
+            if (isNaN(value) || value < 10 || value > 120) {
+                errorElement.style.display = 'block';
+                timeInput.style.borderColor = 'red';
+                return false;
+            } else {
+                errorElement.style.display = 'none';
+                timeInput.style.borderColor = '#ddd';
+                return true;
+            }
+        }
 
         function createAudioContext() {
             if (!audioContext) {
@@ -120,19 +171,35 @@
                 if (isIOS) {
                     document.getElementById('status').textContent += ' (Check silent mode)';
                 }
+                // Reset button state if error occurs
+                isAlertActive = false;
+                updateButtonState();
+            }
+        }
+
+        function toggleAlert() {
+            if (isAlertActive) {
+                stopAlert();
+            } else {
+                startAlert();
             }
         }
 
         function startAlert() {
-            if (isAlertActive) return;
+            // Validate time input
+            if (!validateTimeInput()) {
+                return;
+            }
+
+            // Get the interval time from input
+            const intervalTime = parseInt(document.getElementById('intervalTime').value) * 1000;
 
             // On iOS, we need to play the first beep immediately as part of the click handler
             playBeep();
 
             isAlertActive = true;
-            document.getElementById('status').textContent = 'Alert is active - playing every 10 seconds';
-            document.getElementById('alertButton').disabled = true;
-            document.getElementById('stopButton').disabled = false;
+            updateButtonState();
+            document.getElementById('status').textContent = `Alert is active - playing every ${intervalTime / 1000} seconds`;
 
             // For iOS, we use a different approach to ensure sounds play
             if (isIOS) {
@@ -149,21 +216,29 @@
                     } else {
                         playBeep();
                     }
-                }, 10000);
+                }, intervalTime);
             } else {
                 // Standard approach for other devices
-                alertInterval = setInterval(playBeep, 10000);
+                alertInterval = setInterval(playBeep, intervalTime);
             }
         }
 
         function stopAlert() {
-            if (!isAlertActive) return;
-
             clearInterval(alertInterval);
             isAlertActive = false;
+            updateButtonState();
             document.getElementById('status').textContent = 'Alert is not active';
-            document.getElementById('alertButton').disabled = false;
-            document.getElementById('stopButton').disabled = true;
+        }
+
+        function updateButtonState() {
+            const button = document.getElementById('toggleButton');
+            if (isAlertActive) {
+                button.textContent = 'Stop Alert';
+                button.classList.add('stop');
+            } else {
+                button.textContent = 'Start Alert Sound';
+                button.classList.remove('stop');
+            }
         }
     </script>
 </body>
