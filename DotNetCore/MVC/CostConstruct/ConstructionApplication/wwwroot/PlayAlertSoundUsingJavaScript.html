@@ -71,6 +71,12 @@
             font-size: 14px;
             display: none;
         }
+
+        #countdown {
+            font-size: 18px;
+            color: #333;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -88,11 +94,14 @@
 
     <button id="toggleButton">Start Alert Sound</button>
     <div id="status">Alert is not active</div>
+    <div id="countdown"></div>
 
     <script>
         let alertInterval;
         let isAlertActive = false;
         let audioContext;
+        let countdownInterval;
+        let remainingTime = 0;
         let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
@@ -177,6 +186,28 @@
             }
         }
 
+        function startCountdown(intervalTime) {
+            // Clear any existing countdown
+            clearInterval(countdownInterval);
+
+            // Update immediately
+            updateCountdownDisplay();
+
+            // Start countdown timer
+            countdownInterval = setInterval(() => {
+                remainingTime--;
+                if (remainingTime <= 0) {
+                    remainingTime = intervalTime / 1000;
+                }
+                updateCountdownDisplay();
+            }, 1000);
+        }
+
+        function updateCountdownDisplay() {
+            const countdownElement = document.getElementById('countdown');
+            countdownElement.textContent = `Next beep in: ${remainingTime} seconds`;
+        }
+
         function toggleAlert() {
             if (isAlertActive) {
                 stopAlert();
@@ -193,6 +224,7 @@
 
             // Get the interval time from input
             const intervalTime = parseInt(document.getElementById('intervalTime').value) * 1000;
+            remainingTime = intervalTime / 1000; // Initialize countdown in seconds
 
             // On iOS, we need to play the first beep immediately as part of the click handler
             playBeep();
@@ -200,6 +232,7 @@
             isAlertActive = true;
             updateButtonState();
             document.getElementById('status').textContent = `Alert is active - playing every ${intervalTime / 1000} seconds`;
+            startCountdown(intervalTime);
 
             // For iOS, we use a different approach to ensure sounds play
             if (isIOS) {
@@ -216,18 +249,28 @@
                     } else {
                         playBeep();
                     }
+                    // Reset countdown when beep plays
+                    remainingTime = intervalTime / 1000;
+                    updateCountdownDisplay();
                 }, intervalTime);
             } else {
                 // Standard approach for other devices
-                alertInterval = setInterval(playBeep, intervalTime);
+                alertInterval = setInterval(() => {
+                    playBeep();
+                    // Reset countdown when beep plays
+                    remainingTime = intervalTime / 1000;
+                    updateCountdownDisplay();
+                }, intervalTime);
             }
         }
 
         function stopAlert() {
             clearInterval(alertInterval);
+            clearInterval(countdownInterval);
             isAlertActive = false;
             updateButtonState();
             document.getElementById('status').textContent = 'Alert is not active';
+            document.getElementById('countdown').textContent = '';
         }
 
         function updateButtonState() {
