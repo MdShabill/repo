@@ -1,0 +1,12 @@
+/* https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915380
+Using CSS Modules */
+.btn {
+    padding: 8px, 12px;
+    border-radius: 3px;
+    border: 0;
+}
+
+.btn-primary{
+    background-color: #0d6efd;
+    color: white;
+}
