@@ -438,13 +438,131 @@
 // https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915736
 // Exercise - Building an ExpandableText Component
 
-import ExpandableText from "./Components/ExpandableText";
+// import ExpandableText from "./Components/ExpandableText";
+
+// function App() {
+//   return (
+//     <div>
+//       {/* <ExpandableText maxchars={10}> */}
+//       <ExpandableText>Hello World...</ExpandableText>
+//     </div>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915807
+// Building a Form
+
+// import Form from "./Components/Form";
+
+// function App() {
+//   return (
+//     <div>
+//       <Form />
+//     </div>
+//   );
+// }
+
+//------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915812
+// Building Expense List
+
+// import { useState } from "react";
+// import ExpenseList from "./expense-tracker/components/ExpenseList";
+
+// function App() {
+//   const [expenses, setExpenses] = useState([
+//     { id: 1, description: "aaa", amount: 10, category: "Utilities" },
+//     { id: 2, description: "bbb", amount: 20, category: "Utilities" },
+//     { id: 3, description: "ccc", amount: 30, category: "Utilities" },
+//     { id: 4, description: "ddd", amount: 40, category: "Utilities" },
+//   ]);
+
+//   return (
+//     <div>
+//       <ExpenseList
+//         expenses={expenses}
+//         onDelete={(id) => setExpenses(expenses.filter((e) => e.id !== id))}
+//       />
+//     </div>
+//   );
+// }
+
+//------------------------------------
+//https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915811
+//building Expense Filter
+
+// import { useState } from "react";
+// import ExpenseList from "./expense-tracker/components/ExpenseList";
+// import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
+
+// function App() {
+//   const [selectCategory, setSelectedcategory] = useState("");
+
+//   const [expenses, setExpenses] = useState([
+//     { id: 1, description: "aaa", amount: 10, category: "Utilities" },
+//     { id: 2, description: "bbb", amount: 20, category: "Utilities" },
+//     { id: 3, description: "ccc", amount: 30, category: "Utilities" },
+//     { id: 4, description: "ddd", amount: 40, category: "Utilities" },
+//   ]);
+
+//   const visibleExpense = selectCategory
+//     ? expenses.filter((e) => e.category === selectCategory)
+//     : expenses;
+
+//   return (
+//     <div>
+//       <div className="mb-3">
+//         <ExpenseFilter
+//           onSelectCategory={(category) => setSelectedcategory(category)}
+//         />
+//       </div>
+//       <ExpenseList
+//         expenses={visibleExpense}
+//         onDelete={(id) => setExpenses(expenses.filter((e) => e.id !== id))}
+//       />
+//     </div>
+//   );
+// }
+
+//https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915809
+//Building the Expense form
+
+import { useState } from "react";
+import ExpenseList from "./expense-tracker/components/ExpenseList";
+import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
+import ExpenseForm from "./expense-tracker/components/ExpenseForm";
+
+export const categories = ["Groceries", "Utilities", "Enertainment"];
 
 function App() {
+  const [selectCategory, setSelectedcategory] = useState("");
+
+  const [expenses, setExpenses] = useState([
+    { id: 1, description: "aaa", amount: 10, category: "Utilities" },
+    { id: 2, description: "bbb", amount: 20, category: "Utilities" },
+    { id: 3, description: "ccc", amount: 30, category: "Utilities" },
+    { id: 4, description: "ddd", amount: 40, category: "Utilities" },
+  ]);
+
+  const visibleExpense = selectCategory
+    ? expenses.filter((e) => e.category === selectCategory)
+    : expenses;
+
   return (
     <div>
-      {/* <ExpandableText maxchars={10}> */}
-      <ExpandableText>Hello World...</ExpandableText>
+      <div className="mb-5">
+        <ExpenseForm />
+      </div>
+      <div className="mb-3">
+        <ExpenseFilter
+          onSelectCategory={(category) => setSelectedcategory(category)}
+        />
+      </div>
+      <ExpenseList
+        expenses={visibleExpense}
+        onDelete={(id) => setExpenses(expenses.filter((e) => e.id !== id))}
+      />
     </div>
   );
 }
