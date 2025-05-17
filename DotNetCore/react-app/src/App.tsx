@@ -463,7 +463,7 @@
 //   );
 // }
 
-//------------------------------------
+//----------------------------------------
 // https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915812
 // Building Expense List
 
@@ -488,7 +488,7 @@
 //   );
 // }
 
-//------------------------------------
+//----------------------------------------
 //https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915811
 //building Expense Filter
 
@@ -525,45 +525,1079 @@
 //   );
 // }
 
+//----------------------------------------
 //https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915809
 //Building the Expense form
 
-import { useState } from "react";
-import ExpenseList from "./expense-tracker/components/ExpenseList";
-import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
-import ExpenseForm from "./expense-tracker/components/ExpenseForm";
+// import { useState } from "react";
+// import ExpenseList from "./expense-tracker/components/ExpenseList";
+// import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
+// import ExpenseForm from "./expense-tracker/components/ExpenseForm";
 
-export const categories = ["Groceries", "Utilities", "Enertainment"];
+// export const categories = ["Groceries", "Utilities", "Enertainment"];
+
+// function App() {
+//   const [selectCategory, setSelectedcategory] = useState("");
+
+//   const [expenses, setExpenses] = useState([
+//     { id: 1, description: "aaa", amount: 10, category: "Utilities" },
+//     { id: 2, description: "bbb", amount: 20, category: "Utilities" },
+//     { id: 3, description: "ccc", amount: 30, category: "Utilities" },
+//     { id: 4, description: "ddd", amount: 40, category: "Utilities" },
+//   ]);
+
+//   const visibleExpense = selectCategory
+//     ? expenses.filter((e) => e.category === selectCategory)
+//     : expenses;
+
+//   return (
+//     <div>
+//       <div className="mb-5">
+//         <ExpenseForm />
+//       </div>
+//       <div className="mb-3">
+//         <ExpenseFilter
+//           onSelectCategory={(category) => setSelectedcategory(category)}
+//         />
+//       </div>
+//       <ExpenseList
+//         expenses={visibleExpense}
+//         onDelete={(id) => setExpenses(expenses.filter((e) => e.id !== id))}
+//       />
+//     </div>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915814
+// Integrating with react hook form and zod
+
+// import { useState } from "react";
+// import ExpenseList from "./expense-tracker/components/ExpenseList";
+// import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
+// import ExpenseForm from "./expense-tracker/components/ExpenseForm";
+// import categories from "./expense-tracker/categories";
+
+// function App() {
+//   const [selectCategory, setSelectedcategory] = useState("");
+
+//   const [expenses, setExpenses] = useState([
+//     { id: 1, description: "aaa", amount: 10, category: "Utilities" },
+//     { id: 2, description: "bbb", amount: 20, category: "Utilities" },
+//     { id: 3, description: "ccc", amount: 30, category: "Utilities" },
+//     { id: 4, description: "ddd", amount: 40, category: "Utilities" },
+//   ]);
+
+//   const visibleExpense = selectCategory
+//     ? expenses.filter((e) => e.category === selectCategory)
+//     : expenses;
+
+//   return (
+//     <div>
+//       <div className="mb-5">
+//         <ExpenseForm />
+//       </div>
+//       <div className="mb-3">
+//         <ExpenseFilter
+//           onSelectCategory={(category) => setSelectedcategory(category)}
+//         />
+//       </div>
+//       <ExpenseList
+//         expenses={visibleExpense}
+//         onDelete={(id) => setExpenses(expenses.filter((e) => e.id !== id))}
+//       />
+//     </div>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45917480
+// Adding an expense
+
+// import { useState } from "react";
+// import ExpenseList from "./expense-tracker/components/ExpenseList";
+// import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
+// import ExpenseForm from "./expense-tracker/components/ExpenseForm";
+// import categories from "./expense-tracker/categories";
+
+// function App() {
+//   const [selectCategory, setSelectedcategory] = useState("");
+
+//   const [expenses, setExpenses] = useState([
+//     { id: 1, description: "aaa", amount: 10, category: "Utilities" },
+//     { id: 2, description: "bbb", amount: 20, category: "Utilities" },
+//     { id: 3, description: "ccc", amount: 30, category: "Utilities" },
+//     { id: 4, description: "ddd", amount: 40, category: "Utilities" },
+//   ]);
+
+//   const visibleExpense = selectCategory
+//     ? expenses.filter((e) => e.category === selectCategory)
+//     : expenses;
+
+//   return (
+//     <div>
+//       <div className="mb-5">
+//         <ExpenseForm
+//           onSubmit={(expense) =>
+//             setExpenses([...expenses, { ...expense, id: expenses.length + 1 }])
+//           }
+//         />
+//       </div>
+//       <div className="mb-3">
+//         <ExpenseFilter
+//           onSelectCategory={(category) => setSelectedcategory(category)}
+//         />
+//       </div>
+//       <ExpenseList
+//         expenses={visibleExpense}
+//         onDelete={(id) => setExpenses(expenses.filter((e) => e.id !== id))}
+//       />
+//     </div>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915909
+// Understanding the effect hook
+
+// import { useEffect, useRef } from "react";
+
+// function App() {
+//   const ref = useRef<HTMLInputElement>(null);
+
+//   // After Render
+//   useEffect(() => {
+//     // Side Effect
+//     if (ref.current) ref.current.focus();
+//   });
+
+//   useEffect(() => {
+//     document.title = "My App";
+//   });
+
+//   return (
+//     <div>
+//       <input ref={ref} type="text" className="form-control" />
+//     </div>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915913
+// Effect Dependencies
+
+// import { useEffect, useState } from "react";
+// import ProductList from "./Components/ProductList";
+
+// function App() {
+//   const [category, setCategory] = useState("");
+
+//   return (
+//     <div>
+//       <select
+//         className="form-select"
+//         onChange={(event) => setCategory(event.target.value)}
+//       >
+//         <option value=""></option>
+//         <option value="Clothing">Clothing</option>
+//         <option value="Household">Household</option>
+//       </select>
+//       <ProductList category={category} />
+//     </div>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915906
+// Effect clean up
+
+// import { useEffect } from "react";
+
+// const connect = () => console.log("Connecting");
+// const disConnect = () => console.log("Disconnicting");
+
+// function App() {
+//   useEffect(() => {
+//     connect();
+
+//     return () => disConnect();
+//   });
+
+//   return <div></div>;
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915920
+// Fetching Data
+
+// import axios from "axios";
+// import { useEffect, useState } from "react";
+
+// interface User {
+//   id: number;
+//   name: string;
+// }
+
+// function App() {
+//   const [users, setUsers] = useState<User[]>([]);
+
+//   useEffect(() => {
+//     axios
+//       .get<User[]>("https://jsonplaceholder.typicode.com/users")
+//       .then((res) => setUsers(res.data));
+//   }, []);
+
+//   return (
+//     <ul>
+//       {users.map((user) => (
+//         <li key={user.id}>{user.name}</li>
+//       ))}
+//     </ul>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915915
+// Handling Errors
+
+// import axios from "axios";
+// import { useEffect, useState } from "react";
+
+// interface User {
+//   id: number;
+//   name: string;
+// }
+
+// function App() {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [error, setError] = useState("");
+
+//   useEffect(() => {
+//     axios
+//       .get<User[]>("https://jsonplaceholder.typicode.com/xusers")
+//       .then((res) => setUsers(res.data))
+//       .catch((err) => setError(err.Message));
+//   }, []);
+
+//   return (
+//     <>
+//       {error && <p className="text-danger">{error}</p>}
+//       <ul>
+//         {users.map((user) => (
+//           <li key={user.id}>{user.name}</li>
+//         ))}
+//       </ul>
+//     </>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915907
+// Working With Async and Await
+
+// import axios, { AxiosError } from "axios";
+// import { useEffect, useState } from "react";
+
+// interface User {
+//   id: number;
+//   name: string;
+// }
+
+// function App() {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [error, setError] = useState("");
+
+//   useEffect(() => {
+//     const fetchUsers = async () => {
+//       try {
+//         const res = await axios.get<User[]>(
+//           "https://jsonplaceholder.typicode.com/xusers"
+//         );
+//         setUsers(res.data);
+//       } catch (err) {
+//         setError((err as AxiosError).message);
+//       }
+//     };
+//     fetchUsers();
+//   }, []);
+
+//   return (
+//     <>
+//       {error && <p className="text-danger">{error}</p>}
+//       <ul>
+//         {users.map((user) => (
+//           <li key={user.id}>{user.name}</li>
+//         ))}
+//       </ul>
+//     </>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915908
+// Cancelling a fetch request
+
+// import axios, { AxiosError, CanceledError } from "axios";
+// import { useEffect, useState } from "react";
+
+// interface User {
+//   id: number;
+//   name: string;
+// }
+
+// function App() {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [error, setError] = useState("");
+
+//   useEffect(() => {
+//     const controller = new AbortController();
+//     axios
+//       .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+//         signal: controller.signal,
+//       })
+
+//       .then((res) => setUsers(res.data))
+//       .catch((err) => {
+//         if (err instanceof CanceledError) return;
+//         setError(err.Message);
+//       });
+
+//     return () => controller.abort();
+//   }, []);
+
+//   return (
+//     <>
+//       {error && <p className="text-danger">{error}</p>}
+//       <ul>
+//         {users.map((user) => (
+//           <li key={user.id}>{user.name}</li>
+//         ))}
+//       </ul>
+//     </>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915910
+// Showing a Loading Indicator
+
+// import axios, { AxiosError, CanceledError } from "axios";
+// import { useEffect, useState } from "react";
+
+// interface User {
+//   id: number;
+//   name: string;
+// }
+
+// function App() {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [error, setError] = useState("");
+//   const [isLoading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     const controller = new AbortController();
+
+//     setLoading(true);
+//     axios
+//       .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+//         signal: controller.signal,
+//       })
+
+//       .then((res) => {
+//         setUsers(res.data);
+//         setLoading(false);
+//       })
+//       .catch((err) => {
+//         if (err instanceof CanceledError) return;
+//         setError(err.Message);
+//         setLoading(false);
+//       });
+
+//     return () => controller.abort();
+//   }, []);
+
+//   return (
+//     <>
+//       {error && <p className="text-danger">{error}</p>}
+//       {isLoading && <div className="spinner-border"></div>}
+//       <ul>
+//         {users.map((user) => (
+//           <li key={user.id}>{user.name}</li>
+//         ))}
+//       </ul>
+//     </>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915919
+// Deleting Data
+
+// import axios, { AxiosError, CanceledError } from "axios";
+// import { useEffect, useState } from "react";
+
+// interface User {
+//   id: number;
+//   name: string;
+// }
+
+// function App() {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [error, setError] = useState("");
+//   const [isLoading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     const controller = new AbortController();
+
+//     setLoading(true);
+//     axios
+//       .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+//         signal: controller.signal,
+//       })
+
+//       .then((res) => {
+//         setUsers(res.data);
+//         setLoading(false);
+//       })
+//       .catch((err) => {
+//         if (err instanceof CanceledError) return;
+//         setError(err.Message);
+//         setLoading(false);
+//       });
+
+//     return () => controller.abort();
+//   }, []);
+
+//   const deleteUser = (user: User) => {
+//     const originalUsers = [...users];
+//     setUsers(users.filter((u) => u.id !== user.id));
+
+//     axios
+//       .delete("https://jsonplaceholder.typicode.com/xusers" + user.id)
+//       .catch((err) => {
+//         setError(err.message);
+//         setUsers(originalUsers);
+//       });
+//   };
+
+//   return (
+//     <>
+//       {error && <p className="text-danger">{error}</p>}
+//       {isLoading && <div className="spinner-border"></div>}
+//       <ul className="list-group">
+//         {users.map((user) => (
+//           <li
+//             key={user.id}
+//             className="list-group-item d-flex justify-content-between"
+//           >
+//             {user.name}
+//             <button
+//               className="btn btn-outline-danger"
+//               onClick={() => deleteUser(user)}
+//             >
+//               Delete
+//             </button>
+//           </li>
+//         ))}
+//       </ul>
+//     </>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915904
+// Creating Data
+
+// import axios, { AxiosError, CanceledError } from "axios";
+// import { useEffect, useState } from "react";
+
+// interface User {
+//   id: number;
+//   name: string;
+// }
+
+// function App() {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [error, setError] = useState("");
+//   const [isLoading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     const controller = new AbortController();
+
+//     setLoading(true);
+//     axios
+//       .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+//         signal: controller.signal,
+//       })
+
+//       .then((res) => {
+//         setUsers(res.data);
+//         setLoading(false);
+//       })
+//       .catch((err) => {
+//         if (err instanceof CanceledError) return;
+//         setError(err.Message);
+//         setLoading(false);
+//       });
+
+//     return () => controller.abort();
+//   }, []);
+
+//   const deleteUser = (user: User) => {
+//     const originalUsers = [...users];
+//     setUsers(users.filter((u) => u.id !== user.id));
+
+//     axios
+//       .delete("https://jsonplaceholder.typicode.com/users" + user.id)
+//       .catch((err) => {
+//         setError(err.message);
+//         setUsers(originalUsers);
+//       });
+//   };
+
+//   const addUser = () => {
+//     const originalUsers = [...users];
+//     const newUser = { id: 0, name: "Shabill" };
+//     setUsers([newUser, ...users]);
+
+//     axios
+//       .post("https://jsonplaceholder.typicode.com/users", newUser)
+//       .then(({ data: savedUser }) => setUsers([savedUser, ...users]))
+//       .catch((err) => {
+//         setError(err.message);
+//         setUsers(originalUsers);
+//       });
+//   };
+
+//   return (
+//     <>
+//       {error && <p className="text-danger">{error}</p>}
+//       {isLoading && <div className="spinner-border"></div>}
+//       <button className="btn btn-primary mb-3" onClick={addUser}>
+//         Add
+//       </button>
+//       <ul className="list-group">
+//         {users.map((user) => (
+//           <li
+//             key={user.id}
+//             className="list-group-item d-flex justify-content-between"
+//           >
+//             {user.name}
+//             <button
+//               className="btn btn-outline-danger"
+//               onClick={() => deleteUser(user)}
+//             >
+//               Delete
+//             </button>
+//           </li>
+//         ))}
+//       </ul>
+//     </>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915905
+// Updating Data
+
+// import axios, { AxiosError, CanceledError } from "axios";
+// import { useEffect, useState } from "react";
+
+// interface User {
+//   id: number;
+//   name: string;
+// }
+
+// function App() {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [error, setError] = useState("");
+//   const [isLoading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     const controller = new AbortController();
+
+//     setLoading(true);
+//     axios
+//       .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+//         signal: controller.signal,
+//       })
+
+//       .then((res) => {
+//         setUsers(res.data);
+//         setLoading(false);
+//       })
+//       .catch((err) => {
+//         if (err instanceof CanceledError) return;
+//         setError(err.Message);
+//         setLoading(false);
+//       });
+
+//     return () => controller.abort();
+//   }, []);
+
+//   const deleteUser = (user: User) => {
+//     const originalUsers = [...users];
+//     setUsers(users.filter((u) => u.id !== user.id));
+
+//     axios
+//       .delete("https://jsonplaceholder.typicode.com/users" + user.id)
+//       .catch((err) => {
+//         setError(err.message);
+//         setUsers(originalUsers);
+//       });
+//   };
+
+//   const addUser = () => {
+//     const originalUsers = [...users];
+//     const newUser = { id: 0, name: "Shabill" };
+//     setUsers([newUser, ...users]);
+
+//     axios
+//       .post("https://jsonplaceholder.typicode.com/users", newUser)
+//       .then(({ data: savedUser }) => setUsers([savedUser, ...users]))
+//       .catch((err) => {
+//         setError(err.message);
+//         setUsers(originalUsers);
+//       });
+//   };
+
+//   const updateUser = (user: User) => {
+//     const originalUsers = [...users];
+//     const updatedUser = { ...user, name: user.name + "!" };
+//     setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
+
+//     axios
+//       .patch(
+//         "https://jsonplaceholder.typicode.com/users/" + user.id,
+//         updatedUser
+//       )
+//       .catch((err) => {
+//         setError(err.message);
+//         setUsers(originalUsers);
+//       });
+//   };
+
+//   return (
+//     <>
+//       {error && <p className="text-danger">{error}</p>}
+//       {isLoading && <div className="spinner-border"></div>}
+//       <button className="btn btn-primary mb-3" onClick={addUser}>
+//         Add
+//       </button>
+//       <ul className="list-group">
+//         {users.map((user) => (
+//           <li
+//             key={user.id}
+//             className="list-group-item d-flex justify-content-between"
+//           >
+//             {user.name}
+//             <div>
+//               <button
+//                 className="btn btn-secondery mx-1"
+//                 onClick={() => updateUser(user)}
+//               >
+//                 Update
+//               </button>
+//               <button
+//                 className="btn btn-outline-danger"
+//                 onClick={() => deleteUser(user)}
+//               >
+//                 Delete
+//               </button>
+//             </div>
+//           </li>
+//         ))}
+//       </ul>
+//     </>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915912
+// Extracting a Reusable API Clint
+
+// import { useEffect, useState } from "react";
+// import apiClient, { CanceledError } from "./services/api-client";
+
+// interface User {
+//   id: number;
+//   name: string;
+// }
+
+// function App() {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [error, setError] = useState("");
+//   const [isLoading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     const controller = new AbortController();
+
+//     setLoading(true);
+//     apiClient
+//       .get<User[]>("/users", {
+//         signal: controller.signal,
+//       })
+
+//       .then((res) => {
+//         setUsers(res.data);
+//         setLoading(false);
+//       })
+//       .catch((err) => {
+//         if (err instanceof CanceledError) return;
+//         setError(err.Message);
+//         setLoading(false);
+//       });
+
+//     return () => controller.abort();
+//   }, []);
+
+//   const deleteUser = (user: User) => {
+//     const originalUsers = [...users];
+//     setUsers(users.filter((u) => u.id !== user.id));
+
+//     apiClient.delete("/users" + user.id).catch((err) => {
+//       setError(err.message);
+//       setUsers(originalUsers);
+//     });
+//   };
+
+//   const addUser = () => {
+//     const originalUsers = [...users];
+//     const newUser = { id: 0, name: "Shabill" };
+//     setUsers([newUser, ...users]);
+
+//     apiClient
+//       .post("/users", newUser)
+//       .then(({ data: savedUser }) => setUsers([savedUser, ...users]))
+//       .catch((err) => {
+//         setError(err.message);
+//         setUsers(originalUsers);
+//       });
+//   };
+
+//   const updateUser = (user: User) => {
+//     const originalUsers = [...users];
+//     const updatedUser = { ...user, name: user.name + "!" };
+//     setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
+
+//     apiClient.patch("/users/" + user.id, updatedUser).catch((err) => {
+//       setError(err.message);
+//       setUsers(originalUsers);
+//     });
+//   };
+
+//   return (
+//     <>
+//       {error && <p className="text-danger">{error}</p>}
+//       {isLoading && <div className="spinner-border"></div>}
+//       <button className="btn btn-primary mb-3" onClick={addUser}>
+//         Add
+//       </button>
+//       <ul className="list-group">
+//         {users.map((user) => (
+//           <li
+//             key={user.id}
+//             className="list-group-item d-flex justify-content-between"
+//           >
+//             {user.name}
+//             <div>
+//               <button
+//                 className="btn btn-secondery mx-1"
+//                 onClick={() => updateUser(user)}
+//               >
+//                 Update
+//               </button>
+//               <button
+//                 className="btn btn-outline-danger"
+//                 onClick={() => deleteUser(user)}
+//               >
+//                 Delete
+//               </button>
+//             </div>
+//           </li>
+//         ))}
+//       </ul>
+//     </>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915914
+// Extracting the user service
+
+// import { useEffect, useState } from "react";
+// import { CanceledError } from "./services/api-client";
+// import userService, { User } from "./services/user-service";
+
+// function App() {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [error, setError] = useState("");
+//   const [isLoading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     setLoading(true);
+//     const { request, cancel } = userService.getAllUsers();
+//     request
+//       .then((res) => {
+//         setUsers(res.data);
+//         setLoading(false);
+//       })
+//       .catch((err) => {
+//         if (err instanceof CanceledError) return;
+//         setError(err.Message);
+//         setLoading(false);
+//       });
+
+//     return () => cancel();
+//   }, []);
+
+//   const deleteUser = (user: User) => {
+//     const originalUsers = [...users];
+//     setUsers(users.filter((u) => u.id !== user.id));
+
+//     userService.deleteUser(user.id).catch((err) => {
+//       setError(err.message);
+//       setUsers(originalUsers);
+//     });
+//   };
+
+//   const addUser = () => {
+//     const originalUsers = [...users];
+//     const newUser = { id: 0, name: "Shabill" };
+//     setUsers([newUser, ...users]);
+
+//     userService
+//       .createUser(newUser)
+//       .then(({ data: savedUser }) => setUsers([savedUser, ...users]))
+//       .catch((err) => {
+//         setError(err.message);
+//         setUsers(originalUsers);
+//       });
+//   };
+
+//   const updateUser = (user: User) => {
+//     const originalUsers = [...users];
+//     const updatedUser = { ...user, name: user.name + "!" };
+//     setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
+
+//     userService.updateUser(updatedUser).catch((err) => {
+//       setError(err.message);
+//       setUsers(originalUsers);
+//     });
+//   };
+
+//   return (
+//     <>
+//       {error && <p className="text-danger">{error}</p>}
+//       {isLoading && <div className="spinner-border"></div>}
+//       <button className="btn btn-primary mb-3" onClick={addUser}>
+//         Add
+//       </button>
+//       <ul className="list-group">
+//         {users.map((user) => (
+//           <li
+//             key={user.id}
+//             className="list-group-item d-flex justify-content-between"
+//           >
+//             {user.name}
+//             <div>
+//               <button
+//                 className="btn btn-secondery mx-1"
+//                 onClick={() => updateUser(user)}
+//               >
+//                 Update
+//               </button>
+//               <button
+//                 className="btn btn-outline-danger"
+//                 onClick={() => deleteUser(user)}
+//               >
+//                 Delete
+//               </button>
+//             </div>
+//           </li>
+//         ))}
+//       </ul>
+//     </>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915918
+// Creating a Generic HTTP service
+
+// import { useEffect, useState } from "react";
+// import { CanceledError } from "./services/api-client";
+// import userService, { User } from "./services/user-service";
+
+// function App() {
+//   const [users, setUsers] = useState<User[]>([]);
+//   const [error, setError] = useState("");
+//   const [isLoading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     setLoading(true);
+//     const { request, cancel } = userService.getAll<User>();
+//     request
+//       .then((res) => {
+//         setUsers(res.data);
+//         setLoading(false);
+//       })
+//       .catch((err) => {
+//         if (err instanceof CanceledError) return;
+//         setError(err.Message);
+//         setLoading(false);
+//       });
+
+//     return () => cancel();
+//   }, []);
+
+//   const deleteUser = (user: User) => {
+//     const originalUsers = [...users];
+//     setUsers(users.filter((u) => u.id !== user.id));
+
+//     userService.delete(user.id).catch((err) => {
+//       setError(err.message);
+//       setUsers(originalUsers);
+//     });
+//   };
+
+//   const addUser = () => {
+//     const originalUsers = [...users];
+//     const newUser = { id: 0, name: "Shabill" };
+//     setUsers([newUser, ...users]);
+
+//     userService
+//       .create(newUser)
+//       .then(({ data: savedUser }) => setUsers([savedUser, ...users]))
+//       .catch((err) => {
+//         setError(err.message);
+//         setUsers(originalUsers);
+//       });
+//   };
+
+//   const updateUser = (user: User) => {
+//     const originalUsers = [...users];
+//     const updatedUser = { ...user, name: user.name + "!" };
+//     setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
+
+//     userService.update(updatedUser).catch((err) => {
+//       setError(err.message);
+//       setUsers(originalUsers);
+//     });
+//   };
+
+//   return (
+//     <>
+//       {error && <p className="text-danger">{error}</p>}
+//       {isLoading && <div className="spinner-border"></div>}
+//       <button className="btn btn-primary mb-3" onClick={addUser}>
+//         Add
+//       </button>
+//       <ul className="list-group">
+//         {users.map((user) => (
+//           <li
+//             key={user.id}
+//             className="list-group-item d-flex justify-content-between"
+//           >
+//             {user.name}
+//             <div>
+//               <button
+//                 className="btn btn-secondery mx-1"
+//                 onClick={() => updateUser(user)}
+//               >
+//                 Update
+//               </button>
+//               <button
+//                 className="btn btn-outline-danger"
+//                 onClick={() => deleteUser(user)}
+//               >
+//                 Delete
+//               </button>
+//             </div>
+//           </li>
+//         ))}
+//       </ul>
+//     </>
+//   );
+// }
+
+//----------------------------------------
+// https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915917
+// Creating a Custom Data Featching Hook
+
+import useUsers from "./hooks/useUsers";
+import userService, { User } from "./services/user-service";
 
 function App() {
-  const [selectCategory, setSelectedcategory] = useState("");
+  const { users, error, isLoading, setUsers, setError } = useUsers();
 
-  const [expenses, setExpenses] = useState([
-    { id: 1, description: "aaa", amount: 10, category: "Utilities" },
-    { id: 2, description: "bbb", amount: 20, category: "Utilities" },
-    { id: 3, description: "ccc", amount: 30, category: "Utilities" },
-    { id: 4, description: "ddd", amount: 40, category: "Utilities" },
-  ]);
+  const deleteUser = (user: User) => {
+    const originalUsers = [...users];
+    setUsers(users.filter((u: User) => u.id !== user.id));
 
-  const visibleExpense = selectCategory
-    ? expenses.filter((e) => e.category === selectCategory)
-    : expenses;
+    userService.delete(user.id).catch((err) => {
+      setError(err.message);
+      setUsers(originalUsers);
+    });
+  };
+
+  const addUser = () => {
+    const originalUsers = [...users];
+    const newUser = { id: 0, name: "Shabill" };
+    setUsers([newUser, ...users]);
+
+    userService
+      .create(newUser)
+      .then(({ data: savedUser }) => setUsers([savedUser, ...users]))
+      .catch((err) => {
+        setError(err.message);
+        setUsers(originalUsers);
+      });
+  };
+
+  const updateUser = (user: User) => {
+    const originalUsers = [...users];
+    const updatedUser = { ...user, name: user.name + "!" };
+    setUsers(users.map((u: User) => (u.id === user.id ? updatedUser : u)));
+
+    userService.update(updatedUser).catch((err) => {
+      setError(err.message);
+      setUsers(originalUsers);
+    });
+  };
 
   return (
-    <div>
-      <div className="mb-5">
-        <ExpenseForm />
-      </div>
-      <div className="mb-3">
-        <ExpenseFilter
-          onSelectCategory={(category) => setSelectedcategory(category)}
-        />
-      </div>
-      <ExpenseList
-        expenses={visibleExpense}
-        onDelete={(id) => setExpenses(expenses.filter((e) => e.id !== id))}
-      />
-    </div>
+    <>
+      {error && <p className="text-danger">{error}</p>}
+      {isLoading && <div className="spinner-border"></div>}
+      <button className="btn btn-primary mb-3" onClick={addUser}>
+        Add
+      </button>
+      <ul className="list-group">
+        {users.map((user: User) => (
+          <li
+            key={user.id}
+            className="list-group-item d-flex justify-content-between"
+          >
+            {user.name}
+            <div>
+              <button
+                className="btn btn-secondery mx-1"
+                onClick={() => updateUser(user)}
+              >
+                Update
+              </button>
+              <button
+                className="btn btn-outline-danger"
+                onClick={() => deleteUser(user)}
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
 

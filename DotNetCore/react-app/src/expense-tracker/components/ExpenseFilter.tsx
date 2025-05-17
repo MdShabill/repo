@@ -1,3 +1,4 @@
+//----------------------------------------
 //https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915811
 //building Expense Filter
 
@@ -21,11 +22,12 @@
 //   );
 // };
 
+//----------------------------------------
 //https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45915809
 //Building the Expense form
 
 import React from "react";
-import { categories } from "../../App";
+import categories from "../categories";
 
 interface Props {
   onSelectCategory: (category: string) => void;
