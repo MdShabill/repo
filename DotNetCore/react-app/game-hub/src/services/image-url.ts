@@ -2,10 +2,10 @@
 // https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45916328
 // Getting Optimized Images
 
-//import noImage from '../assets/no-image-placeholder.webp';
+import noImage from '../assets/no-image-placeholder.webp';
 
 const getCroppedImageUrl = (url: string) => {
-  //if (!url) return noImage;
+  if (!url) return noImage;
   
   const target = 'media/';
   const index = url.indexOf(target) + target.length;

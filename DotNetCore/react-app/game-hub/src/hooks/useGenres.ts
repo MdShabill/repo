@@ -2,7 +2,7 @@
 // https://members.codewithmosh.com/courses/ultimate-react-part1-1/lectures/45916324
 // Featching The Genres
 
-import useData from "./useData";
+import genres from "../data/genres";
 
 export interface Genre {
     image_background: string | undefined;
@@ -10,6 +10,6 @@ export interface Genre {
     name: string;
 }
 
-const useGenres = () => useData<Genre>('/genres')
+const useGenres = () => ({ data: genres, isLoading: false, error: null})
 
 export default useGenres;
