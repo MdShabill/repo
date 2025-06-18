@@ -13,6 +13,7 @@ namespace ConstructionApplication.Core.DataModels.Contractor
         public string? ImageName { get; set; }
         public string MobileNumber { get; set; }
         public string ReferredBy { get; set; }
+
         public string AddressLine1 { get; set; }
         public int AddressTypeId { get; set; }
         public string AddressTypes { get; set; }
