@@ -24,33 +24,36 @@ namespace ConstructionApplication.Repository.AdoDotNet
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Select Id, Name, Gender, Email, Password,
-                                    MobileNumber, LoginFailedCount, IsLocked
-                                    From 
-                                    Users 
-                                    Where Email = @email ";
+                string sqlQuery = @"SELECT Id, Name, Gender, Email, Password,
+                            MobileNumber, LoginFailedCount, IsLocked
+                            FROM Users 
+                            WHERE Email = @email";
 
-                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@email", email);
-                DataTable dataTable = new();
-                sqlDataAdapter.Fill(dataTable);
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@email", email);
 
-                if (dataTable.Rows.Count > 0)
+                sqlConnection.Open();
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+
+                User user = null;
+
+                if (reader.Read())
                 {
-                    User users = new()
+                    user = new User
                     {
-                        Id = (int)dataTable.Rows[0]["Id"],
-                        Name = (string)dataTable.Rows[0]["Name"],
-                        Gender = (GenderTypes)dataTable.Rows[0]["Gender"],
-                        Email = (string)dataTable.Rows[0]["Email"],
-                        Password = dataTable.Rows[0]["Password"] != DBNull.Value ? (string)dataTable.Rows[0]["Password"] : null,
-                        MobileNumber = (string)dataTable.Rows[0]["MobileNumber"],
-                        LoginFailedCount = dataTable.Rows[0]["LoginFailedCount"] != DBNull.Value ? (int)dataTable.Rows[0]["LoginFailedCount"] : null,
-                        IsLocked = dataTable.Rows[0]["IsLocked"] != DBNull.Value ? (bool)dataTable.Rows[0]["IsLocked"] : false
+                        Id = (int)reader["Id"],
+                        Name = (string)reader["Name"],
+                        Gender = (GenderTypes)reader["Gender"],
+                        Email = (string)reader["Email"],
+                        Password = reader["Password"] != DBNull.Value ? (string)reader["Password"] : null,
+                        MobileNumber = (string)reader["MobileNumber"],
+                        LoginFailedCount = reader["LoginFailedCount"] != DBNull.Value ? (int?)reader["LoginFailedCount"] : null,
+                        IsLocked = reader["IsLocked"] != DBNull.Value ? (bool)reader["IsLocked"] : false
                     };
-                    return users;
                 }
-                return null;
+
+                reader.Close();
+                return user;
             }
         }
 
