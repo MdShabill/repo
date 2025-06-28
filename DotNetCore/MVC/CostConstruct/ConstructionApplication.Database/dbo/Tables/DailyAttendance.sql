@@ -6,9 +6,12 @@
     [TotalWorker]     INT             NOT NULL,
     [AmountPerWorker] DECIMAL (10, 2) NOT NULL,
     [TotalAmount]     DECIMAL (10, 2) NULL,
-    [Notes] NVARCHAR(200) NULL, 
+    [Notes]           NVARCHAR (200)  NULL, 
+    [SiteId]          INT             NOT NULL,
+
     PRIMARY KEY CLUSTERED ([Id] ASC),
     FOREIGN KEY ([JobCategoryId]) REFERENCES [dbo].[JobCategories] ([Id]),
-    CONSTRAINT [FK__DailyAtte__Contr__1C873BEC] FOREIGN KEY ([ContractorId]) REFERENCES [dbo].[Contractors] ([Id])
+    CONSTRAINT [FK__DailyAttendance__Contractors] FOREIGN KEY ([ContractorId]) REFERENCES [dbo].[Contractors] ([Id]),
+    CONSTRAINT [FK__DailyAttendance__Sites] FOREIGN KEY ([SiteId]) REFERENCES [dbo].[Sites] ([Id])
 );
 

@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace ConstructionApplication.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
 
@@ -15,6 +15,10 @@ namespace ConstructionApplication.Controllers
 
         public IActionResult Index()
         {
+            int? userId = ValidateUserId();
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
+
             return View();
         }
 

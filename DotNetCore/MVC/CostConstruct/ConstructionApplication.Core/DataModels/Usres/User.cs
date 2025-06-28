@@ -14,7 +14,7 @@ namespace ConstructionApplication.Core.DataModels.Usres
         public GenderTypes Gender { get; set; } 
         public string Email { get; set; }
         public string? Password { get; set; }
-        public string MobileNumber { get; set; }
+        public string Mobile { get; set; }
         public DateTime LastFailedLoginDate { get; set; }
         public DateTime LastSuccessFulLoginDate { get; set; }
         public int? LoginFailedCount { get; set; }

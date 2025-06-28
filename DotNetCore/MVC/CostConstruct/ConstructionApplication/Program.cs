@@ -19,6 +19,7 @@ string repositoryType = configuration["ApplicationSettings:DalTechnology"] ?? "A
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
 
 // Register repositories based on repositoryType
 var repositoryRegistration = new RepositoryRegistration();
@@ -59,10 +60,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();

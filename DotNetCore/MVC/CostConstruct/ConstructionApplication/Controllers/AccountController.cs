@@ -58,15 +58,19 @@ namespace ConstructionApplication.Controllers
                 ViewBag.ErrorMessage = "Invalid Email Or Password ";
                 return View();
             }
-
             _userRepository.UpdateOnLoginSuccessful(email);
 
-            return RedirectToAction("Index", "Home");
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("UserName", user.Name);
+            HttpContext.Session.SetString("Email", user.Email);
+
+            return RedirectToAction("Index", "Site");
         }
 
         public IActionResult LogOut()
         {
-            return RedirectToAction("Login");
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Account");
         }
     }
 }

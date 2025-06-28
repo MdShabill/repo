@@ -3,26 +3,30 @@ using ConstructionApplication.Core.DataModels.Contractor;
 using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Core.DataModels.DailyAttendance;
 using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.Site;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+
 using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
-    public class DailyAttendanceController : Controller
+    public class DailyAttendanceController : BaseController
     {
         IDailyAttendanceRepository _dailyAttendanceRepository;
         ICostMasterRepository _costMasterRepository;
         IJobCategoryRepository _jobCategoryRepository;
         IContractorRepository _contractorRepository;
+        ISiteRepository _siteRepository;
         IMapper _imapper;
 
         public DailyAttendanceController(IDailyAttendanceRepository dailyAttendanceRepository, 
                                          ICostMasterRepository costMasterRepository,
                                          IJobCategoryRepository jobCategoryRepository,
-                                         IContractorRepository contractorRepository)
+                                         IContractorRepository contractorRepository,
+                                         ISiteRepository siteRepository)
         {
             _dailyAttendanceRepository = dailyAttendanceRepository;
 
@@ -36,6 +40,7 @@ namespace ConstructionApplication.Controllers
             _costMasterRepository = costMasterRepository;
             _jobCategoryRepository = jobCategoryRepository;
             _contractorRepository = contractorRepository;
+            _siteRepository = siteRepository;
         }
 
         public IActionResult Index(DateTime? DateFrom, DateTime? DateTo)
@@ -56,7 +61,17 @@ namespace ConstructionApplication.Controllers
             //    ViewBag.errorMessage = "The FROM DATE and TO DATE cannot be in the future ";
             //}
 
-            List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll(DateFrom, DateTo);
+            int? userId = ValidateUserId();
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
+
+            int? siteId = ValidateSelectedSiteId();
+            if (siteId == null || siteId <= 0)
+            {
+                return RedirectToAction("Index", "Site");
+            }
+
+            List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll(siteId.Value, DateFrom, DateTo);
             List<DailyAttendanceVm> dailyAttendanceVm = _imapper.Map<List<DailyAttendance>, List<DailyAttendanceVm>>(dailyAttendances);
             ViewBag.DateFrom = DateFrom?.ToString("yyyy-MM-dd");
             ViewBag.DateTo = DateTo?.ToString("yyyy-MM-dd");
@@ -65,6 +80,12 @@ namespace ConstructionApplication.Controllers
 
         public IActionResult Add()
         {
+            int? siteId = ValidateSelectedSiteId();
+            if (siteId == null || siteId <= 0)
+            {
+                return RedirectToAction("Index", "Site");
+            }
+
             DropDownSelectList();
 
             return View();
@@ -75,6 +96,12 @@ namespace ConstructionApplication.Controllers
         {
             ModelState.Clear();
 
+            int? siteId = ValidateSelectedSiteId();
+            if (siteId == null || siteId <= 0)
+            {
+                return RedirectToAction("Index", "Site");
+            }
+
             string validationMessage = ValidateDailyAttendance(dailyAttendanceVm);
             if (validationMessage != null)
             {
@@ -84,6 +111,8 @@ namespace ConstructionApplication.Controllers
             }
 
             DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
+
+            dailyAttendance.SiteId = siteId.Value;
 
             CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.JobCategoryId);
 
@@ -117,6 +146,7 @@ namespace ConstructionApplication.Controllers
         public IActionResult GetDataByJobCategoryId(int jobCategoryId = 0)
         {
             if (jobCategoryId > 0)
+
             {
 
                 CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(jobCategoryId);
@@ -209,5 +239,7 @@ namespace ConstructionApplication.Controllers
 
             ViewBag.JobCategoryCosts = jobCategoryCosts;
         }
+
     }
+
 }

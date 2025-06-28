@@ -13,7 +13,7 @@ using System.Transactions;
 
 namespace ConstructionApplication.Controllers
 {
-    public class ContractorController : Controller
+    public class ContractorController : BaseController
     {
         private IConfiguration _config;
 
@@ -54,6 +54,16 @@ namespace ConstructionApplication.Controllers
 
         public IActionResult Index(int? jobCategoryId, int? id)
         {
+            int? userId = ValidateUserId();
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
+
+            int? siteId = ValidateSelectedSiteId();
+            if (siteId == null || siteId <= 0)
+            {
+                return RedirectToAction("Index", "Site");
+            }
+
             List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, id);
             List<ContractorVm> contractorVm = _imapper.Map<List<Contractor>, List<ContractorVm>>(contractors);
             ViewBag.ContractorCount = contractorVm.Count;

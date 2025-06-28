@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
-    public class CostMasterController : Controller
+    public class CostMasterController : BaseController
     {
         ICostMasterRepository _costMasterRepository;
         IJobCategoryRepository _jobCategoryRepository;
@@ -32,6 +32,16 @@ namespace ConstructionApplication.Controllers
         [HttpGet]
         public IActionResult Index(int? jobCategoryId)
         {
+            int? userId = ValidateUserId();
+            if (userId == null)
+                return RedirectToAction("Login", "Account");
+
+            int? siteId = ValidateSelectedSiteId();
+            if (siteId == null || siteId <= 0)
+            {
+                return RedirectToAction("Index", "Site");
+            }
+
             List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
             ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name", jobCategoryId);
 

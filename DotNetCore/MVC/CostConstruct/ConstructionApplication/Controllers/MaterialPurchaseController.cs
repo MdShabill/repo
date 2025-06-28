@@ -11,7 +11,8 @@ using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
-    public class MaterialPurchaseController : Controller
+
+    public class MaterialPurchaseController : BaseController
     {
         IMaterialPurchaseRepository _materialPurchaseRepository;
         ISupplierRepository _supplierRepository;
@@ -37,11 +38,23 @@ namespace ConstructionApplication.Controllers
             _materialRepository = materialRepository;
         }
 
+        [SessionCheck]
         public IActionResult Index(DateTime? DateFrom, DateTime? DateTo, int? MaterialId, int? SupplierId, int? BrandId)
         {
-            DropDownSelectList();
+            //int? userId = HttpContext.Session.GetInt32("UserId");
+            //if (userId == null || userId <= 0)
+            //    TempData["ErrorMessage"] = "Your session has expired. Please login again.";
 
-            List<MaterialPurchase> materialPurchases = _materialPurchaseRepository.GetAll(DateFrom, DateTo, MaterialId, SupplierId, BrandId);
+            //if (userId == null)
+            //    return RedirectToAction("Login", "Account");
+
+            
+            DropDownSelectList();
+            int? siteId = HttpContext.Session.GetInt32("SelectedSiteId");
+            if (siteId == null || siteId <= 0)
+                TempData["ErrorMessage"] = "Please select a site before accessing attendance";
+            
+            List<MaterialPurchase> materialPurchases = _materialPurchaseRepository.GetAll(Convert.ToInt32(siteId), DateFrom, DateTo, MaterialId, SupplierId, BrandId);
 
             List<MaterialPurchaseVm> materialPurchaseVm = _imapper.Map<List<MaterialPurchase>, List<MaterialPurchaseVm>>(materialPurchases);
             ViewBag.materialPurchaseCount = materialPurchaseVm.Count;
@@ -52,7 +65,13 @@ namespace ConstructionApplication.Controllers
 
         public IActionResult Add(int Id = 0)
         {
-            if(Id > 0)
+            int? siteId = ValidateSelectedSiteId();
+            if (siteId == null || siteId <= 0)
+            {
+                return RedirectToAction("Index", "Site");
+            }
+
+            if (Id > 0)
             {
                 Material material = _materialRepository.GetMaterialInfo(Id);
 
@@ -71,6 +90,12 @@ namespace ConstructionApplication.Controllers
         {
             ModelState.Clear();
 
+            int? siteId = ValidateSelectedSiteId();
+            if (siteId == null || siteId <= 0)
+            {
+                return RedirectToAction("Index", "Site");
+            }
+
             if (!ValidateMaterialPurchase(materialPurchaseVm))
             {
                 DropDownSelectList();
@@ -78,6 +103,7 @@ namespace ConstructionApplication.Controllers
             }
 
             MaterialPurchase materialPurchase = _imapper.Map<MaterialPurchaseVm, MaterialPurchase>(materialPurchaseVm);
+            materialPurchase.SiteId = siteId.Value;
             int affectedRowCount = _materialPurchaseRepository.Create(materialPurchase);
             if (affectedRowCount > 0) 
             {
@@ -140,5 +166,6 @@ namespace ConstructionApplication.Controllers
             List<Brand> brands = _brandRepository.GetAll();
             ViewBag.Brands = new SelectList(brands, "Id", "Name");
         }
+
     }
 }

@@ -88,5 +88,6 @@
     <Build Include="dbo\Stored Procedures\Sp_GetAllCountries.sql" />
     <Build Include="dbo\Stored Procedures\SP_ContractorCRUD.sql" />
     <Build Include="dbo\Tables\Users.sql" />
+    <Build Include="dbo\Tables\Sites.sql" />
   </ItemGroup>
 </Project>

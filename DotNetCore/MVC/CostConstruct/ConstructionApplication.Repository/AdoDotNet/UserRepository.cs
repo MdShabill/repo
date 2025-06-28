@@ -24,10 +24,12 @@ namespace ConstructionApplication.Repository.AdoDotNet
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"SELECT Id, Name, Gender, Email, Password,
-                            MobileNumber, LoginFailedCount, IsLocked
+                string sqlQuery = @"SELECT TOP 1
+                            Id, Name, Gender, Email, Password,
+                            Mobile, LoginFailedCount, IsLocked
                             FROM Users 
-                            WHERE Email = @email";
+                            WHERE Email = @email
+                            ORDER BY Id DESC";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@email", email);
@@ -42,11 +44,11 @@ namespace ConstructionApplication.Repository.AdoDotNet
                     user = new User
                     {
                         Id = (int)reader["Id"],
-                        Name = (string)reader["Name"],
+                        Name = reader["Name"] != DBNull.Value ? (string)reader["Name"] : null,
                         Gender = (GenderTypes)reader["Gender"],
-                        Email = (string)reader["Email"],
+                        Email = reader["Email"] != DBNull.Value ? (string)reader["Email"] : null,
                         Password = reader["Password"] != DBNull.Value ? (string)reader["Password"] : null,
-                        MobileNumber = (string)reader["MobileNumber"],
+                        Mobile = reader["Mobile"] != DBNull.Value ? (string)reader["Mobile"] : null,
                         LoginFailedCount = reader["LoginFailedCount"] != DBNull.Value ? (int?)reader["LoginFailedCount"] : null,
                         IsLocked = reader["IsLocked"] != DBNull.Value ? (bool)reader["IsLocked"] : false
                     };
