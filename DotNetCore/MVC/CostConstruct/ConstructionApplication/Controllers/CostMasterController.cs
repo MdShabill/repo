@@ -29,19 +29,10 @@ namespace ConstructionApplication.Controllers
             _imapper = configuration.CreateMapper();
         }
 
+        [SessionCheck]
         [HttpGet]
         public IActionResult Index(int? jobCategoryId)
         {
-            int? userId = ValidateUserId();
-            if (userId == null)
-                return RedirectToAction("Login", "Account");
-
-            int? siteId = ValidateSelectedSiteId();
-            if (siteId == null || siteId <= 0)
-            {
-                return RedirectToAction("Index", "Site");
-            }
-
             List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
             ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name", jobCategoryId);
 

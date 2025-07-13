@@ -41,19 +41,9 @@ namespace ConstructionApplication.Controllers
         [SessionCheck]
         public IActionResult Index(DateTime? DateFrom, DateTime? DateTo, int? MaterialId, int? SupplierId, int? BrandId)
         {
-            //int? userId = HttpContext.Session.GetInt32("UserId");
-            //if (userId == null || userId <= 0)
-            //    TempData["ErrorMessage"] = "Your session has expired. Please login again.";
-
-            //if (userId == null)
-            //    return RedirectToAction("Login", "Account");
-
-            
             DropDownSelectList();
+
             int? siteId = HttpContext.Session.GetInt32("SelectedSiteId");
-            if (siteId == null || siteId <= 0)
-                TempData["ErrorMessage"] = "Please select a site before accessing attendance";
-            
             List<MaterialPurchase> materialPurchases = _materialPurchaseRepository.GetAll(Convert.ToInt32(siteId), DateFrom, DateTo, MaterialId, SupplierId, BrandId);
 
             List<MaterialPurchaseVm> materialPurchaseVm = _imapper.Map<List<MaterialPurchase>, List<MaterialPurchaseVm>>(materialPurchases);

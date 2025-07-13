@@ -43,6 +43,7 @@ namespace ConstructionApplication.Controllers
             _siteRepository = siteRepository;
         }
 
+        [SessionCheck]
         public IActionResult Index(DateTime? DateFrom, DateTime? DateTo)
         {
             //DateTime currentDate = DateTime.Now;
@@ -61,17 +62,8 @@ namespace ConstructionApplication.Controllers
             //    ViewBag.errorMessage = "The FROM DATE and TO DATE cannot be in the future ";
             //}
 
-            int? userId = ValidateUserId();
-            if (userId == null)
-                return RedirectToAction("Login", "Account");
-
-            int? siteId = ValidateSelectedSiteId();
-            if (siteId == null || siteId <= 0)
-            {
-                return RedirectToAction("Index", "Site");
-            }
-
-            List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll(siteId.Value, DateFrom, DateTo);
+            int siteId = (int)HttpContext.Session.GetInt32("SelectedSiteId");
+            List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll(siteId, DateFrom, DateTo);
             List<DailyAttendanceVm> dailyAttendanceVm = _imapper.Map<List<DailyAttendance>, List<DailyAttendanceVm>>(dailyAttendances);
             ViewBag.DateFrom = DateFrom?.ToString("yyyy-MM-dd");
             ViewBag.DateTo = DateTo?.ToString("yyyy-MM-dd");
@@ -241,5 +233,4 @@ namespace ConstructionApplication.Controllers
         }
 
     }
-
 }

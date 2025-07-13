@@ -6,7 +6,8 @@ public class SessionCheckAttribute : ActionFilterAttribute
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         var httpContext = context.HttpContext;
-        var userId = httpContext.Session.GetInt32("UserId");
+        int? userId = httpContext.Session.GetInt32("UserId");
+        int? siteId = httpContext.Session.GetInt32("SelectedSiteId");
 
         if (userId == null || userId <= 0)
         {
@@ -20,6 +21,16 @@ public class SessionCheckAttribute : ActionFilterAttribute
             context.Result = new RedirectToActionResult("Login", "Account", null);
             return;
         }
+
+        if (siteId == null || siteId <= 0)
+        {
+            if (context.Controller is Controller controller)
+                controller.TempData["ErrorMessage"] = "Please select a site before continuing.";
+
+            context.Result = new RedirectToActionResult("Index", "Site", null);
+            return;
+        }
+
         base.OnActionExecuting(context);
     }
 }
