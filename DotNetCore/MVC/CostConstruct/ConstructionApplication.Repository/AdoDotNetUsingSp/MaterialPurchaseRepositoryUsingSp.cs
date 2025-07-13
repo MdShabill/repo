@@ -14,7 +14,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
             _connectionString = connectionString;
         }
 
-        public List<MaterialPurchase> GetAll(DateTime? DateFrom, DateTime? DateTo, int? MaterialId, int? SupplierId, int? BrandId)
+        public List<MaterialPurchase> GetAll(int siteId, DateTime? DateFrom, DateTime? DateTo, int? MaterialId, int? SupplierId, int? BrandId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {

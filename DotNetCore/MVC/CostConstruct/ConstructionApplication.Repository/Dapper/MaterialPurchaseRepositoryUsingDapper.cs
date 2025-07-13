@@ -20,7 +20,7 @@ namespace ConstructionApplication.Repository.Dapper
             _connectionString = connectionString;
         }
 
-        public List<MaterialPurchase> GetAll(DateTime? DateFrom, DateTime? DateTo, int? MaterialId, int? SupplierId, int? BrandId)
+        public List<MaterialPurchase> GetAll(int siteId, DateTime? DateFrom, DateTime? DateTo, int? MaterialId, int? SupplierId, int? BrandId)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {

@@ -3,6 +3,7 @@ using ConstructionApplication.Repository.AdoDotNetUsingSp;
 using ConstructionApplication.Repository.Dapper;
 using ConstructionApplication.Repository.DapperUsingSp;
 using ConstructionApplication.Repository.Interfaces;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ConstructionApplication.Helpers
 {
@@ -32,6 +33,8 @@ namespace ConstructionApplication.Helpers
             services.AddTransient<IAddressRepository>(svc => new AddressRepository(connectionString));
             services.AddTransient<ICountryRepository>(svc => new CountryRepository(connectionString));
             services.AddTransient<IAddressTypeRepository>(svc => new AddressTypeRepository(connectionString));
+            services.AddTransient<IUserRepository>(svc => new UserRepository(connectionString));
+            services.AddTransient<ISiteRepository>(svc => new SiteRepository(connectionString));
         }
 
         public void RegisterAdoDotNetUsingSpRepositories(IServiceCollection services, string connectionString)
