@@ -3,26 +3,30 @@ using ConstructionApplication.Core.DataModels.Contractor;
 using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Core.DataModels.DailyAttendance;
 using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.Site;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+
 using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
-    public class DailyAttendanceController : Controller
+    public class DailyAttendanceController : BaseController
     {
         IDailyAttendanceRepository _dailyAttendanceRepository;
         ICostMasterRepository _costMasterRepository;
         IJobCategoryRepository _jobCategoryRepository;
         IContractorRepository _contractorRepository;
+        ISiteRepository _siteRepository;
         IMapper _imapper;
 
         public DailyAttendanceController(IDailyAttendanceRepository dailyAttendanceRepository, 
                                          ICostMasterRepository costMasterRepository,
                                          IJobCategoryRepository jobCategoryRepository,
-                                         IContractorRepository contractorRepository)
+                                         IContractorRepository contractorRepository,
+                                         ISiteRepository siteRepository)
         {
             _dailyAttendanceRepository = dailyAttendanceRepository;
 
@@ -36,8 +40,10 @@ namespace ConstructionApplication.Controllers
             _costMasterRepository = costMasterRepository;
             _jobCategoryRepository = jobCategoryRepository;
             _contractorRepository = contractorRepository;
+            _siteRepository = siteRepository;
         }
 
+        [SessionCheck]
         public IActionResult Index(DateTime? DateFrom, DateTime? DateTo)
         {
             //DateTime currentDate = DateTime.Now;
@@ -56,13 +62,14 @@ namespace ConstructionApplication.Controllers
             //    ViewBag.errorMessage = "The FROM DATE and TO DATE cannot be in the future ";
             //}
 
-            List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll(DateFrom, DateTo);
+            List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll(SiteId, DateFrom, DateTo);
             List<DailyAttendanceVm> dailyAttendanceVm = _imapper.Map<List<DailyAttendance>, List<DailyAttendanceVm>>(dailyAttendances);
             ViewBag.DateFrom = DateFrom?.ToString("yyyy-MM-dd");
             ViewBag.DateTo = DateTo?.ToString("yyyy-MM-dd");
             return View(dailyAttendanceVm);
         }
 
+        [SessionCheck]
         public IActionResult Add()
         {
             DropDownSelectList();
@@ -70,11 +77,11 @@ namespace ConstructionApplication.Controllers
             return View();
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Add(DailyAttendanceVm dailyAttendanceVm)
         {
             ModelState.Clear();
-
             string validationMessage = ValidateDailyAttendance(dailyAttendanceVm);
             if (validationMessage != null)
             {
@@ -83,7 +90,10 @@ namespace ConstructionApplication.Controllers
                 return View(dailyAttendanceVm);
             }
 
+            int? siteId = HttpContext.Session.GetInt32("SelectedSiteId");
             DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
+
+            dailyAttendance.SiteId = siteId.Value;
 
             CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.JobCategoryId);
 
@@ -117,6 +127,7 @@ namespace ConstructionApplication.Controllers
         public IActionResult GetDataByJobCategoryId(int jobCategoryId = 0)
         {
             if (jobCategoryId > 0)
+
             {
 
                 CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(jobCategoryId);
@@ -209,5 +220,6 @@ namespace ConstructionApplication.Controllers
 
             ViewBag.JobCategoryCosts = jobCategoryCosts;
         }
+
     }
 }

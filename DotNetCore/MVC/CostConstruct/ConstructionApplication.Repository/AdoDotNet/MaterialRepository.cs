@@ -43,24 +43,32 @@ namespace ConstructionApplication.Repository.AdoDotNet
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"SELECT Id, UnitOfMeasure, UnitPrice 
-                                    FROM Materials
-                                    Where Id = @id ";
-                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", Id);
-                DataTable dataTable = new();
-                sqlDataAdapter.Fill(dataTable);
+                            FROM Materials
+                            WHERE Id = @id";
 
-                List<Material> materials = new();
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@id", Id);
 
+                sqlConnection.Open();
+                SqlDataReader reader = sqlCommand.ExecuteReader();
 
-                Material material = new()
+                Material material = null;
+
+                if (reader.Read())
                 {
-                    Id = (int)dataTable.Rows[0]["Id"],
-                    UnitOfMeasure = (string)dataTable.Rows[0]["UnitOfMeasure"],
-                    UnitPrice = (decimal)dataTable.Rows[0]["UnitPrice"]
-                };
+                    material = new Material
+                    {
+                        Id = (int)reader["Id"],
+                        UnitOfMeasure = (string)reader["UnitOfMeasure"],
+                        UnitPrice = (decimal)reader["UnitPrice"]
+                    };
+                }
+
+                reader.Close();
+
                 return material;
             }
         }
+
     }
 }

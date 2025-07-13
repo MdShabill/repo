@@ -52,6 +52,7 @@ namespace ConstructionApplication.Controllers
             _env = env;
         }
 
+        [SessionCheck]
         public IActionResult Index(int? jobCategoryId, int? id)
         {
             List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, id);
@@ -60,6 +61,7 @@ namespace ConstructionApplication.Controllers
             return View(contractorVm);
         }
 
+        [SessionCheck]
         [HttpGet]
         public IActionResult Add()
         {
@@ -68,6 +70,7 @@ namespace ConstructionApplication.Controllers
             return View();
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Add(ContractorVm contractorVm)
         {
@@ -94,6 +97,7 @@ namespace ConstructionApplication.Controllers
             return View(contractorVm);
         }
 
+        [SessionCheck]
         public IActionResult Edit(int? id) 
         {
             if (id == null)
@@ -114,6 +118,7 @@ namespace ConstructionApplication.Controllers
             return View(contractorVm);
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Update(ContractorVm contractorVm)
         {
@@ -138,6 +143,7 @@ namespace ConstructionApplication.Controllers
             return View("Edit", contractorVm);
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Delete(int contractorId)
         {

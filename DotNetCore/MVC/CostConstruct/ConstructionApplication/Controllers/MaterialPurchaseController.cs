@@ -37,11 +37,13 @@ namespace ConstructionApplication.Controllers
             _materialRepository = materialRepository;
         }
 
+        [SessionCheck]
         public IActionResult Index(DateTime? DateFrom, DateTime? DateTo, int? MaterialId, int? SupplierId, int? BrandId)
         {
             DropDownSelectList();
 
-            List<MaterialPurchase> materialPurchases = _materialPurchaseRepository.GetAll(DateFrom, DateTo, MaterialId, SupplierId, BrandId);
+            int? siteId = HttpContext.Session.GetInt32("SelectedSiteId");
+            List<MaterialPurchase> materialPurchases = _materialPurchaseRepository.GetAll(Convert.ToInt32(siteId), DateFrom, DateTo, MaterialId, SupplierId, BrandId);
 
             List<MaterialPurchaseVm> materialPurchaseVm = _imapper.Map<List<MaterialPurchase>, List<MaterialPurchaseVm>>(materialPurchases);
             ViewBag.materialPurchaseCount = materialPurchaseVm.Count;
@@ -50,9 +52,10 @@ namespace ConstructionApplication.Controllers
             return View(materialPurchaseVm);
         }
 
+        [SessionCheck]
         public IActionResult Add(int Id = 0)
         {
-            if(Id > 0)
+            if (Id > 0)
             {
                 Material material = _materialRepository.GetMaterialInfo(Id);
 
@@ -66,6 +69,7 @@ namespace ConstructionApplication.Controllers
             return View();
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Add(MaterialPurchaseVm materialPurchaseVm)
         {
@@ -77,7 +81,9 @@ namespace ConstructionApplication.Controllers
                 return View(materialPurchaseVm);
             }
 
+            int? siteId = HttpContext.Session.GetInt32("SelectedSiteId");
             MaterialPurchase materialPurchase = _imapper.Map<MaterialPurchaseVm, MaterialPurchase>(materialPurchaseVm);
+            materialPurchase.SiteId = siteId.Value;
             int affectedRowCount = _materialPurchaseRepository.Create(materialPurchase);
             if (affectedRowCount > 0) 
             {
@@ -140,5 +146,6 @@ namespace ConstructionApplication.Controllers
             List<Brand> brands = _brandRepository.GetAll();
             ViewBag.Brands = new SelectList(brands, "Id", "Name");
         }
+
     }
 }
