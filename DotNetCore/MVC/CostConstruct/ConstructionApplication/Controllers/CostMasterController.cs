@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
-    public class CostMasterController : BaseController
+    public class CostMasterController : Controller
     {
         ICostMasterRepository _costMasterRepository;
         IJobCategoryRepository _jobCategoryRepository;
@@ -60,12 +60,14 @@ namespace ConstructionApplication.Controllers
             return Json(costMasterVm);
         }
 
+        [SessionCheck]
         public IActionResult Add()
         {
             DropDownSelectList();
             return View();
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Add(AddNewCostMasterVm costMasterVm)
         {

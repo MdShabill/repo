@@ -11,8 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
-
-    public class MaterialPurchaseController : BaseController
+    public class MaterialPurchaseController : Controller
     {
         IMaterialPurchaseRepository _materialPurchaseRepository;
         ISupplierRepository _supplierRepository;
@@ -53,14 +52,9 @@ namespace ConstructionApplication.Controllers
             return View(materialPurchaseVm);
         }
 
+        [SessionCheck]
         public IActionResult Add(int Id = 0)
         {
-            int? siteId = ValidateSelectedSiteId();
-            if (siteId == null || siteId <= 0)
-            {
-                return RedirectToAction("Index", "Site");
-            }
-
             if (Id > 0)
             {
                 Material material = _materialRepository.GetMaterialInfo(Id);
@@ -75,16 +69,11 @@ namespace ConstructionApplication.Controllers
             return View();
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Add(MaterialPurchaseVm materialPurchaseVm)
         {
             ModelState.Clear();
-
-            int? siteId = ValidateSelectedSiteId();
-            if (siteId == null || siteId <= 0)
-            {
-                return RedirectToAction("Index", "Site");
-            }
 
             if (!ValidateMaterialPurchase(materialPurchaseVm))
             {
@@ -92,6 +81,7 @@ namespace ConstructionApplication.Controllers
                 return View(materialPurchaseVm);
             }
 
+            int? siteId = HttpContext.Session.GetInt32("SelectedSiteId");
             MaterialPurchase materialPurchase = _imapper.Map<MaterialPurchaseVm, MaterialPurchase>(materialPurchaseVm);
             materialPurchase.SiteId = siteId.Value;
             int affectedRowCount = _materialPurchaseRepository.Create(materialPurchase);

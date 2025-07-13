@@ -13,7 +13,7 @@ using System.Transactions;
 
 namespace ConstructionApplication.Controllers
 {
-    public class ContractorController : BaseController
+    public class ContractorController : Controller
     {
         private IConfiguration _config;
 
@@ -52,24 +52,16 @@ namespace ConstructionApplication.Controllers
             _env = env;
         }
 
+        [SessionCheck]
         public IActionResult Index(int? jobCategoryId, int? id)
         {
-            int? userId = ValidateUserId();
-            if (userId == null)
-                return RedirectToAction("Login", "Account");
-
-            int? siteId = ValidateSelectedSiteId();
-            if (siteId == null || siteId <= 0)
-            {
-                return RedirectToAction("Index", "Site");
-            }
-
             List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, id);
             List<ContractorVm> contractorVm = _imapper.Map<List<Contractor>, List<ContractorVm>>(contractors);
             ViewBag.ContractorCount = contractorVm.Count;
             return View(contractorVm);
         }
 
+        [SessionCheck]
         [HttpGet]
         public IActionResult Add()
         {
@@ -78,6 +70,7 @@ namespace ConstructionApplication.Controllers
             return View();
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Add(ContractorVm contractorVm)
         {
@@ -104,6 +97,7 @@ namespace ConstructionApplication.Controllers
             return View(contractorVm);
         }
 
+        [SessionCheck]
         public IActionResult Edit(int? id) 
         {
             if (id == null)
@@ -124,6 +118,7 @@ namespace ConstructionApplication.Controllers
             return View(contractorVm);
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Update(ContractorVm contractorVm)
         {
@@ -148,6 +143,7 @@ namespace ConstructionApplication.Controllers
             return View("Edit", contractorVm);
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Delete(int contractorId)
         {

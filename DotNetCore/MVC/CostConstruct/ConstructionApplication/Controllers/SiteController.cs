@@ -13,6 +13,7 @@ namespace ConstructionApplication.Controllers
             _siteRepository = siteRepository;
         }
 
+        [SessionCheck]
         public IActionResult Index()
         {
             var sites = _siteRepository.GetAllSites();

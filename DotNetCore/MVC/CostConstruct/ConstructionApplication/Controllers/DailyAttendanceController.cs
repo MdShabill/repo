@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
-    public class DailyAttendanceController : BaseController
+    public class DailyAttendanceController : Controller
     {
         IDailyAttendanceRepository _dailyAttendanceRepository;
         ICostMasterRepository _costMasterRepository;
@@ -70,30 +70,19 @@ namespace ConstructionApplication.Controllers
             return View(dailyAttendanceVm);
         }
 
+        [SessionCheck]
         public IActionResult Add()
         {
-            int? siteId = ValidateSelectedSiteId();
-            if (siteId == null || siteId <= 0)
-            {
-                return RedirectToAction("Index", "Site");
-            }
-
             DropDownSelectList();
 
             return View();
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Add(DailyAttendanceVm dailyAttendanceVm)
         {
             ModelState.Clear();
-
-            int? siteId = ValidateSelectedSiteId();
-            if (siteId == null || siteId <= 0)
-            {
-                return RedirectToAction("Index", "Site");
-            }
-
             string validationMessage = ValidateDailyAttendance(dailyAttendanceVm);
             if (validationMessage != null)
             {
@@ -102,6 +91,7 @@ namespace ConstructionApplication.Controllers
                 return View(dailyAttendanceVm);
             }
 
+            int? siteId = HttpContext.Session.GetInt32("SelectedSiteId");
             DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
 
             dailyAttendance.SiteId = siteId.Value;

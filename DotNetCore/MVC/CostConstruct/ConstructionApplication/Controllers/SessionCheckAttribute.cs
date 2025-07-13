@@ -22,13 +22,18 @@ public class SessionCheckAttribute : ActionFilterAttribute
             return;
         }
 
-        if (siteId == null || siteId <= 0)
-        {
-            if (context.Controller is Controller controller)
-                controller.TempData["ErrorMessage"] = "Please select a site before continuing.";
+        string? controllerName = context.RouteData.Values["controller"]?.ToString();
 
-            context.Result = new RedirectToActionResult("Index", "Site", null);
-            return;
+        if (!string.Equals(controllerName, "Site", StringComparison.OrdinalIgnoreCase))
+        {
+            if (siteId == null || siteId <= 0)
+            {
+                if (context.Controller is Controller controller)
+                    controller.TempData["ErrorMessage"] = "Please select a site before continuing.";
+
+                context.Result = new RedirectToActionResult("Index", "Site", null);
+                return;
+            }
         }
 
         base.OnActionExecuting(context);
