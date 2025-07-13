@@ -5,6 +5,8 @@
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public int JobCategoryId { get; set; }
+        public int SiteId { get; set; }
+        public string SiteName { get; set; }
         public int ContractorId { get; set; }
         public string ContractorName { get; set; }
         public string Name { get; set; }

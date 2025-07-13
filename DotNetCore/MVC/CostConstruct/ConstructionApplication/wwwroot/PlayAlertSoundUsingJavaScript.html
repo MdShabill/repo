@@ -1,0 +1,288 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Sound Using JavaScript</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        #toggleButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+            min-width: 150px;
+        }
+
+            #toggleButton:hover {
+                background-color: #45a049;
+            }
+
+            #toggleButton.stop {
+                background-color: #f44336;
+            }
+
+                #toggleButton.stop:hover {
+                    background-color: #d32f2f;
+                }
+
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        #iosWarning {
+            color: #ff0000;
+            margin: 20px auto;
+            max-width: 80%;
+            display: none;
+        }
+
+        .input-container {
+            margin: 20px 0;
+        }
+
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        input {
+            padding: 8px;
+            width: 60px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .error {
+            color: red;
+            margin-top: 5px;
+            font-size: 14px;
+            display: none;
+        }
+
+        #countdown {
+            font-size: 18px;
+            color: #333;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Alert Sound System</h1>
+    <div id="iosWarning">
+        <strong>iOS Users:</strong> Make sure your device is not in silent mode (toggle the physical switch above volume buttons).
+        Also, Safari requires direct interaction - tap the button to start sounds.
+    </div>
+
+    <div class="input-container">
+        <label for="intervalTime">Time (seconds):</label>
+        <input type="number" id="intervalTime" value="10" min="10" max="120">
+        <div id="timeError" class="error">Please enter a value between 10 and 120 seconds</div>
+    </div>
+
+    <button id="toggleButton">Start Alert Sound</button>
+    <div id="status">Alert is not active</div>
+    <div id="countdown"></div>
+
+    <script>
+        let alertInterval;
+        let isAlertActive = false;
+        let audioContext;
+        let countdownInterval;
+        let remainingTime = 0;
+        let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+        // Show iOS warning if needed
+        if (isIOS) {
+            document.getElementById('iosWarning').style.display = 'block';
+        }
+
+        document.getElementById('toggleButton').addEventListener('click', toggleAlert);
+        document.getElementById('intervalTime').addEventListener('change', validateTimeInput);
+
+        function validateTimeInput() {
+            const timeInput = document.getElementById('intervalTime');
+            const errorElement = document.getElementById('timeError');
+            const value = parseInt(timeInput.value);
+
+            if (isNaN(value) || value < 10 || value > 120) {
+                errorElement.style.display = 'block';
+                timeInput.style.borderColor = 'red';
+                return false;
+            } else {
+                errorElement.style.display = 'none';
+                timeInput.style.borderColor = '#ddd';
+                return true;
+            }
+        }
+
+        function createAudioContext() {
+            if (!audioContext) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioContext = new AudioContext();
+
+                // iOS requires we resume the audio context after creation
+                if (audioContext.state === 'suspended') {
+                    const resumeAudio = () => {
+                        audioContext.resume().then(() => {
+                            document.removeEventListener('touchend', resumeAudio, false);
+                        });
+                    };
+                    document.addEventListener('touchend', resumeAudio, false);
+                }
+            }
+            return audioContext;
+        }
+
+        function playBeep() {
+            try {
+                const context = createAudioContext();
+
+                // On iOS, we need to check if context is still suspended
+                if (context.state === 'suspended') {
+                    context.resume().then(() => {
+                        // Try playing again after resume
+                        setTimeout(playBeep, 100);
+                    });
+                    return;
+                }
+
+                const oscillator = context.createOscillator();
+                const gainNode = context.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(context.destination);
+
+                oscillator.type = 'sine';
+                oscillator.frequency.value = 800;
+                gainNode.gain.value = 0.1;
+
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.stop();
+                }, 200);
+            } catch (error) {
+                console.error('Error playing beep:', error);
+                document.getElementById('status').textContent = 'Error playing sound';
+                if (isIOS) {
+                    document.getElementById('status').textContent += ' (Check silent mode)';
+                }
+                // Reset button state if error occurs
+                isAlertActive = false;
+                updateButtonState();
+            }
+        }
+
+        function startCountdown(intervalTime) {
+            // Clear any existing countdown
+            clearInterval(countdownInterval);
+
+            // Update immediately
+            updateCountdownDisplay();
+
+            // Start countdown timer
+            countdownInterval = setInterval(() => {
+                remainingTime--;
+                if (remainingTime <= 0) {
+                    remainingTime = intervalTime / 1000;
+                }
+                updateCountdownDisplay();
+            }, 1000);
+        }
+
+        function updateCountdownDisplay() {
+            const countdownElement = document.getElementById('countdown');
+            countdownElement.textContent = `Next beep in: ${remainingTime} seconds`;
+        }
+
+        function toggleAlert() {
+            if (isAlertActive) {
+                stopAlert();
+            } else {
+                startAlert();
+            }
+        }
+
+        function startAlert() {
+            // Validate time input
+            if (!validateTimeInput()) {
+                return;
+            }
+
+            // Get the interval time from input
+            const intervalTime = parseInt(document.getElementById('intervalTime').value) * 1000;
+            remainingTime = intervalTime / 1000; // Initialize countdown in seconds
+
+            // On iOS, we need to play the first beep immediately as part of the click handler
+            playBeep();
+
+            isAlertActive = true;
+            updateButtonState();
+            document.getElementById('status').textContent = `Alert is active - playing every ${intervalTime / 1000} seconds`;
+            startCountdown(intervalTime);
+
+            // For iOS, we use a different approach to ensure sounds play
+            if (isIOS) {
+                let beepCount = 0;
+                alertInterval = setInterval(() => {
+                    beepCount++;
+                    // On iOS, we need to occasionally re-trigger the audio context
+                    if (beepCount % 5 === 0) {
+                        if (audioContext && audioContext.state === 'suspended') {
+                            audioContext.resume().then(playBeep);
+                        } else {
+                            playBeep();
+                        }
+                    } else {
+                        playBeep();
+                    }
+                    // Reset countdown when beep plays
+                    remainingTime = intervalTime / 1000;
+                    updateCountdownDisplay();
+                }, intervalTime);
+            } else {
+                // Standard approach for other devices
+                alertInterval = setInterval(() => {
+                    playBeep();
+                    // Reset countdown when beep plays
+                    remainingTime = intervalTime / 1000;
+                    updateCountdownDisplay();
+                }, intervalTime);
+            }
+        }
+
+        function stopAlert() {
+            clearInterval(alertInterval);
+            clearInterval(countdownInterval);
+            isAlertActive = false;
+            updateButtonState();
+            document.getElementById('status').textContent = 'Alert is not active';
+            document.getElementById('countdown').textContent = '';
+        }
+
+        function updateButtonState() {
+            const button = document.getElementById('toggleButton');
+            if (isAlertActive) {
+                button.textContent = 'Stop Alert';
+                button.classList.add('stop');
+            } else {
+                button.textContent = 'Start Alert Sound';
+                button.classList.remove('stop');
+            }
+        }
+    </script>
+</body>
+</html>
