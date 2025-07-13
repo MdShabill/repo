@@ -1,25 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace ConstructionApplication.Controllers
 {
     public class BaseController : Controller
     {
-        //protected int? ValidateSelectedSiteId()
-        //{
-        //    int? siteId = HttpContext.Session.GetInt32("SelectedSiteId");
-        //    if (siteId == null || siteId <= 0)
-        //        TempData["ErrorMessage"] = "Please select a site before accessing attendance";
+        protected int SiteId;
 
-        //    return siteId;
+        //public BaseController()
+        //{
+        //    siteId = (int)HttpContext.Session.GetInt32("SelectedSiteId");
         //}
 
-        //protected int? ValidateUserId()
-        //{
-        //    int? userId = HttpContext.Session.GetInt32("UserId");
-        //    if (userId == null || userId <= 0)
-        //        TempData["ErrorMessage"] = "Your session has expired. Please login again.";
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
 
-        //    return userId;
-        //}
+            int? selectedSiteId = HttpContext.Session.GetInt32("SelectedSiteId");
+            if (selectedSiteId.HasValue)
+            {
+                SiteId = selectedSiteId.Value;
+            }
+            else
+            {
+                // Optional: handle missing site ID
+                // e.g., redirect or set default value
+                SiteId = 0;
+            }
+        }
+
     }
 }

@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
-    public class DailyAttendanceController : Controller
+    public class DailyAttendanceController : BaseController
     {
         IDailyAttendanceRepository _dailyAttendanceRepository;
         ICostMasterRepository _costMasterRepository;
@@ -62,8 +62,7 @@ namespace ConstructionApplication.Controllers
             //    ViewBag.errorMessage = "The FROM DATE and TO DATE cannot be in the future ";
             //}
 
-            int siteId = (int)HttpContext.Session.GetInt32("SelectedSiteId");
-            List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll(siteId, DateFrom, DateTo);
+            List<DailyAttendance> dailyAttendances = _dailyAttendanceRepository.GetAll(SiteId, DateFrom, DateTo);
             List<DailyAttendanceVm> dailyAttendanceVm = _imapper.Map<List<DailyAttendance>, List<DailyAttendanceVm>>(dailyAttendances);
             ViewBag.DateFrom = DateFrom?.ToString("yyyy-MM-dd");
             ViewBag.DateTo = DateTo?.ToString("yyyy-MM-dd");
