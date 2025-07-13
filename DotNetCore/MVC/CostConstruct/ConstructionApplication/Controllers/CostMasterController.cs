@@ -29,6 +29,7 @@ namespace ConstructionApplication.Controllers
             _imapper = configuration.CreateMapper();
         }
 
+        [SessionCheck]
         [HttpGet]
         public IActionResult Index(int? jobCategoryId)
         {
@@ -59,12 +60,14 @@ namespace ConstructionApplication.Controllers
             return Json(costMasterVm);
         }
 
+        [SessionCheck]
         public IActionResult Add()
         {
             DropDownSelectList();
             return View();
         }
 
+        [SessionCheck]
         [HttpPost]
         public IActionResult Add(AddNewCostMasterVm costMasterVm)
         {

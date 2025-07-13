@@ -70,34 +70,39 @@ namespace ConstructionApplication.Repository.AdoDotNet
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
-                        Select Top 1 
-                        CostMaster.JobCategoryId, JobCategories.Name, 
-                        CostMaster.Cost, CostMaster.Date
-                        From CostMaster 
-                        Join JobCategories ON CostMaster.JobCategoryId = JobCategories.Id 
-                        Where CostMaster.JobCategoryId = @jobCategoryId 
-                        And CostMaster.Date <= @currentDate 
+                        SELECT TOP 1 
+                            CostMaster.JobCategoryId, JobCategories.Name, 
+                            CostMaster.Cost, CostMaster.Date
+                        FROM CostMaster 
+                        JOIN JobCategories ON CostMaster.JobCategoryId = JobCategories.Id 
+                        WHERE CostMaster.JobCategoryId = @jobCategoryId 
+                          AND CostMaster.Date <= @currentDate 
                         ORDER BY CostMaster.Date DESC";
 
-                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", JobCategoryId);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@currentDate", DateTime.Now);
-                DataTable dataTable = new();
-                sqlDataAdapter.Fill(dataTable);
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@jobCategoryId", JobCategoryId);
+                sqlCommand.Parameters.AddWithValue("@currentDate", DateTime.Now);
 
-                if (dataTable.Rows.Count > 0)
+                sqlConnection.Open();
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+
+                CostMaster costMaster = null;
+
+                if (reader.Read())
                 {
-                    CostMaster costMaster = new()
+                    costMaster = new CostMaster
                     {
-                        JobCategoryId = (int)dataTable.Rows[0]["JobCategoryId"],
-                        Name = (string)dataTable.Rows[0]["Name"],
-                        Cost = (decimal)dataTable.Rows[0]["Cost"],
+                        JobCategoryId = (int)reader["JobCategoryId"],
+                        Name = (string)reader["Name"],
+                        Cost = (decimal)reader["Cost"],
                     };
-                    return costMaster;
                 }
-                return null;
+
+                reader.Close();
+                return costMaster;
             }
         }
+
 
         public int Create(CostMaster costMaster)
         {

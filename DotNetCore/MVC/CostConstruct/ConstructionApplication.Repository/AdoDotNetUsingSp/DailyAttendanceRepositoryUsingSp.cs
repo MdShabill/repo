@@ -19,7 +19,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
             _connectionString = connectionString;
         }
 
-        public List<DailyAttendance> GetAll(DateTime? DateFrom, DateTime? DateTo)
+        public List<DailyAttendance> GetAll(int siteId, DateTime? DateFrom, DateTime? DateTo)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {

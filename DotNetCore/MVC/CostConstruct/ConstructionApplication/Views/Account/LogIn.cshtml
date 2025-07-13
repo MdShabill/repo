@@ -1,0 +1,89 @@
+﻿@model ConstructionApplication.ViewModels.UserVm
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    body {
+        background-color: deepskyblue;
+    }
+
+    .login-section {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .login-card {
+        background-color: #ffffff;
+        padding: 35px;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        width: 100%;
+        max-width: 400px;
+    }
+
+        .login-card h3 {
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #343a40;
+            text-align: center;
+        }
+
+    .form-group label {
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+
+    .alert {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+    }
+</style>
+
+<div class="container login-section">
+    <div class="login-card">
+        <h3>User Login</h3>
+
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger text-center mb-3"></div>
+
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger text-center">
+                    <strong>@ViewBag.ErrorMessage</strong>
+                </div>
+            }
+
+            @if (ViewBag.LockedErrorMessage != null)
+            {
+                <div class="alert alert-warning text-center">
+                    <strong>@ViewBag.LockedErrorMessage</strong>
+                </div>
+            }
+
+            <div class="form-group mb-3">
+                <label asp-for="Email"><b>Email</b></label>
+                <input asp-for="Email" class="form-control" value="zishan123@gmail.com" placeholder="Enter your email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-4">
+                <label asp-for="Password"><b>Password</b></label>
+                <input asp-for="Password" class="form-control" value="sujawalpur123" type="password" placeholder="Enter your password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success fw-bold">
+                    Login
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

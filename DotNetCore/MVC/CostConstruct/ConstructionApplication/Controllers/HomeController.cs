@@ -13,6 +13,7 @@ namespace ConstructionApplication.Controllers
             _logger = logger;
         }
 
+        [SessionCheck]
         public IActionResult Index()
         {
             return View();

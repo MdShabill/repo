@@ -14,7 +14,7 @@ namespace ConstructionApplication.Repository.AdoDotNet
             _connectionString = connectionString;
         }
 
-        public List<DailyAttendance> GetAll(DateTime? DateFrom, DateTime? DateTo)
+        public List<DailyAttendance> GetAll(int siteId, DateTime? DateFrom, DateTime? DateTo)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -26,12 +26,15 @@ namespace ConstructionApplication.Repository.AdoDotNet
                            DailyAttendance
                            Join JobCategories ON DailyAttendance.JobCategoryId = JobCategories.Id
                            Join Contractors ON DailyAttendance.ContractorId = Contractors.Id
+                           Join Sites ON DailyAttendance.SiteId = Sites.Id
                            Where
+                           DailyAttendance.SiteId = @SiteId AND
                            (@DateFrom IS NULL OR DailyAttendance.Date >= @DateFrom) 
                            AND 
                            (@DateTo IS NULL OR DailyAttendance.Date <= @DateTo)
                            Order By DailyAttendance.Date DESC";
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@SiteId", siteId);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@DateFrom", (object)DateFrom ?? DBNull.Value);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@DateTo", (object)DateTo ?? DBNull.Value);
                 DataTable dataTable = new();
@@ -61,15 +64,16 @@ namespace ConstructionApplication.Repository.AdoDotNet
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into DailyAttendance
-                       (Date, JobCategoryId, ContractorId, TotalWorker, AmountPerWorker, TotalAmount)
+                       (Date, JobCategoryId, ContractorId, SiteId, TotalWorker, AmountPerWorker, TotalAmount)
                        Values
-                       (@date, @jobCategoryId, @contractorId, @totalWorker, @amountPerWorker, @totalAmount)
+                       (@date, @jobCategoryId, @contractorId, @siteId, @totalWorker, @amountPerWorker, @totalAmount)
                         SELECT SCOPE_IDENTITY() ";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@date", dailyAttendance.Date);
                 sqlCommand.Parameters.AddWithValue("@jobCategoryId", dailyAttendance.JobCategoryId);
                 sqlCommand.Parameters.AddWithValue("@contractorId", dailyAttendance.ContractorId);
+                sqlCommand.Parameters.AddWithValue("@siteId", dailyAttendance.SiteId);
                 sqlCommand.Parameters.AddWithValue("@totalWorker", dailyAttendance.TotalWorker);
                 sqlCommand.Parameters.AddWithValue("@amountPerWorker", dailyAttendance.AmountPerWorker);
                 sqlCommand.Parameters.AddWithValue("@totalAmount", dailyAttendance.TotalAmount);
