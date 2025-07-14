@@ -94,6 +94,14 @@ namespace ConstructionApplication.Controllers
             return View(materialPurchaseVm);
         }
 
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            _materialPurchaseRepository.Delete(id);
+            TempData["DeleteSuccessMessage"] = "Your Data Has Been Deleted successfully.";
+            return RedirectToAction("Index");
+        }
+
         private bool ValidateMaterialPurchase(MaterialPurchaseVm materialPurchaseVm)
         {
             ModelState.Clear();

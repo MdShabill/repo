@@ -1,4 +1,5 @@
 ﻿using ConstructionApplication.Core.DataModels.Address;
+using ConstructionApplication.Core.DataModels.ServiceProviders;
 using ConstructionApplication.Repository.Interfaces;
 using Dapper;
 using System.Data;
@@ -19,9 +20,9 @@ namespace ConstructionApplication.Repository.Dapper
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                // Check if an address record exists for the given ContractorId
-                string checkQuery = "SELECT COUNT(*) FROM Addresses WHERE ContractorId = @ContractorId";
-                int addressCount = connection.ExecuteScalar<int>(checkQuery, new { address.ContractorId });
+                // Check if an address record exists for the given ServiceProviderId
+                string checkQuery = "SELECT COUNT(*) FROM Addresses WHERE ServiceProviderId = @ServiceProviderId";
+                int addressCount = connection.ExecuteScalar<int>(checkQuery, new { address.ServiceProviderId });
 
                 if (addressCount > 0)
                 {
@@ -32,7 +33,7 @@ namespace ConstructionApplication.Repository.Dapper
                                   AddressTypeId = @AddressTypeId,
                                   CountryId = @CountryId,
                                   PinCode = @PinCode
-                           WHERE ContractorId = @ContractorId";
+                           WHERE ServiceProviderId = @ServiceProviderId";
 
                     connection.Execute(updateQuery, address);
                 }
@@ -41,21 +42,21 @@ namespace ConstructionApplication.Repository.Dapper
                     // Insert new address
                     string insertQuery = @"
                            INSERT INTO Addresses 
-                               (ContractorId, AddressLine1, AddressTypeId, CountryId, PinCode)
+                               (ServiceProviderId, AddressLine1, AddressTypeId, CountryId, PinCode)
                            VALUES 
-                               (@ContractorId, @AddressLine1, @AddressTypeId, @CountryId, @PinCode)";
+                               (@ServiceProviderId, @AddressLine1, @AddressTypeId, @CountryId, @PinCode)";
 
                     connection.Execute(insertQuery, address);
                 }
             }
         }
 
-        public void Delete(int contractorId)
+        public void Delete(int serviceProviderId)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string deleteQuery = "DELETE FROM Addresses WHERE ContractorId = @ContractorId";
-                connection.Execute(deleteQuery, new { ContractorId = contractorId });
+                string deleteQuery = "DELETE FROM Addresses WHERE ServiceProviderId = @ServiceProviderId";
+                connection.Execute(deleteQuery, new { ServiceProviderId = serviceProviderId });
             }
         }
     }

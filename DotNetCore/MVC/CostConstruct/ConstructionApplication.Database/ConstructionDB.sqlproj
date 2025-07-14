@@ -67,7 +67,7 @@
     <Build Include="dbo\Tables\JobCategories.sql" />
     <Build Include="dbo\Tables\DailyAttendance.sql" />
     <Build Include="dbo\Tables\CostMaster.sql" />
-    <Build Include="dbo\Tables\Contractors.sql" />
+    <Build Include="dbo\Tables\ServiceProviders.sql" />
     <Build Include="dbo\Tables\Addresses.sql" />
     <Build Include="dbo\Tables\AddressTypes.sql" />
     <Build Include="dbo\Tables\Countries.sql" />
@@ -86,7 +86,7 @@
     <Build Include="dbo\Stored Procedures\Sp_GetAllSuppliers.sql" />
     <Build Include="dbo\Stored Procedures\Sp_GetAllBrands.sql" />
     <Build Include="dbo\Stored Procedures\Sp_GetAllCountries.sql" />
-    <Build Include="dbo\Stored Procedures\SP_ContractorCRUD.sql" />
+    <Build Include="dbo\Stored Procedures\SP_ServiceProviderCRUD.sql" />
     <Build Include="dbo\Tables\Users.sql" />
     <Build Include="dbo\Tables\Sites.sql" />
   </ItemGroup>

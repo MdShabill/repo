@@ -1,4 +1,5 @@
 ﻿using ConstructionApplication.Core.DataModels.Address;
+using ConstructionApplication.Core.DataModels.ServiceProviders;
 using ConstructionApplication.Repository.Interfaces;
 using Dapper;
 using System;
@@ -26,10 +27,10 @@ namespace ConstructionApplication.Repository.DapperUsingSp
             {
                 connection.Open();
 
-                // Check if an address record exists for the given ContractorId
+                // Check if an address record exists for the given ServiceProviderId
                 int addressCount = connection.ExecuteScalar<int>(
-                    "SELECT COUNT(*) FROM Addresses WHERE ContractorId = @ContractorId",
-                    new { address.ContractorId });
+                    "SELECT COUNT(*) FROM Addresses WHERE ServiceProviderId = @ServiceProviderId",
+                    new { address.ServiceProviderId });
 
                 string mode = addressCount > 0 ? "UPDATE" : "INSERT";
 
@@ -38,7 +39,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                 new
                 {
                     Mode = mode,
-                    address.ContractorId,
+                    address.ServiceProviderId,
                     AddressLine1 = address.AddressLine1 ?? (object)DBNull.Value,
                     address.AddressTypeId,
                     address.CountryId,
@@ -48,11 +49,11 @@ namespace ConstructionApplication.Repository.DapperUsingSp
             }
         }
 
-        public void Delete(int contractorId)
+        public void Delete(int serviceProviderId)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                connection.Execute("Sp_AddressCRUD", new { ContractorId = contractorId, Mode = "DELETE" },
+                connection.Execute("Sp_AddressCRUD", new { ServiceProviderId = serviceProviderId, Mode = "DELETE" },
                 commandType: CommandType.StoredProcedure);
             }
         }

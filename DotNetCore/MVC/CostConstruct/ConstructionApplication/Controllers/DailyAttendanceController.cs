@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.Contractor;
+using ConstructionApplication.Core.DataModels.ServiceProviders;
 using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Core.DataModels.DailyAttendance;
 using ConstructionApplication.Core.DataModels.JobCategory;
 using ConstructionApplication.Core.DataModels.Site;
+using ConstructionApplication.Repository.AdoDotNet;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +19,14 @@ namespace ConstructionApplication.Controllers
         IDailyAttendanceRepository _dailyAttendanceRepository;
         ICostMasterRepository _costMasterRepository;
         IJobCategoryRepository _jobCategoryRepository;
-        IContractorRepository _contractorRepository;
+        IServiceProviderRepository _serviceProviderRepository;
         ISiteRepository _siteRepository;
         IMapper _imapper;
 
         public DailyAttendanceController(IDailyAttendanceRepository dailyAttendanceRepository, 
                                          ICostMasterRepository costMasterRepository,
                                          IJobCategoryRepository jobCategoryRepository,
-                                         IContractorRepository contractorRepository,
+                                         IServiceProviderRepository serviceProviderRepository,
                                          ISiteRepository siteRepository)
         {
             _dailyAttendanceRepository = dailyAttendanceRepository;
@@ -39,7 +40,7 @@ namespace ConstructionApplication.Controllers
             _imapper = configuration.CreateMapper();
             _costMasterRepository = costMasterRepository;
             _jobCategoryRepository = jobCategoryRepository;
-            _contractorRepository = contractorRepository;
+            _serviceProviderRepository = serviceProviderRepository;
             _siteRepository = siteRepository;
         }
 
@@ -131,18 +132,18 @@ namespace ConstructionApplication.Controllers
             {
 
                 CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(jobCategoryId);
-                List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, null)
+                List<Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(jobCategoryId, null)
                 .Where(c => c.JobCategoryId == jobCategoryId)
                 .ToList();
 
                 return new JsonResult(new 
                 {
                     cost = costMaster?.Cost ?? 0,
-                    contractors = contractors
+                    serviceProviders = serviceProviders
                 });
 
             }
-            return Json(new { cost = 0, contractors = new List<Contractor>() });
+            return base.Json(new { cost = 0, serviceProviders = new List<Core.DataModels.ServiceProviders.ServiceProvider>() });
         }
 
         [HttpPost]

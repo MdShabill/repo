@@ -3,7 +3,7 @@
     @Id INT = NULL,
     @Date DATETIME = NULL,
     @JobCategoryId INT = NULL,
-    @ContractorId INT = NULL,
+    @ServiceProviderId INT = NULL,
     @TotalWorker INT = NULL,
     @AmountPerWorker DECIMAL(18,2) = NULL,
     @TotalAmount DECIMAL(18,2) = NULL,
@@ -21,13 +21,13 @@ BEGIN
             DailyAttendance.Id,
             DailyAttendance.Date,
             JobCategories.Name, 
-            Contractors.Name AS ContractorName,
+            ServiceProviders.Name AS ServiceProviderName,
             DailyAttendance.TotalWorker, 
             DailyAttendance.AmountPerWorker,
             DailyAttendance.TotalAmount
         FROM DailyAttendance
         JOIN JobCategories ON DailyAttendance.JobCategoryId = JobCategories.Id
-        JOIN Contractors ON DailyAttendance.ContractorId = Contractors.Id
+        JOIN ServiceProviders ON DailyAttendance.ServiceProviderId = ServiceProviders.Id
         WHERE 
             (@DateFrom IS NULL OR DailyAttendance.Date >= @DateFrom) 
             AND 
@@ -39,16 +39,16 @@ BEGIN
     IF @Mode = 'CREATE'
     BEGIN
         INSERT INTO DailyAttendance
-        (Date, JobCategoryId, ContractorId, TotalWorker, AmountPerWorker, TotalAmount, Notes)
+        (Date, JobCategoryId, ServiceProviderId, TotalWorker, AmountPerWorker, TotalAmount, Notes)
         VALUES
-        (@Date, @JobCategoryId, @ContractorId, @TotalWorker, @AmountPerWorker, @TotalAmount, @Notes);
+        (@Date, @JobCategoryId, @ServiceProviderId, @TotalWorker, @AmountPerWorker, @TotalAmount, @Notes);
         
         SELECT SCOPE_IDENTITY();  -- Return the newly inserted ID
     END
 
-    -- Delete records by ContractorId
+    -- Delete records by ServiceProviderId
     IF @Mode = 'DELETE'
     BEGIN
-        DELETE FROM DailyAttendance WHERE ContractorId = @ContractorId;
+        DELETE FROM DailyAttendance WHERE ServiceProviderId = @ServiceProviderId;
     END
 END
