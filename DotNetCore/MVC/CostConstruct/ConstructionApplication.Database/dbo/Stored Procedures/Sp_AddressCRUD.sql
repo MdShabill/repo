@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE Sp_AddressCRUD
     @Mode NVARCHAR(50),
-    @ContractorId INT,
+    @ServiceProviderId INT,
     @AddressLine1 NVARCHAR(255) = NULL,
     @AddressTypeId INT = NULL,
     @CountryId INT = NULL,
@@ -9,8 +9,8 @@ AS
 BEGIN
     IF @Mode = 'INSERT'
     BEGIN
-        INSERT INTO Addresses (ContractorId, AddressLine1, AddressTypeId, CountryId, PinCode)
-        VALUES (@ContractorId, @AddressLine1, @AddressTypeId, @CountryId, @PinCode)
+        INSERT INTO Addresses (ServiceProviderId, AddressLine1, AddressTypeId, CountryId, PinCode)
+        VALUES (@ServiceProviderId, @AddressLine1, @AddressTypeId, @CountryId, @PinCode)
     END
     ELSE IF @Mode = 'UPDATE'
     BEGIN
@@ -19,10 +19,10 @@ BEGIN
             AddressTypeId = @AddressTypeId,
             CountryId = @CountryId,
             PinCode = @PinCode
-        WHERE ContractorId = @ContractorId
+        WHERE ServiceProviderId = @ServiceProviderId
     END
     ELSE IF @Mode = 'DELETE'
     BEGIN
-        DELETE FROM Addresses WHERE ContractorId = @ContractorId
+        DELETE FROM Addresses WHERE ServiceProviderId = @ServiceProviderId
     END
 END

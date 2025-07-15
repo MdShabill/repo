@@ -3,6 +3,7 @@ using ConstructionApplication.Repository.Interfaces;
 using System.Data.SqlClient;
 using System.Data;
 using Dapper;
+using ConstructionApplication.Core.DataModels.ServiceProviders;
 
 namespace ConstructionApplication.Repository.DapperUsingSp
 {
@@ -36,7 +37,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                     Mode = "CREATE",
                     dailyAttendance.Date,
                     dailyAttendance.JobCategoryId,
-                    dailyAttendance.ContractorId,
+                    dailyAttendance.ServiceProviderId,
                     dailyAttendance.TotalWorker,
                     dailyAttendance.AmountPerWorker,
                     dailyAttendance.TotalAmount,
@@ -46,13 +47,14 @@ namespace ConstructionApplication.Repository.DapperUsingSp
             }
         }
 
-        public void Delete(int contractorId)
+        public void Delete(int serviceProviderId)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 var parameters = new
                 {
-                    Mode = "DELETE", ContractorId = contractorId
+                    Mode = "DELETE",
+                    ServiceProviderId = serviceProviderId
                 };
                 connection.Execute("Sp_DailyAttendanceCRUD", parameters, commandType: CommandType.StoredProcedure);
             }

@@ -123,5 +123,18 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 return affectedRowCount;
             }
         }
+
+        public void Delete(int id)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string deleteServiceProviderQuery = "DELETE FROM MaterialPurchase WHERE Id = @Id";
+                SqlCommand deleteMaterialPurchaseCommand = new(deleteServiceProviderQuery, sqlConnection);
+                deleteMaterialPurchaseCommand.Parameters.AddWithValue("@Id", id);
+                sqlConnection.Open();
+                deleteMaterialPurchaseCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+            }
+        }
     }
 }

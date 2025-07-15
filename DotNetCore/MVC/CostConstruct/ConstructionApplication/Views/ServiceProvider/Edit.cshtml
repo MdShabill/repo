@@ -1,16 +1,16 @@
-﻿@model ConstructionApplication.ViewModels.ContractorVm
+﻿@model ConstructionApplication.ViewModels.ServiceProviderVm
 
-<h3 class="text-center mb-4">Contractor Update</h3>
+<h3 class="text-center mb-4">Service Provider Update</h3>
 <div class="row">
     <div class="col-md-8">
         <form asp-action="Update" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <input type="hidden" id="ContractorId" name="ContractorId" value="@Model.ContractorId">
+            <input type="hidden" id="ServiceProviderId" name="ServiceProviderId" value="@Model.ServiceProviderId">
 
             <div class="form-group mb-3" style="width: 20%;">
-                <label for="ContractorName"><b>Contractor Name</b></label>
-                <input type="text" id="ContractorName" name="ContractorName" value="@Model.ContractorName" 
+                <label for="ServiceProviderName"><b>Service Provider Name</b></label>
+                <input type="text" id="ServiceProviderName" name="ServiceProviderName" value="@Model.ServiceProviderName"
                        maxlength="15" class="form-control" required />
             </div>
 

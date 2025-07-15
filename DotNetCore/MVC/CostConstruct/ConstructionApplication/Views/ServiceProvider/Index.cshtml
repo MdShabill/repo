@@ -1,8 +1,8 @@
-﻿@model List<ConstructionApplication.ViewModels.ContractorVm>
+﻿@model List<ConstructionApplication.ViewModels.ServiceProviderVm>
 
-<h3 style="text-align: center;">Contractor List</h3>
+<h3 style="text-align: center;">ServiceProvider/Vendor</h3>
 <div class="bottom-section">
-    <a asp-controller="Contractor" asp-action="Add">Add New</a>
+    <a asp-controller="ServiceProvider" asp-action="Add">Add New</a>
 </div>
 <head>
     <style>
@@ -86,7 +86,7 @@
     @TempData["UpdateSuccessMessage"]
     @TempData["DeleteSuccessMessage"]
 </span>
-<b style="text-align: left; margin: 20px 0;">Total Contractors: @ViewBag.ContractorCount</b>
+<b style="text-align: left; margin: 20px 0;">Total ServiceProviders: @ViewBag.ServiceProviderCount</b>
 <table>
     <thead>
         <tr class="header-row">
@@ -102,22 +102,22 @@
     <tbody>
         @if (Model != null && Model.Count > 0)
         {
-            foreach (var contractorVm in Model)
+            foreach (var serviceProviderVm in Model)
             {
                 <tr>
-                    <td>@contractorVm.JobTypes</td>
-                    <td>@contractorVm.ContractorName</td>
-                    <td>@contractorVm.Gender</td>
-                    <td>@contractorVm.MobileNumber</td>
-                    <td>@contractorVm.ReferredBy</td>
+                    <td>@serviceProviderVm.JobTypes</td>
+                    <td>@serviceProviderVm.ServiceProviderName</td>
+                    <td>@serviceProviderVm.Gender</td>
+                    <td>@serviceProviderVm.MobileNumber</td>
+                    <td>@serviceProviderVm.ReferredBy</td>
                     <td>
-                        @($"{contractorVm.AddressTypes} - {contractorVm.AddressLine1} - {contractorVm.CountryName} - {contractorVm.PinCode}")
+                        @($"{serviceProviderVm.AddressTypes} - {serviceProviderVm.AddressLine1} - {serviceProviderVm.CountryName} - {serviceProviderVm.PinCode}")
                     </td>
                     <td>
-                        <a href="@Url.Action("Edit", "Contractor", new { id = contractorVm.ContractorId })" class="btn-action">Edit</a>
+                        <a href="@Url.Action("Edit", "ServiceProvider", new { id = serviceProviderVm.ServiceProviderId })" class="btn-action">Edit</a>
                         |
-                        <form asp-action="Delete" asp-controller="Contractor" method="post" onsubmit="return confirm('Are you sure you want to delete this contractor?');" style="display:inline;">
-                            <input type="hidden" name="contractorId" value="@contractorVm.ContractorId" />
+                        <form asp-action="Delete" asp-controller="ServiceProvider" method="post" onsubmit="return confirm('Are you sure you want to delete this service Provider?');" style="display:inline;">
+                            <input type="hidden" name="ServiceProviderId" value="@serviceProviderVm.ServiceProviderId" />
                             <button type="submit" class="btn-action">Delete</button>
                         </form>
                     </td>
@@ -127,7 +127,7 @@
         else
         {
             <tr>
-                <td colspan="10" style="text-align: center;">No contractors found.</td>
+                <td colspan="10" style="text-align: center;">No Service Providers found.</td>
             </tr>
         }
     </tbody>

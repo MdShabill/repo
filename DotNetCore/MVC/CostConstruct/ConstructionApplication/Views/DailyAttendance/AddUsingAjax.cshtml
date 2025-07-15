@@ -20,8 +20,8 @@
             </div>
             <br />
             <div class="form-group" style="width: 40%;">
-                <label asp-for="ContractorId" class="control-label"><b>Contractor Name</b></label><br />
-                <select id="contractorId" name="contractorId"></select>
+                <label asp-for="ServiceProviderId" class="control-label"><b>Service Provider Name</b></label><br />
+                <select id="serviceProviderId" name="serviceProviderId"></select>
                 <span class="text-danger"></span>
             </div>
             <br />
@@ -74,10 +74,10 @@
                         
                         var s = '<option value="-1">SELECT</option>';
                         
-                        for (var i = 0; i < response.contractors.length; i++) {
-                            s += '<option value="' + response.contractors[i].contractorId + '">' + response.contractors[i].contractorName + '</option>';
+                        for (var i = 0; i < response.serviceProviders.length; i++) {
+                            s += '<option value="' + response.serviceProviders[i].serviceProviderId + '">' + response.serviceProviders[i].serviceProviderName + '</option>';
                         }
-                        $("#contractorId").html(s);
+                        $("#serviceProviderId").html(s);
 
                         updateTotalAmount();
                     },

@@ -10,6 +10,9 @@ namespace ConstructionApplication.Repository.Interfaces
     public interface ISiteRepository
     {
         List<Site> GetAllSites();
-        public Site GetSiteById(int id);
+        public Site GetSiteById(int Id);
+        public int Update(Site site);
+        public int Create(Site site);
+        public void Delete(int id);
     }
 }

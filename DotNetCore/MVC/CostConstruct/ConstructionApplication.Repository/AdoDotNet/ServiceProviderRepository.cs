@@ -1,38 +1,39 @@
-﻿using ConstructionApplication.Core.DataModels.Contractor;
+﻿using ConstructionApplication.Core.DataModels.ServiceProviders;
 using System.Data.SqlClient;
 using System.Data;
 using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
+using System;
 
 namespace ConstructionApplication.Repository.AdoDotNet
 {
-    public class ContractorRepository : IContractorRepository
+    public class ServiceProviderRepository : IServiceProviderRepository
     {
         private readonly string _connectionString;
 
-        public ContractorRepository(string connectionString)
+        public ServiceProviderRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public List<Contractor> GetAll(int? jobCategoryId, int? id)
+        public List<ServiceProvider> GetAll(int? jobCategoryId, int? id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
-                            SELECT 
-                                Contractors.Id As ContractorId, Contractors.JobCategoryId, JobCategories.Name As JobTypes, 
-                                Contractors.Name As ContractorName, Contractors.Gender, Contractors.DOB, 
-                                Contractors.MobileNumber, Contractors.ReferredBy, Addresses.AddressLine1, Addresses.AddressTypeId,
-                                AddressTypes.Name As AddressTypes, Addresses.CountryId,
-	                            Countries.Name As CountryName, Addresses.PinCode
-                            FROM Contractors
-                            LEFT JOIN JobCategories ON Contractors.JobCategoryId = JobCategories.Id
-                            LEFT JOIN Addresses ON Contractors.Id = Addresses.ContractorId
-                            LEFT JOIN AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
-                            LEFT JOIN Countries ON Addresses.CountryId = Countries.Id
-                            WHERE (@jobCategoryId IS NULL OR JobCategoryId = @jobCategoryId)
-                            AND (@id IS NULL OR Contractors.Id = @id) ";
+                    SELECT 
+                        ServiceProviders.Id As ServiceProviderId, ServiceProviders.JobCategoryId, JobCategories.Name As JobTypes, 
+                        ServiceProviders.Name As ServiceProviderName, ServiceProviders.Gender, ServiceProviders.DOB, 
+                        ServiceProviders.MobileNumber, ServiceProviders.ReferredBy, Addresses.AddressLine1, Addresses.AddressTypeId,
+                        AddressTypes.Name As AddressTypes, Addresses.CountryId,
+	                    Countries.Name As CountryName, Addresses.PinCode
+                    FROM ServiceProviders
+                    LEFT JOIN JobCategories ON ServiceProviders.JobCategoryId = JobCategories.Id
+                    LEFT JOIN Addresses ON ServiceProviders.Id = Addresses.ServiceProviderId
+                    LEFT JOIN AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
+                    LEFT JOIN Countries ON Addresses.CountryId = Countries.Id
+                    WHERE (@jobCategoryId IS NULL OR JobCategoryId = @jobCategoryId)
+                    AND (@id IS NULL OR ServiceProviders.Id = @id) ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", jobCategoryId ?? (object)DBNull.Value);
@@ -40,20 +41,20 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
-                List<Contractor> contractors = new();
+                List<ServiceProvider> serviceProviders = new();
 
                 //Approach: 1 = With For Loop
 
                 //for (int i = 0; i < dataTable.Rows.Count; i++)
                 //{
-                //    Contractor contractor = new()
+                //    ServiceProvider serviceProvider = new()
                 //    {
 
 
                 //        JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
                 //        JobTypes = (string)dataTable.Rows[i]["JobTypes"],
-                //        ContractorId = (int)dataTable.Rows[i]["ContractorId"],
-                //        ContractorName = (string)dataTable.Rows[i]["ContractorName"],
+                //        ServiceProviderId = (int)dataTable.Rows[i]["ServiceProviderId"],
+                //        ServiceProviderName = (string)dataTable.Rows[i]["ServiceProviderName"],
                 //        Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
                 //        DOB = (DateTime)dataTable.Rows[i]["DOB"],
                 //        MobileNumber = (string)dataTable.Rows[i]["MobileNumber"],
@@ -66,18 +67,18 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 //        CountryName = dataTable.Rows[i]["CountryName"] != DBNull.Value ? (string)dataTable.Rows[i]["CountryName"] : null,
                 //        PinCode = dataTable.Rows[i]["PinCode"] != DBNull.Value ? (int)dataTable.Rows[i]["PinCode"] : 0
                 //    };
-                //    contractors.Add(contractor);
+                //    serviceProviders.Add(serviceProvider);
                 //}
 
                 //Approach: 2 = With For Each Loop
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    Contractor contractor = new()
+                    ServiceProvider serviceProvider = new()
                     {
                         JobCategoryId = (int)row["JobCategoryId"],
                         JobTypes = (string)row["JobTypes"],
-                        ContractorId = (int)row["ContractorId"],
-                        ContractorName = (string)row["ContractorName"],
+                        ServiceProviderId = (int)row["ServiceProviderId"],
+                        ServiceProviderName = (string)row["ServiceProviderName"],
                         Gender = (GenderTypes)row["Gender"],
                         DOB = (DateTime)row["DOB"],
                         MobileNumber = (string)row["MobileNumber"],
@@ -90,61 +91,61 @@ namespace ConstructionApplication.Repository.AdoDotNet
                         CountryName = row["CountryName"] != DBNull.Value ? (string)row["CountryName"] : null,
                         PinCode = row["PinCode"] != DBNull.Value ? (int)row["PinCode"] : 0
                     };
-                    contractors.Add(contractor);
+                    serviceProviders.Add(serviceProvider);
                 }
-                return contractors;
+                return serviceProviders;
             }
         }
 
-        public int Add(Contractor contractor)
+        public int Add(ServiceProvider serviceProvider)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"Insert Into Contractors
+                string sqlQuery = @"Insert Into ServiceProviders
                        (JobCategoryId, Name, Gender, DOB, ImageName, MobileNumber, ReferredBy)
                        Values
                        (@jobCategoryId, @name, @gender, @dOB, @imageName, @mobileNumber, @referredBy)
                        Select Scope_Identity()";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@jobCategoryId", contractor.JobCategoryId);
-                sqlCommand.Parameters.AddWithValue("@name", contractor.ContractorName);
-                sqlCommand.Parameters.AddWithValue("@gender", contractor.Gender);
-                sqlCommand.Parameters.AddWithValue("@dOB", contractor.DOB);
-                if (string.IsNullOrEmpty(contractor.ImageName))
+                sqlCommand.Parameters.AddWithValue("@jobCategoryId", serviceProvider.JobCategoryId);
+                sqlCommand.Parameters.AddWithValue("@name", serviceProvider.ServiceProviderName);
+                sqlCommand.Parameters.AddWithValue("@gender", serviceProvider.Gender);
+                sqlCommand.Parameters.AddWithValue("@dOB", serviceProvider.DOB);
+                if (string.IsNullOrEmpty(serviceProvider.ImageName))
                     sqlCommand.Parameters.AddWithValue("@imageName", DBNull.Value);
                 else
-                    sqlCommand.Parameters.AddWithValue("@imageName", contractor.ImageName);
+                    sqlCommand.Parameters.AddWithValue("@imageName", serviceProvider.ImageName);
 
-                sqlCommand.Parameters.AddWithValue("@mobileNumber", contractor.MobileNumber);
-                sqlCommand.Parameters.AddWithValue("@referredBy", contractor.ReferredBy);
+                sqlCommand.Parameters.AddWithValue("@mobileNumber", serviceProvider.MobileNumber);
+                sqlCommand.Parameters.AddWithValue("@referredBy", serviceProvider.ReferredBy);
 
                 sqlConnection.Open();
-                contractor.ContractorId = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                serviceProvider.ServiceProviderId = Convert.ToInt32(sqlCommand.ExecuteScalar());
                 sqlConnection.Close();
 
-                return contractor.ContractorId;
+                return serviceProvider.ServiceProviderId;
             }
         }
 
-        public void Delete(int contractorId)
+        public void Delete(int serviceProviderId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string deleteContractorQuery = @"DELETE FROM Contractors WHERE Id = @ContractorId";
-                SqlCommand deleteContractorCommand = new(deleteContractorQuery, sqlConnection);
-                deleteContractorCommand.Parameters.AddWithValue("@ContractorId", contractorId);
+                string deleteServiceProviderQuery = @"DELETE FROM ServiceProviders WHERE Id = @ServiceProviderId";
+                SqlCommand deleteServiceProviderCommand = new(deleteServiceProviderQuery, sqlConnection);
+                deleteServiceProviderCommand.Parameters.AddWithValue("@ServiceProviderId", serviceProviderId);
                 sqlConnection.Open();
-                deleteContractorCommand.ExecuteNonQuery();
+                deleteServiceProviderCommand.ExecuteNonQuery();
                 sqlConnection.Close();
             }
         }
 
-        public int Update(Contractor contractor)
+        public int Update(ServiceProvider serviceProvider)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = @"UPDATE Contractors SET
+                string sqlQuery = @"UPDATE ServiceProviders SET
                             JobCategoryId = @jobCategoryId,
                             Name = @name,
                             Gender = @gender,
@@ -155,13 +156,13 @@ namespace ConstructionApplication.Repository.AdoDotNet
 
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, sqlConnection))
                 {
-                    sqlCommand.Parameters.AddWithValue("@id", contractor.ContractorId);
-                    sqlCommand.Parameters.AddWithValue("@jobCategoryId", contractor.JobCategoryId);
-                    sqlCommand.Parameters.AddWithValue("@name", contractor.ContractorName);
-                    sqlCommand.Parameters.AddWithValue("@gender", contractor.Gender);
-                    sqlCommand.Parameters.AddWithValue("@dob", contractor.DOB);
-                    sqlCommand.Parameters.AddWithValue("@mobileNumber", contractor.MobileNumber);
-                    sqlCommand.Parameters.AddWithValue("@referredBy", contractor.ReferredBy);
+                    sqlCommand.Parameters.AddWithValue("@id", serviceProvider.ServiceProviderId);
+                    sqlCommand.Parameters.AddWithValue("@jobCategoryId", serviceProvider.JobCategoryId);
+                    sqlCommand.Parameters.AddWithValue("@name", serviceProvider.ServiceProviderName);
+                    sqlCommand.Parameters.AddWithValue("@gender", serviceProvider.Gender);
+                    sqlCommand.Parameters.AddWithValue("@dob", serviceProvider.DOB);
+                    sqlCommand.Parameters.AddWithValue("@mobileNumber", serviceProvider.MobileNumber);
+                    sqlCommand.Parameters.AddWithValue("@referredBy", serviceProvider.ReferredBy);
 
                     sqlConnection.Open();
                     int affectedRowCount = sqlCommand.ExecuteNonQuery();

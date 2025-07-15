@@ -31,7 +31,7 @@ public class SessionCheckAttribute : ActionFilterAttribute
                 if (context.Controller is Controller controller)
                     controller.TempData["ErrorMessage"] = "Please select a site before continuing.";
 
-                context.Result = new RedirectToActionResult("Index", "Site", null);
+                context.Result = new RedirectToActionResult("NoSiteSelcted", "Site", null);
                 return;
             }
         }
