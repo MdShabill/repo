@@ -11,5 +11,8 @@ namespace ConstructionApplication.Repository.Interfaces
     {
         List<Site> GetAllSites();
         public Site GetSiteById(int Id);
+        public int Update(Site site);
+        public int Create(Site site);
+        public void Delete(int id);
     }
 }
