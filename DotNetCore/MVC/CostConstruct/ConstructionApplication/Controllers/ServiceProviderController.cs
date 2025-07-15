@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ConstructionApplication.Controllers
 {
-    public class ServiceProviderController : Controller
+    public class ServiceProviderController : BaseController
     {
         private IConfiguration _config;
 
@@ -34,7 +34,8 @@ namespace ConstructionApplication.Controllers
             IAddressRepository addressRepository,
             ICountryRepository countryRepository, IJobCategoryRepository jobCategoryRepository,
             IAddressTypeRepository addressTypeRepository, IWebHostEnvironment env, 
-            IDailyAttendanceRepository dailyAttendanceRepository)
+            IDailyAttendanceRepository dailyAttendanceRepository, 
+            ISiteRepository siteRepository) : base(siteRepository)
         {
             _config = iConfig;
             _serviceProviderRepository = serviceProviderRepository;

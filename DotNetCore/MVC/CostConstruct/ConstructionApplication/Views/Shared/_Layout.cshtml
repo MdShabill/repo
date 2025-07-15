@@ -55,13 +55,14 @@
 
                     @if (userId != null)
                     {
-                        <ul class="navbar-nav ms-auto">
-                            @if (!string.IsNullOrEmpty(selectedSiteName))
-                            {
-                                <li class="nav-item me-3">
-                                    <span class="nav-link text-info"><b>Site: <b>@selectedSiteName</b></b>&nbsp; | </span>
-                                </li>
-                            }
+                        <form asp-controller="Site" asp-action="Index" method="post" class="d-flex align-items-center me-3" style="gap: 5px;">
+                            <select name="Id" class="form-select form-select-sm fw-bold" asp-items="ViewBag.Site" style="width: 180px;" required>
+                                <option value="">-- Select Site --</option>
+                            </select>
+                            
+                            <button type="submit" class="btn btn-success fw-bold">Go</button>
+                        </form>
+                        <ul class="navbar-nav">
                             <li class="nav-item me-3">
                                 <span class="nav-link text-dark"><b>Welcome, @userName</b></span>
                             </li>

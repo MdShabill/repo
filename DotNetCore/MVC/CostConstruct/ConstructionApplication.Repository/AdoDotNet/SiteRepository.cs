@@ -45,13 +45,13 @@ namespace ConstructionApplication.Repository.AdoDotNet
             }
         }
 
-        public Site GetSiteById(int id)
+        public Site GetSiteById(int Id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = "SELECT Id, Name, Location FROM Sites WHERE Id = @SiteId";
                 SqlCommand cmd = new(sqlQuery, sqlConnection);
-                cmd.Parameters.AddWithValue("@SiteId", id);
+                cmd.Parameters.AddWithValue("@SiteId", Id);
 
                 sqlConnection.Open();
                 using (SqlDataReader reader = cmd.ExecuteReader())

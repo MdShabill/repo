@@ -1,20 +1,9 @@
-﻿@{
-    ViewData["Title"] = "Select Site";
-}
-
-<style>
-    body {
-        background-color: deepskyblue;
-    }
-
-</style>
-
+﻿@* 
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-5">
             <div class="card shadow-lg rounded">
                 <div class="card-header text-black">
-                    <h4 class="mb-0 text-center">Select a Site</h4>
                 </div>
                 <div class="card-body">
 
@@ -27,17 +16,13 @@
 
                     <form asp-action="Index" method="post">
                         <div class="form-group mb-3">
-                            <label for="Id" class="form-label fw-bold">Site</label>
+                            <label for="Id" class="form-label fw-bold"></label>
                             <select id="Id" name="Id" class="form-control" asp-items="ViewBag.Site">
                                 <option value="">-- Select Site --</option>
                             </select>
                         </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-success fw-bold">
-                                Go
-                            </button>
-                        </div>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Go</button>
                     </form>
 
                 </div>
@@ -45,3 +30,4 @@
         </div>
     </div>
 </div>
+ *@

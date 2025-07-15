@@ -13,6 +13,7 @@ namespace ConstructionApplication.Controllers
             _siteRepository = siteRepository;
         }
 
+
         [SessionCheck]
         public IActionResult Index()
         {
@@ -30,10 +31,15 @@ namespace ConstructionApplication.Controllers
             return View();
         }
 
-        [HttpPost]
-        public IActionResult Index(int id)
+        public IActionResult NoSiteSelcted()
         {
-            var selectedSite = _siteRepository.GetSiteById(id);
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Index(int Id)
+        {
+            var selectedSite = _siteRepository.GetSiteById(Id);
 
             if (selectedSite != null)
             {

@@ -27,7 +27,7 @@ namespace ConstructionApplication.Controllers
                                          ICostMasterRepository costMasterRepository,
                                          IJobCategoryRepository jobCategoryRepository,
                                          IServiceProviderRepository serviceProviderRepository,
-                                         ISiteRepository siteRepository)
+                                         ISiteRepository siteRepository) : base(siteRepository)
         {
             _dailyAttendanceRepository = dailyAttendanceRepository;
 

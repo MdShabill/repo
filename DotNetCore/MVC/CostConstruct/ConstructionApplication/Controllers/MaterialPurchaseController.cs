@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
-    public class MaterialPurchaseController : Controller
+    public class MaterialPurchaseController : BaseController
     {
         IMaterialPurchaseRepository _materialPurchaseRepository;
         ISupplierRepository _supplierRepository;
@@ -21,7 +21,7 @@ namespace ConstructionApplication.Controllers
 
         public MaterialPurchaseController(IMaterialPurchaseRepository materialPurchaseRepository,
                   ISupplierRepository supplierRepository, IMaterialRepository materialRepository, 
-                  IBrandRepository brandRepository)
+                  IBrandRepository brandRepository, ISiteRepository siteRepository) : base(siteRepository)
         {
             _materialPurchaseRepository = materialPurchaseRepository;
             _supplierRepository = supplierRepository;
