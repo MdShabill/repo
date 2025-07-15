@@ -1,6 +1,6 @@
-﻿@model ConstructionApplication.ViewModels.ContractorVm
+﻿@model ConstructionApplication.ViewModels.ServiceProviderVm
 
-<h4>Add Contractor</h4>
+<h4>Add Service Provider</h4>
 <br />
 <div class="row">
     <div class="col-md-4">
@@ -8,9 +8,9 @@
             <span class="text-danger"> <b> @ViewBag.errorMessage </b> </span>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group" style="width: 60%;">
-                <label asp-for="ContractorName" class="control-label"><b>Contractor Name</b></label>
-                <input asp-for="ContractorName" class="form-control" maxlength="15" class="form-control" required />
-                @* <span asp-validation-for="ContractorName" class="text-danger"></span> *@
+                <label asp-for="ServiceProviderName" class="control-label"><b>Service Provider Name</b></label>
+                <input asp-for="ServiceProviderName" class="form-control" maxlength="15" class="form-control" required />
+                @* <span asp-validation-for="ServiceProviderName" class="text-danger"></span> *@
             </div>
             <br />
             <div class="form-group" style="width: 70%;">
@@ -85,7 +85,7 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
                 &nbsp;&nbsp;&nbsp;
-                <a asp-controller ="Contractor" asp-action="Index"><b>Back To Contractor List</b></a>
+                <a asp-controller="ServiceProvider" asp-action="Index"><b>Back To Service Provider List</b></a>
             </div>
         </form>
     </div>

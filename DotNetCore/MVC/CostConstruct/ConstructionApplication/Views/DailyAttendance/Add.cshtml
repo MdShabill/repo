@@ -22,8 +22,8 @@
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
-                <label asp-for="ContractorId" class="control-label"><b>Contractor Name</b></label><br />
-                <select id="contractorId" name="ContractorId"></select>
+                <label asp-for="ServiceProviderId" class="control-label"><b>Service Provider Name</b></label><br />
+                <select id="serviceProviderId" name="serviceProviderId"></select>
                 <span class="text-danger"></span>
             </div>
             <br />
@@ -66,15 +66,15 @@
         const amountPerWorkerField = document.getElementById('AmountPerWorker');
         const totalWorkerField = document.getElementById('totalWorker');
         const totalAmountField = document.getElementById('totalAmount');
-        const contractorDropdown = document.getElementById('contractorId');
+        const serviceProviderDropdown = document.getElementById('serviceProviderId');
 
         if (!selectedJobCategoryId) {
             // Reset fields if no job category is selected
             amountPerWorkerField.value = '';
             totalWorkerField.value = '';
             totalAmountField.value = '';
-            contractorDropdown.innerHTML = '';
-            contractorDropdown.innerHTML = '<option value="-1">SELECT</option>';
+            serviceProviderDropdown.innerHTML = '';
+            serviceProviderDropdown.innerHTML = '<option value="-1">SELECT</option>';
             return;
         }
 
@@ -93,23 +93,23 @@
             }
         }
 
-        // Fetch contractors data based on selected job category
+        // Fetch ServiceProvider data based on selected job category
         $.ajax({
             url: '@Url.Action("GetDataByJobCategoryId", "DailyAttendance")',
             type: 'GET',
             data: { jobCategoryId: selectedJobCategoryId },
             success: function(response) {
-                // Populate contractors dropdown
-                if (response && response.contractors) {
-                    let contractorOptions = '<option value="-1">SELECT</option>';
-                    for (let i = 0; i < response.contractors.length; i++) {
-                        contractorOptions += `<option value="${response.contractors[i].contractorId}">
-                                                  ${response.contractors[i].contractorName}
+                // Populate Service Provider dropdown
+                if (response && response.serviceProviders) {
+                    let serviceProviderOptions = '<option value="-1">SELECT</option>';
+                    for (let i = 0; i < response.serviceProviders.length; i++) {
+                        serviceProviderOptions += `<option value="${response.serviceProviders[i].serviceProviderId}">
+                                                  ${response.serviceProviders[i].serviceProviderName}
                                               </option>`;
                     }
-                    contractorDropdown.innerHTML = contractorOptions;
+                    serviceProviderDropdown.innerHTML = serviceProviderOptions;
                 } else {
-                    contractorDropdown.innerHTML = '<option value="-1">No contractors available</option>';
+                    serviceProviderDropdown.innerHTML = '<option value="-1">No service Providers available</option>';
                 }
 
                 // Optionally, calculate Total Amount if TotalWorker is already filled
@@ -118,7 +118,7 @@
                 }
             },
             error: function() {
-                alert('Error fetching contractors data.');
+                alert('Error fetching service Providers data.');
             }
         });
     });

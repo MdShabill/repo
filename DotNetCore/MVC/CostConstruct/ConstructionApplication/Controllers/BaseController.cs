@@ -1,33 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ConstructionApplication.Repository.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ConstructionApplication.Controllers
 {
     public class BaseController : Controller
     {
+        private readonly ISiteRepository _siteRepository;
         protected int SiteId;
 
-        //public BaseController()
-        //{
-        //    siteId = (int)HttpContext.Session.GetInt32("SelectedSiteId");
-        //}
+        public BaseController(ISiteRepository siteRepository)
+        {
+            _siteRepository = siteRepository;
+        }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             base.OnActionExecuting(context);
 
             int? selectedSiteId = HttpContext.Session.GetInt32("SelectedSiteId");
-            if (selectedSiteId.HasValue)
-            {
-                SiteId = selectedSiteId.Value;
-            }
-            else
-            {
-                // Optional: handle missing site ID
-                // e.g., redirect or set default value
-                SiteId = 0;
-            }
-        }
+            SiteId = selectedSiteId ?? 0;
 
+            var sites = _siteRepository.GetAllSites();
+            ViewBag.Site = new SelectList(sites, "Id", "Name", selectedSiteId);
+        }
     }
 }

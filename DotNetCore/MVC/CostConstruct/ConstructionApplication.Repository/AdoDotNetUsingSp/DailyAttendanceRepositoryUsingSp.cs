@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ConstructionApplication.Core.DataModels.ServiceProviders;
 
 namespace ConstructionApplication.Repository.AdoDotNetUsingSp
 {
@@ -44,7 +45,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                     {
                         Date = (DateTime)dataTable.Rows[i]["Date"],
                         Name = (string)dataTable.Rows[i]["Name"],
-                        ContractorName = (string)dataTable.Rows[i]["ContractorName"],
+                        ServiceProviderName = (string)dataTable.Rows[i]["ServiceProviderName"],
                         TotalWorker = (int)dataTable.Rows[i]["TotalWorker"],
                         AmountPerWorker = (decimal)dataTable.Rows[i]["AmountPerWorker"],
                         TotalAmount = (decimal)dataTable.Rows[i]["TotalAmount"],
@@ -66,7 +67,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                 sqlCommand.Parameters.AddWithValue("@Mode", "CREATE");
                 sqlCommand.Parameters.AddWithValue("@date", dailyAttendance.Date);
                 sqlCommand.Parameters.AddWithValue("@jobCategoryId", dailyAttendance.JobCategoryId);
-                sqlCommand.Parameters.AddWithValue("@contractorId", dailyAttendance.ContractorId);
+                sqlCommand.Parameters.AddWithValue("@cerviceProviderId", dailyAttendance.ServiceProviderId);
                 sqlCommand.Parameters.AddWithValue("@totalWorker", dailyAttendance.TotalWorker);
                 sqlCommand.Parameters.AddWithValue("@amountPerWorker", dailyAttendance.AmountPerWorker);
                 sqlCommand.Parameters.AddWithValue("@totalAmount", dailyAttendance.TotalAmount);
@@ -79,7 +80,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
             }
         }
 
-        public void Delete(int ContractorId)
+        public void Delete(int serviceProviderId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -88,7 +89,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                     CommandType = CommandType.StoredProcedure
                 };
                 sqlCommand.Parameters.AddWithValue("@Mode", "DELETE");
-                sqlCommand.Parameters.AddWithValue("@contractorId", ContractorId);
+                sqlCommand.Parameters.AddWithValue("@serviceProviderId", serviceProviderId);
                 sqlConnection.Open();
                 sqlCommand.ExecuteNonQuery();
                 sqlConnection.Close();

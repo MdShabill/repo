@@ -50,4 +50,10 @@ BEGIN
 
 			 SELECT @@ROWCOUNT AS AffectedRows
     END
+
+    ELSE IF @Mode = 'Delete'
+    BEGIN
+        DELETE FROM MaterialPurchase WHERE Id = @Id
+        SELECT @@ROWCOUNT AS AffectedRows
+    END
 END

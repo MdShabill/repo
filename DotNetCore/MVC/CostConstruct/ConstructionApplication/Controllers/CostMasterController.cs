@@ -9,13 +9,15 @@ using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
 {
-    public class CostMasterController : Controller
+    public class CostMasterController : BaseController
     {
         ICostMasterRepository _costMasterRepository;
         IJobCategoryRepository _jobCategoryRepository;
         IMapper _imapper;
 
-        public CostMasterController(ICostMasterRepository costMasterRepository, IJobCategoryRepository jobCategoryRepository)
+        public CostMasterController(ICostMasterRepository costMasterRepository, 
+                                    IJobCategoryRepository jobCategoryRepository, 
+                                    ISiteRepository siteRepository) : base(siteRepository)
         {
             _costMasterRepository = costMasterRepository;
             _jobCategoryRepository = jobCategoryRepository;

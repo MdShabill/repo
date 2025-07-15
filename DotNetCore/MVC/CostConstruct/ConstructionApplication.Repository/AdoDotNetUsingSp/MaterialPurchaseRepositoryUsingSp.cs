@@ -86,5 +86,21 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                 return affectedRowCount;
             }
         }
+
+        public void Delete(int id)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                SqlCommand sqlCommand = new SqlCommand("Sp_MaterialPurchaseCRUD", sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+
+                sqlCommand.Parameters.AddWithValue("@Mode", "Delete");
+                sqlCommand.Parameters.AddWithValue("@Id", id);
+
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+            }
+        }
     }
 }
