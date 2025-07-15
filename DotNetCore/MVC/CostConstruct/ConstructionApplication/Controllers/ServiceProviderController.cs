@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ConstructionApplication.Core.DataModels.Address;
 using ConstructionApplication.Core.DataModels.AddressType;
-using ConstructionApplication.Core.DataModels.Contractor;
+using ConstructionApplication.Core.DataModels.ServiceProviders;
 using ConstructionApplication.Core.DataModels.Country;
 using ConstructionApplication.Core.DataModels.JobCategory;
 using ConstructionApplication.Repository.Interfaces;
@@ -10,10 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
 using System.Transactions;
+using ConstructionApplication.Repository.AdoDotNet;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ConstructionApplication.Controllers
 {
-    public class ContractorController : Controller
+    public class ServiceProviderController : BaseController
     {
         private IConfiguration _config;
 
@@ -21,21 +23,22 @@ namespace ConstructionApplication.Controllers
         ICountryRepository _countryRepository;
         IJobCategoryRepository _jobCategoryRepository;
         IAddressRepository _addressRepository;
-        IContractorRepository _contractorRepository;
+        IServiceProviderRepository _serviceProviderRepository;
         IDailyAttendanceRepository _dailyAttendanceRepository;
         IMapper _imapper;
         private object iConfig;
         private readonly IWebHostEnvironment _env;
 
-        public ContractorController(IConfiguration iConfig,
-            IContractorRepository contractorRepository,
+        public ServiceProviderController(IConfiguration iConfig,
+            IServiceProviderRepository serviceProviderRepository,
             IAddressRepository addressRepository,
             ICountryRepository countryRepository, IJobCategoryRepository jobCategoryRepository,
             IAddressTypeRepository addressTypeRepository, IWebHostEnvironment env, 
-            IDailyAttendanceRepository dailyAttendanceRepository)
+            IDailyAttendanceRepository dailyAttendanceRepository, 
+            ISiteRepository siteRepository) : base(siteRepository)
         {
             _config = iConfig;
-            _contractorRepository = contractorRepository;
+            _serviceProviderRepository = serviceProviderRepository;
             _jobCategoryRepository = jobCategoryRepository;
             _addressRepository = addressRepository;
             _countryRepository = countryRepository;
@@ -44,8 +47,8 @@ namespace ConstructionApplication.Controllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<ContractorVm, Contractor>();
-                cfg.CreateMap<Contractor, ContractorVm>();
+                cfg.CreateMap<ServiceProviderVm, Core.DataModels.ServiceProviders.ServiceProvider>();
+                cfg.CreateMap<Core.DataModels.ServiceProviders.ServiceProvider, ServiceProviderVm>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -55,10 +58,10 @@ namespace ConstructionApplication.Controllers
         [SessionCheck]
         public IActionResult Index(int? jobCategoryId, int? id)
         {
-            List<Contractor> contractors = _contractorRepository.GetAll(jobCategoryId, id);
-            List<ContractorVm> contractorVm = _imapper.Map<List<Contractor>, List<ContractorVm>>(contractors);
-            ViewBag.ContractorCount = contractorVm.Count;
-            return View(contractorVm);
+            List<Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(jobCategoryId, id);
+            List<ServiceProviderVm> serviceProviderVm = _imapper.Map<List<Core.DataModels.ServiceProviders.ServiceProvider>, List<ServiceProviderVm>>(serviceProviders);
+            ViewBag.ServiceProviderCount = serviceProviderVm.Count;
+            return View(serviceProviderVm);
         }
 
         [SessionCheck]
@@ -72,29 +75,29 @@ namespace ConstructionApplication.Controllers
 
         [SessionCheck]
         [HttpPost]
-        public IActionResult Add(ContractorVm contractorVm)
+        public IActionResult Add(ServiceProviderVm serviceProviderVm)
         {
             ModelState.Clear();
 
-            if (!ValidateContractorDetails(contractorVm))
+            if (!ValidateServiceProviderDetails(serviceProviderVm))
             {
                 DropDownSelectList();
-                return View(contractorVm);
+                return View(serviceProviderVm);
             }
 
-            string uniqueFileName = ValidateAndUploadFile(contractorVm);
-            
-            Contractor contractor = _imapper.Map<ContractorVm, Contractor>(contractorVm);
-            contractor.ImageName = uniqueFileName;
-            contractor.ContractorId = _contractorRepository.Add(contractor);
-            if (contractor.ContractorId > 0)
+            string uniqueFileName = ValidateAndUploadFile(serviceProviderVm);
+
+            Core.DataModels.ServiceProviders.ServiceProvider serviceProvider = _imapper.Map<ServiceProviderVm, Core.DataModels.ServiceProviders.ServiceProvider>(serviceProviderVm);
+            serviceProvider.ImageName = uniqueFileName;
+            serviceProvider.ServiceProviderId = _serviceProviderRepository.Add(serviceProvider);
+            if (serviceProvider.ServiceProviderId > 0)
             {
-                AddAddressIfPresent(contractor.ContractorId, contractorVm);
-                TempData["AddSuccessMessage"] = "Your Contractor Data Added successfully.";
+                AddAddressIfPresent(serviceProvider.ServiceProviderId, serviceProviderVm);
+                TempData["AddSuccessMessage"] = "Your ServiceProvider Data Added successfully.";
                 return RedirectToAction("Index");
             }
             DropDownSelectList();
-            return View(contractorVm);
+            return View(serviceProviderVm);
         }
 
         [SessionCheck]
@@ -105,57 +108,57 @@ namespace ConstructionApplication.Controllers
                 return NotFound();
             }
 
-            List<Contractor> contractors = _contractorRepository.GetAll(null, id);
-            if (contractors.Count == 0)
+            List<Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(null, id);
+            if (serviceProviders.Count == 0)
             {
                 return NotFound();
             }
 
-            ContractorVm contractorVm = _imapper.Map<ContractorVm>(contractors.First());
+            ServiceProviderVm serviceProviderVm = _imapper.Map<ServiceProviderVm>(serviceProviders.First());
 
             DropDownSelectList();
 
-            return View(contractorVm);
+            return View(serviceProviderVm);
         }
 
         [SessionCheck]
         [HttpPost]
-        public IActionResult Update(ContractorVm contractorVm)
+        public IActionResult Update(ServiceProviderVm serviceProviderVm)
         {
             ModelState.Clear();
 
-            if (!ValidateContractorDetails(contractorVm))
+            if (!ValidateServiceProviderDetails(serviceProviderVm))
             {
                 DropDownSelectList();
-                return View("Edit", contractorVm);
+                return View("Edit", serviceProviderVm);
             }
 
-            Contractor contractor = _imapper.Map<ContractorVm, Contractor>(contractorVm);
-            int affectedRowCount = _contractorRepository.Update(contractor);
+            Core.DataModels.ServiceProviders.ServiceProvider serviceProvider = _imapper.Map<ServiceProviderVm, Core.DataModels.ServiceProviders.ServiceProvider>(serviceProviderVm);
+            int affectedRowCount = _serviceProviderRepository.Update(serviceProvider);
 
             if (affectedRowCount > 0)
             {
-                AddAddressIfPresent(contractor.ContractorId, contractorVm);
+                AddAddressIfPresent(serviceProvider.ServiceProviderId, serviceProviderVm);
                 TempData["UpdateSuccessMessage"] = "Your Data updated successfully.";
                 return RedirectToAction("Index");
             }
             DropDownSelectList();
-            return View("Edit", contractorVm);
+            return View("Edit", serviceProviderVm);
         }
 
         [SessionCheck]
         [HttpPost]
-        public IActionResult Delete(int contractorId)
+        public IActionResult Delete(int serviceProviderId)
         {
             using (var transaction = new TransactionScope())
             {
                 try
                 {
-                    _addressRepository.Delete(contractorId);
+                    _addressRepository.Delete(serviceProviderId);
 
-                    _dailyAttendanceRepository.Delete(contractorId);
+                    _dailyAttendanceRepository.Delete(serviceProviderId);
 
-                    _contractorRepository.Delete(contractorId);
+                    _serviceProviderRepository.Delete(serviceProviderId);
 
                     transaction.Complete();
 
@@ -163,7 +166,7 @@ namespace ConstructionApplication.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError(string.Empty, "An error occurred while deleting the contractor: " + ex.Message);
+                    ModelState.AddModelError(string.Empty, "An error occurred while deleting the Service Provider: " + ex.Message);
                     return View();
                 }
             }
@@ -179,50 +182,50 @@ namespace ConstructionApplication.Controllers
                    + Path.GetExtension(fileName);
         }
 
-        private bool ValidateContractorDetails(ContractorVm contractorVm)
+        private bool ValidateServiceProviderDetails(ServiceProviderVm serviceProviderVm)
         {
             ModelState.Clear();
 
-            if (string.IsNullOrEmpty(contractorVm.ContractorName))
+            if (string.IsNullOrEmpty(serviceProviderVm.ServiceProviderName))
             {
-                ViewBag.errorMessage = "Contractor Name is required.";
+                ViewBag.errorMessage = "Service Provider Name is required.";
                 return false;
             }
 
-            if (contractorVm.ContractorName.Length > 15 || contractorVm.ContractorName.Length < 4 ||
-                !Regex.IsMatch(contractorVm.ContractorName, @"^[a-zA-Z\s]+$"))
+            if (serviceProviderVm.ServiceProviderName.Length > 15 || serviceProviderVm.ServiceProviderName.Length < 4 ||
+                !Regex.IsMatch(serviceProviderVm.ServiceProviderName, @"^[a-zA-Z\s]+$"))
             {
-                ViewBag.errorMessage = "Contractor Name must be between 4 to 15 characters and contain only alphabets.";
+                ViewBag.errorMessage = "Service Provider Name must be between 4 to 15 characters and contain only alphabets.";
                 return false;
             }
 
-            if (contractorVm.DOB == null || contractorVm.DOB > DateTime.Now)
+            if (serviceProviderVm.DOB == null || serviceProviderVm.DOB > DateTime.Now)
             {
                 ViewBag.errorMessage = "Date Of Birth cannot be null or in the future.";
                 return false;
             }
 
-            if (string.IsNullOrEmpty(contractorVm.MobileNumber) || contractorVm.MobileNumber.Length != 10 ||
-                !Regex.IsMatch(contractorVm.MobileNumber, @"^\d{10}$"))
+            if (string.IsNullOrEmpty(serviceProviderVm.MobileNumber) || serviceProviderVm.MobileNumber.Length != 10 ||
+                !Regex.IsMatch(serviceProviderVm.MobileNumber, @"^\d{10}$"))
             {
                 ViewBag.errorMessage = "Mobile Number must be numeric and exactly 10 digits long.";
                 return false;
             }
 
-            if (string.IsNullOrEmpty(contractorVm.ReferredBy))
+            if (string.IsNullOrEmpty(serviceProviderVm.ReferredBy))
             {
                 ViewBag.errorMessage = "Referred name is required.";
                 return false;
             }
 
-            if (contractorVm.ReferredBy.Length > 15 || contractorVm.ReferredBy.Length < 3 ||
-                !Regex.IsMatch(contractorVm.ReferredBy, @"^[a-zA-Z\s]+$"))
+            if (serviceProviderVm.ReferredBy.Length > 15 || serviceProviderVm.ReferredBy.Length < 3 ||
+                !Regex.IsMatch(serviceProviderVm.ReferredBy, @"^[a-zA-Z\s]+$"))
             {
                 ViewBag.errorMessage = "Referred name must be between 3 to 15 characters and contain only alphabets.";
                 return false;
             }
 
-            if (contractorVm.JobCategoryId == 0)
+            if (serviceProviderVm.JobCategoryId == 0)
             {
                 ViewBag.errorMessage = "Job Category is required.";
                 return false;
@@ -231,14 +234,14 @@ namespace ConstructionApplication.Controllers
             return true;
         }
 
-        private string ValidateAndUploadFile(ContractorVm contractorVm)
+        private string ValidateAndUploadFile(ServiceProviderVm serviceProviderVm)
         {
-            if (contractorVm.ImageFile == null || contractorVm.ImageFile.Length == 0)
+            if (serviceProviderVm.ImageFile == null || serviceProviderVm.ImageFile.Length == 0)
             {
                 return null;
             }
 
-            var fileExtension = Path.GetExtension(contractorVm.ImageFile.FileName).ToLower();
+            var fileExtension = Path.GetExtension(serviceProviderVm.ImageFile.FileName).ToLower();
             string extensions = _config.GetValue<string>("ApplicationSettings:fileExtension");
             string[] allowedExtensions = extensions.Split(',');
 
@@ -249,7 +252,7 @@ namespace ConstructionApplication.Controllers
             }
 
             int maxFileSizeInBytes = _config.GetValue<int>("ApplicationSettings:maxFileSizeInBytes");
-            if (contractorVm.ImageFile.Length > maxFileSizeInBytes)
+            if (serviceProviderVm.ImageFile.Length > maxFileSizeInBytes)
             {
                 ViewBag.errorMessage = $"ImageFile size must not exceed {maxFileSizeInBytes} bytes.";
                 return null;
@@ -261,35 +264,35 @@ namespace ConstructionApplication.Controllers
                 Directory.CreateDirectory(dir);
             }
 
-            string uniqueFileName = GetUniqueFileName(contractorVm.ImageFile.FileName);
+            string uniqueFileName = GetUniqueFileName(serviceProviderVm.ImageFile.FileName);
             string filePath = Path.Combine(dir, uniqueFileName);
 
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
-                contractorVm.ImageFile.CopyTo(fileStream);
+                serviceProviderVm.ImageFile.CopyTo(fileStream);
             }
             return uniqueFileName;
         }
 
-        private void AddAddressIfPresent(int contractorId, ContractorVm contractorVm)
+        private void AddAddressIfPresent(int serviceProviderId, ServiceProviderVm serviceProviderVm)
         {
-            if (!string.IsNullOrEmpty(contractorVm.AddressLine1) ||
-               (contractorVm.AddressTypeId.HasValue && contractorVm.AddressTypeId > 0) ||
-               (contractorVm.CountryId.HasValue && contractorVm.CountryId > 0) ||
-               (contractorVm.PinCode.HasValue && contractorVm.PinCode > 0))
+            if (!string.IsNullOrEmpty(serviceProviderVm.AddressLine1) ||
+               (serviceProviderVm.AddressTypeId.HasValue && serviceProviderVm.AddressTypeId > 0) ||
+               (serviceProviderVm.CountryId.HasValue && serviceProviderVm.CountryId > 0) ||
+               (serviceProviderVm.PinCode.HasValue && serviceProviderVm.PinCode > 0))
             {
                 Address address = new Address(
-                    contractorId,
-                    contractorVm.AddressLine1,
-                    contractorVm.AddressTypeId ?? 0,
-                    contractorVm.CountryId ?? 0,
-                    contractorVm.PinCode ?? 0
+                    serviceProviderId,
+                    serviceProviderVm.AddressLine1,
+                    serviceProviderVm.AddressTypeId ?? 0,
+                    serviceProviderVm.CountryId ?? 0,
+                    serviceProviderVm.PinCode ?? 0
                 );
                 _addressRepository.InsertOrUpdateAddress(address);
             }
             else
             {
-                _addressRepository.Delete(contractorId);
+                _addressRepository.Delete(serviceProviderId);
             }
         }
 

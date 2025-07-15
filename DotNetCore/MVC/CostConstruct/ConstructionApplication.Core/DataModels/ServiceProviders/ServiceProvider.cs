@@ -1,11 +1,11 @@
 ﻿using ConstructionApplication.Core.Enums;
 
-namespace ConstructionApplication.Core.DataModels.Contractor
+namespace ConstructionApplication.Core.DataModels.ServiceProviders
 {
-    public class Contractor
+    public class ServiceProvider
     {
-        public int ContractorId { get; set; }
-        public string ContractorName { get; set; }
+        public int ServiceProviderId { get; set; }
+        public string ServiceProviderName { get; set; }
         public int JobCategoryId { get; set; }
         public string JobTypes { get; set; }
         public GenderTypes Gender { get; set; }

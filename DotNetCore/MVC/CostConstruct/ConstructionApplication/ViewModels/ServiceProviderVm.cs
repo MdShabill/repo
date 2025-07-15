@@ -2,10 +2,10 @@
 
 namespace ConstructionApplication.ViewModels
 {
-    public class ContractorVm
+    public class ServiceProviderVm
     {
-        public int ContractorId { get; set; }
-        public string ContractorName { get; set; }
+        public int ServiceProviderId { get; set; }
+        public string ServiceProviderName { get; set; }
         public int JobCategoryId { get; set; }
         public string JobTypes { get; set; }
         public GenderTypes Gender { get; set; }

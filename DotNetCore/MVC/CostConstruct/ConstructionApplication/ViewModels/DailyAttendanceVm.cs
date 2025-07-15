@@ -7,8 +7,8 @@
         public int JobCategoryId { get; set; }
         public int SiteId { get; set; }
         public string SiteName { get; set; }
-        public int ContractorId { get; set; }
-        public string ContractorName { get; set; }
+        public int ServiceProviderId { get; set; }
+        public string ServiceProviderName { get; set; }
         public string Name { get; set; }
         public int TotalWorker { get; set; }
         public decimal AmountPerWorker { get; set; }

@@ -3,6 +3,7 @@ using ConstructionApplication.Repository.Interfaces;
 using System.Data.SqlClient;
 using System.Data;
 using Dapper;
+using ConstructionApplication.Core.DataModels.ServiceProviders;
 
 namespace ConstructionApplication.Repository.Dapper
 {
@@ -21,14 +22,14 @@ namespace ConstructionApplication.Repository.Dapper
             {
                 string sqlQuery = @"
                        SELECT 
-                           DailyAttendance.Date, JobCategories.Name, Contractors.Name AS ContractorName,
+                           DailyAttendance.Date, JobCategories.Name, ServiceProviders.Name AS ServiceProviderName,
                            DailyAttendance.TotalWorker, DailyAttendance.AmountPerWorker, DailyAttendance.TotalAmount
                        FROM 
                            DailyAttendance
                        JOIN 
                            JobCategories ON DailyAttendance.JobCategoryId = JobCategories.Id
                        JOIN 
-                           Contractors ON DailyAttendance.ContractorId = Contractors.Id
+                           ServiceProviders ON DailyAttendance.ServiceProviderId = ServiceProviders.Id
                        WHERE
                            (@DateFrom IS NULL OR DailyAttendance.Date >= @DateFrom) 
                            AND 
@@ -46,9 +47,9 @@ namespace ConstructionApplication.Repository.Dapper
             {
                 string sqlQuery = @"
                        INSERT INTO DailyAttendance
-                          (Date, JobCategoryId, ContractorId, TotalWorker, AmountPerWorker, TotalAmount)
+                          (Date, JobCategoryId, ServiceProviderId, TotalWorker, AmountPerWorker, TotalAmount)
                        VALUES
-                          (@Date, @JobCategoryId, @ContractorId, @TotalWorker, @AmountPerWorker, @TotalAmount);
+                          (@Date, @JobCategoryId, @ServiceProviderId, @TotalWorker, @AmountPerWorker, @TotalAmount);
                        SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
                 // Executes the SQL query and returns the newly inserted DailyAttendance Id
@@ -56,12 +57,12 @@ namespace ConstructionApplication.Repository.Dapper
             }
         }
 
-        public void Delete(int contractorId)
+        public void Delete(int serviceProviderId)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string deleteQuery = "DELETE FROM DailyAttendance WHERE ContractorId = @ContractorId";
-                connection.Execute(deleteQuery, new { ContractorId = contractorId });
+                string deleteQuery = "DELETE FROM DailyAttendance WHERE ServiceProviderId = @ServiceProviderId";
+                connection.Execute(deleteQuery, new { ServiceProviderId = serviceProviderId });
             }
         }
     }

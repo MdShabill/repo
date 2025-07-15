@@ -64,7 +64,7 @@ namespace ConstructionApplication.Controllers
             HttpContext.Session.SetString("UserName", user.Name);
             HttpContext.Session.SetString("Email", user.Email);
 
-            return RedirectToAction("Index", "Site");
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult LogOut()

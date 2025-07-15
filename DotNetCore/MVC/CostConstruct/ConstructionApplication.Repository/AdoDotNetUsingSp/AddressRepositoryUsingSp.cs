@@ -1,4 +1,5 @@
 ﻿using ConstructionApplication.Core.DataModels.Address;
+using ConstructionApplication.Core.DataModels.ServiceProviders;
 using ConstructionApplication.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -24,10 +25,10 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
             {
                 sqlConnection.Open();
 
-                // Check if an address record exists for the given ContractorId
-                string checkQuery = "SELECT COUNT(*) FROM Addresses WHERE ContractorId = @contractorId";
+                // Check if an address record exists for the given ServiceProviderId
+                string checkQuery = "SELECT COUNT(*) FROM Addresses WHERE ServiceProviderId = @serviceProviderId";
                 SqlCommand checkCommand = new SqlCommand(checkQuery, sqlConnection);
-                checkCommand.Parameters.AddWithValue("@contractorId", address.ContractorId);
+                checkCommand.Parameters.AddWithValue("@serviceProviderId", address.ServiceProviderId);
 
                 int addressCount = (int)checkCommand.ExecuteScalar();
                 string mode = addressCount > 0 ? "UPDATE" : "INSERT";
@@ -38,7 +39,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                 };
 
                 sqlCommand.Parameters.AddWithValue("@Mode", mode);
-                sqlCommand.Parameters.AddWithValue("@ContractorId", address.ContractorId);
+                sqlCommand.Parameters.AddWithValue("@serviceProviderId", address.ServiceProviderId);
                 sqlCommand.Parameters.AddWithValue("@AddressLine1", address.AddressLine1 ?? (object)DBNull.Value);
                 sqlCommand.Parameters.AddWithValue("@AddressTypeId", address.AddressTypeId);
                 sqlCommand.Parameters.AddWithValue("@CountryId", address.CountryId);
@@ -49,7 +50,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
             }
         }
 
-        public void Delete(int contractorId)
+        public void Delete(int serviceProviderId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -61,7 +62,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                 };
 
                 deleteAddressesCommand.Parameters.AddWithValue("@Mode", "DELETE");
-                deleteAddressesCommand.Parameters.AddWithValue("@contractorId", contractorId);
+                deleteAddressesCommand.Parameters.AddWithValue("@serviceProviderId", serviceProviderId);
                 deleteAddressesCommand.ExecuteNonQuery();
                 sqlConnection.Close();
             }

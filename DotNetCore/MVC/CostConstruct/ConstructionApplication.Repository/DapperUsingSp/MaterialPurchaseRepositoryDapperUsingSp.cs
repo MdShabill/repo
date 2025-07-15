@@ -47,5 +47,20 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                 return connection.ExecuteScalar<int>("Sp_MaterialPurchaseCRUD", parameters,commandType: CommandType.StoredProcedure);
             }
         }
+
+        public void Delete(int id)
+        {
+            using (IDbConnection connection = new SqlConnection(_connectionString))
+            {
+                string sqlQuery = "Sp_MaterialPurchaseCRUD";
+                var parameters = new
+                {
+                    Mode = "Delete",
+                    Id = id
+                };
+                // Execute the stored procedure for deleting a ServiceProvider
+                connection.Execute(sqlQuery, parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
     }
 }
