@@ -1,19 +1,20 @@
-﻿using ConstructionApplication.ViewModels;
+﻿using ConstructionApplication.Repository.Interfaces;
+using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace ConstructionApplication.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ISiteRepository siteRepository) : base(siteRepository)
         {
             _logger = logger;
         }
 
-        [SessionCheck]
+        //[SessionCheck]
         public IActionResult Index()
         {
             return View();

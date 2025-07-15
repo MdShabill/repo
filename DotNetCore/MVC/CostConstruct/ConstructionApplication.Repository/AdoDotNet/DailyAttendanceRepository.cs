@@ -1,4 +1,5 @@
 ﻿using ConstructionApplication.Core.DataModels.DailyAttendance;
+using ConstructionApplication.Core.DataModels.ServiceProviders;
 using ConstructionApplication.Repository.Interfaces;
 using System.Data;
 using System.Data.SqlClient;
@@ -19,13 +20,13 @@ namespace ConstructionApplication.Repository.AdoDotNet
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Select 
-                           DailyAttendance.Date, JobCategories.Name, Contractors.Name As ContractorName,
+                           DailyAttendance.Date, JobCategories.Name, ServiceProviders.Name As ServiceProviderName,
                            DailyAttendance.TotalWorker, DailyAttendance.AmountPerWorker,
                            DailyAttendance.TotalAmount
                            From 
                            DailyAttendance
                            Join JobCategories ON DailyAttendance.JobCategoryId = JobCategories.Id
-                           Join Contractors ON DailyAttendance.ContractorId = Contractors.Id
+                           Join ServiceProviders ON DailyAttendance.ServiceProviderId = ServiceProviders.Id
                            Join Sites ON DailyAttendance.SiteId = Sites.Id
                            Where
                            DailyAttendance.SiteId = @SiteId AND
@@ -48,7 +49,7 @@ namespace ConstructionApplication.Repository.AdoDotNet
                     {
                         Date = (DateTime)dataTable.Rows[i]["Date"],
                         Name = (string)dataTable.Rows[i]["Name"],
-                        ContractorName = (string)dataTable.Rows[i]["ContractorName"],
+                        ServiceProviderName = (string)dataTable.Rows[i]["ServiceProviderName"],
                         TotalWorker = (int)dataTable.Rows[i]["TotalWorker"],
                         AmountPerWorker = (decimal)dataTable.Rows[i]["AmountPerWorker"],
                         TotalAmount = (decimal)dataTable.Rows[i]["TotalAmount"],
@@ -64,15 +65,15 @@ namespace ConstructionApplication.Repository.AdoDotNet
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into DailyAttendance
-                       (Date, JobCategoryId, ContractorId, SiteId, TotalWorker, AmountPerWorker, TotalAmount)
+                       (Date, JobCategoryId, ServiceProviderId, SiteId, TotalWorker, AmountPerWorker, TotalAmount)
                        Values
-                       (@date, @jobCategoryId, @contractorId, @siteId, @totalWorker, @amountPerWorker, @totalAmount)
+                       (@date, @jobCategoryId, @serviceProviderId, @siteId, @totalWorker, @amountPerWorker, @totalAmount)
                         SELECT SCOPE_IDENTITY() ";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@date", dailyAttendance.Date);
                 sqlCommand.Parameters.AddWithValue("@jobCategoryId", dailyAttendance.JobCategoryId);
-                sqlCommand.Parameters.AddWithValue("@contractorId", dailyAttendance.ContractorId);
+                sqlCommand.Parameters.AddWithValue("@serviceProviderId", dailyAttendance.ServiceProviderId);
                 sqlCommand.Parameters.AddWithValue("@siteId", dailyAttendance.SiteId);
                 sqlCommand.Parameters.AddWithValue("@totalWorker", dailyAttendance.TotalWorker);
                 sqlCommand.Parameters.AddWithValue("@amountPerWorker", dailyAttendance.AmountPerWorker);
@@ -86,13 +87,13 @@ namespace ConstructionApplication.Repository.AdoDotNet
             }
         }
 
-        public void Delete(int ContractorId)
+        public void Delete(int serviceProviderId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string deleteAddressesQuery = @"DELETE FROM DailyAttendance WHERE ContractorId = @contractorId";
+                string deleteAddressesQuery = @"DELETE FROM DailyAttendance WHERE ServiceProviderId = @serviceProviderId";
                 SqlCommand deleteAddressesCommand = new(deleteAddressesQuery, sqlConnection);
-                deleteAddressesCommand.Parameters.AddWithValue("@contractorId", ContractorId);
+                deleteAddressesCommand.Parameters.AddWithValue("@serviceProviderId", serviceProviderId);
                 sqlConnection.Open();
                 deleteAddressesCommand.ExecuteNonQuery();
                 sqlConnection.Close();

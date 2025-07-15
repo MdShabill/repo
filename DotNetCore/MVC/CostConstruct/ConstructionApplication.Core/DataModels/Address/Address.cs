@@ -3,16 +3,16 @@
     public class Address
     {
         public int Id { get; set; }
-        public int ContractorId { get; set; }
+        public int ServiceProviderId { get; set; }
         public int AddressTypeId { get; set; }
         public int CountryId { get; set; }
         public string AddressLine1 { get; set; }
         public int PinCode { get; set; }
 
         //Parameterized Constructor
-        public Address(int contractorId, string addressLine1, int addressTypeId, int countryId, int pinCode)
+        public Address(int serviceProviderId, string addressLine1, int addressTypeId, int countryId, int pinCode)
         {
-            ContractorId = contractorId;
+            ServiceProviderId = serviceProviderId;
             AddressLine1 = addressLine1;
             AddressTypeId = addressTypeId;
             CountryId = countryId;

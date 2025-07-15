@@ -29,7 +29,7 @@ namespace ConstructionApplication.Helpers
             services.AddTransient<ISupplierRepository>(svc => new SupplierRepository(connectionString));
             services.AddTransient<IBrandRepository>(svc => new BrandRepository(connectionString));
             services.AddTransient<IJobCategoryRepository>(svc => new JobCategoryRepository(connectionString));
-            services.AddTransient<IContractorRepository>(svc => new ContractorRepository(connectionString));
+            services.AddTransient<IServiceProviderRepository>(svc => new ServiceProviderRepository(connectionString));
             services.AddTransient<IAddressRepository>(svc => new AddressRepository(connectionString));
             services.AddTransient<ICountryRepository>(svc => new CountryRepository(connectionString));
             services.AddTransient<IAddressTypeRepository>(svc => new AddressTypeRepository(connectionString));
@@ -46,7 +46,7 @@ namespace ConstructionApplication.Helpers
             services.AddTransient<ISupplierRepository>(svc => new SupplierRepositoryUsingSp(connectionString));
             services.AddTransient<IBrandRepository>(svc => new BrandRepositoryUsingSp(connectionString));
             services.AddTransient<IJobCategoryRepository>(svc => new JobCategoryRepositoryUsingSp(connectionString));
-            services.AddTransient<IContractorRepository>(svc => new ContractorRepositoryUsingSp(connectionString));
+            services.AddTransient<IServiceProviderRepository>(svc => new ServiceProviderRepositoryUsingSp(connectionString));
             services.AddTransient<IAddressRepository>(svc => new AddressRepositoryUsingSp(connectionString));
             services.AddTransient<ICountryRepository>(svc => new CountryRepositoryUsingSp(connectionString));
             services.AddTransient<IAddressTypeRepository>(svc => new AddressTypeRepositoryUsingSp(connectionString));
@@ -61,7 +61,7 @@ namespace ConstructionApplication.Helpers
             services.AddTransient<ISupplierRepository>(svc => new SupplierRepositoryUsingDapper(connectionString));
             services.AddTransient<IBrandRepository>(svc => new BrandRepositoryUsingDapper(connectionString));
             services.AddTransient<IJobCategoryRepository>(svc => new JobCategoryRepositoryUsingDapper(connectionString));
-            services.AddTransient<IContractorRepository>(svc => new ContractorRepositoryUsingDapper(connectionString));
+            services.AddTransient<IServiceProviderRepository>(svc => new ServiceProviderRepositoryUsingDapper(connectionString));
             services.AddTransient<IAddressRepository>(svc => new AddressRepositoryUsingDapper(connectionString));
             services.AddTransient<ICountryRepository>(svc => new CountryRepositoryUsingDapper(connectionString));
             services.AddTransient<IAddressTypeRepository>(svc => new AddressTypeRepositoryUsingDapper(connectionString));
@@ -76,7 +76,7 @@ namespace ConstructionApplication.Helpers
             services.AddTransient<ISupplierRepository>(svc => new SupplierRepositoryDapperUsingSp(connectionString));
             services.AddTransient<IBrandRepository>(svc => new BrandRepositoryDapperUsingSp(connectionString));
             services.AddTransient<IJobCategoryRepository>(svc => new JobCategoryRepositoryDapperUsingSp(connectionString));
-            services.AddTransient<IContractorRepository>(svc => new ContractorRepositoryDapperUsingSp(connectionString));
+            services.AddTransient<IServiceProviderRepository>(svc => new ServiceProviderRepositoryDapperUsingSp(connectionString));
             services.AddTransient<IAddressRepository>(svc => new AddressRepositoryDapperUsingSp(connectionString));
             services.AddTransient<ICountryRepository>(svc => new CountryRepositoryDapperUsingSp(connectionString));
             services.AddTransient<IAddressTypeRepository>(svc => new AddressTypeRepositoryDapperUsingSp(connectionString));

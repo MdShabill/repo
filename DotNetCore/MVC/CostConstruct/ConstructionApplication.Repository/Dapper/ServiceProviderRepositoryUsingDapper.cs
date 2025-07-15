@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.Contractor;
+﻿using ConstructionApplication.Core.DataModels.ServiceProviders;
 using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
 using System;
@@ -12,86 +12,86 @@ using Dapper;
 
 namespace ConstructionApplication.Repository.Dapper
 {
-    public class ContractorRepositoryUsingDapper : IContractorRepository
+    public class ServiceProviderRepositoryUsingDapper : IServiceProviderRepository
     {
         private readonly string _connectionString;
 
-        public ContractorRepositoryUsingDapper(string connectionString)
+        public ServiceProviderRepositoryUsingDapper(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public List<Contractor> GetAll(int? jobCategoryId, int? id)
+        public List<ServiceProvider> GetAll(int? jobCategoryId, int? id)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"
                        SELECT 
-                           Contractors.Id AS ContractorId, Contractors.JobCategoryId, JobCategories.Name AS JobTypes, 
-                           Contractors.Name AS ContractorName, Contractors.Gender, Contractors.DOB, 
-                           Contractors.MobileNumber, Contractors.ReferredBy, Addresses.AddressLine1, 
+                           ServiceProviders.Id AS ServiceProviderId, ServiceProviders.JobCategoryId, JobCategories.Name AS JobTypes, 
+                           ServiceProviders.Name AS ServiceProviderName, ServiceProviders.Gender, ServiceProviders.DOB, 
+                           ServiceProviders.MobileNumber, ServiceProviders.ReferredBy, Addresses.AddressLine1, 
                            Addresses.AddressTypeId, AddressTypes.Name AS AddressTypes, 
                            Addresses.CountryId, Countries.Name AS CountryName, Addresses.PinCode
                        FROM 
-                           Contractors
+                           ServiceProviders
                        LEFT JOIN 
-                            JobCategories ON Contractors.JobCategoryId = JobCategories.Id
+                            JobCategories ON ServiceProviders.JobCategoryId = JobCategories.Id
                        LEFT JOIN 
-                            Addresses ON Contractors.Id = Addresses.ContractorId
+                            Addresses ON ServiceProviders.Id = Addresses.ServiceProviderId
                        LEFT JOIN 
                             AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
                        LEFT JOIN 
                             Countries ON Addresses.CountryId = Countries.Id
                        WHERE 
-                           (@jobCategoryId IS NULL OR Contractors.JobCategoryId = @jobCategoryId)
-                       AND (@id IS NULL OR Contractors.Id = @id);";
+                           (@jobCategoryId IS NULL OR ServiceProviders.JobCategoryId = @jobCategoryId)
+                       AND (@id IS NULL OR ServiceProviders.Id = @id);";
                 // Execute query and return mapped list
-                return connection.Query<Contractor>(sqlQuery, new { jobCategoryId, id }).ToList();
+                return connection.Query<ServiceProvider>(sqlQuery, new { jobCategoryId, id }).ToList();
             }
         }
 
-        public int Add(Contractor contractor)
+        public int Add(ServiceProvider serviceProvider)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"
-                        INSERT INTO Contractors 
+                        INSERT INTO ServiceProviders 
                                (JobCategoryId, Name, Gender, DOB, ImageName, MobileNumber, ReferredBy)
                         VALUES 
-                               (@JobCategoryId, @ContractorName, @Gender, @DOB, @ImageName, @MobileNumber, @ReferredBy);
+                               (@JobCategoryId, @ServiceProviderName, @Gender, @DOB, @ImageName, @MobileNumber, @ReferredBy);
                         SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
-                // Executes the SQL query and returns the newly inserted ContractorId
-                return connection.ExecuteScalar<int>(sqlQuery, contractor);
+                // Executes the SQL query and returns the newly inserted ServiceProviderId
+                return connection.ExecuteScalar<int>(sqlQuery, serviceProvider);
             }
         }
 
-        public void Delete(int contractorId)
+        public void Delete(int serviceProviderId)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = "DELETE FROM Contractors WHERE Id = @ContractorId";
+                string sqlQuery = "DELETE FROM ServiceProviders WHERE Id = @ServiceProviderId";
                 // Executes the delete query
-                connection.Execute(sqlQuery, new { ContractorId = contractorId });
+                connection.Execute(sqlQuery, new { ServiceProviderId = serviceProviderId });
             }
         }
 
 
-        public int Update(Contractor contractor)
+        public int Update(ServiceProvider serviceProvider)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"
-                       UPDATE Contractors SET
+                       UPDATE ServiceProviders SET
                               JobCategoryId = @JobCategoryId,
-                              Name = @ContractorName,
+                              Name = @ServiceProviderName,
                               Gender = @Gender,
                               DOB = @DOB,
                               MobileNumber = @MobileNumber,
                               ReferredBy = @ReferredBy
-                       WHERE Id = @ContractorId";
+                       WHERE Id = @ServiceProviderId";
                 // Executes and returns affected rows
-                return connection.Execute(sqlQuery, contractor);
+                return connection.Execute(sqlQuery, serviceProvider);
             }
         }
     }

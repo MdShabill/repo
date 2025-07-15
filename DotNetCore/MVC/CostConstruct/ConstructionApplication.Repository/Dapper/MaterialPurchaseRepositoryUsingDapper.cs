@@ -62,5 +62,15 @@ namespace ConstructionApplication.Repository.Dapper
                 return connection.Execute(sqlQuery, materialPurchase);
             }
         }
+
+        public void Delete(int id)
+        {
+            using (IDbConnection connection = new SqlConnection(_connectionString))
+            {
+                string sqlQuery = "DELETE FROM MaterialPurchase WHERE Id = @Id";
+                // Executes the delete query
+                connection.Execute(sqlQuery, new { Id = id });
+            }
+        }
     }
 }
