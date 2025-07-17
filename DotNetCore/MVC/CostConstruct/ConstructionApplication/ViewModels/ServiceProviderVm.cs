@@ -14,6 +14,7 @@ namespace ConstructionApplication.ViewModels
         public string MobileNumber { get; set; }
         public string ReferredBy { get; set; }
 
+        public int SiteId { get; set; }
         public int? AddressTypeId { get; set; }
         public string AddressTypes { get; set; }
         public int? CountryId { get; set; }
