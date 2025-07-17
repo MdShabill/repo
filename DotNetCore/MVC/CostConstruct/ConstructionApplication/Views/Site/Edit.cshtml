@@ -9,9 +9,9 @@
             <input type="hidden" id="Id" name="Id" value="@Model.Id">
 
             <div class="form-group mb-3">
-                <label asp-for="CreatedDate" class="form-label fw-bold">Created Date</label>
-                <input asp-for="CreatedDate" class="form-control" type="date" value="@Model.CreatedDate.ToString("yyyy-MM-dd")" />
-                <span asp-validation-for="CreatedDate" class="text-danger"></span>
+                <label asp-for="StartedDate" class="form-label fw-bold">Created Date</label>
+                <input asp-for="StartedDate" class="form-control" type="date" value="@Model.StartedDate.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="StartedDate" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
@@ -21,14 +21,59 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Location" class="form-label fw-bold">Location</label>
-                <input asp-for="Location" class="form-control" value="@Model.Location" />
-                <span asp-validation-for="Location" class="text-danger"></span>
+                <label asp-for="SiteStatusId" class="control-label"><b>Site Status</b></label>
+                @Html.DropDownListFor(model => model.SiteStatusId, (SelectList)ViewBag.SiteStatus, "-- SELECT STATUS --", new { @class = "form-control" })
             </div>
 
-            <div class="text-end">
-                <button type="submit" class="btn btn-primary fw-bold">Update</button>
+            <br />
+            <button type="button" id="btnToggleAddressButton" class="btn btn-secondary mb-3" onclick="toggleAddressFields()">Tap for Address</button>
+
+            <!-- Hidden Address Fields -->
+            <div id="dvAddressFields" style="display: none;">
+                <div class="form-group mb-3">
+                    <label asp-for="AddressTypeId" class="control-label"><b>Address Type</b></label>
+                    @Html.DropDownListFor(model => model.AddressTypeId, ViewBag.AddressTypes as SelectList, "-- Select --", new { @class = "form-control" })
+                    <span asp-validation-for="AddressTypeId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="CountryId" class="control-label"><b>Country Name</b></label>
+                    @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", new { @class = "form-control" })
+                    <span asp-validation-for="CountryId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="AddressLine1" class="control-label"><b>Address</b></label>
+                    <textarea id="AddressLine1" name="AddressLine1" class="form-control">@Model.AddressLine1</textarea>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="PinCode" class="control-label"><b>Pin Code</b></label>
+                    <input type="text" id="PinCode" name="PinCode" value="@Model.PinCode" class="form-control" />
+                    <span asp-validation-for="PinCode" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Update" class="btn btn-primary" />
+                &nbsp;&nbsp;&nbsp;
+                <input type="submit" value="Cancel" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    function toggleAddressFields() {
+        const addressFields = document.getElementById("dvAddressFields");
+        const button = document.getElementById("btnToggleAddressButton");
+
+        if (addressFields.style.display === "none") {
+            addressFields.style.display = "block";
+            button.textContent = "Tap to Hide Address";
+        } else {
+            addressFields.style.display = "none";
+            button.textContent = "Tap for Address";
+        }
+    }
+</script>

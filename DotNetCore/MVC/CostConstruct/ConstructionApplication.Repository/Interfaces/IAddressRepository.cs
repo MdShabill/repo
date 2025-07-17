@@ -5,6 +5,6 @@ namespace ConstructionApplication.Repository.Interfaces
     public interface IAddressRepository
     {
         public void InsertOrUpdateAddress(Address address);
-        public void Delete(int serviceProviderId);
+        public void Delete(int serviceProviderId, int? siteId);
     }
 }
