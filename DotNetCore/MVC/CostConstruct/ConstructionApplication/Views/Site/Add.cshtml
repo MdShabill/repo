@@ -6,9 +6,9 @@
     <div class="col-md-6">
         <form asp-action="Add" method="post" class="border p-4 rounded shadow bg-light">
             <div class="form-group mb-6">
-                <label asp-for="CreatedDate" class="form-label fw-bold">Created Date</label>
-                <input asp-for="CreatedDate" class="form-control" type="date" />
-                <span asp-validation-for="CreatedDate" class="text-danger"></span>
+                <label asp-for="StartedDate" class="form-label fw-bold">Created Date</label>
+                <input asp-for="StartedDate" class="form-control" type="date" />
+                <span asp-validation-for="StartedDate" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-6">
@@ -18,14 +18,63 @@
             </div>
 
             <div class="form-group mb-6">
-                <label asp-for="Location" class="form-label fw-bold">Location</label>
-                <input asp-for="Location" class="form-control" placeholder="Enter site location" />
-                <span asp-validation-for="Location" class="text-danger"></span>
+                <label asp-for="SiteStatusId" class="control-label"><b>Site Status</b></label>
+                @Html.DropDownListFor(model => model.SiteStatusId, (SelectList)ViewBag.SiteStatus, "-- SELECT STATUS --", new { @class = "form-control" })
             </div>
-            <br/>
+
+            <div class="form-group mb-6">
+                <label asp-for="Note" class="form-label fw-bold">Note</label>
+                <input asp-for="Note" class="form-control" placeholder="Enter Note" />
+                <span asp-validation-for="Note" class="text-danger"></span>
+            </div>
+
+            <br />
+            <button type="button" id="btnToggleAddressButton" class="btn btn-secondary" onclick="toggleAddressFields()">Tap for Address</button>
+
+            <!-- Hidden Address Fields -->
+            <div id="dvAddressFields" style="display: none;">
+                <div class="form-group mb-6">
+                    <label asp-for="AddressLine1" class="control-label"><b>Address</b></label>
+                    <input asp-for="AddressLine1" class="form-control" />
+                </div>
+                <br />
+                <div class="form-group mb-6">
+                    <label asp-for="AddressTypeId"><b>Address Type</b></label>
+                    @Html.DropDownListFor(model => model.AddressTypeId, (SelectList)ViewBag.AddressTypes, "-- Select --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
+                </div>
+                <br />
+                <div class="form-group mb-6">
+                    <label asp-for="CountryId"><b>Country Name</b></label>
+                    @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+                </div>
+                <br />
+                <div class="form-group mb-6">
+                    <label asp-for="PinCode" class="control-label"><b>Pin Code</b></label>
+                    <input asp-for="PinCode" class="form-control" />
+                </div>
+                <br />
+            </div>
+
             <div class="text-end">
                 <button type="submit" class="btn btn-success fw-bold">Add</button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    function toggleAddressFields() {
+        const addressFields = document.getElementById("dvAddressFields");
+        const button = document.getElementById("btnToggleAddressButton");
+
+        if (addressFields.style.display === "none") {
+            addressFields.style.display = "block";
+            button.textContent = "Tap to Hide Address";
+        } else {
+            addressFields.style.display = "none";
+            button.textContent = "Tap for Address";
+        }
+    }
+</script>
