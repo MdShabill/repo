@@ -154,7 +154,7 @@ namespace ConstructionApplication.Controllers
             {
                 try
                 {
-                    _addressRepository.Delete(serviceProviderId);
+                    _addressRepository.Delete(serviceProviderId, null);
 
                     _dailyAttendanceRepository.Delete(serviceProviderId);
 
@@ -286,13 +286,14 @@ namespace ConstructionApplication.Controllers
                     serviceProviderVm.AddressLine1,
                     serviceProviderVm.AddressTypeId ?? 0,
                     serviceProviderVm.CountryId ?? 0,
-                    serviceProviderVm.PinCode ?? 0
+                    serviceProviderVm.PinCode ?? 0,
+                    serviceProviderVm.SiteId
                 );
                 _addressRepository.InsertOrUpdateAddress(address);
             }
             else
             {
-                _addressRepository.Delete(serviceProviderId);
+                _addressRepository.Delete(serviceProviderId, null);
             }
         }
 
