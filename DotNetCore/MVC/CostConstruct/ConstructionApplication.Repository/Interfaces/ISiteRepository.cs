@@ -13,6 +13,6 @@ namespace ConstructionApplication.Repository.Interfaces
         public Site GetSiteById(int Id);
         public int Update(Site site);
         public int Create(Site site);
-        public void Delete(int id);
+        public void Delete(int siteId);
     }
 }

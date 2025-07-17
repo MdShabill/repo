@@ -2,6 +2,9 @@
 (
     [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
     [Name] NVARCHAR(100) NOT NULL,
-    [Location] NVARCHAR(150) NULL,
-    [CreatedDate] DATETIME NULL
+    [StartedDate] DATETIME NULL,
+    [SiteStatusId] INT NULL,
+    [Note] NVARCHAR(100) NULL,
+
+    CONSTRAINT [FK_Sites_SiteStatus] FOREIGN KEY ([SiteStatusId]) REFERENCES [dbo].[SiteStatus] ([Id])
 );

@@ -18,12 +18,19 @@ namespace ConstructionApplication.Repository.AdoDotNet
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                // Check if an address record exists for the given ServiceProviderId
-                string checkQuery = "SELECT COUNT(*) FROM Addresses WHERE ServiceProviderId = @serviceProviderId";
-                SqlCommand checkCommand = new SqlCommand(checkQuery, sqlConnection);
-                checkCommand.Parameters.AddWithValue("@serviceProviderId", address.ServiceProviderId);
-
                 sqlConnection.Open();
+                bool isServiceProvider = address.ServiceProviderId > 0;
+                bool isSite = address.SiteId > 0;
+
+                // Check if an address record exists for the given ServiceProviderId or SiteId
+                string checkQuery = @"SELECT COUNT(*) 
+                                    FROM 
+                                        Addresses 
+                                    WHERE " + (isServiceProvider ? "ServiceProviderId = @id" : "SiteId = @id");
+
+                SqlCommand checkCommand = new SqlCommand(checkQuery, sqlConnection);
+                checkCommand.Parameters.AddWithValue("@id", isServiceProvider ? address.ServiceProviderId : address.SiteId);
+
                 int addressCount = (int)checkCommand.ExecuteScalar();
 
                 if (addressCount > 0)
@@ -34,26 +41,28 @@ namespace ConstructionApplication.Repository.AdoDotNet
                                 AddressTypeId = @addressTypeId,
                                 CountryId = @countryId,
                                 PinCode = @pinCode
-                                WHERE ServiceProviderId = @serviceProviderId";
+                                WHERE "" + (isServiceProvider ? ""ServiceProviderId = @id"" : ""SiteId = @id";
 
                     SqlCommand updateCommand = new SqlCommand(updateQuery, sqlConnection);
                     updateCommand.Parameters.AddWithValue("@addressLine1", address.AddressLine1 ?? (object)DBNull.Value);
                     updateCommand.Parameters.AddWithValue("@addressTypeId", address.AddressTypeId);
                     updateCommand.Parameters.AddWithValue("@countryId", address.CountryId);
                     updateCommand.Parameters.AddWithValue("@pinCode", address.PinCode);
-                    updateCommand.Parameters.AddWithValue("@serviceProviderId", address.ServiceProviderId);
+                    updateCommand.Parameters.AddWithValue("@id", isServiceProvider ? address.ServiceProviderId : address.SiteId);
                     updateCommand.ExecuteNonQuery();
                 }
                 else
                 {
                     string insertQuery = @"
                                INSERT INTO Addresses 
-                                      (ServiceProviderId, AddressLine1, AddressTypeId, CountryId, PinCode)
+                                      (ServiceProviderId, SiteId, AddressLine1, AddressTypeId, CountryId, PinCode)
                                 VALUES 
-                                      (@serviceProviderId, @addressLine1, @addressTypeId, @countryId, @pinCode)";
+                                      (@serviceProviderId, @siteId, @addressLine1, @addressTypeId, @countryId, @pinCode)";
 
                     SqlCommand insertCommand = new SqlCommand(insertQuery, sqlConnection);
-                    insertCommand.Parameters.AddWithValue("@serviceProviderId", address.ServiceProviderId);
+                    insertCommand.Parameters.AddWithValue("@serviceProviderId", isServiceProvider ? address.ServiceProviderId : (object)DBNull.Value);
+
+                    insertCommand.Parameters.AddWithValue("@siteId", isSite ? address.SiteId : (object)DBNull.Value);
                     insertCommand.Parameters.AddWithValue("@addressLine1", address.AddressLine1 ?? (object)DBNull.Value);
                     insertCommand.Parameters.AddWithValue("@addressTypeId", address.AddressTypeId);
                     insertCommand.Parameters.AddWithValue("@countryId", address.CountryId);
@@ -64,15 +73,31 @@ namespace ConstructionApplication.Repository.AdoDotNet
             }
         }
 
-        public void Delete(int serviceProviderId)
+        public void Delete(int serviceProviderId, int? siteId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string deleteAddressesQuery = @"DELETE FROM Addresses WHERE ServiceProviderId = @serviceProviderId";
-                SqlCommand deleteAddressesCommand = new(deleteAddressesQuery, sqlConnection);
-                deleteAddressesCommand.Parameters.AddWithValue("@serviceProviderId", serviceProviderId);
                 sqlConnection.Open();
-                deleteAddressesCommand.ExecuteNonQuery();
+
+                string deleteQuery = @"DELETE FROM Addresses WHERE ";
+
+                if (siteId.HasValue && siteId.Value > 0)
+                {
+                    deleteQuery += "SiteId = @siteId";
+                }
+                else
+                {
+                    deleteQuery += "ServiceProviderId = @serviceProviderId";
+                }
+
+                SqlCommand deleteCommand = new SqlCommand(deleteQuery, sqlConnection);
+
+                if (siteId.HasValue && siteId.Value > 0)
+                    deleteCommand.Parameters.AddWithValue("@siteId", siteId.Value);
+                else
+                    deleteCommand.Parameters.AddWithValue("@serviceProviderId", serviceProviderId);
+
+                deleteCommand.ExecuteNonQuery();
                 sqlConnection.Close();
             }
         }

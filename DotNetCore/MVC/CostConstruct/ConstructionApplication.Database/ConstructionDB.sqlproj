@@ -89,5 +89,7 @@
     <Build Include="dbo\Stored Procedures\SP_ServiceProviderCRUD.sql" />
     <Build Include="dbo\Tables\Users.sql" />
     <Build Include="dbo\Tables\Sites.sql" />
+    <Build Include="dbo\Stored Procedures\SP_SiteCRUD.sql" />
+    <Build Include="dbo\Tables\SiteStatus.sql" />
   </ItemGroup>
 </Project>
