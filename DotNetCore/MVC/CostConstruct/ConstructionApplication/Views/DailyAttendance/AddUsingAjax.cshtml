@@ -14,9 +14,9 @@
             </div>
             <br/>
             <div class="form-group" style="width: 40%;">
-                <label asp-for="JobCategoryId" class="control-label"><b>Job Category</b></label>
-                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, "-- SELECT --", new { @class = "form-control", @id = "JobCategoryId" })
-                <span asp-validation-for="JobCategoryId" class="text-danger"></span>
+                <label asp-for="ServiceTypeId" class="control-label"><b>Job Category</b></label>
+                @Html.DropDownListFor(model => model.ServiceTypeId, (SelectList)ViewBag.ServiceType, "-- SELECT --", new { @class = "form-control", @id = "ServiceTypeId" })
+                <span asp-validation-for="ServiceTypeId" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group" style="width: 40%;">
@@ -62,13 +62,14 @@
     $(document).ready(function () {
 
         // When the dropdown value changes, make an AJAX call to fetch the cost.
-        $('#JobCategoryId').change(function () {
-            var jobCategoryId = $(this).val();
-            if (jobCategoryId > 0) {
+        $('#ServiceTypeId').change(function () {
+            var ServiceTypeId = $(this).val();
+            if (ServiceTypeId > 0) {
                 $.ajax({
-                    url: '@Url.Action("GetDataByJobCategoryId", "DailyAttendance")',
+                    url: '@Url.Action("GetDataByServiceTypeId", "DailyAttendance")',
                     type: 'GET',
-                    data: { jobCategoryId: jobCategoryId },
+                    data: { ServiceTypeId: ServiceTypeId },
+                    data: { ServiceTypeId: ServiceTypeId },
                     success: function (response) {
                         $('#amountPerWorker').val(response.cost);
                         
@@ -86,7 +87,7 @@
                     }
                 });
             } else {
-                // Clear amount and total amount fields if no valid category is selected.
+                // Clear amount and total amount fields if no valid ServiceType is selected.
                 $('#amountPerWorker').val('');
                 $('#totalAmount').val('');
             }
@@ -106,8 +107,8 @@
         });
 
         // Restore dropdown values on page load if validation fails
-        if ($('#JobCategoryId').val() > 0) {
-            $('#JobCategoryId').trigger('change');
+        if ($('#ServiceTypeId').val() > 0) {
+            $('#ServiceTypeId').trigger('change');
         }
     });
 </script>

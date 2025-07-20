@@ -1,5 +1,5 @@
 ﻿using ConstructionApplication.Core.DataModels.CostMaster;
-using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Core.DataModels.Material;
 using ConstructionApplication.Repository.Interfaces;
 using Microsoft.VisualBasic;
@@ -17,19 +17,19 @@ namespace ConstructionApplication.Repository.AdoDotNet
             _connectionString = connectionString;
         }
 
-        public List<CostMaster> GetByJobCategory(int jobCategoryId)
+        public List<CostMaster> GetByServiceType(int serviceTypeId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"SELECT CostMaster.Id, CostMaster.JobCategoryId, 
-                            JobCategories.Name, CostMaster.Cost, CostMaster.Date
+                string sqlQuery = @"SELECT CostMaster.Id, CostMaster.ServiceTypeId, 
+                            ServiceTypes.Name, CostMaster.Cost, CostMaster.Date
                             FROM CostMaster
-                            Join JobCategories ON CostMaster.JobCategoryId = JobCategories.Id
-                            WHERE CostMaster.JobCategoryId = @jobCategoryId
+                            Join ServiceTypes ON CostMaster.ServiceTypeId = ServiceTypes.Id
+                            WHERE CostMaster.ServiceTypeId = @serviceTypeId
                             ORDER BY CostMaster.Date DESC";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", jobCategoryId);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@serviceTypeId", serviceTypeId);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
@@ -40,7 +40,7 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 //    CostMaster costMaster = new()
                 //    {
                 //        Id = (int)dataTable.Rows[i]["Id"],
-                //        JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
+                //        ServiceTypeId = (int)dataTable.Rows[i]["ServiceTypeId"],
                 //        Name = (string)dataTable.Rows[i]["Name"],
                 //        Cost = (decimal)dataTable.Rows[i]["Cost"],
                 //        Date = (DateTime)dataTable.Rows[i]["Date"]
@@ -54,7 +54,7 @@ namespace ConstructionApplication.Repository.AdoDotNet
                     CostMaster costMaster = new()
                     {
                         Id = (int)row["ID"],
-                        JobCategoryId = (int)row["JobCategoryId"],
+                        ServiceTypeId = (int)row["ServiceTypeId"],
                         Name = (string)row["Name"],
                         Cost = (decimal)row["Cost"],
                         Date = (DateTime)row["Date"]
@@ -65,22 +65,22 @@ namespace ConstructionApplication.Repository.AdoDotNet
             }
         }
 
-        public CostMaster GetActiveCostDetail(int JobCategoryId)
+        public CostMaster GetActiveCostDetail(int serviceTypeId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
                         SELECT TOP 1 
-                            CostMaster.JobCategoryId, JobCategories.Name, 
+                            CostMaster.ServiceTypeId, ServiceTypes.Name, 
                             CostMaster.Cost, CostMaster.Date
                         FROM CostMaster 
-                        JOIN JobCategories ON CostMaster.JobCategoryId = JobCategories.Id 
-                        WHERE CostMaster.JobCategoryId = @jobCategoryId 
+                        JOIN ServiceTypes ON CostMaster.ServiceTypeId = ServiceTypes.Id 
+                        WHERE CostMaster.ServiceTypeId = @serviceTypeId 
                           AND CostMaster.Date <= @currentDate 
                         ORDER BY CostMaster.Date DESC";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@jobCategoryId", JobCategoryId);
+                sqlCommand.Parameters.AddWithValue("@serviceTypeId", serviceTypeId);
                 sqlCommand.Parameters.AddWithValue("@currentDate", DateTime.Now);
 
                 sqlConnection.Open();
@@ -92,7 +92,7 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 {
                     costMaster = new CostMaster
                     {
-                        JobCategoryId = (int)reader["JobCategoryId"],
+                        ServiceTypeId = (int)reader["ServiceTypeId"],
                         Name = (string)reader["Name"],
                         Cost = (decimal)reader["Cost"],
                     };
@@ -109,11 +109,11 @@ namespace ConstructionApplication.Repository.AdoDotNet
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 string insertQuery = @"INSERT INTO CostMaster
-                                        (JobCategoryId, Cost, Date)
+                                        (ServiceTypeId, Cost, Date)
                                         VALUES
-                                        (@jobCategoryId, @cost, @date)";
+                                        (@serviceTypeId, @cost, @date)";
                 SqlCommand insertCommand = new SqlCommand(insertQuery, sqlConnection);
-                insertCommand.Parameters.AddWithValue("@jobCategoryId", costMaster.JobCategoryId);
+                insertCommand.Parameters.AddWithValue("@serviceTypeId", costMaster.ServiceTypeId);
                 insertCommand.Parameters.AddWithValue("@cost", costMaster.Cost);
                 insertCommand.Parameters.AddWithValue("@date", costMaster.Date);
                 sqlConnection.Open();

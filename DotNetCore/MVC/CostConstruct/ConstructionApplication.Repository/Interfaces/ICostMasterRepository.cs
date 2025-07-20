@@ -4,8 +4,8 @@ namespace ConstructionApplication.Repository.Interfaces
 {
     public interface ICostMasterRepository
     {
-        public List<CostMaster> GetByJobCategory(int jobCategoryId);
-        public CostMaster GetActiveCostDetail(int jobCategoryId);
+        public List<CostMaster> GetByServiceType(int serviceTypeId);
+        public CostMaster GetActiveCostDetail(int serviceTypeId);
         public int Create(CostMaster costMaster);
     }
 }

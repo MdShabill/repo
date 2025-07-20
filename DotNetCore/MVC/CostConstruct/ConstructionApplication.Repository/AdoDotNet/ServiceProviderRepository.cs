@@ -4,6 +4,7 @@ using System.Data;
 using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
 using System;
+using ConstructionApplication.Core.DataModels.ServiceTypes;
 
 namespace ConstructionApplication.Repository.AdoDotNet
 {
@@ -16,27 +17,27 @@ namespace ConstructionApplication.Repository.AdoDotNet
             _connectionString = connectionString;
         }
 
-        public List<ServiceProvider> GetAll(int? jobCategoryId, int? id)
+        public List<ServiceProvider> GetAll(int? serviceTypeId, int? id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
                     SELECT 
-                        ServiceProviders.Id As ServiceProviderId, ServiceProviders.JobCategoryId, JobCategories.Name As JobTypes, 
+                        ServiceProviders.Id As ServiceProviderId, ServiceProviders.ServiceTypeId, ServiceTypes.Name As ServiceTypes, 
                         ServiceProviders.Name As ServiceProviderName, ServiceProviders.Gender, ServiceProviders.DOB, 
                         ServiceProviders.MobileNumber, ServiceProviders.ReferredBy, Addresses.AddressLine1, Addresses.AddressTypeId,
                         AddressTypes.Name As AddressTypes, Addresses.CountryId,
 	                    Countries.Name As CountryName, Addresses.PinCode
                     FROM ServiceProviders
-                    LEFT JOIN JobCategories ON ServiceProviders.JobCategoryId = JobCategories.Id
+                    LEFT JOIN ServiceTypes ON ServiceProviders.ServiceTypeId = ServiceTypes.Id
                     LEFT JOIN Addresses ON ServiceProviders.Id = Addresses.ServiceProviderId
                     LEFT JOIN AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
                     LEFT JOIN Countries ON Addresses.CountryId = Countries.Id
-                    WHERE (@jobCategoryId IS NULL OR JobCategoryId = @jobCategoryId)
+                    WHERE (@serviceTypeId IS NULL OR ServiceTypeId = @serviceTypeId)
                     AND (@id IS NULL OR ServiceProviders.Id = @id) ";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", jobCategoryId ?? (object)DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@serviceTypeId", serviceTypeId ?? (object)DBNull.Value);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@id", id ?? (object)DBNull.Value);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -51,8 +52,8 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 //    {
 
 
-                //        JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
-                //        JobTypes = (string)dataTable.Rows[i]["JobTypes"],
+                //        ServiceTypeId = (int)dataTable.Rows[i]["ServiceTypeId"],
+                //        ServiceTypes = (string)dataTable.Rows[i]["ServiceTypes"],
                 //        ServiceProviderId = (int)dataTable.Rows[i]["ServiceProviderId"],
                 //        ServiceProviderName = (string)dataTable.Rows[i]["ServiceProviderName"],
                 //        Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
@@ -75,8 +76,8 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 {
                     ServiceProvider serviceProvider = new()
                     {
-                        JobCategoryId = (int)row["JobCategoryId"],
-                        JobTypes = (string)row["JobTypes"],
+                        ServiceTypeId = (int)row["ServiceTypeId"],
+                        ServiceTypes = (string)row["ServiceTypes"],
                         ServiceProviderId = (int)row["ServiceProviderId"],
                         ServiceProviderName = (string)row["ServiceProviderName"],
                         Gender = (GenderTypes)row["Gender"],
@@ -102,13 +103,13 @@ namespace ConstructionApplication.Repository.AdoDotNet
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into ServiceProviders
-                       (JobCategoryId, Name, Gender, DOB, ImageName, MobileNumber, ReferredBy)
+                       (ServiceTypeId, Name, Gender, DOB, ImageName, MobileNumber, ReferredBy)
                        Values
-                       (@jobCategoryId, @name, @gender, @dOB, @imageName, @mobileNumber, @referredBy)
+                       (@serviceTypeId, @name, @gender, @dOB, @imageName, @mobileNumber, @referredBy)
                        Select Scope_Identity()";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
-                sqlCommand.Parameters.AddWithValue("@jobCategoryId", serviceProvider.JobCategoryId);
+                sqlCommand.Parameters.AddWithValue("@serviceTypeId", serviceProvider.ServiceTypeId);
                 sqlCommand.Parameters.AddWithValue("@name", serviceProvider.ServiceProviderName);
                 sqlCommand.Parameters.AddWithValue("@gender", serviceProvider.Gender);
                 sqlCommand.Parameters.AddWithValue("@dOB", serviceProvider.DOB);
@@ -146,7 +147,7 @@ namespace ConstructionApplication.Repository.AdoDotNet
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"UPDATE ServiceProviders SET
-                            JobCategoryId = @jobCategoryId,
+                            ServiceTypeId = @serviceTypeId,
                             Name = @name,
                             Gender = @gender,
                             DOB = @dob,
@@ -157,7 +158,7 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, sqlConnection))
                 {
                     sqlCommand.Parameters.AddWithValue("@id", serviceProvider.ServiceProviderId);
-                    sqlCommand.Parameters.AddWithValue("@jobCategoryId", serviceProvider.JobCategoryId);
+                    sqlCommand.Parameters.AddWithValue("@serviceTypeId", serviceProvider.ServiceTypeId);
                     sqlCommand.Parameters.AddWithValue("@name", serviceProvider.ServiceProviderName);
                     sqlCommand.Parameters.AddWithValue("@gender", serviceProvider.Gender);
                     sqlCommand.Parameters.AddWithValue("@dob", serviceProvider.DOB);

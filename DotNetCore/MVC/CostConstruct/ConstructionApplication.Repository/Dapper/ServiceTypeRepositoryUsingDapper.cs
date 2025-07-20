@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.JobCategory;
+﻿using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,21 +12,21 @@ using Dapper;
 
 namespace ConstructionApplication.Repository.Dapper
 {
-    public class JobCategoryRepositoryUsingDapper : IJobCategoryRepository
+    public class ServiceTypeRepositoryUsingDapper : IServiceTypeRepository
     {
         private readonly string _connectionString;
 
-        public JobCategoryRepositoryUsingDapper(string connectionString)
+        public ServiceTypeRepositoryUsingDapper(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public List<JobCategory> GetAll()
+        public List<ServiceType> GetAll()
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = "SELECT Id, Name FROM JobCategories ";
-                return connection.Query<JobCategory>(sqlQuery).ToList();
+                string sqlQuery = "SELECT Id, Name FROM ServiceTypes ";
+                return connection.Query<ServiceType>(sqlQuery).ToList();
             }
         }
     }

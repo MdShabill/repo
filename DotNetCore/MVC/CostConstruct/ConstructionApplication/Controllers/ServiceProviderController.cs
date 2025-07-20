@@ -3,7 +3,7 @@ using ConstructionApplication.Core.DataModels.Address;
 using ConstructionApplication.Core.DataModels.AddressType;
 using ConstructionApplication.Core.DataModels.ServiceProviders;
 using ConstructionApplication.Core.DataModels.Country;
-using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,7 @@ namespace ConstructionApplication.Controllers
 
         IAddressTypeRepository _addressTypeRepository;
         ICountryRepository _countryRepository;
-        IJobCategoryRepository _jobCategoryRepository;
+        IServiceTypeRepository _serviceTypeRepository;
         IAddressRepository _addressRepository;
         IServiceProviderRepository _serviceProviderRepository;
         IDailyAttendanceRepository _dailyAttendanceRepository;
@@ -32,14 +32,14 @@ namespace ConstructionApplication.Controllers
         public ServiceProviderController(IConfiguration iConfig,
             IServiceProviderRepository serviceProviderRepository,
             IAddressRepository addressRepository,
-            ICountryRepository countryRepository, IJobCategoryRepository jobCategoryRepository,
+            ICountryRepository countryRepository, IServiceTypeRepository servicetypeRepository,
             IAddressTypeRepository addressTypeRepository, IWebHostEnvironment env, 
             IDailyAttendanceRepository dailyAttendanceRepository, 
             ISiteRepository siteRepository) : base(siteRepository)
         {
             _config = iConfig;
             _serviceProviderRepository = serviceProviderRepository;
-            _jobCategoryRepository = jobCategoryRepository;
+            _serviceTypeRepository = servicetypeRepository;
             _addressRepository = addressRepository;
             _countryRepository = countryRepository;
             _addressTypeRepository = addressTypeRepository;
@@ -56,9 +56,9 @@ namespace ConstructionApplication.Controllers
         }
 
         [SessionCheck]
-        public IActionResult Index(int? jobCategoryId, int? id)
+        public IActionResult Index(int? serviceTypeId, int? id)
         {
-            List<Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(jobCategoryId, id);
+            List<Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(serviceTypeId, id);
             List<ServiceProviderVm> serviceProviderVm = _imapper.Map<List<Core.DataModels.ServiceProviders.ServiceProvider>, List<ServiceProviderVm>>(serviceProviders);
             ViewBag.ServiceProviderCount = serviceProviderVm.Count;
             return View(serviceProviderVm);
@@ -225,7 +225,7 @@ namespace ConstructionApplication.Controllers
                 return false;
             }
 
-            if (serviceProviderVm.JobCategoryId == 0)
+            if (serviceProviderVm.ServiceTypeId == 0)
             {
                 ViewBag.errorMessage = "Job Category is required.";
                 return false;
@@ -299,8 +299,8 @@ namespace ConstructionApplication.Controllers
 
         private void DropDownSelectList()
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+            List<ServiceType> ServiceTypes = _serviceTypeRepository.GetAll();
+            ViewBag.ServiceType = new SelectList(ServiceTypes, "Id", "Name");
 
             List<AddressType> addressTypes = _addressTypeRepository.GetAll();
             ViewBag.AddressTypes = new SelectList(addressTypes, "Id", "Name");

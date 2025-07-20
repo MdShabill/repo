@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.JobCategory;
+﻿using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Repository.Interfaces;
 using System.Data.SqlClient;
 using System.Data;
@@ -6,20 +6,20 @@ using Dapper;
 
 namespace ConstructionApplication.Repository.DapperUsingSp
 {
-    public class JobCategoryRepositoryDapperUsingSp : IJobCategoryRepository
+    public class ServiceTypeRepositoryDapperUsingSp : IServiceTypeRepository
     {
         private readonly string _connectionString;
 
-        public JobCategoryRepositoryDapperUsingSp(string connectionString)
+        public ServiceTypeRepositoryDapperUsingSp(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public List<JobCategory> GetAll()
+        public List<ServiceType> GetAll()
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                return connection.Query<JobCategory>("Sp_GetAllJobCategories", commandType: CommandType.StoredProcedure).ToList();
+                return connection.Query<ServiceType>("Sp_GetAllServiceTypes", commandType: CommandType.StoredProcedure).ToList();
             }
         }
     }

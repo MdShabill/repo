@@ -15,23 +15,23 @@ namespace ConstructionApplication.Repository.DapperUsingSp
             _connectionString = connectionString;
         }
 
-        public List<CostMaster> GetByJobCategory(int jobCategoryId)
+        public List<CostMaster> GetByServiceType(int serviceTypeId)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                var parameters = new { Mode = "GET_BY_JOBCATEGORY", JobCategoryId = jobCategoryId };
+                var parameters = new { Mode = "GET_BY_SERVICETYPE", ServiceTypeId = serviceTypeId };
                 return connection.Query<CostMaster>("Sp_CostMasterCRUD", parameters, commandType: CommandType.StoredProcedure).ToList();
             }
         }
 
-        public CostMaster GetActiveCostDetail(int jobCategoryId)
+        public CostMaster GetActiveCostDetail(int serviceTypeId)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 var parameters = new
                 {
                     Mode = "GET_ACTIVE_COST",
-                    JobCategoryId = jobCategoryId,
+                    ServiceTypeId = serviceTypeId,
                     CurrentDate = DateTime.Now
                 };
                 return connection.QueryFirstOrDefault<CostMaster>("Sp_CostMasterCRUD", parameters, commandType: CommandType.StoredProcedure) ?? new CostMaster();
@@ -45,7 +45,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                 var parameters = new
                 {
                     Mode = "CREATE",
-                    costMaster.JobCategoryId,
+                    costMaster.ServiceTypeId,
                     costMaster.Cost,
                     costMaster.Date
                 };

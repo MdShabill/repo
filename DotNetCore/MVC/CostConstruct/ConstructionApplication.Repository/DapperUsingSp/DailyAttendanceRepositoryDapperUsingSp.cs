@@ -36,7 +36,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                 {
                     Mode = "CREATE",
                     dailyAttendance.Date,
-                    dailyAttendance.JobCategoryId,
+                    dailyAttendance.ServiceTypeId,
                     dailyAttendance.ServiceProviderId,
                     dailyAttendance.TotalWorker,
                     dailyAttendance.AmountPerWorker,

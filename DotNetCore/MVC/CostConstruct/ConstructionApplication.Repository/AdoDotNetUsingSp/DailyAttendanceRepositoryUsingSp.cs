@@ -66,7 +66,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                 };
                 sqlCommand.Parameters.AddWithValue("@Mode", "CREATE");
                 sqlCommand.Parameters.AddWithValue("@date", dailyAttendance.Date);
-                sqlCommand.Parameters.AddWithValue("@jobCategoryId", dailyAttendance.JobCategoryId);
+                sqlCommand.Parameters.AddWithValue("@serviceTypeId", dailyAttendance.ServiceTypeId);
                 sqlCommand.Parameters.AddWithValue("@cerviceProviderId", dailyAttendance.ServiceProviderId);
                 sqlCommand.Parameters.AddWithValue("@totalWorker", dailyAttendance.TotalWorker);
                 sqlCommand.Parameters.AddWithValue("@amountPerWorker", dailyAttendance.AmountPerWorker);

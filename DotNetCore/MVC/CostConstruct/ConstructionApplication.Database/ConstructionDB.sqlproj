@@ -64,7 +64,7 @@
     <Folder Include="dbo\Stored Procedures\" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\JobCategories.sql" />
+    <Build Include="dbo\Tables\ServiceTypes.sql" />
     <Build Include="dbo\Tables\DailyAttendance.sql" />
     <Build Include="dbo\Tables\CostMaster.sql" />
     <Build Include="dbo\Tables\ServiceProviders.sql" />
@@ -81,7 +81,7 @@
     <Build Include="dbo\Stored Procedures\Sp_DailyAttendanceCRUD.sql" />
     <Build Include="dbo\Stored Procedures\Sp_MaterialPurchaseCRUD.sql" />
     <Build Include="dbo\Stored Procedures\Sp_GetAllAddressTypes.sql" />
-    <Build Include="dbo\Stored Procedures\Sp_GetAllJobCategories.sql" />
+    <Build Include="dbo\Stored Procedures\Sp_GetAllServiceTypes.sql" />
     <Build Include="dbo\Stored Procedures\Sp_MaterialsDetails.sql" />
     <Build Include="dbo\Stored Procedures\Sp_GetAllSuppliers.sql" />
     <Build Include="dbo\Stored Procedures\Sp_GetAllBrands.sql" />
@@ -91,5 +91,8 @@
     <Build Include="dbo\Tables\Sites.sql" />
     <Build Include="dbo\Stored Procedures\SP_SiteCRUD.sql" />
     <Build Include="dbo\Tables\SiteStatus.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="ConstructionDB.refactorlog" />
   </ItemGroup>
 </Project>

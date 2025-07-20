@@ -27,7 +27,7 @@ namespace ConstructionApplication.Repository.Dapper
                        FROM 
                            DailyAttendance
                        JOIN 
-                           JobCategories ON DailyAttendance.JobCategoryId = JobCategories.Id
+                           ServiceTypes ON DailyAttendance.ServiceTypeId = ServiceTypes.Id
                        JOIN 
                            ServiceProviders ON DailyAttendance.ServiceProviderId = ServiceProviders.Id
                        WHERE
@@ -47,9 +47,9 @@ namespace ConstructionApplication.Repository.Dapper
             {
                 string sqlQuery = @"
                        INSERT INTO DailyAttendance
-                          (Date, JobCategoryId, ServiceProviderId, TotalWorker, AmountPerWorker, TotalAmount)
+                          (Date, ServiceTypeId, ServiceProviderId, TotalWorker, AmountPerWorker, TotalAmount)
                        VALUES
-                          (@Date, @JobCategoryId, @ServiceProviderId, @TotalWorker, @AmountPerWorker, @TotalAmount);
+                          (@Date, @ServiceTypeId, @ServiceProviderId, @TotalWorker, @AmountPerWorker, @TotalAmount);
                        SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
                 // Executes the SQL query and returns the newly inserted DailyAttendance Id

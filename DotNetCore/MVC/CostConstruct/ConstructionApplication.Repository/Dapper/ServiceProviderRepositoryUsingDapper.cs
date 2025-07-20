@@ -21,13 +21,13 @@ namespace ConstructionApplication.Repository.Dapper
             _connectionString = connectionString;
         }
 
-        public List<ServiceProvider> GetAll(int? jobCategoryId, int? id)
+        public List<ServiceProvider> GetAll(int? serviceTypeId, int? id)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"
                        SELECT 
-                           ServiceProviders.Id AS ServiceProviderId, ServiceProviders.JobCategoryId, JobCategories.Name AS JobTypes, 
+                           ServiceProviders.Id AS ServiceProviderId, ServiceProviders.ServiceTypeId, ServiceTypes.Name AS ServiceTypes, 
                            ServiceProviders.Name AS ServiceProviderName, ServiceProviders.Gender, ServiceProviders.DOB, 
                            ServiceProviders.MobileNumber, ServiceProviders.ReferredBy, Addresses.AddressLine1, 
                            Addresses.AddressTypeId, AddressTypes.Name AS AddressTypes, 
@@ -35,7 +35,7 @@ namespace ConstructionApplication.Repository.Dapper
                        FROM 
                            ServiceProviders
                        LEFT JOIN 
-                            JobCategories ON ServiceProviders.JobCategoryId = JobCategories.Id
+                            ServiceTypes ON ServiceProviders.ServiceTypeId = ServiceTypes.Id
                        LEFT JOIN 
                             Addresses ON ServiceProviders.Id = Addresses.ServiceProviderId
                        LEFT JOIN 
@@ -43,10 +43,10 @@ namespace ConstructionApplication.Repository.Dapper
                        LEFT JOIN 
                             Countries ON Addresses.CountryId = Countries.Id
                        WHERE 
-                           (@jobCategoryId IS NULL OR ServiceProviders.JobCategoryId = @jobCategoryId)
+                           (@serviceTypeId IS NULL OR ServiceProviders.ServiceTypeId = @serviceTypeId)
                        AND (@id IS NULL OR ServiceProviders.Id = @id);";
                 // Execute query and return mapped list
-                return connection.Query<ServiceProvider>(sqlQuery, new { jobCategoryId, id }).ToList();
+                return connection.Query<ServiceProvider>(sqlQuery, new { serviceTypeId, id }).ToList();
             }
         }
 
@@ -56,9 +56,9 @@ namespace ConstructionApplication.Repository.Dapper
             {
                 string sqlQuery = @"
                         INSERT INTO ServiceProviders 
-                               (JobCategoryId, Name, Gender, DOB, ImageName, MobileNumber, ReferredBy)
+                               (ServiceTypeId, Name, Gender, DOB, ImageName, MobileNumber, ReferredBy)
                         VALUES 
-                               (@JobCategoryId, @ServiceProviderName, @Gender, @DOB, @ImageName, @MobileNumber, @ReferredBy);
+                               (@ServiceTypeId, @ServiceProviderName, @Gender, @DOB, @ImageName, @MobileNumber, @ReferredBy);
                         SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
                 // Executes the SQL query and returns the newly inserted ServiceProviderId
@@ -83,7 +83,7 @@ namespace ConstructionApplication.Repository.Dapper
             {
                 string sqlQuery = @"
                        UPDATE ServiceProviders SET
-                              JobCategoryId = @JobCategoryId,
+                              ServiceTypeId = @ServiceTypeId,
                               Name = @ServiceProviderName,
                               Gender = @Gender,
                               DOB = @DOB,

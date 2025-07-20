@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
-using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.ServiceTypes;
 
 namespace ConstructionApplication.Repository.Dapper
 {
@@ -21,45 +21,45 @@ namespace ConstructionApplication.Repository.Dapper
             _connectionString = connectionString;
         }
 
-        public List<CostMaster> GetByJobCategory(int jobCategoryId)
+        public List<CostMaster> GetByServiceType(int serviceTypeId)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"
                         SELECT 
-                            CostMaster.Id, CostMaster.JobCategoryId, 
-                            JobCategories.Name, CostMaster.Cost, CostMaster.Date
+                            CostMaster.Id, CostMaster.ServiceTypeId, 
+                            ServiceTypes.Name, CostMaster.Cost, CostMaster.Date
                         FROM 
                             CostMaster
                         JOIN 
-                            JobCategories ON CostMaster.JobCategoryId = JobCategories.Id
+                            ServiceTypes ON CostMaster.ServiceTypeId = ServiceTypes.Id
                         WHERE 
-                            CostMaster.JobCategoryId = @jobCategoryId
+                            CostMaster.ServiceTypeId = @serviceTypeId
                         ORDER BY CostMaster.Date DESC";
 
-                return connection.Query<CostMaster>(sqlQuery, new { jobCategoryId }).ToList();
+                return connection.Query<CostMaster>(sqlQuery, new { serviceTypeId }).ToList();
             }
         }
 
-        public CostMaster GetActiveCostDetail(int jobCategoryId)
+        public CostMaster GetActiveCostDetail(int serviceTypeId)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"
                         SELECT 
-                            TOP 1 CostMaster.JobCategoryId, JobCategories.Name, 
+                            TOP 1 CostMaster.ServiceTypeId, ServiceTypes.Name, 
                                   CostMaster.Cost, CostMaster.Date
                         FROM 
                             CostMaster 
                         JOIN 
-                            JobCategories ON CostMaster.JobCategoryId = JobCategories.Id 
+                            ServiceTypes ON CostMaster.ServiceTypeId = ServiceTypes.Id 
                         WHERE 
-                            CostMaster.JobCategoryId = @jobCategoryId 
+                            CostMaster.ServiceTypeId = @serviceTypeId 
                             AND CostMaster.Date <= @currentDate 
                         ORDER BY CostMaster.Date DESC";
 
                 return connection.QueryFirstOrDefault<CostMaster>(sqlQuery,
-                    new { jobCategoryId, currentDate = DateTime.Now }) ?? new CostMaster();
+                    new { serviceTypeId, currentDate = DateTime.Now }) ?? new CostMaster();
             }
         }
 
@@ -69,9 +69,9 @@ namespace ConstructionApplication.Repository.Dapper
             {
                 string insertQuery = @"
                        INSERT INTO CostMaster 
-                             (JobCategoryId, Cost, Date)
+                             (ServiceTypeId, Cost, Date)
                        VALUES 
-                             (@JobCategoryId, @Cost, @Date);
+                             (@serviceTypeId, @Cost, @Date);
                        SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
                 return connection.ExecuteScalar<int>(insertQuery, costMaster);

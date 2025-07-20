@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using ConstructionApplication.Core.DataModels.CostMaster;
-using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using NuGet.Protocol;
 using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
@@ -12,15 +13,15 @@ namespace ConstructionApplication.Controllers
     public class CostMasterController : BaseController
     {
         ICostMasterRepository _costMasterRepository;
-        IJobCategoryRepository _jobCategoryRepository;
+        IServiceTypeRepository _serviceTypeRepository;
         IMapper _imapper;
 
-        public CostMasterController(ICostMasterRepository costMasterRepository, 
-                                    IJobCategoryRepository jobCategoryRepository, 
+        public CostMasterController(ICostMasterRepository costMasterRepository,
+                                    IServiceTypeRepository serviceTypeRepository, 
                                     ISiteRepository siteRepository) : base(siteRepository)
         {
             _costMasterRepository = costMasterRepository;
-            _jobCategoryRepository = jobCategoryRepository;
+            _serviceTypeRepository = serviceTypeRepository;
 
             var configuration = new MapperConfiguration(cfg =>
             {
@@ -33,19 +34,19 @@ namespace ConstructionApplication.Controllers
 
         [SessionCheck]
         [HttpGet]
-        public IActionResult Index(int? jobCategoryId)
+        public IActionResult Index(int? serviceTypeId)
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name", jobCategoryId);
+            List<ServiceType> serviceTypes = _serviceTypeRepository.GetAll();
+            ViewBag.ServiceType = new SelectList(serviceTypes, "Id", "Name", serviceTypeId);
 
             List<CostMaster> costMasters;
-            if (jobCategoryId.HasValue && jobCategoryId.Value > 0)
+            if (serviceTypeId.HasValue && serviceTypeId.Value > 0)
             {
-                costMasters = _costMasterRepository.GetByJobCategory(jobCategoryId.Value);
+                costMasters = _costMasterRepository.GetByServiceType(serviceTypeId.Value);
             }
             else
             {
-                costMasters = _costMasterRepository.GetByJobCategory(jobCategories.First().Id);
+                costMasters = _costMasterRepository.GetByServiceType(serviceTypes.First().Id);
             }
 
             List<CostMasterVm> costMasterVm = _imapper.Map<List<CostMaster>, List<CostMasterVm>>(costMasters);
@@ -54,9 +55,9 @@ namespace ConstructionApplication.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetActiveCost(int JobCategoryId)
+        public JsonResult GetActiveCost(int serviceTypeId)
         {
-            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(JobCategoryId);
+            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(serviceTypeId);
             CostMasterVm costMasterVm = _imapper.Map<CostMaster, CostMasterVm>(costMaster);
 
             return Json(costMasterVm);
@@ -96,7 +97,7 @@ namespace ConstructionApplication.Controllers
         {
             if (costMasterVm.Date == null ||
                 costMasterVm.Date == default(DateTime) ||
-                costMasterVm.JobCategoryId == 0)
+                costMasterVm.ServiceTypeId == 0)
             {
                 return "Page not submitted, please enter correct Inputs";
             }
@@ -113,8 +114,8 @@ namespace ConstructionApplication.Controllers
 
         private void DropDownSelectList()
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+            List<ServiceType> serviceTypes = _serviceTypeRepository.GetAll();
+            ViewBag.ServiceType = new SelectList(serviceTypes, "Id", "Name");
         }
     }
 }

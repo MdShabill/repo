@@ -15,7 +15,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
             _connectionString = connectionString;
         }
 
-        public List<ServiceProvider> GetAll(int? jobCategoryId, int? id)
+        public List<ServiceProvider> GetAll(int? serviceTypeId, int? id)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -26,7 +26,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                     SelectCommand = { CommandType = CommandType.StoredProcedure }
                 };
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@Mode", 2);
-                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@jobCategoryId", jobCategoryId ?? (object)DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@serviceTypeId", serviceTypeId ?? (object)DBNull.Value);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@ServiceProviderId", id ?? (object)DBNull.Value);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -37,8 +37,8 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                 {
                     ServiceProvider serviceProvider = new()
                     {
-                        JobCategoryId = dataTable.Rows[i]["JobCategoryId"] != DBNull.Value ? (int)dataTable.Rows[i]["JobCategoryId"] : 0,
-                        JobTypes = dataTable.Rows[i]["JobTypes"] != DBNull.Value ? (string)dataTable.Rows[i]["JobTypes"] : null,
+                        ServiceTypeId = dataTable.Rows[i]["ServiceTypeId"] != DBNull.Value ? (int)dataTable.Rows[i]["ServiceTypeId"] : 0,
+                        ServiceTypes = dataTable.Rows[i]["ServiceTypes"] != DBNull.Value ? (string)dataTable.Rows[i]["ServiceTypes"] : null,
                         ServiceProviderId = (int)dataTable.Rows[i]["ServiceProviderId"],
                         ServiceProviderName = (string)dataTable.Rows[i]["ServiceProviderName"],
                         Gender = (GenderTypes)dataTable.Rows[i]["Gender"],
@@ -70,7 +70,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                     CommandType = CommandType.StoredProcedure
                 };
                 sqlCommand.Parameters.AddWithValue("@Mode", 1);
-                sqlCommand.Parameters.AddWithValue("@jobCategoryId", serviceProvider.JobCategoryId);
+                sqlCommand.Parameters.AddWithValue("@serviceTypeId", serviceProvider.ServiceTypeId);
                 sqlCommand.Parameters.AddWithValue("@ServiceProviderName", serviceProvider.ServiceProviderName);
                 sqlCommand.Parameters.AddWithValue("@gender", serviceProvider.Gender);
                 sqlCommand.Parameters.AddWithValue("@dOB", serviceProvider.DOB);
@@ -124,7 +124,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
 
                     sqlUpdateCommand.Parameters.AddWithValue("@Mode", 3);
                     sqlUpdateCommand.Parameters.AddWithValue("@ServiceProviderId", serviceProvider.ServiceProviderId);
-                    sqlUpdateCommand.Parameters.AddWithValue("@jobCategoryId", serviceProvider.JobCategoryId);
+                    sqlUpdateCommand.Parameters.AddWithValue("@serviceTypeId", serviceProvider.ServiceTypeId);
                     sqlUpdateCommand.Parameters.AddWithValue("@ServiceProviderName", serviceProvider.ServiceProviderName);
                     sqlUpdateCommand.Parameters.AddWithValue("@gender", serviceProvider.Gender);
                     sqlUpdateCommand.Parameters.AddWithValue("@dob", serviceProvider.DOB);

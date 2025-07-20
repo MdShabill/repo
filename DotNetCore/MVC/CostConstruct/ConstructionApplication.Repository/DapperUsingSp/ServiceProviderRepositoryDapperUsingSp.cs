@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using ConstructionApplication.Core.DataModels.ServiceTypes;
 
 namespace ConstructionApplication.Repository.DapperUsingSp
 {
@@ -20,7 +21,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
             _connectionString = connectionString;
         }
 
-        public List<ServiceProvider> GetAll(int? jobCategoryId, int? id)
+        public List<ServiceProvider> GetAll(int? serviceTypeId, int? id)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
@@ -29,7 +30,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                 {
                     Mode = 2,
                     ServiceProviderId = id ?? 0,
-                    FilterJobCategoryId = jobCategoryId ?? 0
+                    FilterServiceTypeId = serviceTypeId ?? 0
                 };
                 // Execute the stored procedure and return mapped list of ServiceProviders
                 return connection.Query<ServiceProvider>(sqlQuery, parameters, commandType: CommandType.StoredProcedure).ToList();
@@ -45,7 +46,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                 {
                     Mode = 1,
                     ServiceProviderId = 0,
-                    serviceProvider.JobCategoryId,
+                    serviceProvider.ServiceTypeId,
                     serviceProvider.ServiceProviderName,
                     serviceProvider.Gender,
                     serviceProvider.DOB,
@@ -82,7 +83,7 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                 {
                     Mode = 3,
                     serviceProvider.ServiceProviderId,
-                    serviceProvider.JobCategoryId,
+                    serviceProvider.ServiceTypeId,
                     serviceProvider.ServiceProviderName,
                     serviceProvider.Gender,
                     serviceProvider.DOB,

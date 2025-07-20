@@ -41,7 +41,7 @@ namespace ConstructionApplication.Repository.AdoDotNet
                                 AddressTypeId = @addressTypeId,
                                 CountryId = @countryId,
                                 PinCode = @pinCode
-                                WHERE "" + (isServiceProvider ? ""ServiceProviderId = @id"" : ""SiteId = @id";
+                                WHERE " + (isServiceProvider ? "ServiceProviderId = @id" : "SiteId = @id");
 
                     SqlCommand updateCommand = new SqlCommand(updateQuery, sqlConnection);
                     updateCommand.Parameters.AddWithValue("@addressLine1", address.AddressLine1 ?? (object)DBNull.Value);

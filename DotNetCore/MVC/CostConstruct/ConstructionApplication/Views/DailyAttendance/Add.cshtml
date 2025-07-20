@@ -16,9 +16,9 @@
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
-                <label asp-for="JobCategoryId" class="control-label"><b>Job Category</b></label>
-                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, "-- Select Job Category --", new { @class = "form-control",@id = "jobCategory" })
-                <span asp-validation-for="JobCategoryId" class="text-danger"></span>
+                <label asp-for="ServiceTypeId" class="control-label"><b>Job Category</b></label>
+                @Html.DropDownListFor(model => model.ServiceTypeId, (SelectList)ViewBag.ServiceType, "-- Select Service Type --", new { @class = "form-control", @id = "ServiceType" })
+                <span asp-validation-for="ServiceTypeId" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group" style="width: 60%;">
@@ -58,18 +58,18 @@
 </div>
 
 <script>
-    // Preload job category costs passed from the controller
-    const jobCategoryCosts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.JobCategoryCosts));
+    // Preload service Type costs passed from the controller
+    const serviceTypeCosts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ServiceTypeCosts));
 
-    document.getElementById('jobCategory').addEventListener('change', function () {
-        const selectedJobCategoryId = parseInt(this.value);
+    document.getElementById('ServiceType').addEventListener('change', function () {
+        const selectedServiceTypeId = parseInt(this.value);
         const amountPerWorkerField = document.getElementById('AmountPerWorker');
         const totalWorkerField = document.getElementById('totalWorker');
         const totalAmountField = document.getElementById('totalAmount');
         const serviceProviderDropdown = document.getElementById('serviceProviderId');
 
-        if (!selectedJobCategoryId) {
-            // Reset fields if no job category is selected
+        if (!selectedServiceTypeId) {
+            // Reset fields if no service Type is selected  
             amountPerWorkerField.value = '';
             totalWorkerField.value = '';
             totalAmountField.value = '';
@@ -78,26 +78,26 @@
             return;
         }
 
-        if (!jobCategoryCosts || jobCategoryCosts.length === 0) return;
+        if (!serviceTypeCosts || serviceTypeCosts.length === 0) return;
 
-        // Find the matching JobCategoryId in the jobCategoryCosts array
-        const selectedJobCategory = jobCategoryCosts.find(category => category.JobCategoryId === selectedJobCategoryId);
+        // Find the matching ServiceTypeId in the serviceTypeCosts array
+        const selectedServiceType = serviceTypeCosts.find(service => service.ServiceTypeId === selectedServiceTypeId);
 
-        if (selectedJobCategory) {
-            // Set the AmountPerWorker field value based on the selected JobCategory's Cost
-            amountPerWorkerField.value = selectedJobCategory.Cost;
+        if (selectedServiceType) {
+            // Set the AmountPerWorker field value based on the selected serviceType's Cost
+            amountPerWorkerField.value = selectedServiceType.Cost;
 
             // Optionally calculate Total Amount if TotalWorker is already filled
             if (totalWorkerField.value) {
-                totalAmountField.value = selectedJobCategory.Cost * totalWorkerField.value;
+                totalAmountField.value = selectedServiceType.Cost * totalWorkerField.value;
             }
         }
 
-        // Fetch ServiceProvider data based on selected job category
+        // Fetch ServiceProvider data based on selected service Type
         $.ajax({
-            url: '@Url.Action("GetDataByJobCategoryId", "DailyAttendance")',
+            url: '@Url.Action("GetCostByServiceType", "DailyAttendance")',
             type: 'GET',
-            data: { jobCategoryId: selectedJobCategoryId },
+            data: { ServiceTypeId: selectedServiceTypeId },
             success: function(response) {
                 // Populate Service Provider dropdown
                 if (response && response.serviceProviders) {
@@ -136,9 +136,9 @@
     });
 
     document.addEventListener("DOMContentLoaded", function () {
-        const jobCategoryDropdown = document.getElementById('jobCategory');
-        if (jobCategoryDropdown.value) {
-            jobCategoryDropdown.dispatchEvent(new Event('change'));
+        const serviceTypeDropdown = document.getElementById('ServiceType');
+        if (serviceTypeDropdown.value) {
+            serviceTypeDropdown.dispatchEvent(new Event('change'));
         }
     });
 </script>

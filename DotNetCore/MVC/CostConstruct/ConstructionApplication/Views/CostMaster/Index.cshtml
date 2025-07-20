@@ -92,9 +92,9 @@
     <div class="dropdown-section" style="display: flex; justify-content: space-between; align-items: center;">
         <div style="width: 200px;">
             <form method="get" action="/CostMaster/Index">
-                <label for="jobCategoryId"><b>Select Job Type:</b></label>
-                <select id="jobCategoryId" name="jobCategoryId" onchange="this.form.submit()">
-                    @foreach (var item in ViewBag.JobCategory as SelectList)
+                <label for="serviceTypeId"><b>Service Type:</b></label>
+                <select id="serviceTypeId" name="serviceTypeId" onchange="this.form.submit()">
+                    @foreach (var item in ViewBag.ServiceType as SelectList)
                     {
                         if (item.Selected)
                         {
@@ -115,7 +115,7 @@
         <table>
             <tr class="header-row">
                 <td><b>Date</b></td>
-                <td><b>Job Type</b></td>
+                <td><b>Service Types</b></td>
                 <td><b>Cost</b></td>
             </tr>
 

@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
-        public int JobCategoryId { get; set; }
+        public int ServiceTypeId { get; set; }
         public int SiteId { get; set; }
         public string SiteName { get; set; }
         public int ServiceProviderId { get; set; }

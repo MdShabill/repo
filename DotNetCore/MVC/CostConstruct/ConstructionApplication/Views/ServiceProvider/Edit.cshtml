@@ -15,9 +15,9 @@
             </div>
 
             <div class="form-group mb-3" style="width: 20%;">
-                <label for="JobCategoryId" class="control-label"><b>Job Category</b></label>
-                @Html.DropDownListFor(model => model.JobCategoryId, ViewBag.JobCategory as SelectList, "-- SELECT --", new { @class = "form-control" })
-                <span asp-validation-for="JobCategoryId" class="text-danger"></span>
+                <label for="ServiceTypeId" class="control-label"><b>Service Type</b></label>
+                @Html.DropDownListFor(model => model.ServiceTypeId, ViewBag.ServiceType as SelectList, "-- SELECT --", new { @class = "form-control" })
+                <span asp-validation-for="ServiceTypeId" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3" style="width: 20%;">

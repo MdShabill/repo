@@ -15,9 +15,9 @@
             </div>
             <br />
             <div class="form-group" style="width: 200px;">
-                <label asp-for="JobCategoryId" class="control-label"><b>Job Category</b></label>
-                @Html.DropDownListFor(model => model.JobCategoryId, (SelectList)ViewBag.JobCategory, "-- Select --", new { @class = "form-control", id = "jobCategorySelect", onchange = "updateCost()" })
-                <span asp-validation-for="JobCategoryId" class="text-danger"></span>
+                <label asp-for="ServiceTypeId" class="control-label"><b>Service Types</b></label>
+                @Html.DropDownListFor(model => model.ServiceTypeId, (SelectList)ViewBag.ServiceType, "-- Select --", new { @class = "form-control", id = "serviceTypeSelect", onchange = "updateCost()" })
+                <span asp-validation-for="ServiceTypeId" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group" style="width: 200px;">
@@ -36,12 +36,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function updateCost() {
-        var jobCategoryId = $('#jobCategorySelect').val();
-        if (jobCategoryId) {
+        var serviceTypeId = $('#serviceTypeSelect').val();
+        if (serviceTypeId) {
             $.ajax({
-                url: '@Url.Action("GetCostByJobCategory", "CostMaster")', // Replace with your actual controller name
+                url: '@Url.Action("GetCostByServiceType", "CostMaster")', // Replace with your actual controller name
                 type: 'GET',
-                data: { jobCategoryId: jobCategoryId },
+                data: { serviceTypeId: serviceTypeId },
                 success: function (result) {
                     $('#Cost').val(result.cost); // Assuming your input for Cost has id="Cost"
                 },

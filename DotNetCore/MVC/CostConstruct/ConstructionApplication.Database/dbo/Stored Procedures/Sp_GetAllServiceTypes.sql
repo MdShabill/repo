@@ -1,0 +1,6 @@
+﻿CREATE PROCEDURE Sp_GetAllServiceTypes
+AS
+BEGIN
+    SET NOCOUNT ON
+    SELECT Id, Name FROM ServiceTypes
+END

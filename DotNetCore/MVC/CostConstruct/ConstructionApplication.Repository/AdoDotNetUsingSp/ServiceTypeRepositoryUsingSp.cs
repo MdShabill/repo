@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.JobCategory;
+﻿using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace ConstructionApplication.Repository.AdoDotNetUsingSp
 {
-    public class JobCategoryRepositoryUsingSp : IJobCategoryRepository
+    public class ServiceTypeRepositoryUsingSp : IServiceTypeRepository
     {
         private readonly string _connectionString;
 
-        public JobCategoryRepositoryUsingSp(string connectionString)
+        public ServiceTypeRepositoryUsingSp(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public List<JobCategory> GetAll()
+        public List<ServiceType> GetAll()
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -33,16 +33,16 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                         DataTable dataTable = new();
                         sqlDataAdapter.Fill(dataTable);
 
-                        List<JobCategory> jobCategories = new();
+                        List<ServiceType> jobCategories = new();
 
                         for (int i = 0; i < dataTable.Rows.Count; i++)
                         {
-                            JobCategory jobCategory = new()
+                            ServiceType serviceType = new()
                             {
                                 Id = Convert.ToInt32(dataTable.Rows[i]["Id"]),
                                 Name = Convert.ToString(dataTable.Rows[i]["Name"])!
                             };
-                            jobCategories.Add(jobCategory);
+                            jobCategories.Add(serviceType);
                         }
                         return jobCategories;
                     }

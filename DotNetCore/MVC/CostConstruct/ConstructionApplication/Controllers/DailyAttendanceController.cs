@@ -2,14 +2,13 @@
 using ConstructionApplication.Core.DataModels.ServiceProviders;
 using ConstructionApplication.Core.DataModels.CostMaster;
 using ConstructionApplication.Core.DataModels.DailyAttendance;
-using ConstructionApplication.Core.DataModels.JobCategory;
+using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Core.DataModels.Site;
 using ConstructionApplication.Repository.AdoDotNet;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
 using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers
@@ -18,14 +17,14 @@ namespace ConstructionApplication.Controllers
     {
         IDailyAttendanceRepository _dailyAttendanceRepository;
         ICostMasterRepository _costMasterRepository;
-        IJobCategoryRepository _jobCategoryRepository;
+        IServiceTypeRepository _serviceTypeRepository;
         IServiceProviderRepository _serviceProviderRepository;
         ISiteRepository _siteRepository;
         IMapper _imapper;
 
         public DailyAttendanceController(IDailyAttendanceRepository dailyAttendanceRepository, 
                                          ICostMasterRepository costMasterRepository,
-                                         IJobCategoryRepository jobCategoryRepository,
+                                         IServiceTypeRepository serviceTypeRepository,
                                          IServiceProviderRepository serviceProviderRepository,
                                          ISiteRepository siteRepository) : base(siteRepository)
         {
@@ -39,7 +38,7 @@ namespace ConstructionApplication.Controllers
 
             _imapper = configuration.CreateMapper();
             _costMasterRepository = costMasterRepository;
-            _jobCategoryRepository = jobCategoryRepository;
+            _serviceTypeRepository = serviceTypeRepository;
             _serviceProviderRepository = serviceProviderRepository;
             _siteRepository = siteRepository;
         }
@@ -96,7 +95,7 @@ namespace ConstructionApplication.Controllers
 
             dailyAttendance.SiteId = siteId.Value;
 
-            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.JobCategoryId);
+            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.ServiceTypeId);
 
             if (costMaster != null)
             {
@@ -125,15 +124,15 @@ namespace ConstructionApplication.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetDataByJobCategoryId(int jobCategoryId = 0)
+        public IActionResult GetCostByServiceType(int ServiceTypeId = 0)
         {
-            if (jobCategoryId > 0)
+            if (ServiceTypeId > 0)
 
             {
 
-                CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(jobCategoryId);
-                List<Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(jobCategoryId, null)
-                .Where(c => c.JobCategoryId == jobCategoryId)
+                CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(ServiceTypeId);
+                List<Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(ServiceTypeId, null)
+                .Where(c => c.ServiceTypeId == ServiceTypeId)
                 .ToList();
 
                 return new JsonResult(new 
@@ -161,7 +160,7 @@ namespace ConstructionApplication.Controllers
 
             DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
 
-            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.JobCategoryId);
+            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.ServiceTypeId);
 
             if (costMaster != null)
             {
@@ -182,7 +181,7 @@ namespace ConstructionApplication.Controllers
 
         private string ValidateDailyAttendance(DailyAttendanceVm dailyAttendanceVm)
         {
-            if (dailyAttendanceVm.JobCategoryId == 0)
+            if (dailyAttendanceVm.ServiceTypeId == 0)
             {
                 return "Please select a Job Category.";
             }
@@ -209,17 +208,17 @@ namespace ConstructionApplication.Controllers
 
         private void DropDownSelectList()
         {
-            List<JobCategory> jobCategories = _jobCategoryRepository.GetAll();
-            ViewBag.JobCategory = new SelectList(jobCategories, "Id", "Name");
+            List<ServiceType> serviceTypes = _serviceTypeRepository.GetAll();
+            ViewBag.ServiceType = new SelectList(serviceTypes, "Id", "Name");
 
-            var jobCategoryCosts = jobCategories.Select(jobCategory => new
+            var serviceTypeCosts = serviceTypes.Select(serviceTypes => new
             {
-                JobCategoryId = jobCategory.Id,
-                JobCategoryName = jobCategory.Name,
-                Cost = _costMasterRepository.GetActiveCostDetail(jobCategory.Id)?.Cost ?? 0
+                ServiceTypeId = serviceTypes.Id,
+                ServiceTypeName = serviceTypes.Name,
+                Cost = _costMasterRepository.GetActiveCostDetail(serviceTypes.Id)?.Cost ?? 0
             }).ToList();
 
-            ViewBag.JobCategoryCosts = jobCategoryCosts;
+            ViewBag.ServiceTypeCosts = serviceTypeCosts;
         }
 
     }

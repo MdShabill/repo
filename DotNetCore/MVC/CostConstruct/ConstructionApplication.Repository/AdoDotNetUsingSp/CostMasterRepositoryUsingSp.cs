@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ConstructionApplication.Core.DataModels.ServiceTypes;
 
 namespace ConstructionApplication.Repository.AdoDotNetUsingSp
 {
@@ -19,7 +20,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
             _connectionString = connectionString;
         }
 
-        public List<CostMaster> GetByJobCategory(int jobCategoryId)
+        public List<CostMaster> GetByServiceType(int serviceTypeId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -27,8 +28,8 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                 {
                     CommandType = CommandType.StoredProcedure
                 };
-                sqlCommand.Parameters.AddWithValue("@Mode", "GET_BY_JOBCATEGORY");
-                sqlCommand.Parameters.AddWithValue("@jobCategoryId", jobCategoryId);
+                sqlCommand.Parameters.AddWithValue("@Mode", "GET_BY_SERVICETYPE");
+                sqlCommand.Parameters.AddWithValue("@serviceTypeId", serviceTypeId);
                 SqlDataAdapter sqlDataAdapter = new(sqlCommand);
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
@@ -39,7 +40,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                     CostMaster costMaster = new()
                     {
                         Id = (int)dataTable.Rows[i]["Id"],
-                        JobCategoryId = (int)dataTable.Rows[i]["JobCategoryId"],
+                        ServiceTypeId = (int)dataTable.Rows[i]["ServiceTypeId"],
                         Name = (string)dataTable.Rows[i]["Name"],
                         Cost = (decimal)dataTable.Rows[i]["Cost"],
                         Date = (DateTime)dataTable.Rows[i]["Date"]
@@ -50,7 +51,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
             }
         }
 
-        public CostMaster GetActiveCostDetail(int jobCategoryId)
+        public CostMaster GetActiveCostDetail(int serviceTypeId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
@@ -59,7 +60,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                     CommandType = CommandType.StoredProcedure
                 };
                 command.Parameters.AddWithValue("@Mode", "GET_ACTIVE_COST");
-                command.Parameters.AddWithValue("@JobCategoryId", jobCategoryId);
+                command.Parameters.AddWithValue("@serviceTypeId", serviceTypeId);
                 command.Parameters.AddWithValue("@CurrentDate", DateTime.Now);
 
                 SqlDataAdapter sqlDataAdapter = new(command);
@@ -71,7 +72,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                     DataRow row = dataTable.Rows[0];
                     return new CostMaster
                     {
-                        JobCategoryId = (int)row["JobCategoryId"],
+                        ServiceTypeId = (int)row["ServiceTypeId"],
                         Cost = (decimal)row["Cost"],
                         Date = (DateTime)row["Date"]
                     };
@@ -89,7 +90,7 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
                     CommandType = CommandType.StoredProcedure
                 };
                 insertCommand.Parameters.AddWithValue("@Mode", "CREATE");
-                insertCommand.Parameters.AddWithValue("@jobCategoryId", costMaster.JobCategoryId);
+                insertCommand.Parameters.AddWithValue("@serviceTypeId", costMaster.ServiceTypeId);
                 insertCommand.Parameters.AddWithValue("@cost", costMaster.Cost);
                 insertCommand.Parameters.AddWithValue("@date", costMaster.Date);
                 sqlConnection.Open();

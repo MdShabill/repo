@@ -2,7 +2,7 @@
     @Mode NVARCHAR(50),
     @Id INT = NULL,
     @Date DATETIME = NULL,
-    @JobCategoryId INT = NULL,
+    @ServiceTypeId INT = NULL,
     @ServiceProviderId INT = NULL,
     @TotalWorker INT = NULL,
     @AmountPerWorker DECIMAL(18,2) = NULL,
@@ -20,13 +20,13 @@ BEGIN
         SELECT 
             DailyAttendance.Id,
             DailyAttendance.Date,
-            JobCategories.Name, 
+            ServiceType.Name, 
             ServiceProviders.Name AS ServiceProviderName,
             DailyAttendance.TotalWorker, 
             DailyAttendance.AmountPerWorker,
             DailyAttendance.TotalAmount
         FROM DailyAttendance
-        JOIN JobCategories ON DailyAttendance.JobCategoryId = JobCategories.Id
+        JOIN ServiceTypes ON DailyAttendance.ServiceTypeId = ServiceTypes.Id
         JOIN ServiceProviders ON DailyAttendance.ServiceProviderId = ServiceProviders.Id
         WHERE 
             (@DateFrom IS NULL OR DailyAttendance.Date >= @DateFrom) 
@@ -39,9 +39,9 @@ BEGIN
     IF @Mode = 'CREATE'
     BEGIN
         INSERT INTO DailyAttendance
-        (Date, JobCategoryId, ServiceProviderId, TotalWorker, AmountPerWorker, TotalAmount, Notes)
+        (Date, ServiceTypeId, ServiceProviderId, TotalWorker, AmountPerWorker, TotalAmount, Notes)
         VALUES
-        (@Date, @JobCategoryId, @ServiceProviderId, @TotalWorker, @AmountPerWorker, @TotalAmount, @Notes);
+        (@Date, @ServiceTypeId, @ServiceProviderId, @TotalWorker, @AmountPerWorker, @TotalAmount, @Notes);
         
         SELECT SCOPE_IDENTITY();  -- Return the newly inserted ID
     END

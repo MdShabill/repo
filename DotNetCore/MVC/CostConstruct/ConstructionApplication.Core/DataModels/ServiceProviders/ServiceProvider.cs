@@ -6,8 +6,8 @@ namespace ConstructionApplication.Core.DataModels.ServiceProviders
     {
         public int ServiceProviderId { get; set; }
         public string ServiceProviderName { get; set; }
-        public int JobCategoryId { get; set; }
-        public string JobTypes { get; set; }
+        public int ServiceTypeId { get; set; }
+        public string ServiceTypes { get; set; }
         public GenderTypes Gender { get; set; }
         public DateTime DOB { get; set; }
         public string? ImageName { get; set; }

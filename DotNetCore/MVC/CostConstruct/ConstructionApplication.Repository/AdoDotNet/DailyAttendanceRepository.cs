@@ -20,12 +20,12 @@ namespace ConstructionApplication.Repository.AdoDotNet
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Select 
-                           DailyAttendance.Date, JobCategories.Name, ServiceProviders.Name As ServiceProviderName,
+                           DailyAttendance.Date, ServiceTypes.Name, ServiceProviders.Name As ServiceProviderName,
                            DailyAttendance.TotalWorker, DailyAttendance.AmountPerWorker,
                            DailyAttendance.TotalAmount
                            From 
                            DailyAttendance
-                           Join JobCategories ON DailyAttendance.JobCategoryId = JobCategories.Id
+                           Join ServiceTypes ON DailyAttendance.ServiceTypeId = ServiceTypes.Id
                            Join ServiceProviders ON DailyAttendance.ServiceProviderId = ServiceProviders.Id
                            Join Sites ON DailyAttendance.SiteId = Sites.Id
                            Where
@@ -65,14 +65,14 @@ namespace ConstructionApplication.Repository.AdoDotNet
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"Insert Into DailyAttendance
-                       (Date, JobCategoryId, ServiceProviderId, SiteId, TotalWorker, AmountPerWorker, TotalAmount)
+                       (Date, ServiceTypeId, ServiceProviderId, SiteId, TotalWorker, AmountPerWorker, TotalAmount)
                        Values
-                       (@date, @jobCategoryId, @serviceProviderId, @siteId, @totalWorker, @amountPerWorker, @totalAmount)
+                       (@date, @serviceTypeId, @serviceProviderId, @siteId, @totalWorker, @amountPerWorker, @totalAmount)
                         SELECT SCOPE_IDENTITY() ";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@date", dailyAttendance.Date);
-                sqlCommand.Parameters.AddWithValue("@jobCategoryId", dailyAttendance.JobCategoryId);
+                sqlCommand.Parameters.AddWithValue("@serviceTypeId", dailyAttendance.ServiceTypeId);
                 sqlCommand.Parameters.AddWithValue("@serviceProviderId", dailyAttendance.ServiceProviderId);
                 sqlCommand.Parameters.AddWithValue("@siteId", dailyAttendance.SiteId);
                 sqlCommand.Parameters.AddWithValue("@totalWorker", dailyAttendance.TotalWorker);
