@@ -1,4 +1,7 @@
-﻿SET IDENTITY_INSERT [dbo].[Suppliers] ON;
+﻿PRINT 'Seeding [Suppliers]...';
+
+
+SET IDENTITY_INSERT [dbo].[Suppliers] ON;
 
 MERGE INTO [dbo].[Suppliers] AS trgt
 USING (VALUES
@@ -8,7 +11,7 @@ USING (VALUES
       (4, 'Maruf Hindustan Hardware', '7766889400', 'mukhiya@gmail.com', 'SujawalPur, Dholi Skara, Muzaffarpur, Bihar')
       ) AS src ([Id], [Name], [PhoneNumber], [Email], [Address])
 ON 
-    TARGET.[Id] = src.[Id]
+    trgt.[Id] = src.[Id]
 WHEN MATCHED THEN
     UPDATE SET
         [Name] = src.[Name],

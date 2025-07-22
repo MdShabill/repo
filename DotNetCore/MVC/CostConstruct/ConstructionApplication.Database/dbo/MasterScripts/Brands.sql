@@ -1,4 +1,6 @@
-﻿SET IDENTITY_INSERT [dbo].[Brands] ON;
+﻿PRINT 'Seeding [Brands]...';
+
+SET IDENTITY_INSERT [dbo].[Brands] ON;
 
 MERGE INTO [dbo].[Brands] AS trgt
 USING (VALUES
@@ -27,7 +29,7 @@ USING (VALUES
       (23, 'Babar Enterprises')
       ) AS src ([Id], [Name])
 ON 
-    TARGET.[Id] = src.[Id]
+    trgt.[Id] = src.[Id]
 WHEN MATCHED THEN
     UPDATE SET
         [Name] = src.[Name]

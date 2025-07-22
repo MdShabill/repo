@@ -92,8 +92,18 @@
     <Build Include="dbo\Tables\Sites.sql" />
     <Build Include="dbo\Stored Procedures\SP_SiteCRUD.sql" />
     <Build Include="dbo\Tables\SiteStatus.sql" />
+    <None Include="dbo\MasterScripts\AddressTypes.sql" />
+    <None Include="dbo\MasterScripts\Brands.sql" />
+    <None Include="dbo\MasterScripts\Countries.sql" />
+    <None Include="dbo\MasterScripts\MaterialTypes.sql" />
+    <None Include="dbo\MasterScripts\ServiceTypes.sql" />
+    <None Include="dbo\MasterScripts\SiteStatus.sql" />
+    <None Include="dbo\MasterScripts\Suppliers.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="ConstructionDB.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Script.PostDeployment1.sql" />
   </ItemGroup>
 </Project>

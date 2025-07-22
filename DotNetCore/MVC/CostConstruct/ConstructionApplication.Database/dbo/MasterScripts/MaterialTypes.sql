@@ -1,4 +1,6 @@
-﻿SET IDENTITY_INSERT [dbo].[MaterialTypes] ON;
+﻿PRINT 'Seeding [MaterialTypes]...';
+
+SET IDENTITY_INSERT [dbo].[MaterialTypes] ON;
 
 MERGE INTO [dbo].[MaterialTypes] AS trgt
 USING (VALUES
@@ -14,7 +16,7 @@ USING (VALUES
       (10, 'Sanitary')
       ) AS src ([Id], [Name])
 ON 
-    TARGET.[Id] = src.[Id]
+    trgt.[Id] = src.[Id]
 WHEN MATCHED THEN
     UPDATE SET
         [Name] = src.[Name]

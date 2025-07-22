@@ -1,4 +1,6 @@
-﻿SET IDENTITY_INSERT [dbo].[ServiceTypes] ON;
+﻿PRINT 'Seeding [ServiceTypes]...';
+
+SET IDENTITY_INSERT [dbo].[ServiceTypes] ON;
 
 MERGE INTO [dbo].[ServiceTypes] AS trgt
 USING (VALUES
@@ -16,7 +18,7 @@ USING (VALUES
       (12, 'Tiler Assistant')
       ) AS src ([Id], [Name])
 ON 
-    TARGET.[Id] = src.[Id]
+    trgt.[Id] = src.[Id]
 WHEN MATCHED THEN
     UPDATE SET
         [Name] = src.[Name]

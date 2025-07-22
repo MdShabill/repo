@@ -1,4 +1,6 @@
-﻿SET IDENTITY_INSERT [dbo].[SiteStatus] ON;
+﻿PRINT 'Seeding [SiteStatus]...';
+
+SET IDENTITY_INSERT [dbo].[SiteStatus] ON;
 
 MERGE INTO [dbo].[SiteStatus] AS trgt
 USING (VALUES
@@ -8,7 +10,7 @@ USING (VALUES
       (4, 'Completed')
       ) AS src ([Id], [Status])
 ON 
-    TARGET.[Id] = src.[Id]
+    trgt.[Id] = src.[Id]
 WHEN MATCHED THEN
     UPDATE SET
         [Status] = src.[Status]
