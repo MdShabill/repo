@@ -50,6 +50,17 @@ namespace ConstructionApplication.Repository.Dapper
             }
         }
 
+        public List<ServiceProviderName> GetServiceProviders(ServiceTypes serviceType)
+        {
+            using (IDbConnection connection = new SqlConnection(_connectionString))
+            {
+                string sqlQuery = 
+                    @$"SELECT  id, Name FROM ServiceProviders where ServiceTypeId= {(int)serviceType}";
+
+                return connection.Query<ServiceProviderName>(sqlQuery).ToList();
+            }
+        }
+
         public int Add(ServiceProvider serviceProvider)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))

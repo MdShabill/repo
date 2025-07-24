@@ -171,5 +171,10 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 sqlConnection.Close();
             }
         }
+
+        public void AddSiteServiceProviderBridge(int siteId, Core.Enums.ServiceTypes ServiceType, List<int> ServiceProviderIds)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

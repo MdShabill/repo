@@ -61,11 +61,14 @@ namespace ConstructionApplication.Helpers
             services.AddTransient<IMaterialRepository>(svc => new MaterialRepositoryUsingDapper(connectionString));
             services.AddTransient<ISupplierRepository>(svc => new SupplierRepositoryUsingDapper(connectionString));
             services.AddTransient<IBrandRepository>(svc => new BrandRepositoryUsingDapper(connectionString));
-            services.AddTransient((Func<IServiceProvider, IServiceTypeRepository>)(svc => new Repository.DapperUsingSp.ServiceTypeRepositoryDapperUsingSp(connectionString)));
+            services.AddTransient<IServiceTypeRepository>(svc => new ServiceTypeRepositoryUsingDapper(connectionString));
             services.AddTransient<IServiceProviderRepository>(svc => new ServiceProviderRepositoryUsingDapper(connectionString));
-            //services.AddTransient<IAddressRepository>(svc => new AddressRepositoryUsingDapper(connectionString));
+            services.AddTransient<IUserRepository>(svc => new UserRepositoryUsingDapper(connectionString));
+            services.AddTransient<ISiteRepository>(svc => new SiteRepositoryUsingDapper(connectionString));
+            services.AddTransient<IAddressRepository>(svc => new AddressRepositoryUsingDapper(connectionString));
             services.AddTransient<ICountryRepository>(svc => new CountryRepositoryUsingDapper(connectionString));
             services.AddTransient<IAddressTypeRepository>(svc => new AddressTypeRepositoryUsingDapper(connectionString));
+            services.AddTransient<ISiteStatusRepository>(svc => new SiteStatusRepositoryUsingDapper(connectionString));
         }
 
         public void RegisterDapperUsingSpRepositories(IServiceCollection services, string connectionString)

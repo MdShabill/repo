@@ -5,6 +5,8 @@ using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
 using System;
 using ConstructionApplication.Core.DataModels.ServiceTypes;
+using System.Collections.Generic;
+using ConstructionApplication.Core.DataModels.Country;
 
 namespace ConstructionApplication.Repository.AdoDotNet
 {
@@ -91,6 +93,31 @@ namespace ConstructionApplication.Repository.AdoDotNet
                         CountryId = row["CountryId"] != DBNull.Value ? (int)row["CountryId"] : 0,
                         CountryName = row["CountryName"] != DBNull.Value ? (string)row["CountryName"] : null,
                         PinCode = row["PinCode"] != DBNull.Value ? (int)row["PinCode"] : 0
+                    };
+                    serviceProviders.Add(serviceProvider);
+                }
+                return serviceProviders;
+            }
+        }
+
+        public List<ServiceProviderName> GetServiceProviders(ServiceTypes ServiceType)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @$"SELECT  id, Name FROM ServiceProviders where ServiceTypeId= {(int)ServiceType}";
+                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<ServiceProviderName> serviceProviders = new();
+
+                for (int i = 0; i < dataTable.Rows.Count; i++)
+                {
+                    ServiceProviderName serviceProvider = new()
+                    {
+                        //ServiceProviderId = (int)dataTable.Rows[i]["ServiceProviderId"],
+                        //ServiceProviderName = (string)dataTable.Rows[i]["ServiceProviderName"],
+                        //ServiceTypes = (string)dataTable.Rows[i]["ServiceTypes"]
                     };
                     serviceProviders.Add(serviceProvider);
                 }

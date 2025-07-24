@@ -14,5 +14,6 @@ namespace ConstructionApplication.Repository.Interfaces
         public int Update(Site site);
         public int Create(Site site);
         public void Delete(int siteId);
+        public void AddSiteServiceProviderBridge(int siteId, Core.Enums.ServiceTypes ServiceType, List<int> ServiceProviderIds);
     }
 }

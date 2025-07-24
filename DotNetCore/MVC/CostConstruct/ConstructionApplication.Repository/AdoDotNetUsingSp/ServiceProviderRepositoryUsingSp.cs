@@ -59,6 +59,40 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
             }
         }
 
+        public List<ServiceProviderName> GetServiceProviders(ServiceTypes serviceType)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string storedProcedure = "SP_ServiceProviderCRUD";
+
+                SqlDataAdapter sqlDataAdapter = new(storedProcedure, sqlConnection)
+                {
+                    SelectCommand = { CommandType = CommandType.StoredProcedure }
+                };
+
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@Mode", 2);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@serviceTypeId", DBNull.Value);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@ServiceProviderId", DBNull.Value);
+
+                DataTable dataTable = new();
+                sqlDataAdapter.Fill(dataTable);
+
+                List<ServiceProviderName> serviceProviders = new();
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    ServiceProviderName serviceProvider = new()
+                    {
+                        //ServiceProviderId = Convert.ToInt32(row["ServiceProviderId"]),
+                        //ServiceProviderName = Convert.ToString(row["ServiceProviderName"]),
+                        //ServiceTypes = Convert.ToString(row["JobTypes"])
+                    };
+                    serviceProviders.Add(serviceProvider);
+                }
+                return serviceProviders;
+            }
+        }
+
         public int Add(ServiceProvider serviceProvider)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
@@ -92,11 +126,11 @@ namespace ConstructionApplication.Repository.AdoDotNetUsingSp
 
         public void Delete(int serviceProviderId)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string storedProcedureName = "SP_ServiceProviderCRUD";
 
-                using (SqlCommand deleteServiceProviderCommand = new SqlCommand(storedProcedureName, sqlConnection))
+                using (SqlCommand deleteServiceProviderCommand = new(storedProcedureName, sqlConnection))
                 {
                     // Set the command type to StoredProcedure
                     deleteServiceProviderCommand.CommandType = CommandType.StoredProcedure;

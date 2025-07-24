@@ -1,5 +1,6 @@
 ﻿@model ConstructionApplication.ViewModels.SiteVm
 
+
 <h3 class="text-center my-4 fw-bold">Add Site</h3>
 
 <div class="row justify-content-center">
@@ -27,6 +28,16 @@
                 <input asp-for="Note" class="form-control" placeholder="Enter Note" />
                 <span asp-validation-for="Note" class="text-danger"></span>
             </div>
+
+
+
+   
+            <div class="form-group mb-6">
+                <label class="control-label"><b>Service Providers</b></label>
+                @Html.ListBoxFor(model => model.SelectedMasterMasonIds, (MultiSelectList)ViewBag.Name, new { @class = "form-control" })
+                <span class="text-danger"></span>
+            </div>
+
 
             <br />
             <button type="button" id="btnToggleAddressButton" class="btn btn-secondary" onclick="toggleAddressFields()">Tap for Address</button>

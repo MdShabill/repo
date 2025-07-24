@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using ConstructionApplication.Core.DataModels.ServiceTypes;
+using ConstructionApplication.Core.Enums;
 
 namespace ConstructionApplication.Repository.DapperUsingSp
 {
@@ -36,6 +37,25 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                 return connection.Query<ServiceProvider>(sqlQuery, parameters, commandType: CommandType.StoredProcedure).ToList();
             }
         }
+
+        public List<ServiceProviderName> GetServiceProviders(ServiceTypes serviceType)
+        {
+            throw new NotImplementedException();
+            //using (SqlConnection sqlConnection = new(_connectionString))
+            //{
+            //    string storedProcedure = "SP_ServiceProviderCRUD";
+
+            //    var parameters = new DynamicParameters();
+            //    parameters.Add("@Mode", 2);
+            //    parameters.Add("@serviceTypeId", dbType: DbType.Int32, value: null);
+            //    parameters.Add("@ServiceProviderId", dbType: DbType.Int32, value: null);
+
+            //    var result = sqlConnection.Query<ServiceProvider>(storedProcedure, parameters, commandType: CommandType.StoredProcedure).ToList();
+
+            //    return result;
+            //}
+        }
+
 
         public int Add(ServiceProvider serviceProvider)
         {

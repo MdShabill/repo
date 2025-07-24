@@ -2,8 +2,10 @@
 using ConstructionApplication.Core.DataModels.Address;
 using ConstructionApplication.Core.DataModels.AddressType;
 using ConstructionApplication.Core.DataModels.Country;
+using ConstructionApplication.Core.DataModels.ServiceProviders;
 using ConstructionApplication.Core.DataModels.Site;
 using ConstructionApplication.Core.DataModels.SiteStatus;
+using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.AdoDotNet;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels;
@@ -19,6 +21,7 @@ namespace ConstructionApplication.Controllers
         IAddressRepository _addressRepository;
         IAddressTypeRepository _addressTypeRepository;
         ICountryRepository _countryRepository;
+        IServiceProviderRepository _serviceProviderRepository;
         ISiteRepository _siteRepository;
         IMapper _imapper;
 
@@ -26,12 +29,14 @@ namespace ConstructionApplication.Controllers
                               IAddressRepository addressRepository,
                               IAddressTypeRepository addressTypeRepository,
                               ICountryRepository countryRepository,
+                              IServiceProviderRepository serviceProviderRepository,
                               ISiteRepository siteRepository) : base(siteRepository)
         {
             _siteRepository = siteRepository;
             _siteStatusRepository = siteStatusRepository;
             _addressRepository = addressRepository;
             _countryRepository = countryRepository;
+            _serviceProviderRepository = serviceProviderRepository;
             _addressTypeRepository = addressTypeRepository;
 
             var configuration = new MapperConfiguration(cfg =>
@@ -92,9 +97,17 @@ namespace ConstructionApplication.Controllers
         {
             Core.DataModels.Site.Site site = _imapper.Map<SiteVm, Core.DataModels.Site.Site>(siteVm);
             site.Id = _siteRepository.Create(site);
+
             if (site.Id > 0)
             {
                 AddAddressIfPresent(site.Id, siteVm);
+
+                if (siteVm.SelectedMasterMasonIds.Count > 0)
+                {
+                    _siteRepository.AddSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds);
+                }
+                
+
                 TempData["AddSuccessMessage"] = "Add New Site Successful";
                 return RedirectToAction("Index");
             }
@@ -150,7 +163,7 @@ namespace ConstructionApplication.Controllers
                (siteVm.PinCode.HasValue && siteVm.PinCode > 0))
             {
                 Address address = new Address(
-                    siteVm.serviceProviderId,
+                    siteVm.ServiceProviderId,
                     siteVm.AddressLine1,
                     siteVm.AddressTypeId ?? 0,
                     siteVm.CountryId ?? 0,
@@ -175,6 +188,18 @@ namespace ConstructionApplication.Controllers
 
             List<Country> countries = _countryRepository.GetAllCountries();
             ViewBag.Countries = new SelectList(countries, "Id", "Name");
+
+            List<ServiceProviderName> masterMasons = _serviceProviderRepository.GetServiceProviders(ServiceTypes.MasterMasion);
+            var masterMasonsServiceProviders = masterMasons
+                    .Select(sp => new SelectListItem
+                    {
+                        Value = sp.Id.ToString(),
+                        Text = sp.Name
+                    }).ToList();
+
+            ViewBag.Name = new MultiSelectList(masterMasonsServiceProviders, "Value", "Text");
+
         }
     }
+
 }
