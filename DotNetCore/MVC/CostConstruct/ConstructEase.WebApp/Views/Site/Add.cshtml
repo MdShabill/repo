@@ -1,0 +1,91 @@
+﻿@model ConstructEase.WebApp.ViewModels.SiteVm
+
+
+<h3 class="text-center my-4 fw-bold">Add Site</h3>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Add" method="post" class="border p-4 rounded shadow bg-light">
+            <div class="form-group mb-6">
+                <label asp-for="StartedDate" class="form-label fw-bold">Created Date</label>
+                <input asp-for="StartedDate" class="form-control" type="date" />
+                <span asp-validation-for="StartedDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-6">
+                <label asp-for="Name" class="form-label fw-bold">Site Name</label>
+                <input asp-for="Name" class="form-control" placeholder="Enter site name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-6">
+                <label asp-for="SiteStatusId" class="control-label"><b>Site Status</b></label>
+                @Html.DropDownListFor(model => model.SiteStatusId, (SelectList)ViewBag.SiteStatus, "-- SELECT STATUS --", new { @class = "form-control" })
+            </div>
+
+            <div class="form-group mb-6">
+                <label asp-for="Note" class="form-label fw-bold">Note</label>
+                <input asp-for="Note" class="form-control" placeholder="Enter Note" />
+                <span asp-validation-for="Note" class="text-danger"></span>
+            </div>
+
+
+
+   
+            <div class="form-group mb-6">
+                <label class="control-label"><b>Service Providers</b></label>
+                @Html.ListBoxFor(model => model.SelectedMasterMasonIds, (MultiSelectList)ViewBag.Name, new { @class = "form-control" })
+                <span class="text-danger"></span>
+            </div>
+
+
+            <br />
+            <button type="button" id="btnToggleAddressButton" class="btn btn-secondary" onclick="toggleAddressFields()">Tap for Address</button>
+
+            <!-- Hidden Address Fields -->
+            <div id="dvAddressFields" style="display: none;">
+                <div class="form-group mb-6">
+                    <label asp-for="AddressLine1" class="control-label"><b>Address</b></label>
+                    <input asp-for="AddressLine1" class="form-control" />
+                </div>
+                <br />
+                <div class="form-group mb-6">
+                    <label asp-for="AddressTypeId"><b>Address Type</b></label>
+                    @Html.DropDownListFor(model => model.AddressTypeId, (SelectList)ViewBag.AddressTypes, "-- Select --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
+                </div>
+                <br />
+                <div class="form-group mb-6">
+                    <label asp-for="CountryId"><b>Country Name</b></label>
+                    @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+                </div>
+                <br />
+                <div class="form-group mb-6">
+                    <label asp-for="PinCode" class="control-label"><b>Pin Code</b></label>
+                    <input asp-for="PinCode" class="form-control" />
+                </div>
+                <br />
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-success fw-bold">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleAddressFields() {
+        const addressFields = document.getElementById("dvAddressFields");
+        const button = document.getElementById("btnToggleAddressButton");
+
+        if (addressFields.style.display === "none") {
+            addressFields.style.display = "block";
+            button.textContent = "Tap to Hide Address";
+        } else {
+            addressFields.style.display = "none";
+            button.textContent = "Tap for Address";
+        }
+    }
+</script>

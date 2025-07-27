@@ -1,0 +1,114 @@
+﻿@model DailyAttendanceVm
+
+<h1>Add Using Ajax</h1>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddUsingAjax">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <span class="text-danger"> <b> @ViewBag.errorMessage </b> </span>
+
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="Date" class="control-label"><b>Date</b></label>
+                <input asp-for="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" type="datetime-local" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <br/>
+            <div class="form-group" style="width: 40%;">
+                <label asp-for="ServiceTypeId" class="control-label"><b>Job Category</b></label>
+                @Html.DropDownListFor(model => model.ServiceTypeId, (SelectList)ViewBag.ServiceType, "-- SELECT --", new { @class = "form-control", @id = "ServiceTypeId" })
+                <span asp-validation-for="ServiceTypeId" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 40%;">
+                <label asp-for="ServiceProviderId" class="control-label"><b>Service Provider Name</b></label><br />
+                <select id="serviceProviderId" name="serviceProviderId"></select>
+                <span class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group row" style="width: 95%;">
+                <div class="col-md-6">
+                    <label asp-for="TotalWorker" class="control-label"><b>Total Worker</b></label>
+                    <input asp-for="TotalWorker" id="totalWorker" class="form-control" />
+                    <span asp-validation-for="TotalWorker" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+            <div class="form-group" style="width: 40%;">
+                <label asp-for="AmountPerWorker"><b>Amount Per Worker</b></label>
+                <input asp-for="AmountPerWorker" id="amountPerWorker" class="form-control" readonly />
+            </div>
+            <br />
+            <div class="form-group" style="width: 40%;">
+                <label><b>Total Amount</b></label>
+                <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly />
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="Notes" class="control-label"><b>Notes</b></label>
+                <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+            <br />
+
+            <div class="form-group">
+                <input type="submit" value="Add" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        // When the dropdown value changes, make an AJAX call to fetch the cost.
+        $('#ServiceTypeId').change(function () {
+            var ServiceTypeId = $(this).val();
+            if (ServiceTypeId > 0) {
+                $.ajax({
+                    url: '@Url.Action("GetDataByServiceTypeId", "DailyAttendance")',
+                    type: 'GET',
+                    data: { ServiceTypeId: ServiceTypeId },
+                    data: { ServiceTypeId: ServiceTypeId },
+                    success: function (response) {
+                        $('#amountPerWorker').val(response.cost);
+                        
+                        var s = '<option value="-1">SELECT</option>';
+                        
+                        for (var i = 0; i < response.serviceProviders.length; i++) {
+                            s += '<option value="' + response.serviceProviders[i].serviceProviderId + '">' + response.serviceProviders[i].serviceProviderName + '</option>';
+                        }
+                        $("#serviceProviderId").html(s);
+
+                        updateTotalAmount();
+                    },
+                    error: function () {
+                        alert('Error retrieving cost details.');
+                    }
+                });
+            } else {
+                // Clear amount and total amount fields if no valid ServiceType is selected.
+                $('#amountPerWorker').val('');
+                $('#totalAmount').val('');
+            }
+        });
+
+        // Function to update total amount based on amountPerWorker and totalWorker
+        function updateTotalAmount() {
+            var amountPerWorker = parseFloat($('#amountPerWorker').val()) || 0;
+            var totalWorker = parseFloat($('#totalWorker').val()) || 0;
+            var totalAmount = amountPerWorker * totalWorker;
+            $('#totalAmount').val(totalAmount.toFixed(2));
+        }
+
+        // Trigger total amount update when TotalWorker input changes
+        $('#totalWorker').on('input', function () {
+            updateTotalAmount();
+        });
+
+        // Restore dropdown values on page load if validation fails
+        if ($('#ServiceTypeId').val() > 0) {
+            $('#ServiceTypeId').trigger('change');
+        }
+    });
+</script>

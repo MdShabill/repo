@@ -55,9 +55,9 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"INSERT INTO MaterialPurchase
-                       (MaterialId, SupplierId, PhoneNumber, BrandId, Quantity, UnitOfMeasure, Date, MaterialCost, DeliveryCharge)
+                       (MaterialId, SupplierId, SiteId, PhoneNumber, BrandId, Quantity, UnitOfMeasure, Date, MaterialCost, DeliveryCharge)
                        VALUES
-                       (@MaterialId, @SupplierId, @PhoneNumber, @BrandId, @Quantity, @UnitOfMeasure, @Date, @MaterialCost, @DeliveryCharge)";
+                       (@MaterialId, @SupplierId, @siteId, @PhoneNumber, @BrandId, @Quantity, @UnitOfMeasure, @Date, @MaterialCost, @DeliveryCharge)";
 
                 return connection.Execute(sqlQuery, materialPurchase);
             }

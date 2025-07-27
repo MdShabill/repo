@@ -1,0 +1,144 @@
+﻿@model DailyAttendanceVm
+
+<h1>Daily Attendance</h1>
+<br />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Add">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <span class="text-success"> <b> @ViewBag.successMessage </b> </span>
+            <span class="text-danger"> <b> @ViewBag.errorMessage </b> </span>
+
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="Date" class="control-label"><b>Date</b></label>
+                <input asp-for="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" type="datetime-local" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="ServiceTypeId" class="control-label"><b>Job Category</b></label>
+                @Html.DropDownListFor(model => model.ServiceTypeId, (SelectList)ViewBag.ServiceType, "-- Select Service Type --", new { @class = "form-control", @id = "ServiceType" })
+                <span asp-validation-for="ServiceTypeId" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="ServiceProviderId" class="control-label"><b>Service Provider Name</b></label><br />
+                <select id="serviceProviderId" name="serviceProviderId"></select>
+                <span class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="TotalWorker" class="control-label"><b>Total Worker</b></label>
+                <input asp-for="TotalWorker" id="totalWorker" class="form-control" />
+                <span asp-validation-for="TotalWorker" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="AmountPerWorker"><b>Amount Per Worker</b></label>
+                <input asp-for="AmountPerWorker" id="AmountPerWorker" class="form-control" readonly value="@ViewBag.Cost" />
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label><b>Total Amount</b></label>
+                <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly />
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="Notes" class="control-label"><b>Notes</b></label>
+                <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+            <br />
+
+            <div class="form-group">
+                <input type="submit" value="Add" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Preload service Type costs passed from the controller
+    const serviceTypeCosts = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ServiceTypeCosts));
+
+    document.getElementById('ServiceType').addEventListener('change', function () {
+        const selectedServiceTypeId = parseInt(this.value);
+        const amountPerWorkerField = document.getElementById('AmountPerWorker');
+        const totalWorkerField = document.getElementById('totalWorker');
+        const totalAmountField = document.getElementById('totalAmount');
+        const serviceProviderDropdown = document.getElementById('serviceProviderId');
+
+        if (!selectedServiceTypeId) {
+            // Reset fields if no service Type is selected  
+            amountPerWorkerField.value = '';
+            totalWorkerField.value = '';
+            totalAmountField.value = '';
+            serviceProviderDropdown.innerHTML = '';
+            serviceProviderDropdown.innerHTML = '<option value="-1">SELECT</option>';
+            return;
+        }
+
+        if (!serviceTypeCosts || serviceTypeCosts.length === 0) return;
+
+        // Find the matching ServiceTypeId in the serviceTypeCosts array
+        const selectedServiceType = serviceTypeCosts.find(service => service.ServiceTypeId === selectedServiceTypeId);
+
+        if (selectedServiceType) {
+            // Set the AmountPerWorker field value based on the selected serviceType's Cost
+            amountPerWorkerField.value = selectedServiceType.Cost;
+
+            // Optionally calculate Total Amount if TotalWorker is already filled
+            if (totalWorkerField.value) {
+                totalAmountField.value = selectedServiceType.Cost * totalWorkerField.value;
+            }
+        }
+
+        // Fetch ServiceProvider data based on selected service Type
+        $.ajax({
+            url: '@Url.Action("GetCostByServiceType", "DailyAttendance")',
+            type: 'GET',
+            data: { ServiceTypeId: selectedServiceTypeId },
+            success: function(response) {
+                // Populate Service Provider dropdown
+                if (response && response.serviceProviders) {
+                    let serviceProviderOptions = '<option value="-1">SELECT</option>';
+                    for (let i = 0; i < response.serviceProviders.length; i++) {
+                        serviceProviderOptions += `<option value="${response.serviceProviders[i].serviceProviderId}">
+                                                  ${response.serviceProviders[i].serviceProviderName}
+                                              </option>`;
+                    }
+                    serviceProviderDropdown.innerHTML = serviceProviderOptions;
+                } else {
+                    serviceProviderDropdown.innerHTML = '<option value="-1">No service Providers available</option>';
+                }
+
+                // Optionally, calculate Total Amount if TotalWorker is already filled
+                if (totalWorkerField.value && amountPerWorkerField.value) {
+                    totalAmountField.value = amountPerWorkerField.value * totalWorkerField.value;
+                }
+            },
+            error: function() {
+                alert('Error fetching service Providers data.');
+            }
+        });
+    });
+
+    // Update Total Amount when TotalWorker input changes
+    document.getElementById('totalWorker').addEventListener('input', function () {
+        const totalWorker = this.value;
+        const amountPerWorker = document.getElementById('AmountPerWorker').value;
+
+        if (amountPerWorker && totalWorker) {
+            document.getElementById('totalAmount').value = amountPerWorker * totalWorker;
+        } else {
+            document.getElementById('totalAmount').value = '';
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const serviceTypeDropdown = document.getElementById('ServiceType');
+        if (serviceTypeDropdown.value) {
+            serviceTypeDropdown.dispatchEvent(new Event('change'));
+        }
+    });
+</script>

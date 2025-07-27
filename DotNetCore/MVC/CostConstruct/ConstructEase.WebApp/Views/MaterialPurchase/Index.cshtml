@@ -1,0 +1,225 @@
+﻿@model List<MaterialPurchaseVm>
+
+<h3 style="text-align: center;">Material Purchase Report</h3>
+<html>
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        tr {
+            background-color: lightblue;
+        }
+
+        td {
+            padding: 8px 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .header-row {
+            background-color: #007bff;
+            color: white;
+            font-size: 15px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e6f7ff;
+        }
+
+        .bottom-section {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 20px;
+        }
+
+        #errorMessage {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .no-record {
+            background-color: lightblue;
+            text-align: center;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 10px;
+            margin: 20px auto;
+            width: 50%;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        @@media (max-width: 768px) {
+            form {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            form > div {
+                margin-bottom: 10px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            td, .header-row {
+                font-size: 14px;
+                padding: 6px 8px;
+            }
+
+            .bottom-section {
+                text-align: center;
+                font-size: 18px;
+            }
+
+            .no-record {
+                font-size: 16px;
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <span class="text-success">
+        <b>@TempData["SuccessMessage"]
+           @TempData["DeleteSuccessMessage"]
+        </b>
+    </span>
+
+    <div class="bottom-section">
+        <a asp-controller="MaterialPurchase" asp-action="Add">Add New</a>
+    </div>
+
+    <b style="text-align: left; margin: 20px 0;">Total Purchase: @ViewBag.materialPurchaseCount</b>
+
+    <span id="errorMessage" class="text-danger"></span>
+    <form method="get" asp-action="Index" onsubmit="return validateDates()" style="display: flex; align-items: center; justify-content: flex-start;">
+        <div style="margin-right: 10px;">
+            <label><b>From:</b></label>
+            <input type="date" id="DateFrom" name="DateFrom" value="@ViewBag.DateFrom" />
+        </div>
+        <div style="margin-right: 10px;">
+            <label><b>To:</b></label>
+            <input type="date" id="DateTo" name="DateTo" value="@ViewBag.DateTo" />
+        </div>
+        <div class="form-group" style="margin-right: 10px;">
+            <label><b>Supplier:</b></label>
+            @Html.DropDownList("SupplierId", (SelectList)ViewBag.Supplier, "-- Select Supplier --", new { @class = "form-control", style = "display: inline; width: 165px;" })
+            <span class="text-danger"></span>
+        </div>
+        <div class="form-group" style="margin-right: 10px;">
+            <label><b>Brand:</b></label>
+            @Html.DropDownList("BrandId", (SelectList)ViewBag.Brands, "-- Select Brand --", new { @class = "form-control", style = "display: inline; width: 165px;" })
+            <span class="text-danger"></span>
+        </div>
+        <div class="form-group" style="margin-right: 10px;">
+            <label><b>Material:</b></label>
+            @Html.DropDownList("MaterialId", (SelectList)ViewBag.Materials, "-- Select Material --", new { @class = "form-control", style = "display: inline; width: 165px;" })
+            <span class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Go</button>
+    </form>
+    @if (Model != null && Model.Count > 0)
+    {
+        <table>
+            <tr class="header-row">
+                <td><b>Date</b></td>
+                <td><b>Supplier</b></td>
+                <td><b>Supplier Contact</b></td>
+                <td><b>Brand</b></td>
+                <td><b>Material</b></td>
+                <td><b>Unit Price</b></td>
+                <td><b>Quantity</b></td>
+                <td><b>Material Cost</b></td>
+                <td><b>Delivery Charge</b></td>
+                <td><b>Total Amount</b></td>
+                <td><b>Action</b></td>
+            </tr>
+            @foreach (var materialPurchaseVm in Model)
+            {
+                var totalAmount = materialPurchaseVm.MaterialCost + materialPurchaseVm.DeliveryCharge;
+                <tr>
+                    <td>@materialPurchaseVm.Date.ToString("dd-MMMM-yyyy")</td>
+                    <td>@materialPurchaseVm.SupplierName</td>
+                    <td>@materialPurchaseVm.PhoneNumber</td>
+                    <td>@materialPurchaseVm.BrandName</td>
+                    <td>@materialPurchaseVm.MaterialName</td>
+                    <td>@materialPurchaseVm.UnitPrice.ToString("0.00") / <i>@materialPurchaseVm.UnitOfMeasure</i></td>
+                    <td>@materialPurchaseVm.Quantity.ToString("0.00") / <i>@materialPurchaseVm.UnitOfMeasure</i></td>
+                    <td>@materialPurchaseVm.MaterialCost</td>
+                    <td>@materialPurchaseVm.DeliveryCharge</td>
+                    <td>@totalAmount</td>
+                    <td>
+                        <form asp-action="Delete" asp-controller="MaterialPurchase" method="post" style="display:inline;"
+                              onsubmit="return confirm('Are you sure you want to delete this Service Provider?');">
+                            <input type="hidden" name="Id" value="@materialPurchaseVm.Id" />
+                            <button type="submit" class="btn btn-link p-0 m-0 align-baseline" style="color: #007bff;">Delete</button>
+                        </form>
+
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <div class="no-record">
+            <b>No Record Found</b>
+        </div>
+    }
+    <script>
+        function validateDates() {
+            // Get the date values
+            var dateFrom = document.getElementById("DateFrom").value;
+            var dateTo = document.getElementById("DateTo").value;
+            var errorMessage = document.getElementById("errorMessage");
+            errorMessage.innerHTML = "";
+
+            // Convert date strings to Date objects
+            var currentDate = new Date().toISOString().split('T')[0];
+            var fromDate = dateFrom ? new Date(dateFrom) : null;
+            var toDate = dateTo ? new Date(dateTo) : null;
+
+            // Check if DateFrom is greater than DateTo (when both are provided)
+            if (fromDate && toDate && fromDate > toDate) {
+                errorMessage.innerHTML = "FROM DATE cannot be greater than TO DATE.";
+                return false;
+            }
+
+            // Check both DateFrom and DateTo is in the future
+            if (dateTo && dateFrom > currentDate || dateFrom && dateTo > currentDate) {
+                errorMessage.innerHTML = "FROM DATE and TO DATE cannot be in the future.";
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+﻿@model AddNewCostMasterVm
+
+<h4>Add Cost</h4>
+<br />
+<div class="row">
+    <div>
+        <form asp-action="Add">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <span class="text-danger"> <b> @ViewBag.ErrorMessage </b> </span>
+
+            <div class="form-group" style="width: 200px;">
+                <label asp-for="Date" class="control-label"><b>Date</b></label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 200px;">
+                <label asp-for="ServiceTypeId" class="control-label"><b>Service Types</b></label>
+                @Html.DropDownListFor(model => model.ServiceTypeId, (SelectList)ViewBag.ServiceType, "-- Select --", new { @class = "form-control", id = "serviceTypeSelect", onchange = "updateCost()" })
+                <span asp-validation-for="ServiceTypeId" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group" style="width: 200px;">
+                <label asp-for="Cost" class="control-label"><b>Cost</b></label>
+                <input asp-for="Cost" class="form-control" id="Cost" />
+                <span asp-validation-for="Cost" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Add" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function updateCost() {
+        var serviceTypeId = $('#serviceTypeSelect').val();
+        if (serviceTypeId) {
+            $.ajax({
+                url: '@Url.Action("GetCostByServiceType", "CostMaster")', // Replace with your actual controller name
+                type: 'GET',
+                data: { serviceTypeId: serviceTypeId },
+                success: function (result) {
+                    $('#Cost').val(result.cost); // Assuming your input for Cost has id="Cost"
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching cost: ' + error);
+                }
+            });
+        } else {
+            $('#Cost').val(''); // Clear the Cost field if no category is selected
+        }
+    }
+</script>

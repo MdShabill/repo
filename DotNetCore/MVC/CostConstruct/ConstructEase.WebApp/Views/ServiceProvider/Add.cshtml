@@ -1,0 +1,107 @@
+﻿@model ConstructEase.WebApp.ViewModels.ServiceProviderVm
+
+<h4>Add Service Provider</h4>
+<br />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Add" method="post" enctype="multipart/form-data" novalidate>
+            <span class="text-danger"> <b> @ViewBag.errorMessage </b> </span>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="ServiceProviderName" class="control-label"><b>Service Provider Name</b></label>
+                <input asp-for="ServiceProviderName" class="form-control" maxlength="15" class="form-control" required />
+                @* <span asp-validation-for="ServiceProviderName" class="text-danger"></span> *@
+            </div>
+            <br />
+            <div class="form-group" style="width: 70%;">
+                <label><b>Gender</b></label><br />
+                @Html.RadioButton("Gender", "Male", true) Male
+                @Html.RadioButton("Gender", "Female") Female
+                @Html.RadioButton("Gender", "Transgender") Transgender
+                @Html.RadioButton("Gender", "Others") Others
+                @Html.ValidationMessageFor(model => model.Gender)
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="DOB" class="control-label"><b>Date Of Birth</b></label>
+                <input asp-for="DOB" class="form-control" />
+                @* <span asp-validation-for="DOB" class="text-danger"></span> *@
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label for="ImageFile"><b>Profile Image</b></label>
+                <input type="file" class="form-control" id="ImageFile" name="ImageFile" />
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="MobileNumber" class="control-label"><b>Mobile Number</b></label>
+                <input asp-for="MobileNumber" maxlength="10" minlength="10" class="form-control" required />
+                @* <span asp-validation-for="MobileNumber" class="text-danger"></span> *@
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="ReferredBy" class="control-label"><b>Referred By</b></label>
+                <input asp-for="ReferredBy" maxlength="15" minlength="3" class="form-control" required />
+                @* <span asp-validation-for="ReferredBy" class="text-danger"></span> *@
+            </div>
+            <br />
+            <div class="form-group" style="width: 60%;">
+                <label asp-for="ServiceTypeId" class="control-label"><b>Service Type</b></label>
+                @Html.DropDownListFor(model => model.ServiceTypeId, (SelectList)ViewBag.ServiceType, "-- SELECT SERVICE TYPE --", new { @class = "form-control" })
+                @* <span asp-validation-for="ServiceTypeId" class="text-danger"></span> *@
+            </div>
+            <br />
+            <button type="button" id="btnToggleAddressButton" class="btn btn-secondary" onclick="toggleAddressFields()">Tap for Address</button>
+            <br /><br />
+
+            <!-- Hidden Address Fields -->
+            <div id="dvAddressFields" style="display: none;">
+                <div class="form-group" style="width: 60%;">
+                    <label asp-for="AddressLine1" class="control-label"><b>Address</b></label>
+                    <input asp-for="AddressLine1" class="form-control" />
+                    @* <span asp-validation-for="AddressLine1" class="text-danger"></span> *@
+                </div>
+                <br />
+                <div class="form-group" style="width: 60%;">
+                    <label asp-for="AddressTypeId"><b>Address Type</b></label>
+                    @Html.DropDownListFor(model => model.AddressTypeId, (SelectList)ViewBag.AddressTypes, "-- Select --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.AddressTypeId, "", new { @class = "text-danger" })
+                </div>
+                <br />
+                <div class="form-group" style="width: 60%;">
+                    <label asp-for="CountryId"><b>Country Name</b></label>
+                    @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+                </div>
+                <br />
+                <div class="form-group" style="width: 60%;">
+                    <label asp-for="PinCode" class="control-label"><b>Pin Code</b></label>
+                    <input asp-for="PinCode" class="form-control" />
+                    @* <span asp-validation-for="PinCode" class="text-danger"></span> *@
+                </div>
+                <br />
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                &nbsp;&nbsp;&nbsp;
+                <a asp-controller="ServiceProvider" asp-action="Index"><b>Back To Service Provider List</b></a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleAddressFields() {
+        const addressFields = document.getElementById("dvAddressFields");
+        const button = document.getElementById("btnToggleAddressButton");
+
+        if (addressFields.style.display === "none") {
+            addressFields.style.display = "block";
+            button.textContent = "Tap to Hide Address";
+        } else {
+            addressFields.style.display = "none";
+            button.textContent = "Tap for Address";
+        }
+    }
+</script>
