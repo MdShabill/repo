@@ -1,0 +1,214 @@
+﻿<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+
+@* @{
+    ViewData["Title"] = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+} *@
+
+
+<style>
+    /* Background and Overlay Section */
+    .bg-image {
+        background-image: url('/UploadedImage/Background-Image.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 30vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: black;
+    }
+
+    .overlay-content h3 {
+        font-weight: bold;
+        font-size: 1.8rem;
+    }
+
+    .overlay-content p {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+
+    .btn-outline-primary {
+        border-color: #ffffff;
+        color: #ffffff;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            color: #ffffff;
+        }
+
+    /* About Us Section */
+    #aboutUsContent {
+        display: none;
+        padding: 20px;
+        background-color: #add8e6;
+        margin-top: 10px;
+        max-width: 1000px;
+    }
+
+    /* Card Styles */
+    .card {
+        background-color: #eaf2f8;
+        border: 1px solid #ddd;
+        transition: transform 0.2s;
+    }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .card-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .card-text {
+        font-size: 0.95rem;
+    }
+
+    /* Footer Section */
+    footer {
+        background-color: #333;
+        color: #ffffff;
+        padding: 20px 0;
+    }
+
+        footer h5 {
+            font-size: 1.1rem;
+        }
+
+        footer ul {
+            padding-left: 0;
+            list-style: none;
+        }
+
+            footer ul li a {
+                color: #ffffff;
+                text-decoration: none;
+            }
+
+                footer ul li a:hover {
+                    text-decoration: underline;
+                    color: #ddd;
+                }
+
+        footer small {
+            font-size: 0.85rem;
+        }
+</style>
+
+<div class="bg-image">
+    <div class="container text-center overlay-content">
+        <h3>Your Partner in Construction Management</h3>
+        <p>
+            Manage your construction material purchases, track expenses, and optimize your resources with ease.
+        </p>
+        <a href="#" class="btn btn-outline-primary btn-lg">Learn More</a>
+    </div>
+</div>
+
+<div class="container">
+    <div id="aboutUsContent" class="text-center mx-auto">
+        <p>India's No.1 tech-enabled construction company that aims to make construction simple, transparent, and reliable. We provide end-to-end aka design-to-build construction services.</p>
+        <p>We execute projects on a turnkey basis and provide real-time tracking, communication, quality checks, and updates on projects from day one till the handover of the keys.</p>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <!-- Introduction Section -->
+    <div class="row justify-content-center text-center">
+        <!-- Features Section -->
+        <div class="row text-center mt-5">
+            <div class="col-md-4">
+                <div class="card border-1 shadow-sm" style="background-color: lightblue;">
+                    <div class="card-body">
+                        <i class="fas fa-truck fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">Track Deliveries</h5>
+                        <p class="card-text">Monitor material deliveries in real-time, ensuring timely and smooth operations on-site.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-1 shadow-sm" style="background-color: lightyellow;">
+                    <div class="card-body">
+                        <i class="fas fa-file-invoice-dollar fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">Manage Costs</h5>
+                        <p class="card-text">Keep track of expenses and calculate total costs effortlessly for better budgeting.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-1 shadow-sm" style="background-color: skyblue;">
+                    <div class="card-body">
+                        <i class="fas fa-tools fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">Material Tracking</h5>
+                        <p class="card-text">Easily manage materials, suppliers, and brands to ensure the best quality for your projects.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="lead">
+            Streamline your construction material purchases with our powerful tool. Track suppliers, brands, materials, and costs in real-time, ensuring efficiency and accuracy in every transaction.
+        </p>
+    </div>
+
+    <div class="row justify-content-center text-center mt-5">
+        <div class="col-md-8">
+            <h3 class="mb-4 font-weight-bold">Ready to Get Started?</h3>
+            <p class="lead">Experience the most efficient way to manage your construction resources. Sign up now and start optimizing your processes today.</p>
+            <a href="#" class="btn btn-success btn-lg">Sign Up Now</a>
+        </div>
+    </div>
+</div>
+
+<!-- Footer Section -->
+<footer class="bg-dark text-white mt-5">
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-md-2">
+                <h5>Menu</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white">About Us</a></li>
+                    <li><a href="#" class="text-white">Projects</a></li>
+                    <li><a href="#" class="text-white">Cost Master</a></li>
+                    <li><a href="#" class="text-white">Attendance</a></li>
+                    <li><a href="#" class="text-white">Material Report</a></li>
+                    <li><a href="#" class="text-white">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Follow Us</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white">Facebook</a></li>
+                    <li><a href="#" class="text-white">Instagram</a></li>
+                    <li><a href="#" class="text-white">LinkedIn</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Camp Office Contact</h5>
+                <ul class="list-unstyled">
+                    <li>Shaktinagar: 05446-233928</li>
+                    <li>Obra: 05446-262264</li>
+                    <li>Lucknow: 0522-3200260</li>
+                </ul>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <small>&copy; 2024 Ashoka Construction Company. All Rights Reserved.</small>
+        </div>
+    </div>
+</footer>
+
+<!-- FontAwesome for Icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<script>
+    function toggleAboutUs() {
+        var aboutUsContent = document.getElementById('aboutUsContent');
+        aboutUsContent.style.display = (aboutUsContent.style.display === "none" || aboutUsContent.style.display === "") ? "block" : "none";
+    }
+</script>
