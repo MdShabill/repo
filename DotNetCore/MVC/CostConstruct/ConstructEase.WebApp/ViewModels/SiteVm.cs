@@ -24,5 +24,7 @@ namespace ConstructEase.WebApp.ViewModels
         public List<int> SelectedMasterMasonIds { get; set; } = new();
         public MultiSelectList? MasterMasons { get; set; }
 
+        public List<int> SelectedElectricianIds { get; set; } = new List<int>();
+        public MultiSelectList? Electrician { get; set; }
     }
 }

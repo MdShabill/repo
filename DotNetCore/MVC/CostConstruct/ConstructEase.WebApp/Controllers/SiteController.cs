@@ -108,7 +108,12 @@ namespace ConstructEase.WebApp.Controllers
                 {
                     _siteRepository.AddSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds);
                 }
-                
+
+                if (siteVm.SelectedElectricianIds.Count > 0)
+                {
+                    _siteRepository.AddSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteVm.SelectedElectricianIds);
+                }
+
 
                 TempData["AddSuccessMessage"] = "Add New Site Successful";
                 return RedirectToAction("Index");
@@ -201,7 +206,16 @@ namespace ConstructEase.WebApp.Controllers
 
             ViewBag.Name = new MultiSelectList(masterMasonsServiceProviders, "Value", "Text");
 
+            List<ServiceProviderName> electricians = _serviceProviderRepository.GetServiceProviders(ServiceTypes.Electrician);
+            var electricianServiceProviders = electricians
+                .Select(sp => new SelectListItem
+                {
+                    Value = sp.Id.ToString(),
+                    Text = sp.Name
+                }).ToList();
+
+            ViewBag.Electricians = new MultiSelectList(electricianServiceProviders, "Value", "Text");
+
         }
     }
-
 }

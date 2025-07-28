@@ -1,4 +1,4 @@
-﻿CREATE TABLE SiteServiceMappings (
+﻿CREATE TABLE SiteServiceProviders (
     Id INT PRIMARY KEY IDENTITY,
     SiteId INT NOT NULL,
     ServiceProviderId INT NOT NULL,

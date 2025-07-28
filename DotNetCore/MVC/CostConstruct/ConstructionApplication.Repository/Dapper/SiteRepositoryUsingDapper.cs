@@ -106,15 +106,28 @@ namespace ConstructionApplication.Repository.Dapper
             }
         }
 
-        public void AddSiteServiceProviderBridge(int siteId, ServiceTypes ServiceType, List<int> ServiceProviderIds)
+        public void AddSiteServiceProviderBridge(int siteId, ServiceTypes serviceType, List<int> serviceProviderIds)
         {
-            //delete from SiteServiceProviderBridge where siteId=siteId
-            
-            for (int i = 0; i < ServiceProviderIds.Count; i++)
+            using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                
-                //insert code of this table
+                //string deleteQuery = @"DELETE FROM SiteServiceProviders 
+                //               WHERE SiteId = @SiteId AND ServiceTypeId = @ServiceTypeId";
+                //db.Execute(deleteQuery, new { SiteId = siteId, ServiceTypeId = (int)serviceType });
 
+                for (int i = 0; i < serviceProviderIds.Count; i++)
+                {
+                    string insertQuery = @"INSERT INTO SiteServiceProviders 
+                                                (SiteId, ServiceProviderId, ServiceTypeId)
+                                           VALUES 
+                                                (@SiteId, @ServiceProviderId, @ServiceTypeId)";
+
+                    db.Execute(insertQuery, new
+                    {
+                        SiteId = siteId,
+                        ServiceProviderId = serviceProviderIds[i],
+                        ServiceTypeId = (int)serviceType
+                    });
+                }
             }
         }
     }

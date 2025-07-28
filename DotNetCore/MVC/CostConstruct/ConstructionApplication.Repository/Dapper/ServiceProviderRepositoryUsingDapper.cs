@@ -55,7 +55,7 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = 
-                    @$"SELECT  id, Name FROM ServiceProviders where ServiceTypeId= {(int)serviceType}";
+                    @$"SELECT  id, Name FROM ServiceProviders Where ServiceTypeId= {(int)serviceType}";
 
                 return connection.Query<ServiceProviderName>(sqlQuery).ToList();
             }

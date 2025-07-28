@@ -4,7 +4,10 @@
     {
         MasterMasion = 1,
         Labour = 2,
-        Painter = 3,
-        CarPenter = 4,
+        Electrician = 3,
+        Plumber = 5,
+        Painter = 7,
+        Carpenter = 9,
+        Tiler = 11,
     }
 }
