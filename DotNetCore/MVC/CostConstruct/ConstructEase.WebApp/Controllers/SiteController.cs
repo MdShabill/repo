@@ -91,7 +91,19 @@ namespace ConstructEase.WebApp.Controllers
         public IActionResult Add()
         {
             DropDownSelectList();
-            return View();
+
+            var model = new SiteVm
+            {
+                SelectedMasterMasonIds = new List<int>(),
+                SelectedElectricianIds = new List<int>(),
+                SelectedLabourIds = new List<int>(),
+                SelectedPlumberIds = new List<int>(),
+                SelectedCarpenterIds = new List<int>(),
+                SelectedTilerIds = new List<int>(),
+                StartedDate = DateTime.Today
+            };
+
+            return View(model);
         }
 
         [HttpPost]
