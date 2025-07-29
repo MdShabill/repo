@@ -6,6 +6,7 @@ namespace ConstructionApplication.Core.DataModels.ServiceProviders
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public int ServiceTypeId { get; set; }
     }
 
     public class ServiceProvider

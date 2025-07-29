@@ -215,65 +215,62 @@ namespace ConstructEase.WebApp.Controllers
             List<Country> countries = _countryRepository.GetAllCountries();
             ViewBag.Countries = new SelectList(countries, "Id", "Name");
 
-            List<ServiceProviderName> masterMasons = _serviceProviderRepository.GetServiceProviders(ServiceTypes.MasterMasion);
-            var masterMasonsServiceProviders = masterMasons
-                    .Select(sp => new SelectListItem
-                    {
-                        Value = sp.Id.ToString(),
-                        Text = sp.Name
-                    }).ToList();
+            // Get all service providers at once
+            List<ServiceProviderName> allServiceProviders = _serviceProviderRepository.GetAllServiceProviders();
 
-            ViewBag.Name = new MultiSelectList(masterMasonsServiceProviders, "Value", "Text");
+            ViewBag.Name = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.MasterMasion)
+                    .Select(sp => new SelectListItem 
+                    { 
+                        Value = sp.Id.ToString(), 
+                        Text = sp.Name 
+                    })
+                    .ToList(), "Value", "Text");
 
-            List<ServiceProviderName> electricians = _serviceProviderRepository.GetServiceProviders(ServiceTypes.Electrician);
-            var electricianServiceProviders = electricians
-                .Select(sp => new SelectListItem
-                {
-                    Value = sp.Id.ToString(),
-                    Text = sp.Name
-                }).ToList();
+            ViewBag.Electricians = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Electrician)
+                    .Select(sp => new SelectListItem 
+                    { 
+                        Value = sp.Id.ToString(), 
+                        Text = sp.Name 
+                    })
+                    .ToList(), "Value", "Text");
 
-            ViewBag.Electricians = new MultiSelectList(electricianServiceProviders, "Value", "Text");
+            ViewBag.Labours = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Labour)
+                    .Select(sp => new SelectListItem 
+                    { 
+                        Value = sp.Id.ToString(), 
+                        Text = sp.Name 
+                    })
+                    .ToList(), "Value", "Text");
 
-            List<ServiceProviderName> labours = _serviceProviderRepository.GetServiceProviders(ServiceTypes.Labour);
-            var labourServiceProviders = labours
-                .Select(sp => new SelectListItem
-                {
-                    Value = sp.Id.ToString(),
-                    Text = sp.Name
-                }).ToList();
+            ViewBag.Plumbers = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Plumber)
+                    .Select(sp => new SelectListItem 
+                    { 
+                        Value = sp.Id.ToString(), 
+                        Text = sp.Name 
+                    })
+                    .ToList(), "Value", "Text");
 
-            ViewBag.Labours = new MultiSelectList(labourServiceProviders, "Value", "Text");
+            ViewBag.Carpenters = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Carpenter)
+                    .Select(sp => new SelectListItem 
+                    { 
+                        Value = sp.Id.ToString(), 
+                        Text = sp.Name 
+                    })
+                    .ToList(), "Value", "Text");
 
-            List<ServiceProviderName> plumbers = _serviceProviderRepository.GetServiceProviders(ServiceTypes.Plumber);
-            var plumberServiceProviders = plumbers
-                .Select(sp => new SelectListItem
-                {
-                    Value = sp.Id.ToString(),
-                    Text = sp.Name
-                }).ToList();
-
-            ViewBag.Plumbers = new MultiSelectList(plumberServiceProviders, "Value", "Text");
-
-            List<ServiceProviderName> carpenters = _serviceProviderRepository.GetServiceProviders(ServiceTypes.Carpenter);
-            var carpenterServiceProviders = carpenters
-                .Select(sp => new SelectListItem
-                {
-                    Value = sp.Id.ToString(),
-                    Text = sp.Name
-                }).ToList();
-
-            ViewBag.Carpenters = new MultiSelectList(carpenterServiceProviders, "Value", "Text");
-
-            List<ServiceProviderName> tilers = _serviceProviderRepository.GetServiceProviders(ServiceTypes.Tiler);
-            var tilerServiceProviders = tilers
-                .Select(sp => new SelectListItem
-                {
-                    Value = sp.Id.ToString(),
-                    Text = sp.Name
-                }).ToList();
-
-            ViewBag.Tilers = new MultiSelectList(tilerServiceProviders, "Value", "Text");
+            ViewBag.Tilers = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Tiler)
+                    .Select(sp => new SelectListItem 
+                    { 
+                        Value = sp.Id.ToString(), 
+                        Text = sp.Name 
+                    })
+                    .ToList(), "Value", "Text");
         }
     }
 }

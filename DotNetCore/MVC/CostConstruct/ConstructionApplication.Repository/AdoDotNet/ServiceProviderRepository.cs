@@ -199,5 +199,10 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 }
             }
         }
+
+        public List<ServiceProviderName> GetAllServiceProviders()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

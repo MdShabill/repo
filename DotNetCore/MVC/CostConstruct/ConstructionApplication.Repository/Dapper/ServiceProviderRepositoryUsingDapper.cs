@@ -50,13 +50,22 @@ namespace ConstructionApplication.Repository.Dapper
             }
         }
 
-        public List<ServiceProviderName> GetServiceProviders(ServiceTypes serviceType)
+        //public List<ServiceProviderName> GetServiceProviders(ServiceTypes serviceType)
+        //{
+        //    using (IDbConnection connection = new SqlConnection(_connectionString))
+        //    {
+        //        string sqlQuery = 
+        //            @$"SELECT  id, Name FROM ServiceProviders Where ServiceTypeId= {(int)serviceType}";
+
+        //        return connection.Query<ServiceProviderName>(sqlQuery).ToList();
+        //    }
+        //}
+
+        public List<ServiceProviderName> GetAllServiceProviders()
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = 
-                    @$"SELECT  id, Name FROM ServiceProviders Where ServiceTypeId= {(int)serviceType}";
-
+                string sqlQuery = @"SELECT Id, Name, ServiceTypeId FROM ServiceProviders";
                 return connection.Query<ServiceProviderName>(sqlQuery).ToList();
             }
         }

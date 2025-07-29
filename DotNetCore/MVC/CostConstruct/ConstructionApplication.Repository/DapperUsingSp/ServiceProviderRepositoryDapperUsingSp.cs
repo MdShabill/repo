@@ -114,5 +114,10 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                 return connection.Execute(sqlQuery, parameters, commandType: CommandType.StoredProcedure);
             }
         }
+
+        public List<ServiceProviderName> GetAllServiceProviders()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
