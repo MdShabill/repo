@@ -22,9 +22,21 @@ namespace ConstructEase.WebApp.ViewModels
         public int? PinCode { get; set; }
 
         public List<int> SelectedMasterMasonIds { get; set; } = new();
-        public MultiSelectList? MasterMasons { get; set; }
+        //public MultiSelectList? MasterMasons { get; set; }
 
         public List<int> SelectedElectricianIds { get; set; } = new List<int>();
-        public MultiSelectList? Electrician { get; set; }
+        //public MultiSelectList? Electricians { get; set; }
+
+        public List<int> SelectedLabourIds { get; set; } = new List<int>();
+        //public MultiSelectList? Labours { get; set; }
+
+        public List<int> SelectedPlumberIds { get; set; } = new List<int>();
+        //public MultiSelectList? Plumbers { get; set; }
+
+        public List<int> SelectedCarpenterIds { get; set; } = new List<int>();
+        //public MultiSelectList? Carpenters { get; set; }
+
+        public List<int> SelectedTilerIds { get; set; } = new List<int>();
+        //public MultiSelectList? Tilers { get; set; }
     }
 }

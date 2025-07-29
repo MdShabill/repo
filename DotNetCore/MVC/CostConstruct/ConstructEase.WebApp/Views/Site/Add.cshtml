@@ -33,14 +33,34 @@
 
    
             <div class="form-group mb-6">
-                <label class="control-label"><b>Service Providers</b></label>
+                <label class="control-label"><b>Service Providers: Master Masons</b></label>
                 @Html.ListBoxFor(model => model.SelectedMasterMasonIds, (MultiSelectList)ViewBag.Name, new { @class = "form-control" })
                 <span class="text-danger"></span>
             </div>
 
             <div class="form-group mb-6">
-                <label class="control-label"><b>Service Providers</b></label>
+                <label class="control-label"><b>Service Providers: Electricians</b></label>
                 @Html.ListBoxFor(model => model.SelectedElectricianIds, ViewBag.Electricians as MultiSelectList, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group mb-6">
+                <label class="control-label"><b>Service Providers: Labours</b></label>
+                @Html.ListBoxFor(model => model.SelectedLabourIds, ViewBag.Labours as MultiSelectList, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group mb-6">
+                <label class="control-label"><b>Service Providers: Plumbers</b></label>
+                @Html.ListBoxFor(model => model.SelectedPlumberIds, ViewBag.Plumbers as MultiSelectList, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group mb-6">
+                <label class="control-label"><b>Service Providers: Carpenters</b></label>
+                @Html.ListBoxFor(model => model.SelectedCarpenterIds, ViewBag.Carpenters as MultiSelectList, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group mb-6">
+                <label class="control-label"><b>Service Providers: Tilers </b></label>
+                @Html.ListBoxFor(model => model.SelectedTilerIds, ViewBag.Tilers as MultiSelectList, new { @class = "form-control" })
             </div>
 
 
