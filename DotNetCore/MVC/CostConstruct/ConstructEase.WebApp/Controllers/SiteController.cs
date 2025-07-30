@@ -259,10 +259,19 @@ namespace ConstructEase.WebApp.Controllers
 
             ViewBag.Plumbers = new MultiSelectList(
                 allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Plumber)
-                    .Select(sp => new SelectListItem 
-                    { 
-                        Value = sp.Id.ToString(), 
-                        Text = sp.Name 
+                    .Select(sp => new SelectListItem
+                    {
+                        Value = sp.Id.ToString(),
+                        Text = sp.Name
+                    })
+                    .ToList(), "Value", "Text");
+
+            ViewBag.Painters = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Painter)
+                    .Select(sp => new SelectListItem
+                    {
+                        Value = sp.Id.ToString(),
+                        Text = sp.Name
                     })
                     .ToList(), "Value", "Text");
 
