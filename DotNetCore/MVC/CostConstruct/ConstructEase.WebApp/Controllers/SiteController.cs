@@ -118,32 +118,37 @@ namespace ConstructEase.WebApp.Controllers
 
                 if (siteVm.SelectedMasterMasonIds.Count > 0)
                 {
-                    _siteRepository.AddSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds);
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds);
                 }
 
                 if (siteVm.SelectedElectricianIds.Count > 0)
                 {
-                    _siteRepository.AddSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteVm.SelectedElectricianIds);
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteVm.SelectedElectricianIds);
                 }
 
                 if (siteVm.SelectedLabourIds.Count > 0)
                 {
-                    _siteRepository.AddSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteVm.SelectedLabourIds);
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteVm.SelectedLabourIds);
                 }
 
                 if (siteVm.SelectedPlumberIds.Count > 0)
                 {
-                    _siteRepository.AddSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteVm.SelectedPlumberIds);
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteVm.SelectedPlumberIds);
+                }
+
+                if (siteVm.SelectedPainterIds.Count > 0)
+                {
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteVm.SelectedPainterIds);
                 }
 
                 if (siteVm.SelectedCarpenterIds.Count > 0)
                 {
-                    _siteRepository.AddSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteVm.SelectedCarpenterIds);
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteVm.SelectedCarpenterIds);
                 }
 
                 if (siteVm.SelectedTilerIds.Count > 0)
                 {
-                    _siteRepository.AddSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteVm.SelectedTilerIds);
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteVm.SelectedTilerIds);
                 }
 
                 TempData["AddSuccessMessage"] = "Add New Site Successful";
@@ -162,6 +167,16 @@ namespace ConstructEase.WebApp.Controllers
             }
 
             SiteVm siteVm = _imapper.Map<ConstructionApplication.Core.DataModels.Site.Site, SiteVm>(selectedSite);
+
+            // Get already selected service provider IDs per service type
+            siteVm.SelectedMasterMasonIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.MasterMasion });
+            siteVm.SelectedElectricianIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Electrician });
+            siteVm.SelectedLabourIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Labour });
+            siteVm.SelectedPlumberIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Plumber });
+            siteVm.SelectedPainterIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Painter });
+            siteVm.SelectedCarpenterIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Carpenter });
+            siteVm.SelectedTilerIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Tiler });
+
             DropDownSelectList();
             return View(siteVm);
         }
@@ -171,15 +186,38 @@ namespace ConstructEase.WebApp.Controllers
         {
             DropDownSelectList();
 
-            ConstructionApplication.Core.DataModels.Site.Site site = _imapper.Map<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
+            var site = _imapper.Map<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
             int affectedRowCount = _siteRepository.Update(site);
+
             if (affectedRowCount > 0)
             {
                 AddAddressIfPresent(site.Id, siteVm);
-                TempData["UpdateSuccessMessage"] = "Your Data updated successfully.";
+
+                if (siteVm.SelectedMasterMasonIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds);
+
+                if (siteVm.SelectedElectricianIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteVm.SelectedElectricianIds);
+
+                if (siteVm.SelectedLabourIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteVm.SelectedLabourIds);
+
+                if (siteVm.SelectedPlumberIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteVm.SelectedPlumberIds);
+
+                if (siteVm.SelectedPainterIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteVm.SelectedPainterIds);
+
+                if (siteVm.SelectedCarpenterIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteVm.SelectedCarpenterIds);
+
+                if (siteVm.SelectedTilerIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteVm.SelectedTilerIds);
+
+                TempData["UpdateSuccessMessage"] = "Site updated successfully.";
                 return RedirectToAction("Index");
             }
-            DropDownSelectList();
+
             return View("Edit", siteVm);
         }
 

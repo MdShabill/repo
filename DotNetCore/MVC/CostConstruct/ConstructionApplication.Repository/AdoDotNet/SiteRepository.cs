@@ -172,7 +172,12 @@ namespace ConstructionApplication.Repository.AdoDotNet
             }
         }
 
-        public void AddSiteServiceProviderBridge(int siteId, Core.Enums.ServiceTypes ServiceType, List<int> ServiceProviderIds)
+        public void AddAndUpdateSiteServiceProviderBridge(int siteId, Core.Enums.ServiceTypes ServiceType, List<int> ServiceProviderIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<int> GetServiceProviderIdsByTypes(int siteId, List<ServiceTypes> serviceTypes)
         {
             throw new NotImplementedException();
         }

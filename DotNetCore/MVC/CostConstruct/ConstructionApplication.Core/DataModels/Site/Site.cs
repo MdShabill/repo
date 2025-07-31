@@ -21,5 +21,8 @@ namespace ConstructionApplication.Core.DataModels.Site
         public int? CountryId { get; set; }
         public string? CountryName { get; set; }
         public int? PinCode { get; set; }
+
+        public List<int>? ServiceProviderIds { get; set; }
+
     }
 }

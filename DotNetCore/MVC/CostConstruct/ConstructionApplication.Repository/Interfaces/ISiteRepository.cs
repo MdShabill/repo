@@ -1,4 +1,5 @@
 ﻿using ConstructionApplication.Core.DataModels.Site;
+using ConstructionApplication.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace ConstructionApplication.Repository.Interfaces
         public int Update(Site site);
         public int Create(Site site);
         public void Delete(int siteId);
-        public void AddSiteServiceProviderBridge(int siteId, Core.Enums.ServiceTypes ServiceType, List<int> ServiceProviderIds);
+        public List<int> GetServiceProviderIdsByTypes(int siteId, List<ServiceTypes> serviceTypes);
+        public void AddAndUpdateSiteServiceProviderBridge(int siteId, Core.Enums.ServiceTypes ServiceType, List<int> ServiceProviderIds);
     }
 }
