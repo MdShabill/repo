@@ -129,24 +129,49 @@ namespace ConstructionApplication.Repository.Dapper
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                string deleteQuery = @"DELETE FROM SiteServiceProviders 
-                               WHERE SiteId = @SiteId AND ServiceTypeId = @ServiceTypeId";
-                db.Execute(deleteQuery, new { SiteId = siteId, ServiceTypeId = (int)serviceType });
+                string csvIds = string.Join(",", serviceProviderIds);
 
-                for (int i = 0; i < serviceProviderIds.Count; i++)
+                string query = @"
+                        DECLARE @NewServiceProviderIds TABLE (ServiceProviderId INT);
+
+                        INSERT INTO 
+                               @NewServiceProviderIds (ServiceProviderId)
+                        SELECT 
+                            TRY_CAST(value AS INT)
+                        FROM 
+                            STRING_SPLIT(@ServiceProviderIdsCSV, ',')
+                        WHERE TRY_CAST(value AS INT) IS NOT NULL;
+
+                        DELETE FROM SiteServiceProviders
+                        WHERE 
+                            SiteId = @SiteId
+                          AND 
+                            ServiceTypeId = @ServiceTypeId
+                          AND 
+                            ServiceProviderId NOT IN (SELECT ServiceProviderId FROM @NewServiceProviderIds);
+
+                        MERGE 
+                            SiteServiceProviders AS target
+                        USING 
+                            @NewServiceProviderIds AS source
+                          ON 
+                            target.SiteId = @SiteId 
+                          AND 
+                            target.ServiceTypeId = @ServiceTypeId
+                          AND 
+                            target.ServiceProviderId = source.ServiceProviderId
+                        WHEN NOT MATCHED BY TARGET THEN
+                            INSERT 
+                                (SiteId, ServiceTypeId, ServiceProviderId)
+                            VALUES 
+                                (@SiteId, @ServiceTypeId, source.ServiceProviderId);";
+
+                db.Execute(query, new
                 {
-                    string insertQuery = @"INSERT INTO SiteServiceProviders 
-                                                (SiteId, ServiceProviderId, ServiceTypeId)
-                                           VALUES 
-                                                (@SiteId, @ServiceProviderId, @ServiceTypeId)";
-
-                    db.Execute(insertQuery, new
-                    {
-                        SiteId = siteId,
-                        ServiceProviderId = serviceProviderIds[i],
-                        ServiceTypeId = (int)serviceType
-                    });
-                }
+                    SiteId = siteId,
+                    ServiceTypeId = (int)serviceType,
+                    ServiceProviderIdsCSV = csvIds
+                });
             }
         }
     }

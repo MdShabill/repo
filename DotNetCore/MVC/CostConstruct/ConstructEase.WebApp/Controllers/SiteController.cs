@@ -265,7 +265,6 @@ namespace ConstructEase.WebApp.Controllers
             List<Country> countries = _countryRepository.GetAllCountries();
             ViewBag.Countries = new SelectList(countries, "Id", "Name");
 
-            // Get all service providers at once
             List<ServiceProviderName> allServiceProviders = _serviceProviderRepository.GetAllServiceProviders();
 
             ViewBag.Name = new MultiSelectList(
