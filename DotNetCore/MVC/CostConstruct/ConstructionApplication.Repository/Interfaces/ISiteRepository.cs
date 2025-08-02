@@ -1,21 +1,16 @@
 ﻿using ConstructionApplication.Core.DataModels.Site;
 using ConstructionApplication.Core.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConstructionApplication.Repository.Interfaces
 {
     public interface ISiteRepository
     {
-        List<Site> GetAllSites();
-        public Site GetSiteById(int Id);
+        public List<Site> GetAllSites();
+        public Site GetSiteById(int id);
         public int Update(Site site);
         public int Create(Site site);
         public void Delete(int siteId);
         public List<int> GetServiceProviderIdsByTypes(int siteId, List<ServiceTypes> serviceTypes);
-        public void AddAndUpdateSiteServiceProviderBridge(int siteId, Core.Enums.ServiceTypes ServiceType, List<int> ServiceProviderIds);
+        public void AddAndUpdateSiteServiceProviderBridge(int siteId, ServiceTypes serviceType, List<int> serviceProviderIds);
     }
 }

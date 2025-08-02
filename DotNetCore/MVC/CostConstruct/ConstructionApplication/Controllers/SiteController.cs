@@ -53,8 +53,8 @@ namespace ConstructionApplication.Controllers
         [SessionCheck]
         public IActionResult Index()
         {
-            List<Core.DataModels.Site.Site> sites = _siteRepository.GetAllSites();
-            List<SiteVm> siteVm = _imapper.Map<List<Core.DataModels.Site.Site>,List<SiteVm>>(sites);
+            List<ConstructionApplication.Core.DataModels.Site.Site> sites = _siteRepository.GetAllSites();
+            List<SiteVm> siteVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>, List<SiteVm>>(sites);
 
             int? selectedSiteId = HttpContext.Session.GetInt32("SelectedSiteId");
 
@@ -90,13 +90,25 @@ namespace ConstructionApplication.Controllers
         public IActionResult Add()
         {
             DropDownSelectList();
-            return View();
+
+            var model = new SiteVm
+            {
+                SelectedMasterMasonIds = new List<int>(),
+                SelectedElectricianIds = new List<int>(),
+                SelectedLabourIds = new List<int>(),
+                SelectedPlumberIds = new List<int>(),
+                SelectedCarpenterIds = new List<int>(),
+                SelectedTilerIds = new List<int>(),
+                StartedDate = DateTime.Today
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         public IActionResult Add(SiteVm siteVm)
         {
-            Core.DataModels.Site.Site site = _imapper.Map<SiteVm, Core.DataModels.Site.Site>(siteVm);
+            ConstructionApplication.Core.DataModels.Site.Site site = _imapper.Map<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
             site.Id = _siteRepository.Create(site);
 
             if (site.Id > 0)
@@ -105,9 +117,38 @@ namespace ConstructionApplication.Controllers
 
                 if (siteVm.SelectedMasterMasonIds.Count > 0)
                 {
-                    _siteRepository.AddSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds);
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds);
                 }
-                
+
+                if (siteVm.SelectedElectricianIds.Count > 0)
+                {
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteVm.SelectedElectricianIds);
+                }
+
+                if (siteVm.SelectedLabourIds.Count > 0)
+                {
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteVm.SelectedLabourIds);
+                }
+
+                if (siteVm.SelectedPlumberIds.Count > 0)
+                {
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteVm.SelectedPlumberIds);
+                }
+
+                if (siteVm.SelectedPainterIds.Count > 0)
+                {
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteVm.SelectedPainterIds);
+                }
+
+                if (siteVm.SelectedCarpenterIds.Count > 0)
+                {
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteVm.SelectedCarpenterIds);
+                }
+
+                if (siteVm.SelectedTilerIds.Count > 0)
+                {
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteVm.SelectedTilerIds);
+                }
 
                 TempData["AddSuccessMessage"] = "Add New Site Successful";
                 return RedirectToAction("Index");
@@ -124,7 +165,17 @@ namespace ConstructionApplication.Controllers
                 return NotFound();
             }
 
-            SiteVm siteVm = _imapper.Map<Core.DataModels.Site.Site, SiteVm>(selectedSite);
+            SiteVm siteVm = _imapper.Map<ConstructionApplication.Core.DataModels.Site.Site, SiteVm>(selectedSite);
+
+            // Get already selected service provider IDs per service type
+            siteVm.SelectedMasterMasonIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.MasterMasion });
+            siteVm.SelectedElectricianIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Electrician });
+            siteVm.SelectedLabourIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Labour });
+            siteVm.SelectedPlumberIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Plumber });
+            siteVm.SelectedPainterIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Painter });
+            siteVm.SelectedCarpenterIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Carpenter });
+            siteVm.SelectedTilerIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Tiler });
+
             DropDownSelectList();
             return View(siteVm);
         }
@@ -134,15 +185,38 @@ namespace ConstructionApplication.Controllers
         {
             DropDownSelectList();
 
-            Core.DataModels.Site.Site site = _imapper.Map<SiteVm, Core.DataModels.Site.Site>(siteVm);
+            var site = _imapper.Map<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
             int affectedRowCount = _siteRepository.Update(site);
+
             if (affectedRowCount > 0)
             {
                 AddAddressIfPresent(site.Id, siteVm);
-                TempData["UpdateSuccessMessage"] = "Your Data updated successfully.";
+
+                if (siteVm.SelectedMasterMasonIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds);
+
+                if (siteVm.SelectedElectricianIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteVm.SelectedElectricianIds);
+
+                if (siteVm.SelectedLabourIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteVm.SelectedLabourIds);
+
+                if (siteVm.SelectedPlumberIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteVm.SelectedPlumberIds);
+
+                if (siteVm.SelectedPainterIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteVm.SelectedPainterIds);
+
+                if (siteVm.SelectedCarpenterIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteVm.SelectedCarpenterIds);
+
+                if (siteVm.SelectedTilerIds.Count > 0)
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteVm.SelectedTilerIds);
+
+                TempData["UpdateSuccessMessage"] = "Site updated successfully.";
                 return RedirectToAction("Index");
             }
-            DropDownSelectList();
+
             return View("Edit", siteVm);
         }
 
@@ -190,17 +264,70 @@ namespace ConstructionApplication.Controllers
             List<Country> countries = _countryRepository.GetAllCountries();
             ViewBag.Countries = new SelectList(countries, "Id", "Name");
 
-            List<ServiceProviderName> masterMasons = _serviceProviderRepository.GetServiceProviders(ServiceTypes.MasterMasion);
-            var masterMasonsServiceProviders = masterMasons
+            List<ServiceProviderName> allServiceProviders = _serviceProviderRepository.GetAllServiceProviders();
+
+            ViewBag.Name = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.MasterMasion)
                     .Select(sp => new SelectListItem
                     {
                         Value = sp.Id.ToString(),
                         Text = sp.Name
-                    }).ToList();
+                    })
+                    .ToList(), "Value", "Text");
 
-            ViewBag.Name = new MultiSelectList(masterMasonsServiceProviders, "Value", "Text");
+            ViewBag.Electricians = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Electrician)
+                    .Select(sp => new SelectListItem
+                    {
+                        Value = sp.Id.ToString(),
+                        Text = sp.Name
+                    })
+                    .ToList(), "Value", "Text");
 
+            ViewBag.Labours = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Labour)
+                    .Select(sp => new SelectListItem
+                    {
+                        Value = sp.Id.ToString(),
+                        Text = sp.Name
+                    })
+                    .ToList(), "Value", "Text");
+
+            ViewBag.Plumbers = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Plumber)
+                    .Select(sp => new SelectListItem
+                    {
+                        Value = sp.Id.ToString(),
+                        Text = sp.Name
+                    })
+                    .ToList(), "Value", "Text");
+
+            ViewBag.Painters = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Painter)
+                    .Select(sp => new SelectListItem
+                    {
+                        Value = sp.Id.ToString(),
+                        Text = sp.Name
+                    })
+                    .ToList(), "Value", "Text");
+
+            ViewBag.Carpenters = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Carpenter)
+                    .Select(sp => new SelectListItem
+                    {
+                        Value = sp.Id.ToString(),
+                        Text = sp.Name
+                    })
+                    .ToList(), "Value", "Text");
+
+            ViewBag.Tilers = new MultiSelectList(
+                allServiceProviders.Where(sp => sp.ServiceTypeId == (int)ServiceTypes.Tiler)
+                    .Select(sp => new SelectListItem
+                    {
+                        Value = sp.Id.ToString(),
+                        Text = sp.Name
+                    })
+                    .ToList(), "Value", "Text");
         }
     }
-
 }

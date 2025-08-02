@@ -24,5 +24,22 @@ namespace ConstructionApplication.ViewModels
         public List<int> SelectedMasterMasonIds { get; set; } = new();
         public MultiSelectList? MasterMasons { get; set; }
 
+        public List<int> SelectedElectricianIds { get; set; } = new List<int>();
+        public MultiSelectList? Electricians { get; set; }
+
+        public List<int> SelectedLabourIds { get; set; } = new List<int>();
+        public MultiSelectList? Labours { get; set; }
+
+        public List<int> SelectedPlumberIds { get; set; } = new List<int>();
+        public MultiSelectList? Plumbers { get; set; }
+
+        public List<int> SelectedPainterIds { get; set; } = new List<int>();
+        public MultiSelectList? Painters { get; set; }
+
+        public List<int> SelectedCarpenterIds { get; set; } = new List<int>();
+        public MultiSelectList? Carpenters { get; set; }
+
+        public List<int> SelectedTilerIds { get; set; } = new List<int>();
+        public MultiSelectList? Tilers { get; set; }
     }
 }
