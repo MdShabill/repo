@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using ConstructEase.WebApp.ViewModels;
+using ConstructionApplication.Core;
 using ConstructionApplication.Core.DataModels.Address;
 using ConstructionApplication.Core.DataModels.AddressType;
 using ConstructionApplication.Core.DataModels.Country;
@@ -6,12 +8,11 @@ using ConstructionApplication.Core.DataModels.ServiceProviders;
 using ConstructionApplication.Core.DataModels.Site;
 using ConstructionApplication.Core.DataModels.SiteStatus;
 using ConstructionApplication.Core.Enums;
-using ConstructionApplication.Core;
 using ConstructionApplication.Repository.AdoDotNet;
 using ConstructionApplication.Repository.Interfaces;
-using ConstructEase.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Caching.Memory;
 using System.Security.Policy;
 
 namespace ConstructEase.WebApp.Controllers
@@ -25,6 +26,8 @@ namespace ConstructEase.WebApp.Controllers
         IServiceProviderRepository _serviceProviderRepository;
         ISiteRepository _siteRepository;
         IMapper _imapper;
+        IMemoryCache _cache;
+
 
         public SiteController(ISiteStatusRepository siteStatusRepository,
 
@@ -32,7 +35,8 @@ namespace ConstructEase.WebApp.Controllers
                               IAddressTypeRepository addressTypeRepository,
                               ICountryRepository countryRepository,
                               IServiceProviderRepository serviceProviderRepository,
-                              ISiteRepository siteRepository) : base(siteRepository)
+                              ISiteRepository siteRepository,
+                              IMemoryCache cache) : base(siteRepository)
         {
             _siteRepository = siteRepository;
             _siteStatusRepository = siteStatusRepository;
@@ -40,6 +44,7 @@ namespace ConstructEase.WebApp.Controllers
             _countryRepository = countryRepository;
             _serviceProviderRepository = serviceProviderRepository;
             _addressTypeRepository = addressTypeRepository;
+            _cache = cache;
 
             var configuration = new MapperConfiguration(cfg =>
             {
@@ -54,18 +59,27 @@ namespace ConstructEase.WebApp.Controllers
         [SessionCheck]
         public IActionResult Index()
         {
-            List<ConstructionApplication.Core.DataModels.Site.Site> sites = _siteRepository.GetAllSites();
+            const string cacheKey = "AllSites";
+            List<ConstructionApplication.Core.DataModels.Site.Site> sites;
+
+            if (!_cache.TryGetValue(cacheKey, out sites))
+            {
+                sites = _siteRepository.GetAllSites();
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(10)); // Adjust as needed
+                _cache.Set(cacheKey, sites, cacheEntryOptions);
+            }
+
             List<SiteVm> siteVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>,List<SiteVm>>(sites);
 
             int? selectedSiteId = HttpContext.Session.GetInt32("SelectedSiteId");
-
-            ViewBag.Site = new SelectList(sites, "Id", "Name", selectedSiteId);
 
             if (TempData["ErrorMessage"] != null)
             {
                 ViewBag.ErrorMessage = TempData["ErrorMessage"];
             }
 
+            ViewBag.Site = new SelectList(sites, "Id", "Name", selectedSiteId);
             return View(siteVm);
         }
 
