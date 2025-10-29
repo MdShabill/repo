@@ -66,7 +66,7 @@ namespace ConstructEase.WebApp.Controllers
             {
                 sites = _siteRepository.GetAllSites();
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(10)); // Adjust as needed
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(10));
                 _cache.Set(cacheKey, sites, cacheEntryOptions);
             }
 
