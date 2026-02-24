@@ -59,6 +59,37 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(result);
         }
 
+        [HttpGet("GetStaticCost")]
+        public IActionResult GetStaticCost()
+        {
+            var data = new[]
+            {
+                new
+                {
+                    Id = 1,
+                    Name = "Master Mason",
+                    Cost = 1200,
+                    Date = DateTime.Now
+                },
+                new
+                {
+                    Id = 2,
+                    Name = "Labour",
+                    Cost = 800,
+                    Date = DateTime.Now
+                },
+                new
+                {
+                    Id = 3,
+                    Name = "Plumber",
+                    Cost = 1500,
+                    Date = DateTime.Now
+                }
+            };
+
+            return Ok(data);
+        }
+
         [HttpGet("GetActiveCost")]
         public IActionResult GetActiveCost(int serviceTypeId)
         {
@@ -75,16 +106,6 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(result);
         }
 
-        [HttpGet("Add")]
-        public IActionResult Add()
-        {
-            var serviceTypes = _serviceTypeRepository.GetAll();
-
-            if (serviceTypes == null || !serviceTypes.Any())
-                return NotFound("No Service Types Found");
-
-            return Ok(serviceTypes);
-        }
 
         [HttpPost("Add")]
         public IActionResult Add([FromBody] AddNewCostMasterVm costMasterVm)
