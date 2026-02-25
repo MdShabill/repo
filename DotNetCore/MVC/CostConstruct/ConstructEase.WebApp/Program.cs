@@ -21,6 +21,18 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 
+builder.Services.AddCors(options =>
+{
+options.AddPolicy("AllowFrontend",
+    policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5176")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // Register repositories based on repositoryType
 var repositoryRegistration = new RepositoryRegistration();
 
@@ -61,6 +73,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseSession();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
