@@ -238,8 +238,6 @@ namespace ConstructEase.WebApp.Controllers
         [HttpPost]
         public IActionResult Delete(int siteId)
         {
-            _addressRepository.Delete(0, siteId);
-
             _siteRepository.Delete(siteId);
             TempData["DeleteSuccessMessage"] = "Your Data Has Been Deleted successfully.";
             return RedirectToAction("Index");

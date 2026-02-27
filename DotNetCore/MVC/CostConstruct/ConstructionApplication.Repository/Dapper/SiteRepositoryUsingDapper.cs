@@ -101,8 +101,28 @@ namespace ConstructionApplication.Repository.Dapper
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                string deleteQuery = "DELETE FROM Sites WHERE Id = @Id";
-                db.Execute(deleteQuery, new { Id = siteId });
+                db.Open();
+                using (var transaction = db.BeginTransaction())
+                {
+                    try
+                    {
+                        db.Execute("DELETE FROM Addresses WHERE SiteId = @SiteId",
+                                   new { SiteId = siteId }, transaction);
+
+                        db.Execute("DELETE FROM SiteServiceProviders WHERE SiteId = @SiteId",
+                                   new { SiteId = siteId }, transaction);
+
+                        db.Execute("DELETE FROM Sites WHERE Id = @Id",
+                                   new { Id = siteId }, transaction);
+
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
             }
         }
 

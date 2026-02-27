@@ -27,11 +27,18 @@ options.AddPolicy("AllowFrontend",
     policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173/")
+            .WithOrigins("http://localhost:5173", "http://localhost:5173/")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy =
+            System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 
 // Register repositories based on repositoryType
 var repositoryRegistration = new RepositoryRegistration();

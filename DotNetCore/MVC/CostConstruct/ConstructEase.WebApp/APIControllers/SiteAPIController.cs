@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ConstructEase.WebApp.APIControllers.APIViewModels;
 using ConstructEase.WebApp.ViewModels;
 using ConstructionApplication.Core;
 using ConstructionApplication.Core.DataModels.Address;
@@ -50,8 +51,8 @@ namespace ConstructEase.WebApp.APIControllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<ConstructionApplication.Core.DataModels.Site.Site, SiteVm>();
-                cfg.CreateMap<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>();
+                cfg.CreateMap<ConstructionApplication.Core.DataModels.Site.Site, SiteAPIDTO>();
+                cfg.CreateMap<SiteAPIDTO, ConstructionApplication.Core.DataModels.Site.Site>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -74,11 +75,10 @@ namespace ConstructEase.WebApp.APIControllers
                 _cache.Set(cacheKey, sites, cacheEntryOptions);
             }
 
-            var siteVm = _imapper.Map<
-                List<ConstructionApplication.Core.DataModels.Site.Site>,
-                List<SiteVm>>(sites);
+            var siteApiVm = 
+                _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>,List<SiteAPIDTO>>(sites);
 
-            return Ok(siteVm);
+            return Ok(siteApiVm);
         }
 
         [HttpPost("select-site")]
@@ -100,14 +100,13 @@ namespace ConstructEase.WebApp.APIControllers
 
 
         [HttpPost("add")]
-        public IActionResult Add(SiteVm siteVm)
+        public IActionResult Add(SiteAPIDTO siteApiVm)
         {
-            if (siteVm == null)
+            if (siteApiVm == null)
                 return BadRequest("Invalid data");
 
-            var site = _imapper.Map<
-                SiteVm,
-                ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
+            var site = 
+                _imapper.Map<SiteAPIDTO, ConstructionApplication.Core.DataModels.Site.Site>(siteApiVm);
 
             site.Id = _siteRepository.Create(site);
 
@@ -115,36 +114,36 @@ namespace ConstructEase.WebApp.APIControllers
                 return StatusCode(500, "Failed to create site");
 
             // Address
-            AddAddressIfPresent(site.Id, siteVm);
+            AddAddressIfPresent(site.Id, siteApiVm);
 
             // Service Providers
-            if (siteVm.SelectedMasterMasonIds?.Count > 0)
+            if (siteApiVm.MasterMasonIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds);
+                    site.Id, ServiceTypes.MasterMasion, siteApiVm.MasterMasonIds);
 
-            if (siteVm.SelectedElectricianIds?.Count > 0)
+            if (siteApiVm.ElectricianIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Electrician, siteVm.SelectedElectricianIds);
+                    site.Id, ServiceTypes.Electrician, siteApiVm.ElectricianIds);
 
-            if (siteVm.SelectedLabourIds?.Count > 0)
+            if (siteApiVm.LabourIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Labour, siteVm.SelectedLabourIds);
+                    site.Id, ServiceTypes.Labour, siteApiVm.LabourIds);
 
-            if (siteVm.SelectedPlumberIds?.Count > 0)
+            if (siteApiVm.PlumberIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Plumber, siteVm.SelectedPlumberIds);
+                    site.Id, ServiceTypes.Plumber, siteApiVm.PlumberIds);
 
-            if (siteVm.SelectedPainterIds?.Count > 0)
+            if (siteApiVm.PainterIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Painter, siteVm.SelectedPainterIds);
+                    site.Id, ServiceTypes.Painter, siteApiVm.PainterIds);
 
-            if (siteVm.SelectedCarpenterIds?.Count > 0)
+            if (siteApiVm.CarpenterIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Carpenter, siteVm.SelectedCarpenterIds);
+                    site.Id, ServiceTypes.Carpenter, siteApiVm.CarpenterIds);
 
-            if (siteVm.SelectedTilerIds?.Count > 0)
+            if (siteApiVm.TilerIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Tiler, siteVm.SelectedTilerIds);
+                    site.Id, ServiceTypes.Tiler, siteApiVm.TilerIds);
 
             return Ok(new
             {
@@ -161,51 +160,49 @@ namespace ConstructEase.WebApp.APIControllers
             if (selectedSite == null)
                 return NotFound(new { message = "Site not found" });
 
-            var siteVm = _imapper.Map<
-                ConstructionApplication.Core.DataModels.Site.Site,
-                SiteVm>(selectedSite);
+            var siteApiVm = 
+                _imapper.Map<ConstructionApplication.Core.DataModels.Site.Site,SiteAPIDTO>(selectedSite);
 
             // Already selected service provider IDs
-            siteVm.SelectedMasterMasonIds =
+            siteApiVm.MasterMasonIds =
                 _siteRepository.GetServiceProviderIdsByTypes(
                     id, new List<ServiceTypes> { ServiceTypes.MasterMasion });
 
-            siteVm.SelectedElectricianIds =
+            siteApiVm.ElectricianIds =
                 _siteRepository.GetServiceProviderIdsByTypes(
                     id, new List<ServiceTypes> { ServiceTypes.Electrician });
 
-            siteVm.SelectedLabourIds =
+            siteApiVm.LabourIds =
                 _siteRepository.GetServiceProviderIdsByTypes(
                     id, new List<ServiceTypes> { ServiceTypes.Labour });
 
-            siteVm.SelectedPlumberIds =
+            siteApiVm.PlumberIds =
                 _siteRepository.GetServiceProviderIdsByTypes(
                     id, new List<ServiceTypes> { ServiceTypes.Plumber });
 
-            siteVm.SelectedPainterIds =
+            siteApiVm.PainterIds =
                 _siteRepository.GetServiceProviderIdsByTypes(
                     id, new List<ServiceTypes> { ServiceTypes.Painter });
 
-            siteVm.SelectedCarpenterIds =
+            siteApiVm.CarpenterIds =
                 _siteRepository.GetServiceProviderIdsByTypes(
                     id, new List<ServiceTypes> { ServiceTypes.Carpenter });
 
-            siteVm.SelectedTilerIds =
+            siteApiVm.TilerIds =
                 _siteRepository.GetServiceProviderIdsByTypes(
                     id, new List<ServiceTypes> { ServiceTypes.Tiler });
 
-            return Ok(siteVm);
+            return Ok(siteApiVm);
         }
 
         [HttpPost("update")]
-        public IActionResult Update(SiteVm siteVm)
+        public IActionResult Update(SiteAPIDTO siteApiVm)
         {
-            if (siteVm == null)
+            if (siteApiVm == null)
                 return BadRequest("Invalid data");
 
-            var site = _imapper.Map<
-                SiteVm,
-                ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
+            var site = 
+                _imapper.Map<SiteAPIDTO,ConstructionApplication.Core.DataModels.Site.Site>(siteApiVm);
 
             int affectedRowCount = _siteRepository.Update(site);
 
@@ -213,36 +210,36 @@ namespace ConstructEase.WebApp.APIControllers
                 return NotFound(new { message = "Site not found or update failed" });
 
             // Address update
-            AddAddressIfPresent(site.Id, siteVm);
+            AddAddressIfPresent(site.Id, siteApiVm);
 
             // Service Providers Update
-            if (siteVm.SelectedMasterMasonIds?.Count > 0)
+            if (siteApiVm.MasterMasonIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds);
+                    site.Id, ServiceTypes.MasterMasion, siteApiVm.MasterMasonIds);
 
-            if (siteVm.SelectedElectricianIds?.Count > 0)
+            if (siteApiVm.ElectricianIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Electrician, siteVm.SelectedElectricianIds);
+                    site.Id, ServiceTypes.Electrician, siteApiVm.ElectricianIds);
 
-            if (siteVm.SelectedLabourIds?.Count > 0)
+            if (siteApiVm.LabourIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Labour, siteVm.SelectedLabourIds);
+                    site.Id, ServiceTypes.Labour, siteApiVm.LabourIds);
 
-            if (siteVm.SelectedPlumberIds?.Count > 0)
+            if (siteApiVm.PlumberIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Plumber, siteVm.SelectedPlumberIds);
+                    site.Id, ServiceTypes.Plumber, siteApiVm.PlumberIds);
 
-            if (siteVm.SelectedPainterIds?.Count > 0)
+            if (siteApiVm.PainterIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Painter, siteVm.SelectedPainterIds);
+                    site.Id, ServiceTypes.Painter, siteApiVm.PainterIds);
 
-            if (siteVm.SelectedCarpenterIds?.Count > 0)
+            if (siteApiVm.CarpenterIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Carpenter, siteVm.SelectedCarpenterIds);
+                    site.Id, ServiceTypes.Carpenter, siteApiVm.CarpenterIds);
 
-            if (siteVm.SelectedTilerIds?.Count > 0)
+            if (siteApiVm.TilerIds?.Count > 0)
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Tiler, siteVm.SelectedTilerIds);
+                    site.Id, ServiceTypes.Tiler, siteApiVm.TilerIds);
 
             return Ok(new
             {
@@ -263,34 +260,30 @@ namespace ConstructEase.WebApp.APIControllers
             return NoContent();
         }
 
-        [HttpPost("AddAddressIfPresent/{siteId}")]
-        public IActionResult AddAddressIfPresent(int siteId, SiteVm siteVm)
+        private void AddAddressIfPresent(int siteId, SiteAPIDTO siteApiVm)
         {
             if (siteId <= 0)
-                return BadRequest("Invalid site id");
+                return;
 
-            if (!string.IsNullOrEmpty(siteVm.AddressLine1) ||
-                (siteVm.AddressTypeId.HasValue && siteVm.AddressTypeId > 0) ||
-                (siteVm.CountryId.HasValue && siteVm.CountryId > 0) ||
-                (siteVm.PinCode.HasValue && siteVm.PinCode > 0))
+            if (!string.IsNullOrEmpty(siteApiVm.AddressLine1) ||
+                (siteApiVm.AddressTypeId.HasValue && siteApiVm.AddressTypeId > 0) ||
+                (siteApiVm.CountryId.HasValue && siteApiVm.CountryId > 0) ||
+                (siteApiVm.PinCode.HasValue && siteApiVm.PinCode > 0))
             {
                 Address address = new Address(
-                    siteVm.ServiceProviderId,
-                    siteVm.AddressLine1,
-                    siteVm.AddressTypeId ?? 0,
-                    siteVm.CountryId ?? 0,
-                    siteVm.PinCode ?? 0,
+                    siteApiVm.Id,
+                    siteApiVm.AddressLine1,
+                    siteApiVm.AddressTypeId ?? 0,
+                    siteApiVm.CountryId ?? 0,
+                    siteApiVm.PinCode ?? 0,
                     siteId
                 );
 
                 _addressRepository.InsertOrUpdateAddress(address);
-
-                return Ok("Address inserted or updated");
             }
             else
             {
                 _addressRepository.Delete(0, siteId);
-                return Ok("Address deleted");
             }
         }
     }
