@@ -6,7 +6,7 @@
 
 // export default App;
 
-////---------------------------------------------
+////---------------Site Edit------------------------------
 
 // import { BrowserRouter, Routes, Route } from "react-router-dom";
 // import SiteEdit from "./components/SiteEdit";
@@ -24,36 +24,38 @@
 
 // export default App;
 
-////---------------------------------------------
-
-// import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import SiteAdd from "./components/SiteAdd";
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <Routes>
-//         <Route path="/" element={<SiteAdd />} />
-//       </Routes>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;
-
-////---------------------------------------------
+////--------------Site Add-------------------------------
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import SiteList from "./components/SiteList";
+import SiteAdd from "./components/SiteAdd";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<SiteList />} />
+        <Route path="/" element={<SiteAdd />} />
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
+
+////-----------Site Get All Data And Get Site By Id-------------------
+
+// import { BrowserRouter, Routes, Route } from "react-router-dom";
+// import SiteList from "./components/SiteList";
+// import SiteDetail from "./components/SiteDetail";
+
+// function App() {
+//   return (
+//     <BrowserRouter>
+//       <Routes>
+//         <Route path="/" element={<SiteList />} />
+//         <Route path="/site/:id" element={<SiteDetail />} />
+//       </Routes>
+//     </BrowserRouter>
+//   );
+// }
+
+// export default App;
