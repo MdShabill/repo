@@ -81,7 +81,7 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(siteApiVm);
         }
 
-        [HttpPost("select-site")]
+        [HttpGet("select-site")]
         public IActionResult SelectSite(int id)
         {
             var selectedSite = _siteRepository.GetSiteById(id);
@@ -89,23 +89,17 @@ namespace ConstructEase.WebApp.APIControllers
             if (selectedSite == null)
                 return NotFound(new { message = "Site not found" });
 
-            var response = new
-            {
-                selectedSiteId = selectedSite.Id,
-                selectedSiteName = selectedSite.Name
-            };
-
-            return Ok(response);
+            return Ok(selectedSite);
         }
 
         [HttpPost("add")]
-        public IActionResult Add(SiteAPIDTO siteApiVm)
+        public IActionResult Add(SiteAPIVm siteApiVm)
         {
             if (siteApiVm == null)
                 return BadRequest("Invalid data");
 
             var site =
-                _imapper.Map<SiteAPIDTO, ConstructionApplication.Core.DataModels.Site.Site>(siteApiVm);
+                _imapper.Map<SiteAPIVm, ConstructionApplication.Core.DataModels.Site.Site>(siteApiVm);
 
             site.Id = _siteRepository.Create(site);
 

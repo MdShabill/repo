@@ -42,9 +42,9 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 string query = @"SELECT Sites.Id, Sites.Name, Sites.StartedDate,
-                                Sites.SiteStatusId, SiteStatus.Status, Addresses.AddressLine1,
-                                Addresses.AddressTypeId, AddressTypes.Name AS AddressTypes,
-                                Addresses.CountryId, Countries.Name AS CountryName,
+                                SiteStatus.Status, Addresses.AddressLine1,
+                                AddressTypes.Name AS AddressTypes,
+                                Countries.Name AS CountryName,
                                 Addresses.PinCode
                                 FROM Sites
                                 LEFT JOIN SiteStatus ON Sites.SiteStatusId = SiteStatus.Id
