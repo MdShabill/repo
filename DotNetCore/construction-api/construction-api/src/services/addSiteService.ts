@@ -1,7 +1,13 @@
 export interface SiteCreateDto {
-  startedDate: string;
   name: string;
-  status: string;
+  startedDate: string;
+  siteStatusId: number;
+  note: string;
+
+  addressLine1?: string;
+  addressTypeId?: number;
+  countryId?: number;
+  pinCode?: number;
 }
 
 const ADD_API_URL =
@@ -12,15 +18,16 @@ export const addSite = async (
 ): Promise<number> => {
   const response = await fetch(ADD_API_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(site),
   });
 
   if (!response.ok) {
-    throw new Error("Failed to add site");
-  }
+  const errorText = await response.text();
+  console.error("Server error:", errorText);
+  throw new Error(errorText);
+}
 
-  return response.json();
+  const data = await response.json();
+  return data.siteId;
 };
