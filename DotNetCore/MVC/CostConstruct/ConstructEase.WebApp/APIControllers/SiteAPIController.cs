@@ -1,20 +1,10 @@
 ﻿using AutoMapper;
-using ConstructEase.WebApp.APIControllers.APIViewModels;
-using ConstructEase.WebApp.ViewModels;
-using ConstructionApplication.Core;
 using ConstructionApplication.Core.DataModels.Address;
-using ConstructionApplication.Core.DataModels.AddressType;
-using ConstructionApplication.Core.DataModels.Country;
-using ConstructionApplication.Core.DataModels.ServiceProviders;
-using ConstructionApplication.Core.DataModels.Site;
-using ConstructionApplication.Core.DataModels.SiteStatus;
+using ConstructEase.WebApp.APIControllers.APIViewModels;
 using ConstructionApplication.Core.Enums;
-using ConstructionApplication.Repository.AdoDotNet;
 using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Caching.Memory;
-using System.Security.Policy;
 
 namespace ConstructEase.WebApp.APIControllers
 {
@@ -22,7 +12,7 @@ namespace ConstructEase.WebApp.APIControllers
     [ApiController]
     public class SiteAPIController : ControllerBase
     {
-        ISiteStatusRepository _siteStatusRepository;
+        private readonly ISiteStatusRepository _siteStatusRepository;
         IAddressRepository _addressRepository;
         IAddressTypeRepository _addressTypeRepository;
         ICountryRepository _countryRepository;
@@ -30,7 +20,7 @@ namespace ConstructEase.WebApp.APIControllers
         private readonly ISiteRepository _siteRepository;
         IMapper _imapper;
         IMemoryCache _cache;
-
+        //private object _statusRepository;
 
         public SiteAPIController(ISiteStatusRepository siteStatusRepository,
 
@@ -93,18 +83,19 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         [HttpPost("add")]
-        public IActionResult Add(SiteAPIVm siteApiVm)
+        public IActionResult Add(SiteAPIDTO siteApiDto)
         {
-            if (siteApiVm == null)
+            if (siteApiDto == null)
                 return BadRequest("Invalid data");
 
-            var site =
-                _imapper.Map<SiteAPIVm, ConstructionApplication.Core.DataModels.Site.Site>(siteApiVm);
+            var site = _imapper.Map<SiteAPIDTO,ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
 
             site.Id = _siteRepository.Create(site);
 
             if (site.Id <= 0)
                 return StatusCode(500, "Failed to create site");
+
+            AddAddressIfPresent(site.Id, siteApiDto);
 
             return Ok(new
             {
@@ -209,58 +200,58 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(siteApiVm);
         }
 
-        [HttpPost("update")]
-        public IActionResult Update(SiteAPIVm siteApiVm)
-        {
-            if (siteApiVm == null)
-                return BadRequest("Invalid data");
+        //[HttpPost("update")]
+        //public IActionResult Update(SiteAPIDTO siteApiDto)
+        //{
+        //    if (siteApiDto == null)
+        //        return BadRequest("Invalid data");
 
-            var site = 
-                _imapper.Map<SiteAPIVm, ConstructionApplication.Core.DataModels.Site.Site>(siteApiVm);
+        //    var site = 
+        //        _imapper.Map<SiteAPIVm, ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
 
-            int affectedRowCount = _siteRepository.Update(site);
+        //    int affectedRowCount = _siteRepository.Update(site);
 
-            if (affectedRowCount <= 0)
-                return NotFound(new { message = "Site not found or update failed" });
+        //    if (affectedRowCount <= 0)
+        //        return NotFound(new { message = "Site not found or update failed" });
 
-            // Address update
-            AddAddressIfPresent(site.Id, siteApiVm);
+        //    // Address update
+        //    AddAddressIfPresent(site.Id, siteApiDto);
 
-            // Service Providers Update
-            if (siteApiVm.MasterMasonIds?.Count > 0)
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.MasterMasion, siteApiVm.MasterMasonIds);
+        //    //// Service Providers Update
+        //    //if (siteApiDto.MasterMasonIds?.Count > 0)
+        //    //    _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+        //    //        site.Id, ServiceTypes.MasterMasion, siteApiDto.MasterMasonIds);
 
-            if (siteApiVm.ElectricianIds?.Count > 0)
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Electrician, siteApiVm.ElectricianIds);
+        //    //if (siteApiDto.ElectricianIds?.Count > 0)
+        //    //    _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+        //    //        site.Id, ServiceTypes.Electrician, siteApiDto.ElectricianIds);
 
-            if (siteApiVm.LabourIds?.Count > 0)
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Labour, siteApiVm.LabourIds);
+        //    //if (siteApiDto.LabourIds?.Count > 0)
+        //    //    _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+        //    //        site.Id, ServiceTypes.Labour, siteApiDto.LabourIds);
 
-            if (siteApiVm.PlumberIds?.Count > 0)
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Plumber, siteApiVm.PlumberIds);
+        //    //if (siteApiDto.PlumberIds?.Count > 0)
+        //    //    _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+        //    //        site.Id, ServiceTypes.Plumber, siteApiDto.PlumberIds);
 
-            if (siteApiVm.PainterIds?.Count > 0)
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Painter, siteApiVm.PainterIds);
+        //    //if (siteApiDto.PainterIds?.Count > 0)
+        //    //    _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+        //    //        site.Id, ServiceTypes.Painter, siteApiDto.PainterIds);
 
-            if (siteApiVm.CarpenterIds?.Count > 0)
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Carpenter, siteApiVm.CarpenterIds);
+        //    //if (siteApiDto.CarpenterIds?.Count > 0)
+        //    //    _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+        //    //        site.Id, ServiceTypes.Carpenter, siteApiDto.CarpenterIds);
 
-            if (siteApiVm.TilerIds?.Count > 0)
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id, ServiceTypes.Tiler, siteApiVm.TilerIds);
+        //    //if (siteApiDto.TilerIds?.Count > 0)
+        //    //    _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+        //    //        site.Id, ServiceTypes.Tiler, siteApiDto.TilerIds);
 
-            return Ok(new
-            {
-                message = "Site updated successfully",
-                siteId = site.Id
-            });
-        }
+        //    return Ok(new
+        //    {
+        //        message = "Site updated successfully",
+        //        siteId = site.Id
+        //    });
+        //}
 
         [HttpDelete("{siteId}")]
         public IActionResult Delete(int siteId)
@@ -274,22 +265,52 @@ namespace ConstructEase.WebApp.APIControllers
             return NoContent();
         }
 
-        private void AddAddressIfPresent(int siteId, SiteAPIVm siteApiVm)
+        [HttpGet("dropdown-data")]
+        public IActionResult GetDropdownData()
+        {
+            var response = new SiteDropdownDTO
+            {
+                Statuses = _siteStatusRepository.GetAll()
+                    .Select(statuses => new DropdownItemDTO
+                    {
+                        Id = statuses.Id,
+                        Name = statuses.Status
+                    }).ToList(),
+
+                AddressTypes = _addressTypeRepository.GetAll()
+                    .Select(addressTypes => new DropdownItemDTO
+                    {
+                        Id = addressTypes.Id,
+                        Name = addressTypes.Name
+                    }).ToList(),
+
+                Countries = _countryRepository.GetAllCountries()
+                    .Select(countries => new DropdownItemDTO
+                    {
+                        Id = countries.Id,
+                        Name = countries.Name
+                    }).ToList()
+            };
+
+            return Ok(response);
+        }
+
+        private void AddAddressIfPresent(int siteId, SiteAPIDTO siteApiDto)
         {
             if (siteId <= 0)
                 return;
 
-            if (!string.IsNullOrEmpty(siteApiVm.AddressLine1) ||
-                (siteApiVm.AddressTypeId.HasValue && siteApiVm.AddressTypeId > 0) ||
-                (siteApiVm.CountryId.HasValue && siteApiVm.CountryId > 0) ||
-                (siteApiVm.PinCode.HasValue && siteApiVm.PinCode > 0))
+            if (!string.IsNullOrEmpty(siteApiDto.AddressLine1) ||
+                (siteApiDto.AddressTypeId.HasValue && siteApiDto.AddressTypeId > 0) ||
+                (siteApiDto.CountryId.HasValue && siteApiDto.CountryId > 0) ||
+                (siteApiDto.PinCode.HasValue && siteApiDto.PinCode > 0))
             {
                 Address address = new Address(
-                    siteApiVm.Id,
-                    siteApiVm.AddressLine1,
-                    siteApiVm.AddressTypeId ?? 0,
-                    siteApiVm.CountryId ?? 0,
-                    siteApiVm.PinCode ?? 0,
+                    0,
+                    siteApiDto.AddressLine1,
+                    siteApiDto.AddressTypeId ?? 0,
+                    siteApiDto.CountryId ?? 0,
+                    siteApiDto.PinCode ?? 0,
                     siteId
                 );
 
