@@ -8,6 +8,14 @@ export interface SiteCreateDto {
   addressTypeId?: number;
   countryId?: number;
   pinCode?: number;
+
+  selectedMasterMasonIds: number[];
+  selectedElectricianIds: number[];
+  selectedLabourIds: number[];
+  selectedPlumberIds: number[];
+  selectedPainterIds: number[];
+  selectedCarpenterIds: number[];
+  selectedTilerIds: number[];
 }
 
 const ADD_API_URL =
@@ -23,10 +31,10 @@ export const addSite = async (
   });
 
   if (!response.ok) {
-  const errorText = await response.text();
-  console.error("Server error:", errorText);
-  throw new Error(errorText);
-}
+    const errorText = await response.text();
+    console.error("Server error:", errorText);
+    throw new Error(errorText);
+  }
 
   const data = await response.json();
   return data.siteId;
