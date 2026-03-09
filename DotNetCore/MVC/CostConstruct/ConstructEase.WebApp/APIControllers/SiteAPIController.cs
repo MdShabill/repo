@@ -43,6 +43,7 @@ namespace ConstructEase.WebApp.APIControllers
             {
                 cfg.CreateMap<ConstructionApplication.Core.DataModels.Site.Site, SiteAPIDTO>();
                 cfg.CreateMap<SiteAPIDTO, ConstructionApplication.Core.DataModels.Site.Site>();
+                cfg.CreateMap<ConstructionApplication.Core.DataModels.Site.Site, SiteAPIVm>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -88,7 +89,7 @@ namespace ConstructEase.WebApp.APIControllers
             if (siteApiDto == null)
                 return BadRequest("Invalid data");
 
-            var site = _imapper.Map<SiteAPIDTO,ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
+            var site = _imapper.Map<SiteAPIDTO, ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
 
             site.Id = _siteRepository.Create(site);
 
@@ -96,6 +97,41 @@ namespace ConstructEase.WebApp.APIControllers
                 return StatusCode(500, "Failed to create site");
 
             AddAddressIfPresent(site.Id, siteApiDto);
+
+            if (siteApiDto.SelectedMasterMasonIds?.Count > 0)
+            {
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteApiDto.SelectedMasterMasonIds);
+            }
+
+            if (siteApiDto.SelectedElectricianIds?.Count > 0)
+            {
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteApiDto.SelectedElectricianIds);
+            }
+
+            if (siteApiDto.SelectedLabourIds?.Count > 0)
+            {
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteApiDto.SelectedLabourIds);
+            }
+
+            if (siteApiDto.SelectedPlumberIds?.Count > 0)
+            {
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteApiDto.SelectedPlumberIds);
+            }
+
+            if (siteApiDto.SelectedPainterIds?.Count > 0)
+            {
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteApiDto.SelectedPainterIds);
+            }
+
+            if (siteApiDto.SelectedCarpenterIds?.Count > 0)
+            {
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteApiDto.SelectedCarpenterIds);
+            }
+
+            if (siteApiDto.SelectedTilerIds?.Count > 0)
+            {
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteApiDto.SelectedTilerIds);
+            }
 
             return Ok(new
             {
@@ -290,6 +326,80 @@ namespace ConstructEase.WebApp.APIControllers
                         Id = countries.Id,
                         Name = countries.Name
                     }).ToList()
+            };
+
+            return Ok(response);
+        }
+
+        [HttpGet("service-providers")]
+        public IActionResult GetServiceProviders()
+        {
+            var allServiceProviders = _serviceProviderRepository.GetAllServiceProviders();
+
+            var response = new
+            {
+                masterMasons = allServiceProviders
+                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.MasterMasion)
+                    .Select(serviceProvider => new
+                    {
+                        id = serviceProvider.Id,
+                        name = serviceProvider.Name
+                    })
+                    .ToList(),
+
+                electricians = allServiceProviders
+                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Electrician)
+                    .Select(serviceProvider => new
+                    {
+                        id = serviceProvider.Id,
+                        name = serviceProvider.Name
+                    })
+                    .ToList(),
+
+                labours = allServiceProviders
+                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Labour)
+                    .Select(serviceProvider => new
+                    {
+                        id = serviceProvider.Id,
+                        name = serviceProvider.Name
+                    })
+                    .ToList(),
+
+                plumbers = allServiceProviders
+                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Plumber)
+                    .Select(serviceProvider => new
+                    {
+                        id = serviceProvider.Id,
+                        name = serviceProvider.Name
+                    })
+                    .ToList(),
+
+                painters = allServiceProviders
+                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Painter)
+                    .Select(serviceProvider => new
+                    {
+                        id = serviceProvider.Id,
+                        name = serviceProvider.Name
+                    })
+                    .ToList(),
+
+                carpenters = allServiceProviders
+                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Carpenter)
+                    .Select(serviceProvider => new
+                    {
+                        id = serviceProvider.Id,
+                        name = serviceProvider.Name
+                    })
+                    .ToList(),
+
+                tilers = allServiceProviders
+                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Tiler)
+                    .Select(serviceProvider => new
+                    {
+                        id = serviceProvider.Id,
+                        name = serviceProvider.Name
+                    })
+                    .ToList()
             };
 
             return Ok(response);
