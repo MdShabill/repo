@@ -1,19 +1,54 @@
-// export interface SiteEditDto {
-//   id: number;
-//   startedDate: string;
-//   name: string;
-//   status: string;
-// }
+export interface ProviderOption {
+  id: number;
+  name: string;
+}
 
-// const API_URL =
-//   "https://constructionapp1.azurewebsites.net/api/SiteAPI/edit/";
+export interface ServiceProviderResponse {
+  masterMasons: ProviderOption[];
+  electricians: ProviderOption[];
+  labours: ProviderOption[];
+  plumbers: ProviderOption[];
+  painters: ProviderOption[];
+  carpenters: ProviderOption[];
+  tilers: ProviderOption[];
+}
 
-// export const getSiteById = async (id: number): Promise<SiteEditDto> => {
-//   const response = await fetch(`${API_URL}${id}`);
+export interface SiteEditDto {
+  id: number;
+  startedDate: string;
+  name: string;
+  status: string;
 
-//   if (!response.ok) {
-//     throw new Error("Failed to fetch site");
-//   }
+  addressLine1?: string;
+  addressTypes?: string;
+  countryName?: string;
+  pinCode?: number;
 
-//   return response.json();
-// };
+  labourIds: number[];
+  masterMasonIds: number[];
+  electricianIds: number[];
+  plumberIds: number[];
+  painterIds: number[];
+  carpenterIds: number[];
+  tilerIds: number[];
+}
+
+const BASE = "https://localhost:7036/api/SiteAPI";
+
+export const getSiteById = async (id: number): Promise<SiteEditDto> => {
+
+  const res = await fetch(`${BASE}/edit/${id}`);
+
+  if (!res.ok) throw new Error("Failed to fetch site");
+
+  return res.json();
+};
+
+export const getServiceProviders = async (): Promise<ServiceProviderResponse> => {
+
+  const res = await fetch(`${BASE}/service-providers`);
+
+  if (!res.ok) throw new Error("Failed to fetch providers");
+
+  return res.json();
+};

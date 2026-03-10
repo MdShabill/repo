@@ -8,38 +8,30 @@
 
 ////---------------Site Edit------------------------------
 
+import SiteEdit from "./components/SiteEdit";
+
+function App() {
+  return <SiteEdit />;
+}
+
+export default App;
+
+////--------------Site Add-------------------------------
+
 // import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import SiteEdit from "./components/SiteEdit";
+// import SiteAdd from "./components/SiteAdd";
 
 // function App() {
 //   return (
 //     <BrowserRouter>
 //       <Routes>
-//         <Route path="/" element={<SiteEdit />} />
-//         <Route path="/site/edit/:id" element={<SiteEdit />} />
+//         <Route path="/" element={<SiteAdd />} />
 //       </Routes>
 //     </BrowserRouter>
 //   );
 // }
 
 // export default App;
-
-////--------------Site Add-------------------------------
-
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import SiteAdd from "./components/SiteAdd";
-
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<SiteAdd />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
-
-export default App;
 
 ////-----------Site Get All Data And Get Site By Id-------------------
 

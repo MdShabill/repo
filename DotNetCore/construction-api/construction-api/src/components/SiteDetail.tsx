@@ -14,10 +14,17 @@
 //   useEffect(() => {
 //     const fetchSite = async () => {
 //       try {
-//         if (id) {
-//           const data = await getSiteById(Number(id));
-//           setSite(data);
+//         if (!id) return;
+
+//         const siteId = parseInt(id);
+
+//         if (isNaN(siteId)) {
+//           setError("Invalid site id");
+//           return;
 //         }
+
+//         const data = await getSiteById(siteId);
+//         setSite(data);
 //       } catch {
 //         setError("Failed to load site detail");
 //       } finally {
