@@ -11,7 +11,7 @@
         //public string Note { get; set; }
 
         //public int? ServiceProviderId { get; set; }
-        public string? DisplayName { get; set; }
+        //public string? DisplayName { get; set; }
         public string? AddressLine1 { get; set; }
         //public int? AddressTypeId { get; set; }
         public string? AddressTypes { get; set; }
@@ -19,12 +19,18 @@
         public string? CountryName { get; set; }
         public int? PinCode { get; set; }
 
-        public List<int> LabourIds { get; set; }
-        public List<int> MasterMasonIds { get; set; }
-        public List<int> ElectricianIds { get; set; }
-        public List<int> PlumberIds { get; set; }
-        public List<int> PainterIds { get; set; }
-        public List<int> CarpenterIds { get; set; }
-        public List<int> TilerIds { get; set; }
+        public List<int> MasterMasonIds { get; set; } = new();
+
+        public List<int> ElectricianIds { get; set; } = new();
+
+        public List<int> LabourIds { get; set; } = new();
+
+        public List<int> PlumberIds { get; set; } = new();
+
+        public List<int> PainterIds { get; set; } = new();
+
+        public List<int> CarpenterIds { get; set; } = new();
+
+        public List<int> TilerIds { get; set; } = new();
     }
 }
