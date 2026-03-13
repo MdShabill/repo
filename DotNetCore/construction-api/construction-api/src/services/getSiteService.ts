@@ -1,42 +1,33 @@
-// export interface SiteDto {
-//   id: number;
-//   name: string;
-//   startedDate: string;
-//   status: string;
-//   //note: string | null;
+export interface SiteDto {
+  id: number;
+  name: string;
+  startedDate: string;
+  siteStatusId: number;
+  status: string;
+  addressLine1?: string;
+  addressTypes?: string;
+  countryName?: string;
+  pinCode?: number;
+}
 
-//   addressLine1: string;
-//   addressTypes: string;
-//   countryName: string;
-//   pinCode: string;
-// }
+const API_BASE = "https://localhost:7036/api/SiteAPI";
 
-// /* ================= GET ALL SITE ================= */
+export const getAllSites = async (): Promise<SiteDto[]> => {
+  const response = await fetch(`${API_BASE}/GetAllSites`);
 
-// const GET_ALL_URL =
-//   "https://localhost:7036/api/SiteAPI/GetAllSites";
+  if (!response.ok) {
+    throw new Error("Failed to fetch sites");
+  }
 
-// export const getAllSites = async (): Promise<SiteDto[]> => {
-//   const response = await fetch(GET_ALL_URL);
+  return await response.json();
+};
 
-//   if (!response.ok) {
-//     throw new Error("Failed to fetch sites");
-//   }
+export const getSiteById = async (id: number) => {
+  const response = await fetch(`${API_BASE}/select-site?id=${id}`);
 
-//   return response.json();
-// };
+  if (!response.ok) {
+    throw new Error("Site not found");
+  }
 
-// /* ================= GET SITE BY ID ================= */
-
-// const GET_BY_ID_URL =
-//   "https://localhost:7036/api/SiteAPI/select-site";
-
-// export const getSiteById = async (id: number): Promise<SiteDto> => {
-//   const response = await fetch(`${GET_BY_ID_URL}?id=${id}`);
-
-//   if (!response.ok) {
-//     throw new Error("Failed to fetch site detail");
-//   }
-
-//   return response.json();
-// };
+  return await response.json();
+};
