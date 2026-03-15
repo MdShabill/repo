@@ -10,7 +10,7 @@ export interface SiteDto {
   pinCode?: number;
 }
 
-const API_BASE = "https://localhost:7036/api/SiteAPI";
+const API_BASE = "https://constructionapp1.azurewebsites.net/api/SiteAPI";
 
 export const getAllSites = async (): Promise<SiteDto[]> => {
   const response = await fetch(`${API_BASE}/GetAllSites`);
