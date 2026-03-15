@@ -27,7 +27,7 @@ options.AddPolicy("AllowFrontend",
     policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173", "http://localhost:5173/", "https://constructionapp1.azurewebsites.net/", "https://mango-flower-08e682c00.4.azurestaticapps.net/")
+            .WithOrigins("http://localhost:5173", "http://localhost:5173/", "https://constructionapp1.azurewebsites.net/", "https://mango-flower-08e682c00.4.azurestaticapps.net")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
