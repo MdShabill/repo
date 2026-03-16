@@ -92,15 +92,16 @@ const SiteList = () => {
                   </td>
 
                   <td>
-                    <span
+                    <Link
+                      to={`/site-edit/${site.id}`}
                       style={{
                         color: "green",
                         fontWeight: "bold",
-                        cursor: "pointer",
+                        textDecoration: "none",
                       }}
                     >
                       Edit
-                    </span>
+                    </Link>
                     {" | "}
                     <span
                       style={{

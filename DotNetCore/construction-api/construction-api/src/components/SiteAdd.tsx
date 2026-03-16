@@ -3,11 +3,14 @@ import { addSite } from "../services/addSiteService";
 import { getDropdownData } from "../services/dropdownService";
 import { getServiceProviders } from "../services/serviceProviderService";
 import CheckboxDropdown from "./CheckboxDropdown";
+import { useNavigate } from "react-router-dom";
 
 const SiteAdd = () => {
   const [startedDate, setStartedDate] = useState("");
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
+
+  const navigate = useNavigate();
 
   const [siteStatusId, setSiteStatusId] = useState<number>();
   const [addressTypeId, setAddressTypeId] = useState<number>();
@@ -90,7 +93,10 @@ const SiteAdd = () => {
 
     try {
       const insertedId = await addSite(newSite);
+
       setMessage(`Site inserted successfully. Id: ${insertedId}`);
+
+      navigate("/");
     } catch {
       setMessage("Insert failed");
     }
