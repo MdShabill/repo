@@ -182,7 +182,15 @@ namespace ConstructEase.WebApp.Controllers
 
             SiteVm siteVm = _imapper.Map<ConstructionApplication.Core.DataModels.Site.Site, SiteVm>(selectedSite);
 
-            // Get already selected service provider IDs per service type
+            var address = _addressRepository.GetBySiteId(id);
+            if (address != null)
+            {
+                siteVm.AddressLine1 = address.AddressLine1;
+                siteVm.AddressTypeId = address.AddressTypeId;
+                siteVm.CountryId = address.CountryId;
+                siteVm.PinCode = address.PinCode;
+            }
+
             siteVm.SelectedMasterMasonIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.MasterMasion });
             siteVm.SelectedElectricianIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Electrician });
             siteVm.SelectedLabourIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Labour });
@@ -191,14 +199,15 @@ namespace ConstructEase.WebApp.Controllers
             siteVm.SelectedCarpenterIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Carpenter });
             siteVm.SelectedTilerIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Tiler });
 
-            DropDownSelectList();
+            DropDownSelectList(siteVm.SiteStatusId, siteVm.AddressTypeId, siteVm.CountryId);
+
             return View(siteVm);
         }
 
         [HttpPost]
         public IActionResult Update(SiteVm siteVm)
         {
-            DropDownSelectList();
+            DropDownSelectList(siteVm.SiteStatusId, siteVm.AddressTypeId, siteVm.CountryId);
 
             var site = _imapper.Map<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
             int affectedRowCount = _siteRepository.Update(site);
@@ -245,19 +254,23 @@ namespace ConstructEase.WebApp.Controllers
 
         private void AddAddressIfPresent(int siteId, SiteVm siteVm)
         {
-            if (!string.IsNullOrEmpty(siteVm.AddressLine1) ||
-               (siteVm.AddressTypeId.HasValue && siteVm.AddressTypeId > 0) ||
-               (siteVm.CountryId.HasValue && siteVm.CountryId > 0) ||
-               (siteVm.PinCode.HasValue && siteVm.PinCode > 0))
+            bool hasValidAddress =
+                !string.IsNullOrEmpty(siteVm.AddressLine1) ||
+                (siteVm.AddressTypeId.HasValue && siteVm.AddressTypeId > 0) ||
+                (siteVm.CountryId.HasValue && siteVm.CountryId > 0) ||
+                (siteVm.PinCode.HasValue && siteVm.PinCode > 0);
+
+            if (hasValidAddress)
             {
                 Address address = new Address(
                     siteVm.ServiceProviderId,
                     siteVm.AddressLine1,
-                    siteVm.AddressTypeId ?? 0,
-                    siteVm.CountryId ?? 0,
+                    siteVm.AddressTypeId > 0 ? siteVm.AddressTypeId : null,
+                    siteVm.CountryId > 0 ? siteVm.CountryId.Value : null,
                     siteVm.PinCode ?? 0,
                     siteId
                 );
+
                 _addressRepository.InsertOrUpdateAddress(address);
             }
             else
@@ -266,16 +279,16 @@ namespace ConstructEase.WebApp.Controllers
             }
         }
 
-        private void DropDownSelectList()
+        private void DropDownSelectList(int? SiteStatusId = null, int? addressTypeId = null, int? countryId = null)
         {
             List<SiteStatus> siteStatuses = _siteStatusRepository.GetAll();
-            ViewBag.SiteStatus = new SelectList(siteStatuses, "Id", "Status");
+            ViewBag.SiteStatus = new SelectList(siteStatuses, "Id", "Status", SiteStatusId);
 
             List<AddressType> addressTypes = _addressTypeRepository.GetAll();
-            ViewBag.AddressTypes = new SelectList(addressTypes, "Id", "Name");
+            ViewBag.AddressTypes = new SelectList(addressTypes, "Id", "Name", addressTypeId);
 
             List<Country> countries = _countryRepository.GetAllCountries();
-            ViewBag.Countries = new SelectList(countries, "Id", "Name");
+            ViewBag.Countries = new SelectList(countries, "Id", "Name", countryId);
 
             List<ServiceProviderName> allServiceProviders = _serviceProviderRepository.GetAllServiceProviders();
 

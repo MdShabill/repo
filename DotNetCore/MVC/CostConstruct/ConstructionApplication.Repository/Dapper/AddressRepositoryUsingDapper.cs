@@ -15,6 +15,16 @@ namespace ConstructionApplication.Repository.Dapper
             _connectionString = connectionString;
         }
 
+        public Address GetBySiteId(int siteId)
+        {
+            using (IDbConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT TOP 1 * FROM Addresses WHERE SiteId = @SiteId";
+
+                return connection.QueryFirstOrDefault<Address>(query, new { SiteId = siteId });
+            }
+        }
+
         public void InsertOrUpdateAddress(Address address)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))

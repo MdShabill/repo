@@ -14,6 +14,40 @@ namespace ConstructionApplication.Repository.AdoDotNet
             _connectionString = connectionString;
         }
 
+        public Address GetBySiteId(int siteId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT TOP 1 * FROM Addresses WHERE SiteId = @SiteId";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@SiteId", siteId);
+
+                    connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new Address
+                            {
+                                Id = Convert.ToInt32(reader["Id"]),
+                                ServiceProviderId = reader["ServiceProviderId"] != DBNull.Value ? Convert.ToInt32(reader["ServiceProviderId"]) : 0,
+                                AddressLine1 = reader["AddressLine1"]?.ToString(),
+                                AddressTypeId = reader["AddressTypeId"] != DBNull.Value ? Convert.ToInt32(reader["AddressTypeId"]) : (int?)null,
+                                CountryId = reader["CountryId"] != DBNull.Value ? Convert.ToInt32(reader["CountryId"]) : (int?)null,
+                                PinCode = reader["PinCode"] != DBNull.Value ? Convert.ToInt32(reader["PinCode"]) : (int?)null,
+                                SiteId = reader["SiteId"] != DBNull.Value ? Convert.ToInt32(reader["SiteId"]) : 0
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         public void InsertOrUpdateAddress(Address address)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))

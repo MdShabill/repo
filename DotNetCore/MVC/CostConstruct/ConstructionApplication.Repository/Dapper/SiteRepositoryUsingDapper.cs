@@ -42,7 +42,8 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 string query = @"SELECT Sites.Id, Sites.Name, Sites.StartedDate,
-                                SiteStatus.Status, Addresses.AddressLine1,
+                                Sites.SiteStatusId, SiteStatus.Status, 
+                                Addresses.AddressLine1,
                                 AddressTypes.Name AS AddressTypes,
                                 Countries.Name AS CountryName,
                                 Addresses.PinCode
