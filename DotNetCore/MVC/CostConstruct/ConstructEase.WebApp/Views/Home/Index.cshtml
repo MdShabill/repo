@@ -1,214 +1,685 @@
-﻿<!-- Bootstrap CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-
-@* @{
+﻿@{
     ViewData["Title"] = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
-} *@
 
+    var userName = Context.Session.GetString("UserName") ?? "User";
+    var selectedSiteName = Context.Session.GetString("SelectedSiteName") ?? "";
+}
 
 <style>
-    /* Background and Overlay Section */
-    .bg-image {
-        background-image: url('/UploadedImage/Background-Image.jpg');
+    /* ── Reset margin added by _Layout container ── */
+    .main-page-wrapper {
+        margin: -1rem -15px 0;
+    }
+
+    /* ── HERO WITH BACKGROUND IMAGE ── */
+    .sl-hero {
+        background: linear-gradient( rgba(28, 46, 70, 0.85), rgba(28, 46, 70, 0.85) ), url('/UploadedImage/Background-Image.jpg');
         background-size: cover;
         background-position: center;
-        height: 30vh;
+        background-repeat: no-repeat;
+        padding: 40px 32px 44px;
+    }
+
+    /* ── HERO ── */
+    /* .sl-hero {
+        background: #1C2E46;
+        padding: 40px 32px 44px;
+    } */
+
+    .sl-hero-inner {
         display: flex;
-        justify-content: center;
+        align-items: flex-start;
+        gap: 32px;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .sl-hero-left {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .sl-badge {
+        display: inline-flex;
         align-items: center;
-        color: black;
+        gap: 7px;
+        background: rgba(245,158,11,0.15);
+        border: 0.5px solid rgba(245,158,11,0.35);
+        color: #FCD34D;
+        font-size: 12px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 14px;
     }
 
-    .overlay-content h3 {
-        font-weight: bold;
-        font-size: 1.8rem;
+    .sl-badge-dot {
+        width: 7px;
+        height: 7px;
+        background: #F59E0B;
+        border-radius: 50%;
+        flex-shrink: 0;
     }
 
-    .overlay-content p {
-        font-size: 1.1rem;
-        margin-bottom: 20px;
+    .sl-hero-title {
+        font-size: 30px;
+        font-weight: 600;
+        color: #fff;
+        line-height: 1.22;
+        margin-bottom: 12px;
     }
 
-    .btn-outline-primary {
-        border-color: #ffffff;
-        color: #ffffff;
-    }
-
-        .btn-outline-primary:hover {
-            background-color: #007bff;
-            color: #ffffff;
+        .sl-hero-title span {
+            color: #F59E0B;
         }
 
-    /* About Us Section */
-    #aboutUsContent {
-        display: none;
-        padding: 20px;
-        background-color: #add8e6;
-        margin-top: 10px;
-        max-width: 1000px;
+    .sl-hero-desc {
+        font-size: 14px;
+        color: #94A3B8;
+        line-height: 1.75;
+        margin-bottom: 24px;
+        max-width: 460px;
     }
 
-    /* Card Styles */
-    .card {
-        background-color: #eaf2f8;
-        border: 1px solid #ddd;
-        transition: transform 0.2s;
+    .sl-hero-ctas {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
     }
 
-        .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    .sl-btn-primary {
+        background: #F59E0B;
+        color: #1a2332;
+        font-size: 13.5px;
+        font-weight: 600;
+        padding: 10px 22px;
+        border-radius: 7px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .sl-btn-outline {
+        background: transparent;
+        color: #fff;
+        font-size: 13.5px;
+        padding: 10px 22px;
+        border-radius: 7px;
+        border: 0.5px solid rgba(255,255,255,0.3);
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .sl-btn-primary:hover {
+        background: #D97706;
+        color: #1a2332;
+        text-decoration: none;
+    }
+
+    .sl-btn-outline:hover {
+        background: rgba(255,255,255,0.07);
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .sl-stats {
+        display: flex;
+        gap: 0;
+    }
+
+    .sl-stat {
+        border-left: 2px solid rgba(245,158,11,0.4);
+        padding: 0 24px 0 14px;
+    }
+
+        .sl-stat:first-child {
+            padding-left: 14px;
         }
 
-    .card-title {
-        font-size: 1.2rem;
-        font-weight: bold;
+    .sl-stat-num {
+        font-size: 17px;
+        font-weight: 600;
+        color: #fff;
     }
 
-    .card-text {
-        font-size: 0.95rem;
+    .sl-stat-label {
+        font-size: 11px;
+        color: #fff;
+        margin-top: 2px;
     }
 
-    /* Footer Section */
-    footer {
-        background-color: #333;
-        color: #ffffff;
-        padding: 20px 0;
+    /* Hero right: mini stat cards */
+    .sl-hero-right {
+        flex-shrink: 0;
+        width: 200px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
-        footer h5 {
-            font-size: 1.1rem;
+    /* Right Cards */
+    .sl-hero-right {
+        width: 200px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .sl-mini-card {
+        background: rgba(255,255,255,0.06);
+        border: 0.5px solid rgba(255,255,255,0.1);
+        border-radius: 9px;
+        padding: 12px 14px;
+    }
+
+    .sl-mini-label {
+        font-size: 10px;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .sl-mini-val {
+        font-size: 18px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .sl-mini-sub {
+        font-size: 11px;
+        margin-top: 3px;
+    }
+
+    .sl-green {
+        color: #4ADE80;
+    }
+
+    .sl-amber {
+        color: #FCD34D;
+    }
+
+    .sl-red {
+        color: #F87171;
+    }
+
+    .sl-progress {
+        background: rgba(255,255,255,0.1);
+        height: 4px;
+        border-radius: 2px;
+        margin-top: 7px;
+        overflow: hidden;
+    }
+
+    .sl-progress-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: #F59E0B;
+        width: 68%;
+    }
+
+    /* ── FEATURES ── */
+    .sl-features {
+        padding: 36px 32px 28px;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .sl-section-eyebrow {
+        font-size: 11px;
+        font-weight: 600;
+        color: #888780;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        margin-bottom: 6px;
+    }
+
+    .sl-section-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #1a2332;
+        margin-bottom: 6px;
+    }
+
+    .sl-section-desc {
+        font-size: 13.5px;
+        color: #64748B;
+        margin-bottom: 24px;
+        line-height: 1.65;
+    }
+
+    .sl-features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+
+    .sl-feat-card {
+        background: #F8F7F4;
+        border: 0.5px solid #E2E0D8;
+        border-radius: 12px;
+        padding: 18px 18px 16px;
+        transition: border-color 0.15s;
+    }
+
+        .sl-feat-card:hover {
+            border-color: #C8C5BB;
         }
 
-        footer ul {
-            padding-left: 0;
-            list-style: none;
+    .sl-feat-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        font-size: 16px;
+    }
+
+    .sl-feat-title {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #1a2332;
+        margin-bottom: 5px;
+    }
+
+    .sl-feat-desc {
+        font-size: 12.5px;
+        color: #64748B;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* ── QUICK ACCESS ── */
+    .sl-quickaccess {
+        padding: 0 32px 36px;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .sl-quickaccess-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1a2332;
+        margin-bottom: 12px;
+    }
+
+    .sl-qa-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .sl-qa-link {
+        background: #fff;
+        border: 0.5px solid #E2E0D8;
+        border-radius: 9px;
+        padding: 13px 16px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        transition: border-color 0.15s, background 0.15s;
+    }
+
+        .sl-qa-link:hover {
+            border-color: #B0ADA4;
+            background: #F8F7F4;
+            text-decoration: none;
         }
 
-            footer ul li a {
-                color: #ffffff;
-                text-decoration: none;
+    .sl-qa-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 3px;
+        flex-shrink: 0;
+    }
+
+    .sl-qa-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1a2332;
+        display: block;
+    }
+
+    .sl-qa-sub {
+        font-size: 11.5px;
+        color: #94A3B8;
+        display: block;
+        margin-top: 1px;
+    }
+
+    /* ── FOOTER ── */
+    .sl-footer {
+        background: #1a2332;
+        padding: 28px 32px 0;
+    }
+
+    .sl-footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        gap: 24px;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding-bottom: 20px;
+    }
+
+    .sl-footer-brand-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 8px;
+    }
+
+    .sl-footer-brand-desc {
+        font-size: 12px;
+        color: #475569;
+        line-height: 1.65;
+        max-width: 200px;
+    }
+
+    .sl-footer-col-title {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 10px;
+    }
+
+    .sl-footer-col a,
+    .sl-footer-col span {
+        display: block;
+        font-size: 12.5px;
+        color: #64748B;
+        text-decoration: none;
+        margin-bottom: 6px;
+    }
+
+        .sl-footer-col a:hover {
+            color: #94A3B8;
+        }
+
+    .sl-footer-bottom {
+        border-top: 0.5px solid rgba(255,255,255,0.07);
+        padding: 14px 0;
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sl-footer-copy {
+        font-size: 11.5px;
+        color: #334155;
+    }
+
+    .sl-footer-links {
+        display: flex;
+        gap: 16px;
+    }
+
+        .sl-footer-links a {
+            font-size: 11.5px;
+            color: #334155;
+            text-decoration: none;
+        }
+
+            .sl-footer-links a:hover {
+                color: #64748B;
             }
 
-                footer ul li a:hover {
-                    text-decoration: underline;
-                    color: #ddd;
-                }
-
-        footer small {
-            font-size: 0.85rem;
+    /* ── Responsive ── */
+    @@media (max-width: 768px) {
+        .sl-hero-inner {
+            flex-direction: column;
         }
+
+        .sl-hero-right {
+            width: 100%;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        .sl-mini-card {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .sl-features-grid, .sl-qa-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .sl-footer-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .sl-features-grid, .sl-qa-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sl-footer-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .sl-stats {
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+    }
 </style>
 
-<div class="bg-image">
-    <div class="container text-center overlay-content">
-        <h3>Your Partner in Construction Management</h3>
-        <p>
-            Manage your construction material purchases, track expenses, and optimize your resources with ease.
-        </p>
-        <a href="#" class="btn btn-outline-primary btn-lg">Learn More</a>
-    </div>
-</div>
+<div class="main-page-wrapper">
 
-<div class="container">
-    <div id="aboutUsContent" class="text-center mx-auto">
-        <p>India's No.1 tech-enabled construction company that aims to make construction simple, transparent, and reliable. We provide end-to-end aka design-to-build construction services.</p>
-        <p>We execute projects on a turnkey basis and provide real-time tracking, communication, quality checks, and updates on projects from day one till the handover of the keys.</p>
-    </div>
-</div>
-
-<div class="container mt-5">
-    <!-- Introduction Section -->
-    <div class="row justify-content-center text-center">
-        <!-- Features Section -->
-        <div class="row text-center mt-5">
-            <div class="col-md-4">
-                <div class="card border-1 shadow-sm" style="background-color: lightblue;">
-                    <div class="card-body">
-                        <i class="fas fa-truck fa-3x mb-3 text-primary"></i>
-                        <h5 class="card-title">Track Deliveries</h5>
-                        <p class="card-text">Monitor material deliveries in real-time, ensuring timely and smooth operations on-site.</p>
+    <!-- ═══════════════════════════════════════
+         HERO
+    ════════════════════════════════════════ -->
+    <section class="sl-hero">
+        <div class="sl-hero-inner">
+            <div class="sl-hero-left">
+                <div class="sl-badge">
+                    <span class="sl-badge-dot"></span>
+                    Construction management platform
+                </div>
+                <h1 class="sl-hero-title">
+                    Control every rupee,<br>
+                    <span>every site, every day.</span>
+                </h1>
+                <p class="sl-hero-desc">
+                    BuilderLedger brings your material purchases, labour attendance, vendor payments,
+                    and site expenses into one place — so nothing slips through the cracks.
+                </p>
+                <div class="sl-hero-ctas">
+                    <a asp-controller="MaterialPurchase" asp-action="Index" class="sl-btn-primary">View material report</a>
+                    <a asp-controller="CostMaster" asp-action="Index" class="sl-btn-outline">Open cost master</a>
+                </div>
+                @* <div class="sl-stats">
+                    <div class="sl-stat">
+                        <div class="sl-stat-num">3</div>
+                        <div class="sl-stat-label">Active sites</div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card border-1 shadow-sm" style="background-color: lightyellow;">
-                    <div class="card-body">
-                        <i class="fas fa-file-invoice-dollar fa-3x mb-3 text-primary"></i>
-                        <h5 class="card-title">Manage Costs</h5>
-                        <p class="card-text">Keep track of expenses and calculate total costs effortlessly for better budgeting.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-1 shadow-sm" style="background-color: skyblue;">
-                    <div class="card-body">
-                        <i class="fas fa-tools fa-3x mb-3 text-primary"></i>
-                        <h5 class="card-title">Material Tracking</h5>
-                        <p class="card-text">Easily manage materials, suppliers, and brands to ensure the best quality for your projects.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <p class="lead">
-            Streamline your construction material purchases with our powerful tool. Track suppliers, brands, materials, and costs in real-time, ensuring efficiency and accuracy in every transaction.
-        </p>
-    </div>
 
-    <div class="row justify-content-center text-center mt-5">
-        <div class="col-md-8">
-            <h3 class="mb-4 font-weight-bold">Ready to Get Started?</h3>
-            <p class="lead">Experience the most efficient way to manage your construction resources. Sign up now and start optimizing your processes today.</p>
-            <a href="#" class="btn btn-success btn-lg">Sign Up Now</a>
+            <div class="sl-hero-right">
+                <div class="sl-mini-card">
+                    <div class="sl-mini-label">This month spend</div>
+                    <div class="sl-mini-val">₹@ViewBag.ThisMonthSpend</div>
+                    <div class="sl-mini-sub sl-amber">@ViewBag.SpendVsLastMonth</div>
+                    <div class="sl-progress"><div class="sl-progress-fill" style="width:@(ViewBag.SpendPercent ?? 68)%"></div></div>
+                </div>
+                <div class="sl-mini-card">
+                    <div class="sl-mini-label">Pending deliveries</div>
+                    <div class="sl-mini-val">@ViewBag.PendingDeliveries</div>
+                    <div class="sl-mini-sub sl-amber">@ViewBag.DeliveriesToday due today</div>
+                </div>
+                <div class="sl-mini-card">
+                    <div class="sl-mini-label">Attendance today</div>
+                    <div class="sl-mini-val">@ViewBag.AttendancePresent / @ViewBag.AttendanceTotal</div>
+                    <div class="sl-mini-sub sl-green">@ViewBag.AttendancePercent% present</div>
+                </div>
+            </div> *@
         </div>
-    </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         FEATURES
+    ════════════════════════════════════════ -->
+    <section class="sl-features">
+        <p class="sl-section-eyebrow">What BuilderLedger does</p>
+        <h2 class="sl-section-title">Everything your site needs, in one system</h2>
+        <p class="sl-section-desc">Designed for construction teams managing multiple sites, vendors, and budgets simultaneously.</p>
+
+        <div class="sl-features-grid">
+
+            <div class="sl-feat-card">
+                <div class="sl-feat-icon" style="background:#FAEEDA;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <rect x="2" y="2" width="5" height="5" rx="1" fill="#854F0B" />
+                        <rect x="9" y="2" width="5" height="5" rx="1" fill="#854F0B" />
+                        <rect x="2" y="9" width="5" height="5" rx="1" fill="#854F0B" />
+                        <rect x="9" y="9" width="5" height="5" rx="1" fill="#EF9F27" />
+                    </svg>
+                </div>
+                <div class="sl-feat-title">Cost master</div>
+                <p class="sl-feat-desc">Define standard rates for materials, labour, and equipment. All transactions reference these rates automatically.</p>
+            </div>
+
+            <div class="sl-feat-card">
+                <div class="sl-feat-icon" style="background:#E6F1FB;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="8" cy="6" r="3" stroke="#185FA5" stroke-width="1.2" />
+                        <path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#185FA5" stroke-width="1.2" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <div class="sl-feat-title">Attendance tracking</div>
+                <p class="sl-feat-desc">Record daily worker attendance per site. Calculate wages, overtime, and absenteeism across your workforce.</p>
+            </div>
+
+            <div class="sl-feat-card">
+                <div class="sl-feat-icon" style="background:#E1F5EE;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 13L5 7l3 3 3-4 3 4" stroke="#0F6E56" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div class="sl-feat-title">Material reports</div>
+                <p class="sl-feat-desc">Track every purchase — quantity, brand, supplier, and cost. Identify overspend and compare against budget.</p>
+            </div>
+
+            <div class="sl-feat-card">
+                <div class="sl-feat-icon" style="background:#EEEDFE;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <rect x="2" y="4" width="12" height="9" rx="1.5" stroke="#534AB7" stroke-width="1.2" />
+                        <path d="M5 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1" stroke="#534AB7" stroke-width="1.2" />
+                        <path d="M5 8h6M5 11h3" stroke="#534AB7" stroke-width="1" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <div class="sl-feat-title">Service providers</div>
+                <p class="sl-feat-desc">Maintain a directory of contractors and vendors. Log work orders, payments, and performance per site.</p>
+            </div>
+
+            <div class="sl-feat-card">
+                <div class="sl-feat-icon" style="background:#EAF3DE;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <rect x="2" y="2" width="12" height="3" rx="1" fill="#3B6D11" />
+                        <rect x="2" y="6.5" width="12" height="3" rx="1" fill="#3B6D11" />
+                        <rect x="2" y="11" width="7" height="3" rx="1" fill="#3B6D11" />
+                    </svg>
+                </div>
+                <div class="sl-feat-title">Site-wise reports</div>
+                <p class="sl-feat-desc">Switch between Shaktinagar, Obra, and Lucknow to see isolated spend summaries, P&L, and material usage.</p>
+            </div>
+
+            <div class="sl-feat-card">
+                <div class="sl-feat-icon" style="background:#FAECE7;">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 2v4M8 10v4M2 8h4M10 8h4" stroke="#993C1D" stroke-width="1.3" stroke-linecap="round" />
+                        <circle cx="8" cy="8" r="2" fill="#F0997B" />
+                    </svg>
+                </div>
+                <div class="sl-feat-title">Expense control</div>
+                <p class="sl-feat-desc">Set budgets per site and material category. Get visibility into variances before they become problems.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         QUICK ACCESS
+    ════════════════════════════════════════ -->
+    <section class="sl-quickaccess">
+        <div class="sl-quickaccess-title">Quick access</div>
+        <div class="sl-qa-grid">
+            <a asp-controller="CostMaster" asp-action="Index" class="sl-qa-link">
+                <span class="sl-qa-dot" style="background:#F59E0B;"></span>
+                <span><span class="sl-qa-name">Cost master</span><span class="sl-qa-sub">Rates &amp; price lists</span></span>
+            </a>
+            <a asp-controller="DailyAttendance" asp-action="Index" class="sl-qa-link">
+                <span class="sl-qa-dot" style="background:#378ADD;"></span>
+                <span><span class="sl-qa-name">Attendance</span><span class="sl-qa-sub">Daily worker log</span></span>
+            </a>
+            <a asp-controller="MaterialPurchase" asp-action="Index" class="sl-qa-link">
+                <span class="sl-qa-dot" style="background:#1D9E75;"></span>
+                <span><span class="sl-qa-name">Material report</span><span class="sl-qa-sub">Purchases &amp; stock</span></span>
+            </a>
+            <a asp-controller="ServiceProvider" asp-action="Index" class="sl-qa-link">
+                <span class="sl-qa-dot" style="background:#7F77DD;"></span>
+                <span><span class="sl-qa-name">Service providers</span><span class="sl-qa-sub">Vendors &amp; contractors</span></span>
+            </a>
+            <a asp-controller="Site" asp-action="Index" class="sl-qa-link">
+                <span class="sl-qa-dot" style="background:#639922;"></span>
+                <span><span class="sl-qa-name">Sites</span><span class="sl-qa-sub">All active sites</span></span>
+            </a>
+            <a asp-controller="Home" asp-action="Index" class="sl-qa-link">
+                <span class="sl-qa-dot" style="background:#D85A30;"></span>
+                <span><span class="sl-qa-name">Dashboard</span><span class="sl-qa-sub">Overview &amp; summary</span></span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         FOOTER
+    ════════════════════════════════════════ -->
+    <footer class="sl-footer">
+        <div class="sl-footer-grid">
+            <div>
+                <div class="sl-footer-brand-name">Builder Ledger</div>
+                <p class="sl-footer-brand-desc">Construction ERP for site supervisors, engineers, and project managers.</p>
+            </div>
+            <div class="sl-footer-col">
+                <div class="sl-footer-col-title">Modules</div>
+                <a asp-controller="CostMaster" asp-action="Index">Cost master</a>
+                <a asp-controller="DailyAttendance" asp-action="Index">Attendance</a>
+                <a asp-controller="MaterialPurchase" asp-action="Index">Material report</a>
+                <a asp-controller="ServiceProvider" asp-action="Index">Service providers</a>
+                <a asp-controller="Site" asp-action="Index">Sites</a>
+            </div>
+            <div class="sl-footer-col">
+                <div class="sl-footer-col-title">Account</div>
+                <a asp-controller="Home" asp-action="Index">Dashboard</a>
+                <a asp-controller="Account" asp-action="LogOut">Log out</a>
+            </div>
+            <div class="sl-footer-col">
+                <div class="sl-footer-col-title">Camp offices</div>
+                <a href="tel:05446233928">Shaktinagar: 05446-233928</a>
+                <a href="tel:05446262264">Obra: 05446-262264</a>
+                <a href="tel:05223200260">Lucknow: 0522-3200260</a>
+            </div>
+        </div>
+        <div class="sl-footer-bottom">
+            <span class="sl-footer-copy">&copy; 2024 Builder Ledger — Construction Application</span>
+            <div class="sl-footer-links">
+                <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+                <a asp-controller="Home" asp-action="Index">About</a>
+            </div>
+        </div>
+    </footer>
+
 </div>
-
-<!-- Footer Section -->
-<footer class="bg-dark text-white mt-5">
-    <div class="container py-4">
-        <div class="row">
-            <div class="col-md-2">
-                <h5>Menu</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#" class="text-white">About Us</a></li>
-                    <li><a href="#" class="text-white">Projects</a></li>
-                    <li><a href="#" class="text-white">Cost Master</a></li>
-                    <li><a href="#" class="text-white">Attendance</a></li>
-                    <li><a href="#" class="text-white">Material Report</a></li>
-                    <li><a href="#" class="text-white">Contact Us</a></li>
-                </ul>
-            </div>
-            <div class="col-md-3">
-                <h5>Follow Us</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#" class="text-white">Facebook</a></li>
-                    <li><a href="#" class="text-white">Instagram</a></li>
-                    <li><a href="#" class="text-white">LinkedIn</a></li>
-                </ul>
-            </div>
-            <div class="col-md-3">
-                <h5>Camp Office Contact</h5>
-                <ul class="list-unstyled">
-                    <li>Shaktinagar: 05446-233928</li>
-                    <li>Obra: 05446-262264</li>
-                    <li>Lucknow: 0522-3200260</li>
-                </ul>
-            </div>
-        </div>
-        <div class="text-center mt-3">
-            <small>&copy; 2024  Construction Company. All Rights Reserved.</small>
-        </div>
-    </div>
-</footer>
-
-<!-- FontAwesome for Icons -->
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-<script>
-    function toggleAboutUs() {
-        var aboutUsContent = document.getElementById('aboutUsContent');
-        aboutUsContent.style.display = (aboutUsContent.style.display === "none" || aboutUsContent.style.display === "") ? "block" : "none";
-    }
-</script>
