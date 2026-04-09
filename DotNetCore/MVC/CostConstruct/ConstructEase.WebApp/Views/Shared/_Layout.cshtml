@@ -10,87 +10,363 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Construction Application</title>
+    <title>ConstructEase - Construction Application</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ConstructEase.WebApp.styles.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --ce-navy: #1a2e44;
+            --ce-amber: #f0a500;
+            --ce-amber-hover: #d4920a;
+            --ce-text: #374151;
+            --ce-muted: #6b7280;
+            --ce-border: #e8e6e0;
+            --ce-surface: #f5f3ee;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* ── Navbar ── */
+        .ce-navbar {
+            background: #fff;
+            border-bottom: 1px solid var(--ce-border);
+            padding: 0 1.5rem;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+            .ce-navbar .container-fluid {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                padding: 0;
+            }
+
+        /* Logo */
+        .ce-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+            .ce-brand img {
+                width: 80px;
+                height: 60px;
+                object-fit: contain;
+            }
+
+        /* Nav links */
+        .ce-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+            .ce-nav-links .nav-item .nav-link {
+                padding: 7px 13px;
+                font-size: 14px;
+                font-weight: 500;
+                color: var(--ce-text);
+                border-radius: 7px;
+                transition: background 0.15s, color 0.15s;
+                white-space: nowrap;
+            }
+
+                .ce-nav-links .nav-item .nav-link:hover,
+                .ce-nav-links .nav-item .nav-link.active {
+                    background: var(--ce-surface);
+                    color: var(--ce-navy);
+                }
+
+        /* Right section */
+        .ce-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .ce-site-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #9ca3af;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .ce-select {
+            border: 1.5px solid #d1ccbb;
+            border-radius: 7px;
+            padding: 7px 10px;
+            font-size: 13px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            color: var(--ce-text);
+            background: #fff;
+            outline: none;
+            width: 170px;
+            cursor: pointer;
+            transition: border-color 0.15s;
+            appearance: auto;
+        }
+
+            .ce-select:focus {
+                border-color: var(--ce-amber);
+            }
+
+        .ce-btn-go {
+            background: var(--ce-amber);
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 7px 20px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+            .ce-btn-go:hover {
+                background: var(--ce-amber-hover);
+            }
+
+        .ce-divider {
+            width: 1px;
+            height: 26px;
+            background: var(--ce-border);
+        }
+
+        .ce-welcome {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ce-muted);
+            white-space: nowrap;
+        }
+
+        .ce-btn-logout {
+            padding: 7px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ce-navy);
+            border: 1.5px solid var(--ce-navy);
+            border-radius: 7px;
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }
+
+            .ce-btn-logout:hover {
+                background: var(--ce-navy);
+                color: #fff;
+            }
+
+        /* Mobile toggler */
+        .ce-toggler {
+            display: none;
+            background: none;
+            border: 1.5px solid var(--ce-border);
+            border-radius: 7px;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
+
+        /* ── Footer ── */
+        .ce-footer {
+            background: #fff;
+            border-top: 1px solid var(--ce-border);
+            padding: 1.25rem 0;
+            font-size: 13px;
+            color: var(--ce-muted);
+        }
+
+            .ce-footer a {
+                color: var(--ce-amber);
+                text-decoration: none;
+            }
+
+                .ce-footer a:hover {
+                    text-decoration: underline;
+                }
+
+        /* ── Responsive ── */
+        @@media (max-width: 991px) {
+            .ce-toggler
+
+        {
+            display: block;
+        }
+
+        .ce-nav-collapse {
+            display: none;
+            position: absolute;
+            top: 68px;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-bottom: 1px solid var(--ce-border);
+            padding: 1rem 1.5rem;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 1029;
+        }
+
+            .ce-nav-collapse.open {
+                display: flex;
+            }
+
+        .ce-nav-links {
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+            .ce-nav-links .nav-item {
+                width: 100%;
+            }
+
+                .ce-nav-links .nav-item .nav-link {
+                    display: block;
+                    width: 100%;
+                }
+
+        .ce-nav-right {
+            flex-wrap: wrap;
+            width: 100%;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--ce-border);
+        }
+
+        .ce-divider {
+            display: none;
+        }
+
+        }
+    </style>
 </head>
 <body>
+
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="ce-navbar">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/UploadedImage/NavbarLogo.jpg" alt="ConstructEase.WebApp Logo" style="width: 100px; height: 60px;" />
+                <!-- Logo -->
+                <a class="ce-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/UploadedImage/WebSiteLogo.jpg" alt="ConstructEase Logo" />
                 </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                <!-- Mobile toggler -->
+                <button class="ce-toggler" id="ceNavToggler" aria-label="Toggle navigation">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect y="2" width="18" height="2" rx="1" fill="#374151" />
+                        <rect y="8" width="18" height="2" rx="1" fill="#374151" />
+                        <rect y="14" width="18" height="2" rx="1" fill="#374151" />
+                    </svg>
                 </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        @if (userId != null)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index"><b>Home</b></a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="CostMaster" asp-action="Index"><b>Cost Master</b></a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="DailyAttendance" asp-action="Index"><b>Attendance</b></a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="MaterialPurchase" asp-action="Index"><b>Material Report</b></a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="ServiceProvider" asp-action="Index"><b>Service Provider</b></a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Site" asp-action="Index"><b>Site</b></a>
-                            </li>
-                        }
-                    </ul>
+                <!-- Collapsible content -->
+                <div class="ce-nav-collapse" id="ceNavCollapse" style="display:flex; align-items:center; justify-content:space-between; flex:1; margin-left:1.5rem;">
 
                     @if (userId != null)
                     {
-                        <form asp-controller="Site" asp-action="Index" method="post" class="d-flex align-items-center me-3" style="gap: 5px;">
-                            <select name="Id" class="form-select form-select-sm fw-bold" asp-items="ViewBag.Site" style="width: 180px;" required>
-                                <option value="">-- Select Site --</option>
-                            </select>
-                            
-                            <button type="submit" class="btn btn-success fw-bold">Go</button>
-                        </form>
-                        <ul class="navbar-nav">
-                            <li class="nav-item me-3">
-                                <span class="nav-link text-dark"><b>Welcome, @userName</b></span>
+                        <!-- Nav links -->
+                        <ul class="ce-nav-links">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="LogOut"><b>Log Out</b></a>
+                                <a class="nav-link" asp-area="" asp-controller="CostMaster" asp-action="Index">Cost Master</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="DailyAttendance" asp-action="Index">Attendance</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="MaterialPurchase" asp-action="Index">Material Report</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="ServiceProvider" asp-action="Index">Service Provider</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Site" asp-action="Index">Site</a>
                             </li>
                         </ul>
+
+                        <!-- Right: Site selector + user -->
+                        <div class="ce-nav-right">
+                            <form asp-controller="Site" asp-action="Index" method="post" style="display:flex; align-items:center; gap:8px;">
+                                <span class="ce-site-label">Site</span>
+                                <select name="Id" class="ce-select" asp-items="ViewBag.Site" required>
+                                    <option value="">-- Select Site --</option>
+                                </select>
+                                <button type="submit" class="ce-btn-go">Go</button>
+                            </form>
+
+                            <div class="ce-divider"></div>
+
+                            <span class="ce-welcome">Welcome, @userName</span>
+
+                            <a class="ce-btn-logout" asp-area="" asp-controller="Account" asp-action="LogOut">Log Out</a>
+                        </div>
                     }
+
                 </div>
             </div>
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container-fluid px-0">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="ce-footer">
         <div class="container">
-            &copy; 2024 - ConstructionApplication - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 Builder Ledger;
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // Mobile nav toggle
+        const toggler = document.getElementById('ceNavToggler');
+        const collapse = document.getElementById('ceNavCollapse');
+
+        toggler?.addEventListener('click', () => {
+            collapse.classList.toggle('open');
+        });
+
+        // Active nav link highlight
+        const currentPath = window.location.pathname.toLowerCase();
+        document.querySelectorAll('.ce-nav-links .nav-link').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && currentPath.includes(href.toLowerCase().split('/')[1])) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
