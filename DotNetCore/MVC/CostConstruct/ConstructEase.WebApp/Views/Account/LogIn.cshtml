@@ -5,52 +5,114 @@
 }
 
 <style>
+    /* Background with overlay + image */
     body {
-        background-color: deepskyblue;
+        height: 100vh;
+        margin: 0;
+        background: linear-gradient( rgba(28, 46, 70, 0.85), rgba(28, 46, 70, 0.85) ), url('/UploadedImage/Background-Image.jpg');
+        background-size: cover;
+        background-position: center;
     }
 
     .login-section {
-        min-height: 80vh;
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
+    /* Card */
     .login-card {
         background-color: #ffffff;
-        padding: 35px;
-        border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
         width: 100%;
         max-width: 400px;
+        transition: 0.3s;
     }
 
-        .login-card h3 {
-            font-weight: bold;
-            margin-bottom: 25px;
-            color: #343a40;
-            text-align: center;
+        .login-card:hover {
+            transform: translateY(-5px);
         }
 
-    .form-group label {
-        font-weight: 600;
+        .login-card h3 {
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #1E293B;
+        }
+
+    .login-subtitle {
+        text-align: center;
+        color: #6c757d;
+        margin-bottom: 25px;
+        font-size: 14px;
     }
 
-    .btn-primary {
-        width: 100%;
+    /* Input group with icons */
+    .input-group-text {
+        background-color: #f1f5f9;
+        border-radius: 10px 0 0 10px;
+        border: 1px solid #ddd;
+    }
+
+    .form-control {
+        border-radius: 0 10px 10px 0;
+        padding: 10px;
+        border: 1px solid #ddd;
+        transition: 0.3s;
+    }
+
+        .form-control:focus {
+            border-color: #F59E0B;
+            box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+        }
+
+    /* Password toggle */
+    .toggle-password {
+        cursor: pointer;
+        background: #f1f5f9;
+        border: 1px solid #ddd;
+        border-left: none;
+        border-radius: 0 10px 10px 0;
+        padding: 10px;
+    }
+
+    /* Button */
+    .login-btn {
+        background-color: #F59E0B;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 10px;
+        transition: 0.3s;
+        border: none;
+    }
+
+        .login-btn:hover {
+            background-color: #d97706;
+        }
+
+    .form-check-label {
+        font-size: 14px;
     }
 
     .alert {
         font-size: 0.9rem;
-        padding: 8px 15px;
+        padding: 10px;
+        border-radius: 8px;
     }
 </style>
 
 <div class="container login-section">
     <div class="login-card">
-        <h3>User Login</h3>
+
+        <h3>Welcome Back</h3>
+        <div class="login-subtitle">Login to Builder Ledger</div>
 
         <form asp-action="Login" method="post">
+
             <div asp-validation-summary="ModelOnly" class="text-danger text-center mb-3"></div>
 
             @if (ViewBag.ErrorMessage != null)
@@ -67,23 +129,58 @@
                 </div>
             }
 
-            <div class="form-group mb-3">
-                <label asp-for="Email"><b>Email</b></label>
-                <input asp-for="Email" class="form-control" value="zishan123@gmail.com" placeholder="Enter your email" />
+            <!-- Email with icon -->
+            <div class="mb-3">
+                <label asp-for="Email">Email</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fa fa-envelope"></i>
+                    </span>
+                    <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                </div>
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-4">
-                <label asp-for="Password"><b>Password</b></label>
-                <input asp-for="Password" class="form-control" value="sujawalpur123" type="password" placeholder="Enter your password" />
+            <!-- Password with toggle -->
+            <div class="mb-3">
+                <label asp-for="Password">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                    <input asp-for="Password" id="password" class="form-control" type="password" placeholder="Enter your password" />
+                    <span class="toggle-password" onclick="togglePassword()">
+                        👁️
+                    </span>
+                </div>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
+            <!-- Remember Me -->
+            <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" id="rememberMe" />
+                <label class="form-check-label" for="rememberMe">Remember Me</label>
+            </div>
+
             <div class="d-grid">
-                <button type="submit" class="btn btn-success fw-bold">
+                <button type="submit" class="login-btn">
                     Login
                 </button>
             </div>
+
         </form>
+
     </div>
 </div>
+
+<!-- JS for password toggle -->
+<script>
+    function togglePassword() {
+        var password = document.getElementById("password");
+        if (password.type === "password") {
+            password.type = "text";
+        } else {
+            password.type = "password";
+        }
+    }
+</script>

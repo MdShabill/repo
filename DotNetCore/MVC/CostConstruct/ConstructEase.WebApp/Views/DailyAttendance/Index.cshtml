@@ -1,153 +1,216 @@
 ﻿@model List<DailyAttendanceVm>
 
-<h3 style="text-align: center;">Attendance Report</h3>
-<div class="bottom-section">
-    <a asp-controller="DailyAttendance" asp-action="Add">Add New</a>
-    @* &nbsp;&nbsp;&nbsp;
-    <a asp-controller="DailyAttendance" asp-action="AddUsingAjax">Add New (Using AJAX)</a> *@
-</div>
-<html>
-<head>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px auto;
-            font-family: 'Arial', sans-serif;
-            background-color: #f9f9f9;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+@{
+    ViewData["Title"] = "Attendance Report";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #1E3A5F, #0F172A);
+        min-height: 100vh;
+    }
+
+    .page-container {
+        margin-top: 80px;
+        padding: 30px;
+    }
+
+    /* Card */
+    .card-box {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .page-title {
+        text-align: center;
+        font-weight: 700;
+        color: #1E293B;
+        margin-bottom: 15px;
+    }
+
+    /* Top bar */
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    /* Filter */
+    .filter-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: nowrap;
+    }
+
+    .date-input {
+        width: 150px;
+        border-radius: 8px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 6px 10px;
+        border: 1px solid #ddd;
+    }
+
+        .form-control:focus {
+            border-color: #F59E0B;
+            box-shadow: 0 0 5px rgba(245,158,11,0.5);
         }
 
-        tr {
-            background-color: lightblue;
+    /* Button */
+    .btn-orange {
+        background-color: #F59E0B;
+        color: white;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 6px 14px;
+        border: none;
+    }
+
+        .btn-orange:hover {
+            background-color: #d97706;
         }
 
-        td {
-            padding: 8px 10px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
+    /* Table */
+    .table {
+        border-radius: 12px;
+        overflow: hidden;
+    }
 
-        .header-row {
-            background-color: #007bff;
+        .table thead {
+            background-color: #1E3A5F;
             color: white;
-            font-size: 15px;
         }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
+        .table tbody tr:hover {
+            background-color: #f8fafc;
         }
 
-        tr:hover {
-            background-color: #e6f7ff;
+    .badge-amount {
+        background: #F59E0B;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 8px;
+    }
+
+    .no-record {
+        text-align: center;
+        padding: 30px;
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    #errorMessage {
+        color: red;
+        font-weight: 500;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="container page-container">
+
+    <div class="card-box">
+
+        <!-- Title + Button -->
+        <div class="top-bar">
+            <div></div>
+
+            <h3 class="page-title">Attendance Report</h3>
+
+            <a asp-controller="DailyAttendance" asp-action="Add" class="btn btn-orange">
+                + Add New
+            </a>
+        </div>
+
+        <!-- Success Message -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success text-center">
+                @TempData["SuccessMessage"]
+            </div>
         }
 
-        .bottom-section {
-            margin-top: 20px;
-            text-align: right;
-            font-size: 20px;
-        }
+        <form method="get" asp-action="Index" onsubmit="return validateDates()" class="filter-row mb-3">
 
-        #errorMessage {
-            color: red;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .no-record {
-            background-color: lightblue;
-            text-align: center;
-            padding: 15px;
-            font-size: 18px;
-            border-radius: 10px;
-            margin: 20px auto;
-            width: 50%;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-        }
-
-            .btn-primary:hover {
-                background-color: #0056b3;
-            }
-    </style>
-</head>
-    <body>
-        <span class="text-success"><b>@TempData["SuccessMessage"]</b></span>
-
-        <form method="get" asp-action="Index" onsubmit="return validateDates()">
             <label><b>From:</b></label>
-            <input type="date" id="DateFrom" name="DateFrom" value="@ViewBag.DateFrom" />
-            &nbsp;&nbsp;&nbsp;
+            <input type="date" id="DateFrom" name="DateFrom" value="@ViewBag.DateFrom" class="form-control date-input" />
+
             <label><b>To:</b></label>
-            <input type="date" id="DateTo" name="DateTo" value="@ViewBag.DateTo" />
-            &nbsp;&nbsp;&nbsp;
-            <button type="submit" class="btn btn-primary">Go</button>
+            <input type="date" id="DateTo" name="DateTo" value="@ViewBag.DateTo" class="form-control date-input" />
+
+            <button type="submit" class="btn btn-orange">Go</button>
+
         </form>
-        <span id="errorMessage" class="text-danger"></span>
+
+        <span id="errorMessage"></span>
+
+        <!-- Table -->
         @if (Model != null && Model.Count > 0)
         {
-            <table>
-                <tr class="header-row">
-                    <td><b>Date</b></td>
-                    <td><b>Service Type</b></td>
-                    <td><b>Service Providers</b></td>
-                    <td><b>Total Worker</b></td>
-                    <td><b>Amount Per Worker</b></td>
-                    <td><b>Total Amount</b></td>
-                </tr>
-
-                @foreach (DailyAttendanceVm dailyAttendanceVm in Model)
-                {
-                    <tr class="table1">
-                        <td>@dailyAttendanceVm.Date.ToString("dd-MMMM-yyyy")</td>
-                        <td>@dailyAttendanceVm.Name</td>
-                        <td>@dailyAttendanceVm.ServiceProviderName</td>
-                        <td>@dailyAttendanceVm.TotalWorker</td>
-                        <td>@dailyAttendanceVm.AmountPerWorker</td>
-                        <td>@dailyAttendanceVm.TotalAmount</td>
+            <table class="table table-hover text-center align-middle">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Service Type</th>
+                        <th>Service Providers</th>
+                        <th>Total Worker</th>
+                        <th>Amount Per Worker</th>
+                        <th>Total Amount</th>
                     </tr>
-                }
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Date.ToString("dd MMM yyyy")</td>
+                            <td>@item.Name</td>
+                            <td>@item.ServiceProviderName</td>
+                            <td>@item.TotalWorker</td>
+                            <td>₹ @item.AmountPerWorker</td>
+                            <td>
+                                <span class="badge-amount">₹ @item.TotalAmount</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
             </table>
         }
         else
         {
             <div class="no-record">
-                <b>No Record Found</b>
+                🚫 No Record Found
             </div>
         }
-        
-        <script>
-        function validateDates() {
-            // Get the date values
-            var dateFrom = document.getElementById("DateFrom").value;
-            var dateTo = document.getElementById("DateTo").value;
-            var errorMessage = document.getElementById("errorMessage");
-            errorMessage.innerHTML = "";
 
-            // Convert date strings to Date objects
-            var currentDate = new Date().toISOString().split('T')[0];
-            var fromDate = dateFrom ? new Date(dateFrom) : null;
-            var toDate = dateTo ? new Date(dateTo) : null;
+    </div>
+</div>
 
-            // Check if DateFrom is greater than DateTo (when both are provided)
-            if (fromDate && toDate && fromDate > toDate) {
-                errorMessage.innerHTML = "FROM DATE cannot be greater than TO DATE.";
-                return false;
-            }
+<script>
+    function validateDates() {
+        var dateFrom = document.getElementById("DateFrom").value;
+        var dateTo = document.getElementById("DateTo").value;
+        var errorMessage = document.getElementById("errorMessage");
+        errorMessage.innerHTML = "";
 
-            // Check both DateFrom and DateTo is in the future
-            if (dateTo && dateFrom > currentDate || dateFrom && dateTo > currentDate) {
-                errorMessage.innerHTML = "FROM DATE and TO DATE cannot be in the future.";
-                return false;
-            }
-            return true;
+        var currentDate = new Date().toISOString().split('T')[0];
+        var fromDate = dateFrom ? new Date(dateFrom) : null;
+        var toDate = dateTo ? new Date(dateTo) : null;
+
+        if (fromDate && toDate && fromDate > toDate) {
+            errorMessage.innerHTML = "FROM DATE cannot be greater than TO DATE.";
+            return false;
         }
-        </script>
-    </body>
-</html>
+
+        if (dateTo && dateFrom > currentDate || dateFrom && dateTo > currentDate) {
+            errorMessage.innerHTML = "FROM DATE and TO DATE cannot be in the future.";
+            return false;
+        }
+        return true;
+    }
+</script>

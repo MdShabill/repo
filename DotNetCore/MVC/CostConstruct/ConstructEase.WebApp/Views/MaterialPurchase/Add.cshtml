@@ -1,93 +1,178 @@
 ﻿@model MaterialPurchaseVm
 
-<h3 class="text-center mb-4">Material Purchase</h3>
+@{
+    ViewData["Title"] = "Material Purchase";
+}
 
-<div class="row justify-content-center">
-    <div class="col-md-10">
-        <div class="card shadow p-4">
+<style>
+    body {
+        background: linear-gradient(135deg, #1E3A5F, #0F172A);
+        min-height: 100vh;
+    }
 
-            <form asp-action="Add">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                <span class="text-danger"><b>@ViewBag.errorMessage</b></span>
+    .page-container {
+        padding: 30px;
+        margin-top: 80px;
+    }
 
-                <div class="row">
+    .card-box {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
 
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Date"><b>Date</b></label>
+    .page-title {
+        font-weight: 700;
+        color: #1E293B;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .form-row-inline {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+        .form-row-inline label {
+            width: 180px;
+            margin-bottom: 0;
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        .form-row-inline .form-control {
+            flex: 1;
+            border-radius: 8px;
+            height: 38px;
+        }
+
+    .form-control:focus {
+        border-color: #F59E0B;
+        box-shadow: 0 0 5px rgba(245, 158, 11, 0.5);
+    }
+
+    .btn-orange {
+        background-color: #F59E0B;
+        color: white;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 10px 30px;
+        border: none;
+    }
+
+        .btn-orange:hover {
+            background-color: #d97706;
+        }
+</style>
+
+<div class="container page-container">
+    <div class="card-box">
+
+        <h3 class="page-title">Material Purchase</h3>
+
+        <form asp-action="Add">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <span class="text-danger"><b>@ViewBag.errorMessage</b></span>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-row-inline">
+                        <label asp-for="Date">Date:</label>
                         <input asp-for="Date" class="form-control"
                                value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
                                type="datetime-local" />
                     </div>
+                </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="SupplierId"><b>Supplier/Vendor</b></label>
+                <div class="col-md-6">
+                    <div class="form-row-inline">
+                        <label asp-for="SupplierId">Supplier/Vendor:</label>
                         @Html.DropDownListFor(model => model.SupplierId,
                         (SelectList)ViewBag.Supplier,
                                                 "-- Select Supplier --",
                                                 new { @class = "form-control" })
                     </div>
+                </div>
+            </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="PhoneNumber"><b>Supplier Contact</b></label>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-row-inline">
+                        <label asp-for="PhoneNumber">Supplier Contact:</label>
                         <input asp-for="PhoneNumber" class="form-control" />
                     </div>
+                </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="BrandId"><b>Brands</b></label>
+                <div class="col-md-6">
+                    <div class="form-row-inline">
+                        <label asp-for="BrandId">Brand:</label>
                         @Html.DropDownListFor(model => model.BrandId,
                                                 (SelectList)ViewBag.Brands,
                                                 "-- Select Brand --",
                                                 new { @class = "form-control" })
                     </div>
+                </div>
+            </div>
 
-                    <div class="col-md-12 mb-3">
-                        <label asp-for="MaterialId"><b>Materials</b></label>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-row-inline">
+                        <label asp-for="MaterialId">Material:</label>
                         @Html.DropDownListFor(model => model.MaterialId,
-                                                (SelectList)ViewBag.Materials,
-                                                "-- Select Material --",
-                                                new { @class = "form-control" })
+                                            (SelectList)ViewBag.Materials,
+                                            "-- Select Material --",
+                                            new { @class = "form-control", id = "MaterialId" })
                     </div>
+                </div>
 
-                    <div class="col-md-4 mb-3">
-                        <label><b>Unit Price</b></label>
-                        <div class="input-group">
-                            <input asp-for="UnitPrice" id="unitPrice" class="form-control" readonly />
-                            <span class="input-group-text">
-                                <span id="unitOfMeasureDisplay">@Model?.UnitOfMeasure</span>
-                            </span>
-                            <input type="hidden" id="unitOfMeasure" name="UnitOfMeasure" value="@Model?.UnitOfMeasure" />
-                        </div>
+                <div class="col-md-6">
+                    <div class="form-row-inline">
+                        <label>Unit Price:</label>
+                        <input asp-for="UnitPrice" id="unitPrice" class="form-control" readonly />
                     </div>
+                </div>
+            </div>
 
-                    <div class="col-md-4 mb-3">
-                        <label><b>Quantity</b></label>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-row-inline">
+                        <label>Quantity:</label>
                         <input asp-for="Quantity" id="quantity" class="form-control" />
                     </div>
+                </div>
 
-                    <div class="col-md-4 mb-3">
-                        <label><b>Material Cost</b></label>
+                <div class="col-md-6">
+                    <div class="form-row-inline">
+                        <label>Material Cost:</label>
                         <input asp-for="MaterialCost" id="materialCost" class="form-control" readonly />
                     </div>
+                </div>
+            </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label><b>Delivery Cost</b></label>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-row-inline">
+                        <label>Delivery Cost:</label>
                         <input asp-for="DeliveryCharge" id="deliveryCharge" class="form-control" />
                     </div>
+                </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label><b>Total Amount</b></label>
+                <div class="col-md-6">
+                    <div class="form-row-inline">
+                        <label>Total Amount:</label>
                         <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly />
                     </div>
-
                 </div>
+            </div>
 
-                <div class="text-end mt-3">
-                    <input type="submit" value="Add" class="btn btn-success px-4" />
-                </div>
+            <div class="text-center mt-4">
+                <input type="submit" value="Add" class="btn btn-orange" />
+            </div>
 
-            </form>
+        </form>
 
-        </div>
     </div>
 </div>
 

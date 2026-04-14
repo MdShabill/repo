@@ -1,48 +1,127 @@
 ﻿@model AddNewCostMasterVm
 
-<h3 class="text-center mb-4">Add Cost</h3>
+@{
+    ViewData["Title"] = "Add Cost";
+}
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow p-4">
+<style>
+    body {
+        background: linear-gradient(135deg, #1E3A5F, #0F172A);
+        min-height: 100vh;
+    }
 
-            <form asp-action="Add">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                <span class="text-danger"><b>@ViewBag.ErrorMessage</b></span>
+    .page-container {
+        margin-top: 80px;
+        padding: 30px;
+    }
 
-                <div class="row">
+    .card-box {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        max-width: 500px;
+        margin: auto;
+    }
 
-                    <div class="col-md-12 mb-3">
-                        <label asp-for="Date"><b>Date</b></label>
-                        <input asp-for="Date" class="form-control" />
-                        <span asp-validation-for="Date" class="text-danger"></span>
-                    </div>
+    .page-title {
+        text-align: center;
+        font-weight: 700;
+        color: #1E293B;
+        margin-bottom: 20px;
+    }
 
-                    <div class="col-md-12 mb-3">
-                        <label asp-for="ServiceTypeId"><b>Service Types</b></label>
-                        @Html.DropDownListFor(model => model.ServiceTypeId,
-                        (SelectList)ViewBag.ServiceType,
-                                                "-- Select --",
-                                                new { @class = "form-control", id = "serviceTypeSelect", onchange = "updateCost()" })
-                        <span asp-validation-for="ServiceTypeId" class="text-danger"></span>
-                    </div>
+    label {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
 
-                    <div class="col-md-12 mb-3">
-                        <label asp-for="Cost"><b>Cost</b></label>
-                        <input asp-for="Cost" class="form-control" id="Cost" />
-                        <span asp-validation-for="Cost" class="text-danger"></span>
-                    </div>
+    .form-control {
+        border-radius: 10px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        transition: 0.3s;
+    }
 
+    .form-control:focus {
+        border-color: #F59E0B;
+        box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+    }
+
+    select.form-control {
+        height: 40px;
+    }
+
+    .btn-orange {
+        background-color: #F59E0B;
+        color: white;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 10px 20px;
+        border: none;
+    }
+
+    .btn-orange:hover {
+        background-color: #d97706;
+    }
+
+    .text-danger {
+        font-size: 13px;
+    }
+</style>
+
+<div class="container page-container">
+
+    <div class="card-box">
+
+        <h3 class="page-title">Add Cost</h3>
+
+        <form asp-action="Add">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 text-center"></div>
+
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger text-center">
+                    <b>@ViewBag.ErrorMessage</b>
                 </div>
+            }
 
-                <div class="text-end mt-3">
-                    <input type="submit" value="Add" class="btn btn-success px-4" />
-                </div>
+            <div class="mb-3">
+                <label asp-for="Date">Date</label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
 
-            </form>
+            <div class="mb-3">
+                <label asp-for="ServiceTypeId">Service Type</label>
 
-        </div>
+                @Html.DropDownListFor(model => model.ServiceTypeId,
+                    (SelectList)ViewBag.ServiceType,
+                    "-- Select --",
+                    new {
+                        @class = "form-control",
+                        id = "serviceTypeSelect",
+                        onchange = "updateCost()"
+                    })
+
+                <span asp-validation-for="ServiceTypeId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Cost">Cost</label>
+                <input asp-for="Cost" class="form-control" id="Cost" />
+                <span asp-validation-for="Cost" class="text-danger"></span>
+            </div>
+
+            <div class="text-end">
+                <input type="submit" value="Add" class="btn btn-orange" />
+            </div>
+
+        </form>
+
     </div>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

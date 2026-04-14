@@ -1,69 +1,121 @@
 ﻿@model DailyAttendanceVm
 
-<h3 class="text-center mb-4">Daily Attendance</h3>
+<style>
+    body {
+        background: linear-gradient(135deg, #1E3A5F, #0F172A);
+        min-height: 100vh;
+    }
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow p-4">
+    .page-container {
+        padding: 30px;
+        margin-top: 60px;
+    }
 
-            <form asp-action="Add">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    .card-box {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        max-width: 900px;
+        margin: auto;
+    }
 
+    .page-title {
+        text-align: center;
+        font-weight: 700;
+        color: #1E293B;
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 8px;
+    }
+
+        .form-control:focus {
+            border-color: #F59E0B;
+            box-shadow: 0 0 5px rgba(245,158,11,0.5);
+        }
+
+    .btn-orange {
+        background-color: #F59E0B;
+        color: white;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 8px 20px;
+        border: none;
+    }
+
+        .btn-orange:hover {
+            background-color: #d97706;
+        }
+</style>
+
+<div class="container page-container">
+
+    <div class="card-box">
+
+        <h3 class="page-title">Daily Attendance</h3>
+
+        <form asp-action="Add">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="text-center">
                 <span class="text-success"><b>@ViewBag.successMessage</b></span>
                 <span class="text-danger"><b>@ViewBag.errorMessage</b></span>
+            </div>
 
-                <div class="row">
+            <div class="row">
 
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="Date"><b>Date</b></label>
-                        <input asp-for="Date" class="form-control"
-                               value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
-                               type="datetime-local" />
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="ServiceTypeId"><b>Job Category</b></label>
-                        @Html.DropDownListFor(model => model.ServiceTypeId,
-                        (SelectList)ViewBag.ServiceType,
-                                                "-- Select Service Type --",
-                                                new { @class = "form-control", @id = "ServiceType" })
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="ServiceProviderId"><b>Service Provider Name</b></label>
-                        <select id="serviceProviderId" name="serviceProviderId" class="form-control"></select>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="TotalWorker"><b>Total Worker</b></label>
-                        <input asp-for="TotalWorker" id="totalWorker" class="form-control" />
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="AmountPerWorker"><b>Amount Per Worker</b></label>
-                        <input asp-for="AmountPerWorker" id="AmountPerWorker"
-                               class="form-control" readonly value="@ViewBag.Cost" />
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label><b>Total Amount</b></label>
-                        <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly />
-                    </div>
-
-                    <div class="col-md-12 mb-3">
-                        <label asp-for="Notes"><b>Notes</b></label>
-                        <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
-                    </div>
-
+                <div class="col-md-6 mb-3">
+                    <label><b>Date</b></label>
+                    <input asp-for="Date" class="form-control"
+                           value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                           type="datetime-local" />
                 </div>
 
-                <div class="text-end mt-3">
-                    <input type="submit" value="Add" class="btn btn-success px-4" />
+                <div class="col-md-6 mb-3">
+                    <label><b>Job Category</b></label>
+                    @Html.DropDownListFor(model => model.ServiceTypeId,
+                    (SelectList)ViewBag.ServiceType,
+                                        "-- Select Service Type --",
+                                        new { @class = "form-control", @id = "ServiceType" })
                 </div>
 
-            </form>
+                <div class="col-md-6 mb-3">
+                    <label><b>Service Provider Name</b></label>
+                    <select id="serviceProviderId" name="serviceProviderId" class="form-control"></select>
+                </div>
 
-        </div>
+                <div class="col-md-6 mb-3">
+                    <label><b>Total Worker</b></label>
+                    <input asp-for="TotalWorker" id="totalWorker" class="form-control" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label><b>Amount Per Worker</b></label>
+                    <input asp-for="AmountPerWorker" id="AmountPerWorker"
+                           class="form-control" readonly value="@ViewBag.Cost" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label><b>Total Amount</b></label>
+                    <input asp-for="TotalAmount" id="totalAmount" class="form-control" readonly />
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label><b>Notes</b></label>
+                    <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                </div>
+
+            </div>
+
+            <div class="text-end mt-3">
+                <input type="submit" value="Add" class="btn btn-orange" />
+            </div>
+
+        </form>
+
     </div>
 </div>
 
