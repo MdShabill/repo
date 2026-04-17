@@ -18,6 +18,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         :root {
             --ce-navy: #1a2e44;
@@ -47,12 +48,25 @@
         }
 
             .ce-navbar .container-fluid {
-                display: flex;
+                display: grid;
+                grid-template-columns: auto 1fr auto;
                 align-items: center;
-                justify-content: space-between;
-                gap: 1rem;
-                padding: 0;
             }
+
+        .ce-nav-links {
+            gap: 20px;
+        }
+
+        .ce-nav-links {
+            justify-content: center;
+        }
+
+        .ce-nav-collapse {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            grid-column: 2;
+        }
 
         /* Logo */
         .ce-brand {
@@ -73,26 +87,24 @@
         .ce-nav-links {
             display: flex;
             align-items: center;
-            gap: 2px;
+            gap: 18px;
             list-style: none;
             margin: 0;
             padding: 0;
+            justify-content: center;
+            transform: translateX(40px);
         }
 
             .ce-nav-links .nav-item .nav-link {
-                padding: 7px 13px;
-                font-size: 14px;
-                font-weight: 500;
-                color: var(--ce-text);
-                border-radius: 7px;
-                transition: background 0.15s, color 0.15s;
-                white-space: nowrap;
+                color: #000 !important;
+                font-size: 15px;
+                font-weight: 600;
             }
 
                 .ce-nav-links .nav-item .nav-link:hover,
                 .ce-nav-links .nav-item .nav-link.active {
+                    color: #000 !important;
                     background: var(--ce-surface);
-                    color: var(--ce-navy);
                 }
 
         /* Right section */
@@ -210,56 +222,51 @@
 
         /* ── Responsive ── */
         @@media (max-width: 991px) {
-            .ce-toggler
 
-        {
-            display: block;
-        }
-
-        .ce-nav-collapse {
-            display: none;
-            position: absolute;
-            top: 68px;
-            left: 0;
-            right: 0;
-            background: #fff;
-            border-bottom: 1px solid var(--ce-border);
-            padding: 1rem 1.5rem;
-            flex-direction: column;
-            gap: 0.5rem;
-            z-index: 1029;
-        }
-
-            .ce-nav-collapse.open {
+            .ce-navbar .container-fluid {
                 display: flex;
+                justify-content: space-between;
+                align-items: center;
             }
 
-        .ce-nav-links {
-            flex-direction: column;
-            align-items: flex-start;
-            width: 100%;
-        }
-
-            .ce-nav-links .nav-item {
-                width: 100%;
+            .ce-toggler {
+                display: block;
+                margin-left: auto;
             }
 
-                .ce-nav-links .nav-item .nav-link {
-                    display: block;
-                    width: 100%;
+            .ce-nav-collapse {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 50%;
+                height: 100vh;
+                background: #fff;
+                padding: 20px;
+                flex-direction: column;
+                transition: right 0.3s ease;
+                z-index: 1050;
+                position: fixed;
+                overflow-y: auto;
+                box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            }
+
+                .ce-nav-collapse.open {
+                    right: 0;
                 }
 
-        .ce-nav-right {
-            flex-wrap: wrap;
-            width: 100%;
-            padding-top: 0.75rem;
-            border-top: 1px solid var(--ce-border);
-        }
+            .ce-nav-links {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+                margin-top: 20px;
+            }
 
-        .ce-divider {
-            display: none;
-        }
-
+            .ce-nav-right {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-top: 20px;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -283,33 +290,33 @@
                 </button>
 
                 <!-- Collapsible content -->
-                <div class="ce-nav-collapse" id="ceNavCollapse" style="display:flex; align-items:center; justify-content:space-between; flex:1; margin-left:1.5rem;">
+                <div class="ce-nav-collapse" id="ceNavCollapse">
 
                     @if (userId != null)
                     {
-                        <!-- Nav links -->
-                        <ul class="ce-nav-links">
+                        <!-- CENTER: Nav links -->
+                        <ul class="ce-nav-links mx-auto">
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="CostMaster" asp-action="Index">Cost Master</a>
+                                <a class="nav-link" asp-controller="CostMaster" asp-action="Index">Cost Master</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="DailyAttendance" asp-action="Index">Attendance</a>
+                                <a class="nav-link" asp-controller="DailyAttendance" asp-action="Index">Attendance</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="MaterialPurchase" asp-action="Index">Material Report</a>
+                                <a class="nav-link" asp-controller="MaterialPurchase" asp-action="Index">Material</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="ServiceProvider" asp-action="Index">Service Provider</a>
+                                <a class="nav-link" asp-controller="ServiceProvider" asp-action="Index">Service Provider</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Site" asp-action="Index">Site</a>
+                                <a class="nav-link" asp-controller="Site" asp-action="Index">Site</a>
                             </li>
                         </ul>
 
-                        <!-- Right: Site selector + user -->
+                        <!-- RIGHT -->
                         <div class="ce-nav-right">
                             <form asp-controller="Site" asp-action="Index" method="post" style="display:flex; align-items:center; gap:8px;">
                                 <span class="ce-site-label">Site</span>
@@ -323,7 +330,7 @@
 
                             <span class="ce-welcome">Welcome, @userName</span>
 
-                            <a class="ce-btn-logout" asp-area="" asp-controller="Account" asp-action="LogOut">Log Out</a>
+                            <a class="ce-btn-logout" asp-controller="Account" asp-action="LogOut">Log Out</a>
                         </div>
                     }
 
@@ -343,24 +350,31 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     <script>
-        // Mobile nav toggle
         const toggler = document.getElementById('ceNavToggler');
         const collapse = document.getElementById('ceNavCollapse');
 
-        toggler?.addEventListener('click', () => {
+        toggler?.addEventListener('click', (e) => {
+            e.stopPropagation();
             collapse.classList.toggle('open');
         });
 
-        // Active nav link highlight
-        const currentPath = window.location.pathname.toLowerCase();
-        document.querySelectorAll('.ce-nav-links .nav-link').forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && currentPath.includes(href.toLowerCase().split('/')[1])) {
-                link.classList.add('active');
+        collapse.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        document.addEventListener('click', (e) => {
+            const isClickInsideMenu = collapse.contains(e.target);
+            const isClickOnToggler = toggler.contains(e.target);
+
+            if (!isClickInsideMenu && !isClickOnToggler) {
+                collapse.classList.remove('open');
             }
         });
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
+    @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
 </body>
 </html>

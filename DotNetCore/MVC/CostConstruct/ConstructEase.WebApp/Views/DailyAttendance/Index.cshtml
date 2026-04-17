@@ -68,12 +68,14 @@
         color: white;
         font-weight: 600;
         border-radius: 10px;
-        padding: 6px 14px;
+        padding: 8px 18px;
         border: none;
+        text-decoration: none;
     }
 
         .btn-orange:hover {
             background-color: #d97706;
+            color: white;
         }
 
     /* Table */
@@ -91,11 +93,28 @@
             background-color: #f8fafc;
         }
 
-    .badge-amount {
-        background: #F59E0B;
-        color: white;
+    .cost-cell {
+        background: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FDE68A;
         padding: 5px 10px;
         border-radius: 8px;
+    }
+
+    .cost-cell {
+        background: transparent;
+        padding: 0;
+    }
+
+    .cost-badge {
+        display: inline-block;
+        background: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FDE68A;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
     }
 
     .no-record {
@@ -116,18 +135,16 @@
 
     <div class="card-box">
 
-        <!-- Title + Button -->
         <div class="top-bar">
             <div></div>
 
-            <h3 class="page-title">Attendance Report</h3>
+            <h3 class="page-title">Attendance</h3>
 
             <a asp-controller="DailyAttendance" asp-action="Add" class="btn btn-orange">
                 + Add New
             </a>
         </div>
 
-        <!-- Success Message -->
         @if (TempData["SuccessMessage"] != null)
         {
             <div class="alert alert-success text-center">
@@ -171,11 +188,9 @@
                             <td>@item.Date.ToString("dd MMM yyyy")</td>
                             <td>@item.Name</td>
                             <td>@item.ServiceProviderName</td>
-                            <td>@item.TotalWorker</td>
-                            <td>₹ @item.AmountPerWorker</td>
-                            <td>
-                                <span class="badge-amount">₹ @item.TotalAmount</span>
-                            </td>
+                            <td><span class="cost-badge">@item.TotalWorker</span></td>
+                            <td><span class="cost-badge">@item.AmountPerWorker</span></td>
+                            <td><span class="cost-badge">₹ @item.TotalAmount</span></td>
                         </tr>
                     }
                 </tbody>

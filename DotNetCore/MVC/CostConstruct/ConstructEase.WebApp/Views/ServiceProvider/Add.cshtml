@@ -1,96 +1,226 @@
 ﻿@model ConstructEase.WebApp.ViewModels.ServiceProviderVm
 
-<h3 class="text-center my-4 fw-bold">Add Service Provider</h3>
+@{
+    ViewData["Title"] = "Add Service Provider";
+}
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form asp-action="Add" method="post" enctype="multipart/form-data" class="border p-4 rounded shadow bg-light">
+<style>
+    body {
+        background: linear-gradient(135deg, #1E3A5F, #0F172A);
+        min-height: 100vh;
+    }
+
+    .page-container {
+        padding: 30px;
+        margin-top: 80px;
+    }
+
+    .card-box {
+        max-width: 700px;
+        margin: auto;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .title {
+        text-align: center;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #1E293B;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 25px;
+    }
+
+    .full-width {
+        grid-column: span 2;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    /* Toggle button */
+    .btn-toggle {
+        background: #1E3A5F;
+        color: white;
+        border-radius: 10px;
+        padding: 8px 14px;
+        border: none;
+    }
+
+        .btn-toggle:hover {
+            background: #0F172A;
+        }
+
+    /* Buttons */
+    .btn-submit {
+        background: #F59E0B;
+        color: white;
+        border-radius: 10px;
+        padding: 10px 18px;
+        border: none;
+        font-weight: 500;
+    }
+
+        .btn-submit:hover {
+            background: #D97706;
+        }
+
+    .btn-cancel {
+        background: transparent;
+        color: #64748B;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 10px 18px;
+        border: 1px solid #CBD5E1;
+        margin-right: 8px;
+    }
+
+        .btn-cancel:hover {
+            background-color: #F8FAFC;
+        }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .radio-group input {
+        margin-right: 5px;
+        margin-left: 10px;
+    }
+
+        .radio-group input:first-child {
+            margin-left: 0;
+        }
+</style>
+
+<div class="page-container">
+    <div class="card-box">
+
+        <div class="title">Service Provider</div>
+
+        <form asp-action="Add" method="post" enctype="multipart/form-data">
 
             <span class="text-danger"><b>@ViewBag.errorMessage</b></span>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group mb-3">
-                <label asp-for="ServiceProviderName" class="fw-bold">Service Provider Name</label>
-                <input asp-for="ServiceProviderName" class="form-control" maxlength="15" required />
+            <div class="form-grid">
+
+                <div>
+                    <label asp-for="ServiceProviderName">Service Provider Name</label>
+                    <input asp-for="ServiceProviderName" class="form-control" maxlength="15" required />
+                </div>
+
+                <div>
+                    <label>Gender</label><br />
+                    <div class="radio-group">
+                        @Html.RadioButton("Gender", "Male", true) Male
+                        @Html.RadioButton("Gender", "Female") Female
+                        @Html.RadioButton("Gender", "Transgender") Transgender
+                        @Html.RadioButton("Gender", "Others") Others
+                    </div>
+                </div>
+
+                <div>
+                    <label asp-for="DOB">Date Of Birth</label>
+                    <input asp-for="DOB" class="form-control" />
+                </div>
+
+                <div>
+                    <label>Profile Image</label>
+                    <input type="file" class="form-control" id="ImageFile" name="ImageFile" />
+                </div>
+
+                <div>
+                    <label asp-for="MobileNumber">Mobile Number</label>
+                    <input asp-for="MobileNumber" class="form-control" maxlength="10" required />
+                </div>
+
+                <div>
+                    <label asp-for="ReferredBy">Referred By</label>
+                    <input asp-for="ReferredBy" class="form-control" maxlength="15" required />
+                </div>
+
+                <div class="full-width">
+                    <label asp-for="ServiceTypeId">Service Type</label>
+                    @Html.DropDownListFor(model => model.ServiceTypeId,
+                    (SelectList)ViewBag.ServiceType,
+                                        "-- SELECT SERVICE TYPE --",
+                                        new { @class = "form-control" })
+                </div>
+
             </div>
 
-            <div class="form-group mb-3">
-                <label class="fw-bold">Gender</label><br />
-                @Html.RadioButton("Gender", "Male", true) Male
-                @Html.RadioButton("Gender", "Female") Female
-                @Html.RadioButton("Gender", "Transgender") Transgender
-                @Html.RadioButton("Gender", "Others") Others
-            </div>
+            </br>
 
-            <div class="form-group mb-3">
-                <label asp-for="DOB" class="fw-bold">Date Of Birth</label>
-                <input asp-for="DOB" class="form-control" />
+            <div class="text-center mt-3">
+                <button type="button" id="btnToggleAddressButton" class="btn-toggle mb-3" onclick="toggleAddressFields()">
+                    Tap for Address
+                </button>
             </div>
-
-            <div class="form-group mb-3">
-                <label class="fw-bold">Profile Image</label>
-                <input type="file" class="form-control" id="ImageFile" name="ImageFile" />
-            </div>
-      
-            <div class="form-group mb-3">
-                <label asp-for="MobileNumber" class="fw-bold">Mobile Number</label>
-                <input asp-for="MobileNumber" class="form-control" maxlength="10" required />
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="ReferredBy" class="fw-bold">Referred By</label>
-                <input asp-for="ReferredBy" class="form-control" maxlength="15" required />
-            </div>
-
-            <div class="form-group mb-3">
-                <label asp-for="ServiceTypeId" class="fw-bold">Service Type</label>
-                @Html.DropDownListFor(model => model.ServiceTypeId,
-                (SelectList)ViewBag.ServiceType,
-                                "-- SELECT SERVICE TYPE --",
-                                new { @class = "form-control" })
-            </div>
-
-            <!-- Toggle Address -->
-            <button type="button" id="btnToggleAddressButton" class="btn btn-secondary mb-3" onclick="toggleAddressFields()">
-                Tap for Address
-            </button>
 
             <div id="dvAddressFields" style="display: none;">
 
-                <div class="form-group mb-3">
-                    <label asp-for="AddressLine1" class="fw-bold">Address</label>
-                    <input asp-for="AddressLine1" class="form-control" />
+                <div class="form-grid">
+
+                    <div class="full-width">
+                        <label asp-for="AddressLine1">Address</label>
+                        <input asp-for="AddressLine1" class="form-control" />
+                    </div>
+
+                    <div>
+                        <label asp-for="AddressTypeId">Address Type</label>
+                        @Html.DropDownListFor(model => model.AddressTypeId,
+                                                (SelectList)ViewBag.AddressTypes,
+                                                "-- Select --",
+                                                new { @class = "form-control" })
+                    </div>
+
+                    <div>
+                        <label asp-for="CountryId">Country Name</label>
+                        @Html.DropDownListFor(model => model.CountryId,
+                                                ViewBag.Countries as SelectList,
+                                                "-- Select --",
+                                                new { @class = "form-control" })
+                    </div>
+
+                    <div class="full-width">
+                        <label asp-for="PinCode">Pin Code</label>
+                        <input asp-for="PinCode" class="form-control" />
+                    </div>
+
                 </div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="AddressTypeId" class="fw-bold">Address Type</label>
-                    @Html.DropDownListFor(model => model.AddressTypeId,
-                                        (SelectList)ViewBag.AddressTypes,
-                                        "-- Select --",
-                                        new { @class = "form-control" })
-                </div>
-
-                <div class="form-group mb-3">
-                    <label asp-for="CountryId" class="fw-bold">Country Name</label>
-                    @Html.DropDownListFor(model => model.CountryId,
-                                        ViewBag.Countries as SelectList,
-                                        "-- Select --",
-                                        new { @class = "form-control" })
-                </div>
-
-                <div class="form-group mb-3">
-                    <label asp-for="PinCode" class="fw-bold">Pin Code</label>
-                    <input asp-for="PinCode" class="form-control" />
-                </div>
             </div>
 
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-                &nbsp;&nbsp;&nbsp;
-                <a asp-controller="ServiceProvider" asp-action="Index" class="btn btn-secondary">Back</a>
+            <div class="form-actions">
+                <a asp-controller="ServiceProvider" asp-action="Index" class="btn-cancel">Cancel</a>
+                <input type="submit" value="Add" class="btn-submit" />
             </div>
 
         </form>
+
     </div>
 </div>
 

@@ -1,98 +1,223 @@
 ﻿@model ConstructEase.WebApp.ViewModels.ServiceProviderVm
 
-<h3 class="text-center mb-4">Service Provider Update</h3>
+@{
+    ViewData["Title"] = "Service Provider Update";
+}
 
-<div class="container">
-    <div class="card shadow p-4">
+<style>
+    body {
+        background: linear-gradient(135deg, #1E3A5F, #0F172A);
+        min-height: 100vh;
+    }
+
+    .page-container {
+        padding: 30px;
+        margin-top: 80px;
+    }
+
+    .card-box {
+        max-width: 900px;
+        margin: auto;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .title {
+        text-align: center;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #1E293B;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .btn-toggle {
+        background: #1E3A5F;
+        color: white;
+        border-radius: 10px;
+        padding: 8px 14px;
+        border: none;
+    }
+
+        .btn-toggle:hover {
+            background: #0F172A;
+        }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn-update {
+        background: #F59E0B;
+        color: white;
+        border-radius: 10px;
+        padding: 10px 18px;
+        border: none;
+    }
+
+        .btn-update:hover {
+            background: #D97706;
+        }
+
+    .btn-cancel {
+        background: transparent;
+        color: #64748B;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 10px 18px;
+        border: 1px solid #CBD5E1;
+        margin-right: 8px;
+    }
+
+        .btn-cancel:hover {
+            background-color: #F8FAFC;
+        }
+
+    .radio-group input {
+        margin-right: 5px;
+        margin-left: 10px;
+    }
+
+        .radio-group input:first-child {
+            margin-left: 0;
+        }
+</style>
+
+<div class="page-container">
+    <div class="card-box">
+
+        <div class="title">Service Provider Update</div>
+
         <form asp-action="Update" method="post">
+
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <input type="hidden" id="ServiceProviderId" name="ServiceProviderId" value="@Model.ServiceProviderId">
+            <input type="hidden" name="ServiceProviderId" value="@Model.ServiceProviderId">
 
+            <!-- Main Fields -->
             <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label><b>Service Provider Name</b></label>
-                    <input type="text" name="ServiceProviderName" value="@Model.ServiceProviderName"
+
+                <div class="col-md-6 form-group">
+                    <label>Service Provider Name</label>
+                    <input type="text" name="ServiceProviderName"
+                           value="@Model.ServiceProviderName"
                            maxlength="15" class="form-control" required />
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label><b>Service Type</b></label>
-                    @Html.DropDownListFor(model => model.ServiceTypeId, ViewBag.ServiceType as SelectList, "-- SELECT --", new { @class = "form-control" })
+                <div class="col-md-6 form-group">
+                    <label>Service Type</label>
+                    @Html.DropDownListFor(model => model.ServiceTypeId,
+                    ViewBag.ServiceType as SelectList,
+                                        "-- SELECT --",
+                                        new { @class = "form-control" })
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label><b>Mobile Number</b></label>
-                    <input type="text" name="MobileNumber" value="@Model.MobileNumber"
-                           maxlength="10" minlength="10" class="form-control" required />
+                <div class="col-md-6 form-group">
+                    <label>Mobile Number</label>
+                    <input type="text" name="MobileNumber"
+                           value="@Model.MobileNumber"
+                           maxlength="10" class="form-control" required />
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label><b>Referred By</b></label>
+                <div class="col-md-6 form-group">
+                    <label>Referred By</label>
                     <input asp-for="ReferredBy" class="form-control" required />
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label><b>DOB</b></label>
-                    <input type="text" name="DOB" value="@Model.DOB" class="form-control" />
+                <div class="col-md-6 form-group">
+                    <label>DOB</label>
+                    <input type="text" name="DOB"
+                           value="@Model.DOB"
+                           class="form-control" />
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label><b>Gender</b></label><br />
-                    <div class="form-check form-check-inline">
-                        @Html.RadioButtonFor(model => model.Gender, "Male", new { @class = "form-check-input" })
-                        <label class="form-check-label">Male</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        @Html.RadioButtonFor(model => model.Gender, "Female", new { @class = "form-check-input" })
-                        <label class="form-check-label">Female</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        @Html.RadioButtonFor(model => model.Gender, "Transgender", new { @class = "form-check-input" })
-                        <label class="form-check-label">Transgender</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        @Html.RadioButtonFor(model => model.Gender, "Others", new { @class = "form-check-input" })
-                        <label class="form-check-label">Others</label>
+                <div class="col-md-6 form-group">
+                    <label>Gender</label><br />
+                    <div class="radio-group">
+                        @Html.RadioButtonFor(model => model.Gender, "Male") Male
+                        @Html.RadioButtonFor(model => model.Gender, "Female") Female
+                        @Html.RadioButtonFor(model => model.Gender, "Transgender") Transgender
+                        @Html.RadioButtonFor(model => model.Gender, "Others") Others
                     </div>
                 </div>
+
             </div>
 
+            <!-- Toggle Button -->
             <div class="text-center mt-3">
-                <button type="button" id="btnToggleAddressButton" class="btn btn-secondary" onclick="toggleAddressFields()">
+                <button type="button" id="btnToggleAddressButton"
+                        class="btn-toggle"
+                        onclick="toggleAddressFields()">
                     Tap for Address
                 </button>
             </div>
 
-            <div id="dvAddressFields" class="mt-4" style="display: none;">
+            <!-- Address Section -->
+            <div id="dvAddressFields" class="mt-4" style="display:none;">
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label><b>Address Type</b></label>
-                        @Html.DropDownListFor(model => model.AddressTypeId, ViewBag.AddressTypes as SelectList, "-- Select --", new { @class = "form-control" })
+
+                    <div class="col-md-6 form-group">
+                        <label>Address Type</label>
+                        @Html.DropDownListFor(model => model.AddressTypeId,
+                                                ViewBag.AddressTypes as SelectList,
+                                                "-- Select --",
+                                                new { @class = "form-control" })
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label><b>Country Name</b></label>
-                        @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", new { @class = "form-control" })
+                    <div class="col-md-6 form-group">
+                        <label>Country Name</label>
+                        @Html.DropDownListFor(model => model.CountryId,
+                                                ViewBag.Countries as SelectList,
+                                                "-- Select --",
+                                                new { @class = "form-control" })
                     </div>
 
-                    <div class="col-md-12 mb-3">
-                        <label><b>Address</b></label>
+                    <div class="col-md-12 form-group">
+                        <label>Address</label>
                         <textarea name="AddressLine1" class="form-control">@Model.AddressLine1</textarea>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label><b>Pin Code</b></label>
-                        <input type="text" name="PinCode" value="@Model.PinCode" class="form-control" />
+                    <div class="col-md-6 form-group">
+                        <label>Pin Code</label>
+                        <input type="text" name="PinCode"
+                               value="@Model.PinCode"
+                               class="form-control" />
                     </div>
+
                 </div>
             </div>
 
-            <div class="text-center mt-4">
-                <input type="submit" value="Update" class="btn btn-primary px-4" />
-                <input type="submit" value="Cancel" class="btn btn-outline-secondary px-4" />
+            <!-- Buttons -->
+            <div class="form-actions">
+                <button type="button" class="btn-cancel"
+                        onclick="window.location.href='@Url.Action("Index", "ServiceProvider")'">
+                    Cancel
+                </button>
+
+                <input type="submit" value="Update" class="btn-update" />
             </div>
+
         </form>
+
     </div>
 </div>
 

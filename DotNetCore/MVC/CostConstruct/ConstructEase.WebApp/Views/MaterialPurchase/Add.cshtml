@@ -65,6 +65,20 @@
         .btn-orange:hover {
             background-color: #d97706;
         }
+
+    .btn-cancel {
+        background: transparent;
+        color: #64748B;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 10px 18px;
+        border: 1px solid #CBD5E1;
+        margin-right: 8px;
+    }
+
+        .btn-cancel:hover {
+            background-color: #F8FAFC;
+        }
 </style>
 
 <div class="container page-container">
@@ -135,6 +149,16 @@
                 </div>
             </div>
 
+            <div class="row" id="unitOfMeasureText" style="display:none;">
+                <div class="col-md-6">
+                    <div class="form-row-inline">
+                        <label>Unit Of Measure:</label>
+                        <span id="unitOfMeasureDisplay" class="form-control" style="background:#f8fafc;"></span>
+                        <input type="hidden" asp-for="UnitOfMeasure" id="unitOfMeasure" />
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-row-inline">
@@ -167,7 +191,8 @@
                 </div>
             </div>
 
-            <div class="text-center mt-4">
+            <div class="d-flex justify-content-end align-items-center gap-2 mt-3">
+                <a asp-controller="MaterialPurchase" asp-action="Index" class="btn btn-cancel">Cancel</a>
                 <input type="submit" value="Add" class="btn btn-orange" />
             </div>
 

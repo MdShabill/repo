@@ -40,7 +40,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
 
     /* Dropdown */
@@ -71,16 +71,17 @@
         color: white;
         font-weight: 600;
         border-radius: 10px;
-        padding: 8px 18px;
-        border: none;
         white-space: nowrap;
+        padding: 8px 20px;
+        border: none;
+        text-decoration: none;
     }
 
-        .btn-orange:hover {
-            background-color: #d97706;
-        }
+    .btn-orange:hover {
+        background-color: #d97706;
+        color: white;
+    }
 
-    /* Table styling */
     .table {
         border-radius: 12px;
         overflow: hidden;
@@ -96,8 +97,9 @@
         }
 
     .badge-cost {
-        background: #F59E0B;
-        color: white;
+        background: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FDE68A;
         padding: 5px 10px;
         border-radius: 8px;
     }
@@ -114,23 +116,18 @@
 
     <div class="card-box">
 
-        <!-- Title + Button -->
         <div class="top-bar">
 
-            <!-- Empty div for spacing -->
             <div></div>
 
-            <!-- Center Title -->
-            <h3 class="page-title">Cost Master Report</h3>
+            <h3 class="page-title">Cost Master</h3>
 
-            <!-- Button -->
             <a asp-controller="CostMaster" asp-action="Add" class="btn btn-orange">
                 + Add New
             </a>
 
         </div>
 
-        <!-- Success Message -->
         @if (TempData["SuccessMessage"] != null)
         {
             <div class="alert alert-success text-center">

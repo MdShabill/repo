@@ -123,6 +123,12 @@ namespace ConstructEase.WebApp.Controllers
         [HttpPost]
         public IActionResult Add(SiteVm siteVm)
         {
+            if (!ModelState.IsValid)
+            {
+                DropDownSelectList();
+                return View(siteVm);
+            }
+
             ConstructionApplication.Core.DataModels.Site.Site site = _imapper.Map<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
             site.Id = _siteRepository.Create(site);
 

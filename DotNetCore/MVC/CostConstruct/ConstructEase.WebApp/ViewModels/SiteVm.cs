@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace ConstructEase.WebApp.ViewModels
 {
@@ -6,9 +7,15 @@ namespace ConstructEase.WebApp.ViewModels
     {
         public int Id { get; set; }
         public int SiteId { get; set; }
+
+        [Required(ErrorMessage = "Please give site input before submit")]
         public string Name { get; set; }
+
         public DateTime StartedDate { get; set; }
+
+        [Required(ErrorMessage = "Please Select Site Status")]
         public int SiteStatusId { get; set; }
+
         public string Status { get; set; }
         public string Note { get; set; }
 

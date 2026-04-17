@@ -1,238 +1,333 @@
 ﻿@model ConstructEase.WebApp.ViewModels.SiteVm
 
-<h3 class="text-center my-4 fw-bold">Edit Site</h3>
-
 <style>
+    body {
+        background: linear-gradient(135deg, #1E3A5F, #0F172A);
+        min-height: 100vh;
+    }
+
+    .page-container {
+        padding: 30px;
+        margin-top: 40px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .page-title {
+        font-size: 28px;
+        color: #1E293B;
+        letter-spacing: 0.5px;
+    }
+
+    .form-card {
+        max-width: 900px;
+        width: 100%;
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+
+    .card-title {
+        text-align: center;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: #1E293B;
+    }
+
+    .form-label {
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 10px;
+        height: 40px;
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
     .dropdown-toggle {
         width: 100%;
         text-align: left;
+        border-radius: 10px;
+        padding: 8px 12px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .btn-address {
+        background: #1E3A5F;
+        color: white;
+        border-radius: 12px;
+        padding: 10px 22px;
+        border: none;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+
+        .btn-address:hover {
+            background: #0F172A;
+        }
+
+    .btn-update {
+        background-color: #F59E0B;
+        color: white;
+        border-radius: 12px;
+        padding: 8px 22px;
+        border: none;
+        font-weight: 600;
+    }
+
+        .btn-update:hover {
+            background-color: #D97706;
+        }
+
+    .btn-cancel {
+        border-radius: 12px;
+        padding: 8px 20px;
+        border: 1px solid #CBD5E1;
+        color: #64748B;
+        font-weight: 600;
+    }
+
+        .btn-cancel:hover {
+            background-color: #F8FAFC;
+        }
+
+    .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
     }
 </style>
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form asp-action="Update" method="post" class="border p-4 rounded shadow bg-light">
+<div class="container page-container">
+  <div class="form-card">
 
-            <input type="hidden" id="Id" name="Id" value="@Model.Id">
+    <h2 class="text-center my-4 fw-bold page-title">Edit Site</h2>
 
-            <div class="form-group mb-3">
-                <label asp-for="StartedDate" class="form-label fw-bold">Created Date</label>
-                <input asp-for="StartedDate" class="form-control" type="date" value="@Model.StartedDate.ToString("yyyy-MM-dd")" />
-                <span asp-validation-for="StartedDate" class="text-danger"></span>
+    <form asp-action="Update" method="post">
+
+        <input type="hidden" id="Id" name="Id" value="@Model.Id">
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <label asp-for="StartedDate" class="form-label">Created Date</label>
+                <input asp-for="StartedDate" class="form-control" type="date"
+                       value="@Model.StartedDate.ToString("yyyy-MM-dd")" />
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Name" class="form-label fw-bold">Site Name</label>
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label">Site Name</label>
                 <input asp-for="Name" class="form-control" value="@Model.Name" />
-                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="SiteStatusId" class="control-label"><b>Site Status</b></label>
-                @Html.DropDownListFor(model => model.SiteStatusId, (SelectList)ViewBag.SiteStatus, "-- SELECT STATUS --", new { @class = "form-control" })
+            <div class="col-md-6">
+                <label asp-for="SiteStatusId" class="form-label">Site Status</label>
+                @Html.DropDownListFor(model => model.SiteStatusId,
+                (SelectList)ViewBag.SiteStatus,
+                                "-- SELECT STATUS --",
+                                new { @class = "form-select" })
             </div>
-            <br />
 
-            <div class="row">
-                <!-- Master Masons -->
-                <div class="col-md-6">
-                    <div class="dropdown mb-3">
-                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
-                            <b>Masons</b>
-                        </button>
-                        <ul class="dropdown-menu p-3" style="max-height: 300px; overflow-y: auto;">
-                            @foreach (var item in (MultiSelectList)ViewBag.Name)
-                            {
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox"
-                                               name="SelectedMasterMasonIds"
-                                               value="@item.Value"
-                                               @(Model.SelectedMasterMasonIds != null && Model.SelectedMasterMasonIds.Contains(int.Parse(item.Value)) ? "checked" : "") />
-                                        <label class="form-check-label">@item.Text</label>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
+        </div>
 
-                <!-- Labours -->
-                <div class="col-md-6">
-                    <div class="dropdown mb-3">
-                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
-                            <b>Labours</b>
-                        </button>
-                        <ul class="dropdown-menu p-3" style="max-height: 300px; overflow-y: auto;">
-                            @foreach (var item in (MultiSelectList)ViewBag.Labours)
-                            {
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox"
-                                               name="SelectedLabourIds"
-                                               value="@item.Value"
-                                               @(Model.SelectedLabourIds != null && Model.SelectedLabourIds.Contains(int.Parse(item.Value)) ? "checked" : "") />
-                                        <label class="form-check-label">@item.Text</label>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
+        </br>
 
-                <!-- Electricians -->
-                <div class="col-md-6">
-                    <div class="dropdown mb-3">
-                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
-                            <b>Electricians</b>
-                        </button>
-                        <ul class="dropdown-menu p-3" style="max-height: 300px; overflow-y: auto;">
-                            @foreach (var item in (MultiSelectList)ViewBag.Electricians)
-                            {
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox"
-                                               name="SelectedElectricianIds"
-                                               value="@item.Value"
-                                               @(Model.SelectedElectricianIds != null && Model.SelectedElectricianIds.Contains(int.Parse(item.Value)) ? "checked" : "") />
-                                        <label class="form-check-label">@item.Text</label>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
+        <!-- DROPDOWNS GRID -->
+        <div class="row g-3">
 
-                <!-- Plumbers -->
-                <div class="col-md-6">
-                    <div class="dropdown mb-3">
-                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
-                            <b>Plumbers</b>
-                        </button>
-                        <ul class="dropdown-menu p-3" style="max-height: 300px; overflow-y: auto;">
-                            @foreach (var item in (MultiSelectList)ViewBag.Plumbers)
-                            {
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox"
-                                               name="SelectedPlumberIds"
-                                               value="@item.Value"
-                                               @(Model.SelectedPlumberIds != null && Model.SelectedPlumberIds.Contains(int.Parse(item.Value)) ? "checked" : "") />
-                                        <label class="form-check-label">@item.Text</label>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Painters -->
-                <div class="col-md-6">
-                    <div class="dropdown mb-3">
-                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
-                            <b>Painters</b>
-                        </button>
-                        <ul class="dropdown-menu p-3" style="max-height: 300px; overflow-y: auto;">
-                            @foreach (var item in (MultiSelectList)ViewBag.Painters)
-                            {
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox"
-                                               name="SelectedPainterIds"
-                                               value="@item.Value"
-                                               @(Model.SelectedPainterIds != null && Model.SelectedPainterIds.Contains(int.Parse(item.Value)) ? "checked" : "") />
-                                        <label class="form-check-label">@item.Text</label>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Carpenters -->
-                <div class="col-md-6">
-                    <div class="dropdown mb-3">
-                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
-                            <b>Carpenters</b>
-                        </button>
-                        <ul class="dropdown-menu p-3" style="max-height: 300px; overflow-y: auto;">
-                            @foreach (var item in (MultiSelectList)ViewBag.Carpenters)
-                            {
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox"
-                                               name="SelectedCarpenterIds"
-                                               value="@item.Value"
-                                               @(Model.SelectedCarpenterIds != null && Model.SelectedCarpenterIds.Contains(int.Parse(item.Value)) ? "checked" : "") />
-                                        <label class="form-check-label">@item.Text</label>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Tilers -->
-                <div class="col-md-6">
-                    <div class="dropdown mb-3">
-                        <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
-                            <b>Tilers</b>
-                        </button>
-                        <ul class="dropdown-menu p-3" style="max-height: 300px; overflow-y: auto;">
-                            @foreach (var item in (MultiSelectList)ViewBag.Tilers)
-                            {
-                                <li>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox"
-                                               name="SelectedTilerIds"
-                                               value="@item.Value"
-                                               @(Model.SelectedTilerIds != null && Model.SelectedTilerIds.Contains(int.Parse(item.Value)) ? "checked" : "") />
-                                        <label class="form-check-label">@item.Text</label>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </div>
-                
-            <br />
-            <button type="button" id="btnToggleAddressButton" class="btn btn-secondary mb-3" onclick="toggleAddressFields()">Tap for Address</button>
-
-            <!-- Hidden Address Fields -->
-            <div id="dvAddressFields" style="display: none;">
-                <div class="form-group mb-3">
-                    <label asp-for="AddressTypeId" class="control-label"><b>Address Type</b></label>
-                    @Html.DropDownListFor(model => model.AddressTypeId, ViewBag.AddressTypes as SelectList, "-- Select --", new { @class = "form-control" })
-                    <span asp-validation-for="AddressTypeId" class="text-danger"></span>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label asp-for="CountryId" class="control-label"><b>Country Name</b></label>
-                    @Html.DropDownListFor(model => model.CountryId, ViewBag.Countries as SelectList, "-- Select --", new { @class = "form-control" })
-                    <span asp-validation-for="CountryId" class="text-danger"></span>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="AddressLine1" class="control-label"><b>Address</b></label>
-                    <textarea id="AddressLine1" name="AddressLine1" class="form-control">@Model.AddressLine1</textarea>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label for="PinCode" class="control-label"><b>Pin Code</b></label>
-                    <input type="text" id="PinCode" name="PinCode" value="@Model.PinCode" class="form-control" />
-                    <span asp-validation-for="PinCode" class="text-danger"></span>
+            <!-- Masons -->
+            <div class="col-md-6">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Masons</button>
+                    <ul class="dropdown-menu p-3" style="max-height:250px; overflow:auto;">
+                        @foreach (var item in (MultiSelectList)ViewBag.Name)
+                        {
+                            <li>
+                                <input type="checkbox"
+                                       name="SelectedMasterMasonIds"
+                                       value="@item.Value"
+                                       @(Model.SelectedMasterMasonIds?.Contains(int.Parse(item.Value)) == true ? "checked" : "") />
+                                @item.Text
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
 
-            <div class="form-group">
-                <input type="submit" value="Update" class="btn btn-primary" />
-                &nbsp;&nbsp;&nbsp;
-                <input type="submit" value="Cancel" class="btn btn-primary" />
+            <!-- Labours -->
+            <div class="col-md-6">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Labours</button>
+                    <ul class="dropdown-menu p-3" style="max-height:250px; overflow:auto;">
+                        @foreach (var item in (MultiSelectList)ViewBag.Labours)
+                        {
+                            <li>
+                                <input type="checkbox"
+                                       name="SelectedLabourIds"
+                                       value="@item.Value"
+                                       @(Model.SelectedLabourIds?.Contains(int.Parse(item.Value)) == true ? "checked" : "") />
+                                @item.Text
+                            </li>
+                        }
+                    </ul>
+                </div>
             </div>
-        </form>
-    </div>
+
+            <!-- Electricians -->
+            <div class="col-md-6">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Electricians</button>
+                    <ul class="dropdown-menu p-3" style="max-height:250px; overflow:auto;">
+                        @foreach (var item in (MultiSelectList)ViewBag.Electricians)
+                        {
+                            <li>
+                                <input type="checkbox"
+                                       name="SelectedElectricianIds"
+                                       value="@item.Value"
+                                       @(Model.SelectedElectricianIds?.Contains(int.Parse(item.Value)) == true ? "checked" : "") />
+                                @item.Text
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Plumbers -->
+            <div class="col-md-6">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Plumbers</button>
+                    <ul class="dropdown-menu p-3" style="max-height:250px; overflow:auto;">
+                        @foreach (var item in (MultiSelectList)ViewBag.Plumbers)
+                        {
+                            <li>
+                                <input type="checkbox"
+                                       name="SelectedPlumberIds"
+                                       value="@item.Value"
+                                       @(Model.SelectedPlumberIds?.Contains(int.Parse(item.Value)) == true ? "checked" : "") />
+                                @item.Text
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Painters -->
+            <div class="col-md-6">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Painters</button>
+                    <ul class="dropdown-menu p-3" style="max-height:250px; overflow:auto;">
+                        @foreach (var item in (MultiSelectList)ViewBag.Painters)
+                        {
+                            <li>
+                                <input type="checkbox"
+                                       name="SelectedPainterIds"
+                                       value="@item.Value"
+                                       @(Model.SelectedPainterIds?.Contains(int.Parse(item.Value)) == true ? "checked" : "") />
+                                @item.Text
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Carpenters -->
+            <div class="col-md-6">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Carpenters</button>
+                    <ul class="dropdown-menu p-3" style="max-height:250px; overflow:auto;">
+                        @foreach (var item in (MultiSelectList)ViewBag.Carpenters)
+                        {
+                            <li>
+                                <input type="checkbox"
+                                       name="SelectedCarpenterIds"
+                                       value="@item.Value"
+                                       @(Model.SelectedCarpenterIds?.Contains(int.Parse(item.Value)) == true ? "checked" : "") />
+                                @item.Text
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tilers -->
+            <div class="col-md-6">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Tilers</button>
+                    <ul class="dropdown-menu p-3" style="max-height:250px; overflow:auto;">
+                        @foreach (var item in (MultiSelectList)ViewBag.Tilers)
+                        {
+                            <li>
+                                <input type="checkbox"
+                                       name="SelectedTilerIds"
+                                       value="@item.Value"
+                                       @(Model.SelectedTilerIds?.Contains(int.Parse(item.Value)) == true ? "checked" : "") />
+                                @item.Text
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ADDRESS -->
+        <div class="text-center my-3">
+            <button type="button" id="btnToggleAddressButton"
+                    class="btn-address"
+                    onclick="toggleAddressFields()">
+                Tap for Address
+            </button>
+        </div>
+
+        <div id="dvAddressFields" style="display:none;">
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label>Address Type</label>
+                    @Html.DropDownListFor(model => model.AddressTypeId,
+                    ViewBag.AddressTypes as SelectList,
+                                        "-- Select --",
+                                        new { @class = "form-select" })
+                </div>
+
+                <div class="col-md-6">
+                    <label>Country</label>
+                    @Html.DropDownListFor(model => model.CountryId,
+                                        ViewBag.Countries as SelectList,
+                                        "-- Select --",
+                                        new { @class = "form-select" })
+                </div>
+
+                <div class="col-md-12">
+                    <label>Address</label>
+                    <textarea name="AddressLine1" class="form-control">@Model.AddressLine1</textarea>
+                </div>
+
+                <div class="col-md-6">
+                    <label>Pin Code</label>
+                    <input type="text" name="PinCode" value="@Model.PinCode" class="form-control" />
+                </div>
+
+            </div>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="action-buttons">
+            <a asp-action="Index" asp-controller="Site" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn btn-update">Update</button>
+        </div>
+
+    </form>
+  </div>
 </div>
+
 
 <script>
     function toggleAddressFields() {
