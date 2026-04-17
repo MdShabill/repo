@@ -1,6 +1,204 @@
-﻿
-<div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-    <div class="text-center p-5 rounded shadow" style="background-color: #007bff; max-width: 600px;">
-        <p class="fw-bold text-white fs-6 mb-3">⚠️ No site selected.<br />Please choose a site first to continue.</p>
+﻿<style>
+    .no-site-wrapper {
+        min-height: calc(100vh - 60px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #1E3A5F, #0F172A);
+    }
+
+    .no-site-card {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 40px 36px;
+        max-width: 480px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .no-site-icon {
+        width: 72px;
+        height: 72px;
+        background: #FEF3C7;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+
+    .no-site-card h2 {
+        font-size: 22px;
+        font-weight: 600;
+        color: #1E293B;
+        margin: 0 0 10px;
+    }
+
+    .no-site-card p.subtitle {
+        font-size: 15px;
+        color: #64748B;
+        margin: 0 0 28px;
+        line-height: 1.6;
+    }
+
+    .no-site-steps {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 16px 20px;
+        text-align: left;
+    }
+
+        .no-site-steps .steps-label {
+            font-size: 12px;
+            color: #94A3B8;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0 0 12px;
+        }
+
+    .step-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+        .step-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .step-number {
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
+        background: #1E3A5F;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1px;
+    }
+
+        .step-number span {
+            font-size: 11px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+    .step-text {
+        font-size: 14px;
+        color: #475569;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+        .step-text strong {
+            color: #1E293B;
+        }
+
+        .step-text .go-btn-label {
+            color: #F59E0B;
+            font-weight: 600;
+        }
+
+    /* ── Mobile ── */
+    @@media (max-width: 480px) {
+
+        .no-site-wrapper {
+            padding: 12px;
+            align-items: flex-start;
+            padding-top: 28px;
+        }
+
+        .no-site-card {
+            padding: 22px 16px;
+            border-radius: 14px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .no-site-icon {
+            width: 52px;
+            height: 52px;
+            margin-bottom: 14px;
+        }
+
+            .no-site-icon svg {
+                width: 24px;
+                height: 24px;
+            }
+
+        .no-site-card h2 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .no-site-card p.subtitle {
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .no-site-steps {
+            padding: 12px 14px;
+        }
+
+            .no-site-steps .steps-label {
+                font-size: 11px;
+                margin-bottom: 10px;
+            }
+
+        .step-item {
+            margin-bottom: 8px;
+        }
+
+        .step-number {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+        }
+
+        .step-text {
+            font-size: 13px;
+        }
+    }
+</style>
+
+<div class="no-site-wrapper">
+    <div class="no-site-card">
+
+        <div class="no-site-icon">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                      stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+
+        <h2>No Site Selected</h2>
+        <p class="subtitle">
+            Please select an active site from the top menu before navigating to this section.
+        </p>
+
+        <div class="no-site-steps">
+            <p class="steps-label">How to continue</p>
+
+            <div class="step-item">
+                <div class="step-number"><span>1</span></div>
+                <p class="step-text">Look for the <strong>SITE</strong> dropdown in the top navigation bar</p>
+            </div>
+
+            <div class="step-item">
+                <div class="step-number"><span>2</span></div>
+                <p class="step-text">Select your site from the list</p>
+            </div>
+
+            <div class="step-item">
+                <div class="step-number"><span>3</span></div>
+                <p class="step-text">Click the <span class="go-btn-label">Go</span> button to confirm</p>
+            </div>
+        </div>
+
     </div>
 </div>

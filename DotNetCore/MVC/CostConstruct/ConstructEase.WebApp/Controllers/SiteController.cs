@@ -80,6 +80,7 @@ namespace ConstructEase.WebApp.Controllers
             }
 
             ViewBag.Site = new SelectList(sites, "Id", "Name", selectedSiteId);
+            ViewBag.SiteCount = siteVm?.Count ?? 0;
             return View(siteVm);
         }
 

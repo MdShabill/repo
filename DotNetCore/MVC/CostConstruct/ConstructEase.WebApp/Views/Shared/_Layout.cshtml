@@ -47,26 +47,14 @@
             z-index: 1030;
         }
 
+            /* Desktop: single flex row, space-between */
             .ce-navbar .container-fluid {
-                display: grid;
-                grid-template-columns: auto 1fr auto;
+                display: flex;
                 align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                width: 100%;
             }
-
-        .ce-nav-links {
-            gap: 20px;
-        }
-
-        .ce-nav-links {
-            justify-content: center;
-        }
-
-        .ce-nav-collapse {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            grid-column: 2;
-        }
 
         /* Logo */
         .ce-brand {
@@ -83,22 +71,32 @@
                 object-fit: contain;
             }
 
+        /* Desktop collapsible area — flex row */
+        .ce-nav-collapse {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            gap: 0;
+        }
+
         /* Nav links */
         .ce-nav-links {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 4px;
             list-style: none;
             margin: 0;
             padding: 0;
-            justify-content: center;
-            transform: translateX(40px);
+            flex-shrink: 0;
         }
 
             .ce-nav-links .nav-item .nav-link {
                 color: #000 !important;
                 font-size: 15px;
                 font-weight: 600;
+                padding: 6px 10px;
+                border-radius: 6px;
+                white-space: nowrap;
             }
 
                 .ce-nav-links .nav-item .nav-link:hover,
@@ -107,12 +105,13 @@
                     background: var(--ce-surface);
                 }
 
-        /* Right section */
+        /* Right section — site selector + welcome + logout */
         .ce-nav-right {
             display: flex;
             align-items: center;
             gap: 10px;
             flex-shrink: 0;
+            margin-left: auto;
         }
 
         .ce-site-label {
@@ -192,7 +191,23 @@
                 color: #fff;
             }
 
-        /* Mobile toggler */
+        /* Hide mobile-only elements on desktop */
+        .ce-user-strip,
+        .ce-avatar,
+        .ce-logged-in,
+        .ce-nav-bottom,
+        .ce-site-card {
+            display: none;
+        }
+
+        /* Desktop site form inline */
+        .ce-site-form-desktop {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Mobile toggler — hidden on desktop */
         .ce-toggler {
             display: none;
             background: none;
@@ -233,39 +248,168 @@
                 display: block;
                 margin-left: auto;
             }
-
+            /* Hide desktop-only elements on mobile */
+            .ce-site-form-desktop,
+            .ce-welcome-desktop,
+            .ce-divider {
+                display: none !important;
+            }
+            /* Slide-in drawer */
             .ce-nav-collapse {
                 position: fixed;
                 top: 0;
                 right: -100%;
-                width: 50%;
+                width: 75%;
+                max-width: 300px;
                 height: 100vh;
                 background: #fff;
-                padding: 20px;
+                display: flex;
                 flex-direction: column;
+                align-items: stretch;
                 transition: right 0.3s ease;
                 z-index: 1050;
-                position: fixed;
                 overflow-y: auto;
-                box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+                box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+                padding: 0;
             }
 
                 .ce-nav-collapse.open {
                     right: 0;
                 }
-
-            .ce-nav-links {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-                margin-top: 20px;
+            /* ── Top: navy welcome strip ── */
+            .ce-nav-right {
+                background: #1a2e44;
+                padding: 20px 18px 18px;
+                flex-shrink: 0;
+                margin-left: 0;
             }
 
-            .ce-nav-right {
+            .ce-user-strip {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .ce-avatar {
+                display: flex;
+                width: 42px;
+                height: 42px;
+                min-width: 42px;
+                background: #f0a500;
+                border-radius: 50%;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+                font-weight: 700;
+                color: #fff;
+            }
+
+            .ce-welcome {
+                display: block;
+                font-size: 15px;
+                font-weight: 600;
+                color: #ffffff;
+                white-space: normal;
+            }
+
+            .ce-logged-in {
+                display: block;
+                font-size: 12px;
+                color: #94a3b8;
+                margin-top: 2px;
+            }
+            /* ── Middle: nav links ── */
+            .ce-nav-links {
                 flex-direction: column;
-                align-items: flex-start;
-                margin-top: 20px;
+                align-items: stretch;
+                gap: 0;
+                margin: 0;
+                padding: 8px 0;
+                flex: 1;
+            }
+
+                .ce-nav-links .nav-item {
+                    border-left: 3px solid transparent;
+                    transition: border-color 0.15s, background 0.15s;
+                }
+
+                    .ce-nav-links .nav-item:hover {
+                        background: #f8fafc;
+                        border-left-color: #f0a500;
+                    }
+
+                    .ce-nav-links .nav-item .nav-link {
+                        padding: 13px 18px !important;
+                        font-size: 14px !important;
+                        font-weight: 600 !important;
+                        color: #1a2e44 !important;
+                        display: block;
+                        border-radius: 0;
+                    }
+
+                        .ce-nav-links .nav-item .nav-link:hover {
+                            background: transparent !important;
+                            color: #1a2e44 !important;
+                        }
+            /* ── Bottom: site selector + logout ── */
+            .ce-nav-bottom {
+                display: block;
+                padding: 12px;
+                border-top: 1px solid #f1f5f9;
+                flex-shrink: 0;
+            }
+
+            .ce-site-card {
+                display: block;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 10px;
+                padding: 12px 14px;
+                margin-bottom: 10px;
+            }
+
+            .ce-site-label {
+                display: block;
+                font-size: 11px;
+                font-weight: 700;
+                color: #94a3b8;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                margin-bottom: 10px;
+            }
+
+            .ce-site-form {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .ce-select {
+                flex: 0 0 auto;
+                width: auto;
+                font-size: 14px;
+                padding: 9px 10px;
+            }
+
+            .ce-btn-go {
+                padding: 9px 18px;
+                font-size: 14px;
+                border-radius: 8px;
+                white-space: nowrap;
+            }
+
+            .ce-btn-logout {
+                display: block;
                 width: 100%;
+                text-align: center;
+                padding: 11px;
+                border-radius: 8px;
+                font-size: 14px;
+                box-sizing: border-box;
+            }
+
+            .ce-divider {
+                display: none;
             }
         }
     </style>
@@ -294,8 +438,19 @@
 
                     @if (userId != null)
                     {
-                        <!-- CENTER: Nav links -->
-                        <ul class="ce-nav-links mx-auto">
+                        <!-- TOP (mobile only): navy welcome strip -->
+                        <div class="ce-nav-right">
+                            <div class="ce-user-strip">
+                                <div class="ce-avatar">@(userName?.Substring(0, 1).ToUpper() ?? "U")</div>
+                                <div>
+                                    <span class="ce-welcome">Welcome, @userName</span>
+                                    <span class="ce-logged-in">Logged in</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CENTER: Nav links (desktop: horizontal row | mobile: vertical list) -->
+                        <ul class="ce-nav-links">
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
@@ -316,24 +471,34 @@
                             </li>
                         </ul>
 
-                        <!-- RIGHT -->
-                        <div class="ce-nav-right">
-                            <form asp-controller="Site" asp-action="Index" method="post" style="display:flex; align-items:center; gap:8px;">
-                                <span class="ce-site-label">Site</span>
+                        <!-- RIGHT (desktop only): site selector + welcome + logout -->
+                        <div class="ce-site-form-desktop" style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+                            <span class="ce-site-label" style="display:block;">SITE</span>
+                            <form asp-controller="Site" asp-action="Index" method="post" style="display:flex;align-items:center;gap:6px;">
                                 <select name="Id" class="ce-select" asp-items="ViewBag.Site" required>
                                     <option value="">-- Select Site --</option>
                                 </select>
                                 <button type="submit" class="ce-btn-go">Go</button>
                             </form>
-
                             <div class="ce-divider"></div>
+                            <span class="ce-welcome ce-welcome-desktop">Welcome, @userName</span>
+                            <a class="ce-btn-logout" asp-controller="Account" asp-action="LogOut">Log Out</a>
+                        </div>
 
-                            <span class="ce-welcome">Welcome, @userName</span>
-
+                        <!-- BOTTOM (mobile only): site selector + logout -->
+                        <div class="ce-nav-bottom">
+                            <div class="ce-site-card">
+                                <span class="ce-site-label">Select Site</span>
+                                <form asp-controller="Site" asp-action="Index" method="post" class="ce-site-form">
+                                    <select name="Id" class="ce-select" asp-items="ViewBag.Site" required>
+                                        <option value="">-- Select Site --</option>
+                                    </select>
+                                    <button type="submit" class="ce-btn-go">Go</button>
+                                </form>
+                            </div>
                             <a class="ce-btn-logout" asp-controller="Account" asp-action="LogOut">Log Out</a>
                         </div>
                     }
-
                 </div>
             </div>
         </nav>
@@ -374,7 +539,7 @@
 
     @await RenderSectionAsync("Scripts", required: false)
     @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+        <partial name="_ValidationScriptsPartial" />
+    }
 </body>
 </html>
