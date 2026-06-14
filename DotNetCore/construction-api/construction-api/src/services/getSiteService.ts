@@ -10,23 +10,38 @@ export interface SiteDto {
   pinCode?: number;
 }
 
-const API_BASE = "https://constructionapp1.azurewebsites.net/api/SiteAPI";
+const API_BASE =
+  "https://localhost:7036/api/SiteAPI";
 
-export const getAllSites = async (): Promise<SiteDto[]> => {
-  const response = await fetch(`${API_BASE}/GetAllSites`);
+export const getAllSites =
+async (): Promise<SiteDto[]> => {
+
+  const response =
+    await fetch(
+      `${API_BASE}/GetAllSites`
+    );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch sites");
+    throw new Error(
+      "Failed to fetch sites"
+    );
   }
 
   return await response.json();
 };
 
-export const getSiteById = async (id: number) => {
-  const response = await fetch(`${API_BASE}/select-site?id=${id}`);
+export const getSiteById =
+async (id: number) => {
+
+  const response =
+    await fetch(
+      `${API_BASE}/select-site?id=${id}`
+    );
 
   if (!response.ok) {
-    throw new Error("Site not found");
+    throw new Error(
+      "Site not found"
+    );
   }
 
   return await response.json();

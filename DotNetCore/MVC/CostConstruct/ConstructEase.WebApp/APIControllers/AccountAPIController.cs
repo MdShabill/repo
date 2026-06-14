@@ -26,40 +26,71 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login(string email, string password)
+        public IActionResult Login([FromBody] UserVm userVm)
         {
-            User user = _userRepository.GetUserDetailByEmail(email);
+            User user =
+                _userRepository
+                .GetUserDetailByEmail(
+                    userVm.Email
+                );
 
             if (user == null)
             {
-                return BadRequest(new { message = "Invalid Email Or Password" });
+                return BadRequest(new
+                {
+                    message =
+                    "Invalid Email Or Password"
+                });
             }
-
-            UserVm userVm = _imapper.Map<UserVm>(user);
 
             if (user.IsLocked)
             {
                 return BadRequest(new
                 {
-                    message = "Your Account Has Been Locked Kindly Contact With Administrator"
+                    message =
+                    "Your Account Has Been Locked Kindly Contact With Administrator"
                 });
             }
 
-            if (user.Password != password)
+            if (
+                user.Password
+                !=
+                userVm.Password
+            )
             {
-                _userRepository.UpdateOnLoginFailed(email);
+                _userRepository
+                    .UpdateOnLoginFailed(
+                        userVm.Email
+                    );
 
-                if (user.LoginFailedCount >= 2)
+                if (
+                    user.LoginFailedCount >= 2
+                )
                 {
-                    _userRepository.UpdateIsLocked(email);
+                    _userRepository
+                        .UpdateIsLocked(
+                            userVm.Email
+                        );
                 }
 
-                return BadRequest(new { message = "Invalid Email Or Password" });
+                return BadRequest(new
+                {
+                    message =
+                    "Invalid Email Or Password"
+                });
             }
 
-            _userRepository.UpdateOnLoginSuccessful(email);
+            _userRepository
+                .UpdateOnLoginSuccessful(
+                    userVm.Email
+                );
 
-            return Ok(userVm);
+            var response =
+                _imapper.Map<UserVm>(
+                    user
+                );
+
+            return Ok(response);
         }
     }
 }
