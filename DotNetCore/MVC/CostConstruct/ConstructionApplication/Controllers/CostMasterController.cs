@@ -34,7 +34,7 @@ namespace ConstructionApplication.Controllers
 
         [SessionCheck]
         [HttpGet]
-        public IActionResult Index(int? serviceTypeId)
+        public IActionResult Index(int? serviceTypeId, int siteId)
         {
             List<ServiceType> serviceTypes = _serviceTypeRepository.GetAll();
             ViewBag.ServiceType = new SelectList(serviceTypes, "Id", "Name", serviceTypeId);
@@ -42,11 +42,11 @@ namespace ConstructionApplication.Controllers
             List<CostMaster> costMasters;
             if (serviceTypeId.HasValue && serviceTypeId.Value > 0)
             {
-                costMasters = _costMasterRepository.GetByServiceType(serviceTypeId.Value);
+                costMasters = _costMasterRepository.GetByServiceType(serviceTypeId.Value, siteId);
             }
             else
             {
-                costMasters = _costMasterRepository.GetByServiceType(serviceTypes.First().Id);
+                costMasters = _costMasterRepository.GetByServiceType(serviceTypes.First().Id, siteId);
             }
 
             List<CostMasterVm> costMasterVm = _imapper.Map<List<CostMaster>, List<CostMasterVm>>(costMasters);
@@ -55,9 +55,9 @@ namespace ConstructionApplication.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetActiveCost(int serviceTypeId)
+        public JsonResult GetActiveCost(int serviceTypeId, int sitId)
         {
-            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(serviceTypeId);
+            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(serviceTypeId, sitId);
             CostMasterVm costMasterVm = _imapper.Map<CostMaster, CostMasterVm>(costMaster);
 
             return Json(costMasterVm);

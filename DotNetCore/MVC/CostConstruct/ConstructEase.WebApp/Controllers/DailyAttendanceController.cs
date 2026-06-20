@@ -95,7 +95,7 @@ namespace ConstructEase.WebApp.Controllers
 
             dailyAttendance.SiteId = siteId.Value;
 
-            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.ServiceTypeId);
+            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.ServiceTypeId, dailyAttendance.SiteId);
 
             if (costMaster != null)
             {
@@ -127,10 +127,8 @@ namespace ConstructEase.WebApp.Controllers
         public IActionResult GetCostByServiceType(int ServiceTypeId = 0)
         {
             if (ServiceTypeId > 0)
-
             {
-
-                CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(ServiceTypeId);
+                CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(ServiceTypeId, SiteId);
                 List<ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(ServiceTypeId, null)
                 .Where(c => c.ServiceTypeId == ServiceTypeId)
                 .ToList();
@@ -140,7 +138,6 @@ namespace ConstructEase.WebApp.Controllers
                     cost = costMaster?.Cost ?? 0,
                     serviceProviders = serviceProviders
                 });
-
             }
             return base.Json(new { cost = 0, serviceProviders = new List<ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider>() });
         }
@@ -160,7 +157,7 @@ namespace ConstructEase.WebApp.Controllers
 
             DailyAttendance dailyAttendance = _imapper.Map<DailyAttendanceVm, DailyAttendance>(dailyAttendanceVm);
 
-            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.ServiceTypeId);
+            CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(dailyAttendanceVm.ServiceTypeId, SiteId);
 
             if (costMaster != null)
             {
@@ -215,7 +212,7 @@ namespace ConstructEase.WebApp.Controllers
             {
                 ServiceTypeId = serviceTypes.Id,
                 ServiceTypeName = serviceTypes.Name,
-                Cost = _costMasterRepository.GetActiveCostDetail(serviceTypes.Id)?.Cost ?? 0
+                Cost = _costMasterRepository.GetActiveCostDetail(serviceTypes.Id, SiteId)?.Cost ?? 0
             }).ToList();
 
             ViewBag.ServiceTypeCosts = serviceTypeCosts;

@@ -24,6 +24,6 @@ namespace ConstructEase.WebApp.ViewModels
 
         [Required(ErrorMessage = "Date is invalid")]
         public DateTime? Date { get; set; }
-
+        public int? SiteId { get; set; }
     }
 }

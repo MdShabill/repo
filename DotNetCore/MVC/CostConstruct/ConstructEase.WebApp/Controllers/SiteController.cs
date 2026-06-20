@@ -130,53 +130,54 @@ namespace ConstructEase.WebApp.Controllers
                 return View(siteVm);
             }
 
-            ConstructionApplication.Core.DataModels.Site.Site site = _imapper.Map<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
+            var site = _imapper.Map<SiteVm,ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
+
             site.Id = _siteRepository.Create(site);
 
-            if (site.Id > 0)
+            if (site.Id <= 0)
             {
-                AddAddressIfPresent(site.Id, siteVm);
+                ModelState.AddModelError("", "Unable to create site.");
 
-                if (siteVm.SelectedMasterMasonIds.Count > 0)
-                {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds);
-                }
+                DropDownSelectList();
 
-                if (siteVm.SelectedElectricianIds.Count > 0)
-                {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteVm.SelectedElectricianIds);
-                }
-
-                if (siteVm.SelectedLabourIds.Count > 0)
-                {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteVm.SelectedLabourIds);
-                }
-
-                if (siteVm.SelectedPlumberIds.Count > 0)
-                {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteVm.SelectedPlumberIds);
-                }
-
-                if (siteVm.SelectedPainterIds.Count > 0)
-                {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteVm.SelectedPainterIds);
-                }
-
-                if (siteVm.SelectedCarpenterIds.Count > 0)
-                {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteVm.SelectedCarpenterIds);
-                }
-
-                if (siteVm.SelectedTilerIds.Count > 0)
-                {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteVm.SelectedTilerIds);
-                }
-
-                TempData["AddSuccessMessage"] = "Add New Site Successful";
-                return RedirectToAction("Index");
+                return View(siteVm);
             }
-            DropDownSelectList();
-            return View(siteVm);
+
+            // Optional Address
+            AddAddressIfPresent(site.Id, siteVm);
+
+            // Optional Service Providers
+            AddServiceProviders(site.Id, siteVm);
+
+            TempData["AddSuccessMessage"] = "Add New Site Successful";
+
+            return RedirectToAction("Index");
+        }
+
+        private void AddServiceProviders(int siteId, SiteVm siteVm)
+        {
+            var mappings = new Dictionary<ServiceTypes, List<int>>
+            {
+                { ServiceTypes.MasterMasion, siteVm.SelectedMasterMasonIds },
+                { ServiceTypes.Electrician, siteVm.SelectedElectricianIds },
+                { ServiceTypes.Labour, siteVm.SelectedLabourIds },
+                { ServiceTypes.Plumber, siteVm.SelectedPlumberIds },
+                { ServiceTypes.Painter, siteVm.SelectedPainterIds },
+                { ServiceTypes.Carpenter, siteVm.SelectedCarpenterIds },
+                { ServiceTypes.Tiler, siteVm.SelectedTilerIds }
+            };
+
+            foreach (var item in mappings)
+            {
+                if (item.Value?.Any() == true)
+                {
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                        siteId,
+                        item.Key,
+                        item.Value
+                    );
+                }
+            }
         }
 
         public IActionResult Edit(int id)

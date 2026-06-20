@@ -96,10 +96,10 @@
 
         </br>
 
-        @if (!ViewData.ModelState.IsValid)
+        @if (TempData["AddSuccessMessage"] != null)
         {
-            <div class="text-center text-danger fw-bold mb-3">
-                Please give site input before submit
+            <div class="alert alert-success">
+                @TempData["AddSuccessMessage"]
             </div>
         }
         <form asp-action="Add" method="post">

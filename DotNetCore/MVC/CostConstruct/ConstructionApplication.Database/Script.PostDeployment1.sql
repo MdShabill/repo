@@ -5,4 +5,6 @@
 :r dbo\MasterScripts\ServiceTypes.sql
 :r dbo\MasterScripts\SiteStatus.sql
 :r dbo\MasterScripts\Suppliers.sql
+:r dbo\MasterScripts\Users.sql
+:r dbo\MasterScripts\Materials.sql
 

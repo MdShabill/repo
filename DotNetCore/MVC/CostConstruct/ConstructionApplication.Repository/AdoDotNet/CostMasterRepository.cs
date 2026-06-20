@@ -17,23 +17,34 @@ namespace ConstructionApplication.Repository.AdoDotNet
             _connectionString = connectionString;
         }
 
-        public List<CostMaster> GetByServiceType(int serviceTypeId)
+        public List<CostMaster> GetByServiceType(int serviceTypeId, int siteId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string sqlQuery = @"SELECT CostMaster.Id, CostMaster.ServiceTypeId, 
-                            ServiceTypes.Name, CostMaster.Cost, CostMaster.Date
-                            FROM CostMaster
-                            Join ServiceTypes ON CostMaster.ServiceTypeId = ServiceTypes.Id
-                            WHERE CostMaster.ServiceTypeId = @serviceTypeId
-                            ORDER BY CostMaster.Date DESC";
+                string sqlQuery = @"
+                       SELECT 
+                           CostMaster.Id, CostMaster.ServiceTypeId, 
+                           ServiceTypes.Name, CostMaster.Cost, CostMaster.Date, CostMaster.SiteId
+                       FROM 
+                           CostMaster
+                       JOIN 
+                           ServiceTypes ON CostMaster.ServiceTypeId = ServiceTypes.Id
+                       WHERE 
+                           CostMaster.ServiceTypeId = @serviceTypeId
+                         AND 
+                           CostMaster.SiteId = @siteId
+                       ORDER BY 
+                           CostMaster.Date DESC";
 
                 SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
                 sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@serviceTypeId", serviceTypeId);
+                sqlDataAdapter.SelectCommand.Parameters.AddWithValue("@siteId", siteId);
+
                 DataTable dataTable = new();
                 sqlDataAdapter.Fill(dataTable);
 
                 List<CostMaster> costMasters = new();
+
                 //Approach: 1 = With For Loop
                 //for (int i = 0; i < dataTable.Rows.Count; i++)
                 //{
@@ -51,43 +62,50 @@ namespace ConstructionApplication.Repository.AdoDotNet
                 //Approach: 2 = With For Each Loop
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    CostMaster costMaster = new()
+                    costMasters.Add(new CostMaster
                     {
-                        Id = (int)row["ID"],
+                        Id = (int)row["Id"],
                         ServiceTypeId = (int)row["ServiceTypeId"],
                         Name = (string)row["Name"],
                         Cost = (decimal)row["Cost"],
-                        Date = (DateTime)row["Date"]
-                    };
-                    costMasters.Add(costMaster);
+                        Date = (DateTime)row["Date"],
+                        SiteId = row["SiteId"] != DBNull.Value ? (int?)row["SiteId"] : null
+                    });
                 }
                 return costMasters;
             }
         }
 
-        public CostMaster GetActiveCostDetail(int serviceTypeId)
+        public CostMaster GetActiveCostDetail(int serviceTypeId, int siteId)
         {
             using (SqlConnection sqlConnection = new(_connectionString))
             {
                 string sqlQuery = @"
-                        SELECT TOP 1 
-                            CostMaster.ServiceTypeId, ServiceTypes.Name, 
-                            CostMaster.Cost, CostMaster.Date
-                        FROM CostMaster 
-                        JOIN ServiceTypes ON CostMaster.ServiceTypeId = ServiceTypes.Id 
-                        WHERE CostMaster.ServiceTypeId = @serviceTypeId 
-                          AND CostMaster.Date <= @currentDate 
-                        ORDER BY CostMaster.Date DESC";
+                       SELECT TOP 1 
+                           CostMaster.ServiceTypeId, ServiceTypes.Name, 
+                           CostMaster.Cost, CostMaster.Date, CostMaster.SiteId
+                       FROM 
+                           CostMaster 
+                       JOIN 
+                           ServiceTypes ON CostMaster.ServiceTypeId = ServiceTypes.Id 
+                       WHERE 
+                           CostMaster.ServiceTypeId = @serviceTypeId 
+                         AND 
+                           CostMaster.SiteId = @siteId
+                         AND 
+                           CostMaster.Date <= @currentDate 
+                       ORDER BY 
+                           CostMaster.Date DESC";
 
                 SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
                 sqlCommand.Parameters.AddWithValue("@serviceTypeId", serviceTypeId);
+                sqlCommand.Parameters.AddWithValue("@siteId", siteId);
                 sqlCommand.Parameters.AddWithValue("@currentDate", DateTime.Now);
 
                 sqlConnection.Open();
                 SqlDataReader reader = sqlCommand.ExecuteReader();
 
                 CostMaster costMaster = null;
-
                 if (reader.Read())
                 {
                     costMaster = new CostMaster
@@ -95,6 +113,7 @@ namespace ConstructionApplication.Repository.AdoDotNet
                         ServiceTypeId = (int)reader["ServiceTypeId"],
                         Name = (string)reader["Name"],
                         Cost = (decimal)reader["Cost"],
+                        SiteId = reader["SiteId"] != DBNull.Value ? (int?)reader["SiteId"] : null
                     };
                 }
 
@@ -103,24 +122,111 @@ namespace ConstructionApplication.Repository.AdoDotNet
             }
         }
 
+        public CostMaster GetById(int id, int siteId)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string sqlQuery = @"
+                       SELECT 
+                            CostMaster.Id, CostMaster.ServiceTypeId, 
+                            ServiceTypes.Name, CostMaster.Cost, CostMaster.Date, CostMaster.SiteId
+                       FROM 
+                           CostMaster
+                       JOIN 
+                           ServiceTypes ON CostMaster.ServiceTypeId = ServiceTypes.Id
+                       WHERE 
+                           CostMaster.Id = @id
+                         AND 
+                           CostMaster.SiteId = @siteId";
+
+                SqlCommand sqlCommand = new(sqlQuery, sqlConnection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                sqlCommand.Parameters.AddWithValue("@siteId", siteId);
+
+                sqlConnection.Open();
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+
+                CostMaster costMaster = null;
+                if (reader.Read())
+                {
+                    costMaster = new CostMaster
+                    {
+                        Id = (int)reader["Id"],
+                        ServiceTypeId = (int)reader["ServiceTypeId"],
+                        Name = (string)reader["Name"],
+                        Cost = (decimal)reader["Cost"],
+                        Date = (DateTime)reader["Date"],
+                        SiteId = reader["SiteId"] != DBNull.Value ? (int?)reader["SiteId"] : null
+                    };
+                }
+
+                reader.Close();
+                return costMaster;
+            }
+        }
 
         public int Create(CostMaster costMaster)
         {
-            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            using (SqlConnection sqlConnection = new(_connectionString))
             {
-                string insertQuery = @"INSERT INTO CostMaster
-                                        (ServiceTypeId, Cost, Date)
-                                        VALUES
-                                        (@serviceTypeId, @cost, @date)";
-                SqlCommand insertCommand = new SqlCommand(insertQuery, sqlConnection);
+                string insertQuery = @"
+                       INSERT INTO CostMaster (ServiceTypeId, Cost, Date, SiteId)
+                       VALUES (@serviceTypeId, @cost, @date, @siteId)";
+
+                SqlCommand insertCommand = new(insertQuery, sqlConnection);
                 insertCommand.Parameters.AddWithValue("@serviceTypeId", costMaster.ServiceTypeId);
                 insertCommand.Parameters.AddWithValue("@cost", costMaster.Cost);
                 insertCommand.Parameters.AddWithValue("@date", costMaster.Date);
+                insertCommand.Parameters.AddWithValue("@siteId",
+                    costMaster.SiteId.HasValue ? costMaster.SiteId : DBNull.Value);
+
                 sqlConnection.Open();
                 int affectedRowCount = insertCommand.ExecuteNonQuery();
                 sqlConnection.Close();
-
                 return affectedRowCount;
+            }
+        }
+
+        public int Update(CostMaster costMaster)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string updateQuery = @"
+                       UPDATE CostMaster SET
+                           ServiceTypeId = @serviceTypeId,
+                           Cost = @cost,
+                           Date = @date
+                       WHERE Id = @id
+                         AND SiteId = @siteId";
+
+                SqlCommand updateCommand = new(updateQuery, sqlConnection);
+                updateCommand.Parameters.AddWithValue("@id", costMaster.Id);
+                updateCommand.Parameters.AddWithValue("@serviceTypeId", costMaster.ServiceTypeId);
+                updateCommand.Parameters.AddWithValue("@cost", costMaster.Cost);
+                updateCommand.Parameters.AddWithValue("@date", costMaster.Date);
+                updateCommand.Parameters.AddWithValue("@siteId",
+                    costMaster.SiteId.HasValue ? costMaster.SiteId : DBNull.Value);
+
+                sqlConnection.Open();
+                int affectedRowCount = updateCommand.ExecuteNonQuery();
+                sqlConnection.Close();
+                return affectedRowCount;
+            }
+        }
+
+        public void Delete(int id, int siteId)
+        {
+            using (SqlConnection sqlConnection = new(_connectionString))
+            {
+                string deleteQuery = @"DELETE FROM CostMaster WHERE Id = @id AND SiteId = @siteId";
+
+                SqlCommand deleteCommand = new(deleteQuery, sqlConnection);
+                deleteCommand.Parameters.AddWithValue("@id", id);
+                deleteCommand.Parameters.AddWithValue("@siteId", siteId);
+
+                sqlConnection.Open();
+                deleteCommand.ExecuteNonQuery();
+                sqlConnection.Close();
             }
         }
     }

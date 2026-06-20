@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public int ServiceTypeId { get; set; }
+        public int? SiteId { get; set; }
         public string Name { get; set; }
         public decimal Cost { get; set; }
         public DateTime Date { get; set; }
