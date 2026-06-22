@@ -28,18 +28,13 @@ namespace ConstructEase.WebApp.APIControllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] UserVm userVm)
         {
-            User user =
-                _userRepository
-                .GetUserDetailByEmail(
-                    userVm.Email
-                );
+            User user = _userRepository.GetUserDetailByEmail( userVm.Email);
 
             if (user == null)
             {
                 return BadRequest(new
                 {
-                    message =
-                    "Invalid Email Or Password"
+                    message = "Invalid Email Or Password"
                 });
             }
 
@@ -47,30 +42,17 @@ namespace ConstructEase.WebApp.APIControllers
             {
                 return BadRequest(new
                 {
-                    message =
-                    "Your Account Has Been Locked Kindly Contact With Administrator"
+                    message = "Your Account Has Been Locked Kindly Contact With Administrator"
                 });
             }
 
-            if (
-                user.Password
-                !=
-                userVm.Password
-            )
+            if (user.Password != userVm.Password)
             {
-                _userRepository
-                    .UpdateOnLoginFailed(
-                        userVm.Email
-                    );
+                _userRepository.UpdateOnLoginFailed(userVm.Email);
 
-                if (
-                    user.LoginFailedCount >= 2
-                )
+                if (user.LoginFailedCount >= 2)
                 {
-                    _userRepository
-                        .UpdateIsLocked(
-                            userVm.Email
-                        );
+                    _userRepository.UpdateIsLocked(userVm.Email);
                 }
 
                 return BadRequest(new
@@ -80,15 +62,9 @@ namespace ConstructEase.WebApp.APIControllers
                 });
             }
 
-            _userRepository
-                .UpdateOnLoginSuccessful(
-                    userVm.Email
-                );
+            _userRepository.UpdateOnLoginSuccessful(userVm.Email);
 
-            var response =
-                _imapper.Map<UserVm>(
-                    user
-                );
+            var response = _imapper.Map<UserVm>(user);
 
             return Ok(response);
         }

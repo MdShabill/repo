@@ -1,8 +1,8 @@
 ﻿//using AutoMapper;
 //using ConstructEase.WebApp.ViewModels;
 //using ConstructionApplication.Core.DataModels.CostMaster;
-//using ConstructionApplication.Repository.AdoDotNet;
 //using ConstructionApplication.Repository.Interfaces;
+//using Microsoft.AspNetCore.Authorization;
 //using Microsoft.AspNetCore.Mvc;
 //using System.Text.RegularExpressions;
 
@@ -10,17 +10,18 @@
 //{
 //    [Route("api/[controller]")]
 //    [ApiController]
+//    [Authorize]
 //    public class CostMasterAPIController : ControllerBase
 //    {
-//        ICostMasterRepository _costMasterRepository;
-//        IServiceTypeRepository _serviceTypeRepository;
+//        private readonly ICostMasterRepository _costMasterRepository;
+//        private readonly IServiceTypeRepository _serviceTypeRepository;
 //        private readonly ISiteRepository _siteRepository;
+//        private readonly IMapper _imapper;
 
-//        IMapper _imapper;
-
-//        public CostMasterAPIController(ICostMasterRepository costMasterRepository,
-//                                    IServiceTypeRepository serviceTypeRepository,
-//                                    ISiteRepository siteRepository)
+//        public CostMasterAPIController(
+//            ICostMasterRepository costMasterRepository,
+//            IServiceTypeRepository serviceTypeRepository,
+//            ISiteRepository siteRepository)
 //        {
 //            _costMasterRepository = costMasterRepository;
 //            _serviceTypeRepository = serviceTypeRepository;
@@ -30,102 +31,153 @@
 //            {
 //                cfg.CreateMap<AddNewCostMasterVm, CostMaster>();
 //                cfg.CreateMap<CostMaster, CostMasterVm>();
+//                cfg.CreateMap<CostMaster, AddNewCostMasterVm>();
 //            });
 
 //            _imapper = configuration.CreateMapper();
 //        }
 
-//        [HttpGet]
-//        public IActionResult Index(int? serviceTypeId)
+//        // Site ID is sent from React as a header or query param since there's
+//        // no server-side session in a stateless API. We read it from the
+//        // "X-Site-Id" header set by the React axios interceptor.
+//        private int GetSiteId()
 //        {
-//            var serviceTypes = _serviceTypeRepository.GetAll();
+//            if (Request.Headers.TryGetValue("X-Site-Id", out var siteIdHeader)
+//                && int.TryParse(siteIdHeader, out var siteId))
+//            {
+//                return siteId;
+//            }
+//            return 0;
+//        }
 
+//        // GET /api/CostMasterAPI?serviceTypeId=3
+//        [HttpGet]
+//        public IActionResult Index([FromQuery] int? serviceTypeId)
+//        {
+//            int siteId = GetSiteId();
+//            if (siteId <= 0)
+//                return BadRequest(new { message = "No site selected. Please select a site first." });
+
+//            var serviceTypes = _serviceTypeRepository.GetAll();
 //            if (serviceTypes == null || !serviceTypes.Any())
-//                return NotFound("No Service Types Found");
+//                return NotFound(new { message = "No Service Types Found" });
 
 //            List<CostMaster> costMasters;
+//            int activeServiceTypeId = serviceTypeId.HasValue && serviceTypeId.Value > 0
+//                ? serviceTypeId.Value
+//                : serviceTypes.First().Id;
 
-//            if (serviceTypeId.HasValue && serviceTypeId.Value > 0)
-//            {
-//                costMasters = _costMasterRepository.GetByServiceType(serviceTypeId.Value);
-//            }
-//            else
-//            {
-//                costMasters = _costMasterRepository.GetByServiceType(serviceTypes.First().Id);
-//            }
+//            costMasters = _costMasterRepository.GetByServiceType(activeServiceTypeId, siteId);
 
 //            var result = _imapper.Map<List<CostMasterVm>>(costMasters);
 
-//            return Ok(result);
-//        }
-
-//        [HttpGet("GetStaticCost")]
-//        public IActionResult GetStaticCost()
-//        {
-//            var data = new[]
+//            return Ok(new
 //            {
-//                new
-//                {
-//                    Id = 1,
-//                    Name = "Master Mason",
-//                    Cost = 1200,
-//                    Date = DateTime.Now
-//                },
-//                new
-//                {
-//                    Id = 2,
-//                    Name = "Labour",
-//                    Cost = 800,
-//                    Date = DateTime.Now
-//                },
-//                new
-//                {
-//                    Id = 3,
-//                    Name = "Plumber",
-//                    Cost = 1500,
-//                    Date = DateTime.Now
-//                }
-//            };
-
-//            return Ok(data);
+//                items = result,
+//                serviceTypes = serviceTypes.Select(s => new { s.Id, s.Name }),
+//                selectedServiceTypeId = activeServiceTypeId
+//            });
 //        }
 
+//        // GET /api/CostMasterAPI/GetActiveCost?serviceTypeId=3
 //        [HttpGet("GetActiveCost")]
 //        public IActionResult GetActiveCost(int serviceTypeId)
 //        {
-//            if (serviceTypeId <= 0)
-//                return BadRequest("Invalid Service Type Id");
+//            int siteId = GetSiteId();
+//            if (siteId <= 0)
+//                return BadRequest(new { message = "No site selected." });
 
-//            var costMaster = _costMasterRepository.GetActiveCostDetail(serviceTypeId);
+//            if (serviceTypeId <= 0)
+//                return BadRequest(new { message = "Invalid Service Type Id" });
+
+//            var costMaster = _costMasterRepository.GetActiveCostDetail(serviceTypeId, siteId);
 
 //            if (costMaster == null)
-//                return NotFound("No Active Cost Found");
+//                return NotFound(new { message = "No Active Cost Found" });
 
 //            var result = _imapper.Map<CostMasterVm>(costMaster);
-
 //            return Ok(result);
 //        }
 
+//        // GET /api/CostMasterAPI/5
+//        [HttpGet("{id}")]
+//        public IActionResult GetById(int id)
+//        {
+//            int siteId = GetSiteId();
+//            if (siteId <= 0)
+//                return BadRequest(new { message = "No site selected." });
 
-//        [HttpPost("Add")]
+//            var costMaster = _costMasterRepository.GetById(id, siteId);
+//            if (costMaster == null)
+//                return NotFound(new { message = "Cost Master record not found for the current site." });
+
+//            var result = _imapper.Map<AddNewCostMasterVm>(costMaster);
+//            return Ok(result);
+//        }
+
+//        // POST /api/CostMasterAPI
+//        [HttpPost]
 //        public IActionResult Add([FromBody] AddNewCostMasterVm costMasterVm)
 //        {
+//            int siteId = GetSiteId();
+//            if (siteId <= 0)
+//                return BadRequest(new { message = "No site selected." });
+
 //            if (costMasterVm == null)
-//                return BadRequest("Invalid Data");
+//                return BadRequest(new { message = "Invalid Data" });
 
 //            string validationMessage = ValidationDetail(costMasterVm);
-
 //            if (!string.IsNullOrEmpty(validationMessage))
-//                return BadRequest(validationMessage);
+//                return BadRequest(new { message = validationMessage });
+
+//            costMasterVm.SiteId = siteId;
 
 //            CostMaster costMaster = _imapper.Map<AddNewCostMasterVm, CostMaster>(costMasterVm);
-
 //            int affectedRowCount = _costMasterRepository.Create(costMaster);
 
 //            if (affectedRowCount > 0)
-//                return Ok("Add New Cost Master Successful");
+//                return Ok(new { message = "Add New Cost Master Successful" });
 
-//            return StatusCode(500, "Failed to insert record");
+//            return StatusCode(500, new { message = "Failed to insert record" });
+//        }
+
+//        // PUT /api/CostMasterAPI/5
+//        [HttpPut("{id}")]
+//        public IActionResult Update(int id, [FromBody] AddNewCostMasterVm costMasterVm)
+//        {
+//            int siteId = GetSiteId();
+//            if (siteId <= 0)
+//                return BadRequest(new { message = "No site selected." });
+
+//            if (costMasterVm == null)
+//                return BadRequest(new { message = "Invalid Data" });
+
+//            string validationMessage = ValidationDetail(costMasterVm);
+//            if (!string.IsNullOrEmpty(validationMessage))
+//                return BadRequest(new { message = validationMessage });
+
+//            costMasterVm.Id = id;
+//            costMasterVm.SiteId = siteId;
+
+//            CostMaster costMaster = _imapper.Map<AddNewCostMasterVm, CostMaster>(costMasterVm);
+//            int affectedRowCount = _costMasterRepository.Update(costMaster);
+
+//            if (affectedRowCount > 0)
+//                return Ok(new { message = "Cost Master updated successfully." });
+
+//            return BadRequest(new { message = "Update failed. Record may not belong to the current site." });
+//        }
+
+//        // DELETE /api/CostMasterAPI/5
+//        [HttpDelete("{id}")]
+//        public IActionResult Delete(int id)
+//        {
+//            int siteId = GetSiteId();
+//            if (siteId <= 0)
+//                return BadRequest(new { message = "No site selected." });
+
+//            _costMasterRepository.Delete(id, siteId);
+//            return Ok(new { message = "Your Data Has Been Deleted successfully." });
 //        }
 
 //        private string ValidationDetail(AddNewCostMasterVm costMasterVm)
@@ -139,9 +191,9 @@
 
 //            if (costMasterVm.Cost == null ||
 //                costMasterVm.Cost <= 0 ||
-//                !Regex.IsMatch(costMasterVm.Cost.ToString(), @"^\d+$"))
+//                !Regex.IsMatch(costMasterVm.Cost.Value.ToString("0.##"), @"^\d+(\.\d{1,2})?$"))
 //            {
-//                return "Cost must be a positive integer and cannot contain alphabets, decimals, or special characters.";
+//                return "Cost must be a positive number with up to 2 decimal places and cannot contain alphabets or special characters.";
 //            }
 
 //            return string.Empty;
