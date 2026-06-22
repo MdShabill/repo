@@ -1,189 +1,110 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import "./Navbar.css";
+
+import { getNavbarSites } from "../services/siteService";
+import type { SiteDropdownDto } from "../services/siteService";
+
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/Authcontext";
+import { useSite } from "../context/Sitecontext";
 
 function Navbar() {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const { user, logout } = useAuth();
+  const { selectedSite, setSelectedSite } = useSite();
+  const navigate = useNavigate();
+
+  const [sites, setSites] = useState<SiteDropdownDto[]>([]);
+
+  const [pendingSiteId, setPendingSiteId] = useState<string>(
+    selectedSite ? String(selectedSite.id) : ""
+  );
+
+  useEffect(() => {
+    loadSites();
+  }, []);
+
+  // Keep dropdown in sync if selectedSite changes elsewhere (e.g. on mount from localStorage)
+  useEffect(() => {
+    setPendingSiteId(selectedSite ? String(selectedSite.id) : "");
+  }, [selectedSite]);
+
+  const loadSites = async () => {
+    try {
+      const data = await getNavbarSites();
+      setSites(data);
+    } catch (error) {
+      console.error("Error fetching sites:", error);
+    }
+  };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    logout();
+    navigate("/login");
+  };
 
-    window.location.href = "/login";
+  const handleGo = () => {
+    if (!pendingSiteId) {
+      alert("Please select site");
+      return;
+    }
+
+    const site = sites.find((s) => String(s.id) === pendingSiteId);
+    if (!site) {
+      alert("Selected site not found");
+      return;
+    }
+
+    setSelectedSite(site);
+    navigate("/home");
   };
 
   return (
-    <nav
-      className="
-navbar
-navbar-expand-lg
-navbar-light
-bg-light
-shadow-sm
-"
-    >
-      <div
-        className="
-container-fluid
-px-4
-"
-      >
+    <nav className="ce-navbar">
+      <div className="ce-container">
         {/* Logo */}
-
-        <Link className="navbar-brand" to="/home">
-          <img
-            src="/UploadedImage/WebSiteLogo.jpg"
-            alt="Builder Ledger"
-            style={{ height: "50px" }}
-          />
+        <Link to="/home" className="ce-brand">
+          <img src="/UploadedImage/WebSiteLogo.jpg" alt="Builder Ledger" />
         </Link>
 
-        {/* Mobile */}
-
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
-        >
-          <span className="navbar-toggler-icon" />
-        </button>
-
         {/* Menu */}
+        <ul className="ce-nav-links">
+          <li><Link to="/home">Home</Link></li>
+          <li><Link to="/cost-master">Cost Master</Link></li>
+          <li><Link to="/attendance">Attendance</Link></li>
+          <li><Link to="/material-report">Material</Link></li>
+          <li><Link to="/service-provider">Service Provider</Link></li>
+          <li><Link to="/sites">Site</Link></li>
+        </ul>
 
-        <div
-          className="
-collapse
-navbar-collapse
-"
-          id="navbarContent"
-        >
-          <ul
-            className="
-navbar-nav
-me-auto
-"
+        {/* Right */}
+        <div className="ce-right">
+          <span className="ce-site-label">SITE</span>
+
+          <select
+            className="ce-select"
+            value={pendingSiteId}
+            onChange={(e) => setPendingSiteId(e.target.value)}
           >
-            <li className="nav-item">
-              <Link
-                className="
-nav-link
-fw-bold
-"
-                to="/home"
-              >
-                Home
-              </Link>
-            </li>
+            <option value="">-- Select Site --</option>
+            {sites.map((site) => (
+              <option key={site.id} value={site.id}>
+                {site.name}
+              </option>
+            ))}
+          </select>
 
-            <li className="nav-item">
-              <Link
-                className="
-nav-link
-fw-bold
-"
-                to="/cost-master"
-              >
-                Cost Master
-              </Link>
-            </li>
+          <button className="ce-go" onClick={handleGo}>
+            Go
+          </button>
 
-            <li className="nav-item">
-              <Link
-                className="
-nav-link
-fw-bold
-"
-                to="/attendance"
-              >
-                Attendance
-              </Link>
-            </li>
+          <div className="ce-divider"></div>
 
-            <li className="nav-item">
-              <Link
-                className="
-nav-link
-fw-bold
-"
-                to="/material-report"
-              >
-                Material Report
-              </Link>
-            </li>
+          {/* Mirrors @Context.Session.GetString("UserName") in _Layout.cshtml */}
+          <span className="ce-user">Welcome, {user?.name || "User"}</span>
 
-            <li className="nav-item">
-              <Link
-                className="
-nav-link
-fw-bold
-"
-                to="/service-provider"
-              >
-                Service Provider
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link
-                className="
-nav-link
-fw-bold
-"
-                to="/sitelist"
-              >
-                Site
-              </Link>
-            </li>
-          </ul>
-
-          {/* Right */}
-
-          <div
-            className="
-d-flex
-flex-column
-flex-lg-row
-align-items-lg-center
-gap-2
-"
-          >
-            <select
-              className="form-select"
-              style={{
-                minWidth: "220px",
-              }}
-            >
-              <option>-- Select Site --</option>
-
-              <option>Dr Shabbir Sb - Suja</option>
-            </select>
-
-            <button
-              className="
-btn
-btn-success
-"
-            >
-              Go
-            </button>
-
-            <span
-              className="
-fw-semibold
-text-nowrap
-"
-            >
-              Welcome, {user?.name || user?.email || "User"}
-            </span>
-
-            <button
-              className="
-btn
-btn-outline-danger
-"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-          </div>
+          <button className="ce-logout" onClick={handleLogout}>
+            Log Out
+          </button>
         </div>
       </div>
     </nav>

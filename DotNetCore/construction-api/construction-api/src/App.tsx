@@ -1,136 +1,62 @@
-// import CostList from "./components/CostList.tsx";
-
-// function App() {
-//   return <CostList />;
-// }
-
-// export default App;
-
-////-----------Site Get All Data And Get Site By Id And Site Add And Site Edit-------------------
-
-// import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import Navbar from "./components/Navbar";
-// import Home from "./pages/Home";
-// import SiteList from "./components/SiteList";
-// import SiteDetail from "./components/SiteDetail";
-// import SiteAdd from "./components/SiteAdd";
-// import SiteEdit from "./components/SiteEdit";
-
-// function App() {
-//   return (
-//     <BrowserRouter>
-//       <Navbar />
-
-//       <Routes>
-//         <Route path="/" element={<Home />} />
-//         <Route path="/sitelist" element={<SiteList />} />
-//         <Route path="/site/:id" element={<SiteDetail />} />
-//         <Route path="/site-add" element={<SiteAdd />} />
-//         <Route path="/site-edit/:id" element={<SiteEdit />} />
-//       </Routes>
-//     </BrowserRouter>
-//   );
-// }
-
-// export default App;
-
-////-----------Site Get All Data And Get Site By Id And Site Add And Site Edit-------------------
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/Authcontext";
+import { SiteProvider } from "./context/Sitecontext";
+import SessionCheck from "./components/Sessioncheck";
+import RequireAuth from "./components/Requireauth";
+import Navbar from "./components/Navbar";
 
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-
-import Navbar from "./components/Navbar";
-
+import NoSiteSelected from "./pages/Nositeselected";
+import CostMasterList from "./pages/CotMaster/CostMasterList";
+import CostMasterAdd from "./pages/CotMaster/CostMasterAdd";
 import SiteList from "./components/SiteList";
-import SiteDetail from "./components/SiteDetail";
 import SiteAdd from "./components/SiteAdd";
 import SiteEdit from "./components/SiteEdit";
+import SiteDetail from "./components/SiteDetail";
 
-function App() {
-  const user = localStorage.getItem("user");
-
+function AppLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
   return (
-    <BrowserRouter>
-      {user && <Navbar />}
-
-      <Routes>
-        {/* Default */}
-
-        <Route
-          path="/"
-          element={user ? <Navigate to="/home" /> : <Navigate to="/login" />}
-        />
-
-        {/* Login */}
-
-        <Route
-          path="/login"
-          element={user ? <Navigate to="/home" /> : <Login />}
-        />
-
-        {/* Home */}
-
-        <Route
-          path="/home"
-          element={user ? <Home /> : <Navigate to="/login" />}
-        />
-
-        <Route
-          path="/sitelist"
-          element={user ? <SiteList /> : <Navigate to="/login" />}
-        />
-
-        <Route
-          path="/site/:id"
-          element={user ? <SiteDetail /> : <Navigate to="/login" />}
-        />
-
-        <Route
-          path="/site-add"
-          element={user ? <SiteAdd /> : <Navigate to="/login" />}
-        />
-
-        <Route
-          path="/site-edit/:id"
-          element={user ? <SiteEdit /> : <Navigate to="/login" />}
-        />
-      </Routes>
-    </BrowserRouter>
+    <>
+      <Navbar />
+      <main>{children}</main>
+    </>
   );
 }
 
-export default App;
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
 
-//--------------------------------------
+      <Route path="/home" element={<AppLayout><RequireAuth><Home /></RequireAuth></AppLayout>}/>
 
-// import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import Navbar from "./components/Navbar";
-// import Login from "./pages/Login";
-// import Home from "./pages/Home";
+      <Route path="/sites"        element={<AppLayout><RequireAuth><SiteList /></RequireAuth></AppLayout>} />
+      <Route path="/site-add"     element={<AppLayout><RequireAuth><SiteAdd /></RequireAuth></AppLayout>} />
+      <Route path="/site-edit/:id" element={<AppLayout><RequireAuth><SiteEdit /></RequireAuth></AppLayout>} />
+      <Route path="/site/:id"     element={<AppLayout><RequireAuth><SiteDetail /></RequireAuth></AppLayout>} />
 
-// function App() {
+      {/* No-site-selected landing page - login only */}
+      <Route path="/no-site-selected" element={<AppLayout><RequireAuth><NoSiteSelected /></RequireAuth></AppLayout>}/>
 
-//   const user = localStorage.getItem("user");
+      <Route path="/cost-master" element={<AppLayout><SessionCheck><CostMasterList /></SessionCheck></AppLayout>} />
+      <Route path="/cost-master/add" element={<AppLayout><SessionCheck><CostMasterAdd /></SessionCheck></AppLayout>} />
 
-//   return (
+      <Route path="*" element={<Navigate to="/home" replace />} />
+    </Routes>
+  );
+}
 
-//     <BrowserRouter>
-
-//       {user && <Navbar />}
-
-//       <Routes>
-
-//         <Route path="/login" element={<Login />} />
-
-//         <Route path="/" element={<Home />} />
-
-//       </Routes>
-
-//     </BrowserRouter>
-
-//   );
-// }
-
-// export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <SiteProvider>
+          <AppRoutes />
+        </SiteProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}

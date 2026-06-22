@@ -79,3 +79,31 @@ export const getDropdownData = async (): Promise<DropdownResponse> => {
 
   return res.json();
 };
+
+/* ================================
+   NAVBAR SITE DROPDOWN
+================================ */
+
+export interface SiteDropdownDto {
+  id: number;
+  name: string;
+}
+
+export const getNavbarSites =
+async (): Promise<
+SiteDropdownDto[]
+> => {
+
+const res =
+await fetch(
+"https://localhost:7036/api/SiteAPI/GetAllSites"
+);
+
+if(!res.ok)
+throw new Error(
+"Failed to fetch sites"
+);
+
+return res.json();
+
+};
