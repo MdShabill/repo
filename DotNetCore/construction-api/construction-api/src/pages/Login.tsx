@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/accountService";
 import { useAuth } from "../context/Authcontext";
+import { useSite } from "../context/Sitecontext";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ function Login() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const { setUser } = useAuth();
+  const { setSelectedSite } = useSite();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,9 +23,9 @@ function Login() {
       setLoading(true);
       const userData = await login(email, password);
 
-      setUser({ name: userData.name, email: userData.email });
+      setUser(userData);
 
-      navigate("/home");
+    setSelectedSite(null); navigate("/home",{replace:true});
     } catch (err: any) {
       setErrorMessage(err.message || "Invalid Email Or Password");
     } finally {

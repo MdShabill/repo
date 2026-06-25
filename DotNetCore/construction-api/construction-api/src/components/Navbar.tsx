@@ -100,7 +100,7 @@ function Navbar() {
           <div className="ce-divider"></div>
 
           {/* Mirrors @Context.Session.GetString("UserName") in _Layout.cshtml */}
-          <span className="ce-user">Welcome, {user?.name || "User"}</span>
+          <span className="ce-user">Welcome, {user?.fullName || "User"}</span>
 
           <button className="ce-logout" onClick={handleLogout}>
             Log Out
