@@ -26,47 +26,39 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] UserVm userVm)
+        
+        public IActionResult Login(UserVm userVm)
+        
         {
-            User user = _userRepository.GetUserDetailByEmail( userVm.Email);
+            if (userVm == null || string.IsNullOrEmpty(userVm.Email) || string.IsNullOrEmpty(userVm.Password))
+                return BadRequest(new { message = "Email and Password are required." });
+
+            User user = _userRepository.GetUserDetailByEmail(userVm.Email);
 
             if (user == null)
-            {
-                return BadRequest(new
-                {
-                    message = "Invalid Email Or Password"
-                });
-            }
+                return BadRequest(new { message = "Invalid Email Or Password" });
 
             if (user.IsLocked)
-            {
-                return BadRequest(new
-                {
-                    message = "Your Account Has Been Locked Kindly Contact With Administrator"
-                });
-            }
+                return BadRequest(new { message = "Your Account Has Been Locked. Contact Administrator." });
 
             if (user.Password != userVm.Password)
             {
                 _userRepository.UpdateOnLoginFailed(userVm.Email);
-
                 if (user.LoginFailedCount >= 2)
-                {
                     _userRepository.UpdateIsLocked(userVm.Email);
-                }
 
-                return BadRequest(new
-                {
-                    message =
-                    "Invalid Email Or Password"
-                });
+                return BadRequest(new { message = "Invalid Email Or Password" });
             }
 
             _userRepository.UpdateOnLoginSuccessful(userVm.Email);
 
-            var response = _imapper.Map<UserVm>(user);
-
-            return Ok(response);
+            // Only return Name + Email — never send Password back to client
+            return Ok(
+            new UserVm
+            {
+                FullName = user.Name,
+                Email = user.Email
+            });
         }
     }
 }
