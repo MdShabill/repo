@@ -14,21 +14,21 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUserState] = useState<AuthUser | null>(() => {
-    const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user, setUserState] = useState<AuthUser | null>(null);
 
   const setUser = (u: AuthUser | null) => {
     setUserState(u);
-    if (u) localStorage.setItem("user", JSON.stringify(u));
-    else localStorage.removeItem("user");
+    if (u)
+      sessionStorage.setItem("user",JSON.stringify(u)
+    );
+    else
+      sessionStorage.removeItem("user");
   };
 
   const logout = () => {
     setUserState(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("selectedSite");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("selectedSite");
   };
 
   return (

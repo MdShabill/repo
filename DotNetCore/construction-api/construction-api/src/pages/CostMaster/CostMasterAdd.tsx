@@ -1,137 +1,479 @@
-// Path: src/pages/CostMaster/CostMasterAdd.tsx
-import { useEffect, useState }          from "react";
-import { useNavigate, Link }            from "react-router-dom";
-import { getCostMasters, getActiveCost, addCostMaster } from "../../services/costMasterService";
-import type { ServiceTypeOption }       from "../../services/costMasterService";
-import { useSite }                      from "../../context/Sitecontext";
+import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import {getCostMasters,getActiveCost,addCostMaster,} from "../../services/costMasterService";
+import type {ServiceTypeOption,} from "../../services/costMasterService";
+import { useSite } from "../../context/Sitecontext";
 
 function CostMasterAdd() {
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
+
   const { selectedSite } = useSite();
-  const siteId    = selectedSite?.id ?? 0;
 
-  const [serviceTypes,  setServiceTypes]  = useState<ServiceTypeOption[]>([]);
+  const siteId = selectedSite?.id ?? 0;
+
+  const [serviceTypes, setServiceTypes] = useState<ServiceTypeOption[]>([]);
+
   const [serviceTypeId, setServiceTypeId] = useState("");
-  const [cost,          setCost]          = useState("");
-  const [date,          setDate]          = useState(new Date().toISOString().slice(0, 10));
-  const [errorMessage,  setErrorMessage]  = useState("");
-  const [submitting,    setSubmitting]    = useState(false);
 
-  // Reuse Index endpoint to get service types — no separate endpoint needed
-  useEffect(() => {
-    getCostMasters(siteId)
-      .then((result)=>{setServiceTypes(result.serviceTypes);
+  const [cost, setCost] = useState("");
 
-      if(result.serviceTypes.length>0){
-      const firstId=result.serviceTypes[0].id;
-      setServiceTypeId(String(firstId));
-      getActiveCost(siteId,firstId)
-      .then(x=>{
-      if(x)
-      setCost(String(x.cost));
-   });
-}
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
 
-})
-      .catch(() => setErrorMessage("Failed to load service types. Check connection."));
-  }, [siteId]);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // Auto-fill cost when service type changes (mirrors MVC AJAX updateCost())
+  const [submitting, setSubmitting] = useState(false);
+
+
+  // Load only service types
+  useEffect(() => {getCostMasters(siteId)
+      .then((result) => {setServiceTypes(result.serviceTypes);
+      setServiceTypeId("");
+        setCost("");
+      })
+
+      .catch(() =>setErrorMessage("Failed to load service types. Check connection."));
+    }, [siteId]);
+
+
+  // Load cost after selecting service type
   const handleServiceTypeChange = async (id: string) => {
-    setServiceTypeId(id);
-    setCost("");
-    setErrorMessage("");
-    if (!id) return;
-    const active = await getActiveCost(siteId, Number(id)).catch(() => null);
-    if (active) setCost(String(active.cost));
-  };
+        setServiceTypeId(id);
+        setCost("");
+        setErrorMessage("");
+        if (!id)
+        return;
+      try {const active =
+          await getActiveCost(siteId,Number(id));
 
-  const validate = (): string | null => {
-    if (!date || !serviceTypeId)
-      return "Page not submitted, please enter correct Inputs";
-    if (!cost || Number(cost)<=0 || !/^\d+(\.\d{1,2})?$/.test(cost))
-      return "Cost must be a positive number and cannot contain alphabets or special characters.";
+        if (active)setCost(String(active.cost));
+          } catch {setCost("");}};
+
+
+  const validate = () => {
+
+    if (
+      !date ||
+      !serviceTypeId
+    ) {
+      return "Please enter valid inputs";
+    }
+
+    if (
+      !cost ||
+      Number(cost) <= 0 ||
+      !/^\d+(\.\d{1,2})?$/.test(cost)
+    ) {
+      return "Cost must be valid";
+    }
+
     return null;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const validationError = validate();
-    if (validationError) { setErrorMessage(validationError); return; }
-    setSubmitting(true);
-    try {
-      await addCostMaster(siteId, {
-        serviceTypeId: Number(serviceTypeId),
-        cost:          Number(cost),
-        date,
-      });
-      navigate("/cost-master", { state: { success: "Add New Cost Master Successful" } });
-    } catch (err: unknown) {
-      setErrorMessage((err as Error).message || "Failed to add cost master");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+
+  const handleSubmit =
+    async (
+      e: React.FormEvent
+    ) => {
+
+      e.preventDefault();
+
+      const validation =
+        validate();
+
+      if (validation) {
+
+        setErrorMessage(
+          validation
+        );
+
+        return;
+      }
+
+      setSubmitting(true);
+
+      try {
+
+        await addCostMaster(
+          siteId,
+          {
+            serviceTypeId:
+              Number(
+                serviceTypeId
+              ),
+
+            cost:
+              Number(
+                cost
+              ),
+
+            date,
+          }
+        );
+
+        navigate(
+          "/cost-master",
+          {
+            state: {
+              success:
+                "Add New Cost Master Successful",
+            },
+          }
+        );
+
+      } catch (err) {
+
+        setErrorMessage(
+          (err as Error)
+            .message
+        );
+
+      } finally {
+
+        setSubmitting(
+          false
+        );
+      }
+    };
+
 
   return (
-    <div style={{ background: "linear-gradient(135deg, #1E3A5F, #0F172A)", minHeight: "100vh", padding: "80px 30px 30px" }}>
-      <div style={{ background: "#fff", borderRadius: "16px", padding: "30px", boxShadow: "0 10px 30px rgba(0,0,0,0.2)", maxWidth: "500px", margin: "auto" }}>
-        <h3 style={{ textAlign: "center", fontWeight: 700, color: "#1E293B", marginBottom: "20px" }}>Add Cost</h3>
+    <div
+      style={{
+        background:
+          "linear-gradient(180deg,#1E3A5F,#0F172A)",
+
+        minHeight:
+          "100vh",
+
+        padding:
+          "80px 20px",
+      }}
+    >
+
+      <div
+        style={{
+          maxWidth:
+            "550px",
+
+          margin:
+            "0 auto",
+
+          background:
+            "#F8FAFC",
+
+          padding:
+            "40px",
+
+          borderRadius:
+            "20px",
+
+          boxShadow:
+            "0 15px 40px rgba(0,0,0,.25)",
+        }}
+      >
+
+        <h1
+          style={{
+            textAlign:
+              "center",
+
+            color:
+              "#14213D",
+
+            marginBottom:
+              "35px",
+          }}
+        >
+          Add Cost
+        </h1>
+
 
         {errorMessage && (
-          <div style={{ background: "#fdecea", color: "#c62828", padding: "10px", borderRadius: "8px", textAlign: "center", marginBottom: "15px" }}>
-            <b>{errorMessage}</b>
+          <div
+            style={{
+              background:
+                "#FEE2E2",
+
+              color:
+                "#991B1B",
+
+              padding:
+                "12px",
+
+              borderRadius:
+                "10px",
+
+              marginBottom:
+                "20px",
+            }}
+          >
+            {errorMessage}
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ fontWeight: 600, display: "block", marginBottom: "5px" }}>Date</label>
-            <input
-              type="date" value={date}
-              onChange={(e) => setDate(e.target.value)}
-              style={{ width: "100%", borderRadius: "10px", padding: "10px", border: "1px solid #ddd" }}
-            />
-          </div>
 
-          <div style={{ marginBottom: "15px" }}>
-            <label style={{ fontWeight: 600, display: "block", marginBottom: "5px" }}>Service Type</label>
-            <select
-              value={serviceTypeId}
-              onChange={(e) => handleServiceTypeChange(e.target.value)}
-              style={{ width: "100%", borderRadius: "10px", padding: "10px", border: "1px solid #ddd", height: "40px" }}
+        <form
+          onSubmit={
+            handleSubmit
+          }
+        >
+
+          <div
+            style={{
+              marginBottom:
+                "22px",
+            }}
+          >
+
+            <label
+              style={{
+                display:
+                  "block",
+
+                fontWeight:
+                  700,
+
+                marginBottom:
+                  "8px",
+              }}
             >
-              <option value="">-- Select --</option>
-              {serviceTypes.map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
+              Date
+            </label>
+
+            <input
+              type="date"
+              value={date}
+              onChange={(e) =>
+                setDate(
+                  e.target.value
+                )
+              }
+
+              style={{
+                width:
+                  "100%",
+
+                padding:
+                  "14px",
+
+                borderRadius:
+                  "14px",
+
+                border:
+                  "1px solid #CBD5E1",
+              }}
+            />
+
           </div>
 
-          <div style={{ marginBottom: "20px" }}>
-            <label style={{ fontWeight: 600, display: "block", marginBottom: "5px" }}>Cost</label>
+
+          <div
+            style={{
+              marginBottom:
+                "22px",
+            }}
+          >
+
+            <label
+              style={{
+                display:
+                  "block",
+
+                fontWeight:
+                  700,
+
+                marginBottom:
+                  "8px",
+              }}
+            >
+              Service Type
+            </label>
+
+            <select
+              value={
+                serviceTypeId
+              }
+
+              onChange={(e) =>
+                handleServiceTypeChange(
+                  e.target.value
+                )
+              }
+
+              style={{
+                width:
+                  "100%",
+
+                padding:
+                  "14px",
+
+                borderRadius:
+                  "14px",
+
+                border:
+                  "1px solid #CBD5E1",
+              }}
+            >
+
+              <option value="">
+                Select Service Type
+              </option>
+
+              {serviceTypes.map(
+                (s) => (
+
+                  <option
+                    key={
+                      s.id
+                    }
+
+                    value={
+                      s.id
+                    }
+                  >
+                    {s.name}
+                  </option>
+                )
+              )}
+
+            </select>
+
+          </div>
+
+
+          <div
+            style={{
+              marginBottom:
+                "30px",
+            }}
+          >
+
+            <label
+              style={{
+                display:
+                  "block",
+
+                fontWeight:
+                  700,
+
+                marginBottom:
+                  "8px",
+              }}
+            >
+              Cost
+            </label>
+
             <input
               type="number"
-              step="0.01"
-              onChange={(e) => setCost(e.target.value)}
-              placeholder="Auto-filled from last active cost"
-              style={{ width: "100%", borderRadius: "10px", padding: "10px", border: "1px solid #ddd" }}
+
+              value={
+                cost
+              }
+
+              onChange={(e) =>
+                setCost(
+                  e.target.value
+                )
+              }
+
+              placeholder="Enter Cost"
+
+              style={{
+                width:
+                  "100%",
+
+                padding:
+                  "14px",
+
+                borderRadius:
+                  "14px",
+
+                border:
+                  "1px solid #CBD5E1",
+              }}
             />
+
           </div>
 
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-            <Link to="/cost-master" style={{ background: "transparent", color: "#64748B", fontWeight: 600, borderRadius: "10px", padding: "10px 20px", border: "1px solid #CBD5E1", textDecoration: "none" }}>
+
+          <div
+            style={{
+              display:
+                "flex",
+
+              justifyContent:
+                "flex-end",
+
+              gap:
+                "14px",
+            }}
+          >
+
+            <Link
+              to="/cost-master"
+
+              style={{
+                padding:
+                  "12px 28px",
+
+                border:
+                  "1px solid #CBD5E1",
+
+                borderRadius:
+                  "14px",
+
+                textDecoration:
+                  "none",
+
+                color:
+                  "#64748B",
+              }}
+            >
               Cancel
             </Link>
+
+
             <button
-              type="submit" disabled={submitting}
-              style={{ background: "#F59E0B", color: "#fff", fontWeight: 600, borderRadius: "10px", padding: "10px 20px", border: "none", cursor: submitting ? "not-allowed" : "pointer" }}
+              type="submit"
+
+              disabled={
+                submitting
+              }
+
+              style={{
+                background:
+                  "#F59E0B",
+
+                color:
+                  "#fff",
+
+                padding:
+                  "12px 32px",
+
+                border:
+                  "none",
+
+                borderRadius:
+                  "14px",
+
+                cursor:
+                  "pointer",
+              }}
             >
-              {submitting ? "Adding..." : "Add"}
+              {
+                submitting
+                  ? "Adding..."
+                  : "Add"
+              }
+
             </button>
+
           </div>
+
         </form>
+
       </div>
+
     </div>
   );
 }

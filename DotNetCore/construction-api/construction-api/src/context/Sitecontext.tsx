@@ -11,17 +11,14 @@ const SiteContext = createContext<SiteContextType | null>(null);
 
 export function SiteProvider({ children }: { children: ReactNode }) {
   
-  const [selectedSite, setSelectedSiteState] = useState<SiteDropdownDto | null>(() => {
-    const stored = localStorage.getItem("selectedSite");
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [selectedSite,setSelectedSiteState]= useState<SiteDropdownDto|null>(null);
 
   const setSelectedSite = (site: SiteDropdownDto | null) => {
     setSelectedSiteState(site);
     if (site) {
-      localStorage.setItem("selectedSite", JSON.stringify(site));
+      sessionStorage.setItem("selectedSite", JSON.stringify(site));
     } else {
-      localStorage.removeItem("selectedSite");
+      sessionStorage.removeItem("selectedSite");
     }
   };
 

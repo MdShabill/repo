@@ -14,7 +14,6 @@ import CostMasterEdit             from "./pages/CostMaster/CostMasterEdit";
 import SiteList                   from "./components/SiteList";
 import SiteAdd                    from "./components/SiteAdd";
 import SiteEdit                   from "./components/SiteEdit";
-import SiteDetail                 from "./components/SiteDetail";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -56,10 +55,7 @@ function AppRoutes() {
       <Route path="/site-edit/:id"
         element={<AppLayout><RequireAuth><SiteEdit /></RequireAuth></AppLayout>}
       />
-      <Route path="/site/:id"
-        element={<AppLayout><RequireAuth><SiteDetail /></RequireAuth></AppLayout>}
-      />
-
+      
       {/* No site selected page */}
       <Route path="/no-site-selected"
         element={<AppLayout><RequireAuth><NoSiteSelected /></RequireAuth></AppLayout>}
