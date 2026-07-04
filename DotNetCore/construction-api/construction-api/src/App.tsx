@@ -14,6 +14,10 @@ import CostMasterEdit             from "./pages/CostMaster/CostMasterEdit";
 import SiteList                   from "./components/SiteList";
 import SiteAdd                    from "./components/SiteAdd";
 import SiteEdit                   from "./components/SiteEdit";
+import DailyAttendanceList        from "./pages/DailyAttendance/DailyAttendanceList";
+import DailyAttendanceAdd         from "./pages/DailyAttendance/DailyAttendanceAdd";
+import MaterialPurchaseList       from "./pages/MaterialPurchase/MaterialPurchaseList";
+import MaterialPurchaseAdd        from "./pages/MaterialPurchase/MaterialPurchaseAdd";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -71,6 +75,20 @@ function AppRoutes() {
 
       <Route path="/cost-master/edit/:id"
         element={<AppLayout><SessionCheck><CostMasterEdit/></SessionCheck></AppLayout>}/>
+
+      <Route path="/attendance"
+        element={<AppLayout><SessionCheck><DailyAttendanceList /></SessionCheck></AppLayout>}/>
+
+      <Route path="/attendance/add"
+        element={<AppLayout><SessionCheck><DailyAttendanceAdd /></SessionCheck></AppLayout>}/>
+
+      <Route path="/material"
+        element={<AppLayout><SessionCheck><MaterialPurchaseList /></SessionCheck></AppLayout>}
+      />
+
+      <Route path="/material/add"
+       element={<AppLayout><SessionCheck><MaterialPurchaseAdd /></SessionCheck></AppLayout>}
+      />  
 
       {/* Catch-all → always login */}
       <Route path="*" element={<Navigate to="/login" replace />} />

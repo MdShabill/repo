@@ -71,8 +71,8 @@ function Navbar() {
           <li><Link to="/home">Home</Link></li>
           <li><Link to="/cost-master">Cost Master</Link></li>
           <li><Link to="/attendance">Attendance</Link></li>
-          <li><Link to="/material-report">Material</Link></li>
-          <li><Link to="/service-provider">Service Provider</Link></li>
+          <li><Link to="/material">Material</Link></li>
+          <li><Link to="/service provider">Service Provider</Link></li>
           <li><Link to="/sites">Site</Link></li>
         </ul>
 

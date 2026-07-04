@@ -11,7 +11,11 @@ const SiteContext = createContext<SiteContextType | null>(null);
 
 export function SiteProvider({ children }: { children: ReactNode }) {
   
-  const [selectedSite,setSelectedSiteState]= useState<SiteDropdownDto|null>(null);
+  const [selectedSite, setSelectedSiteState] =
+  useState<SiteDropdownDto | null>(() => {
+    const stored = sessionStorage.getItem("selectedSite");
+    return stored ? JSON.parse(stored) : null;
+  });
 
   const setSelectedSite = (site: SiteDropdownDto | null) => {
     setSelectedSiteState(site);
