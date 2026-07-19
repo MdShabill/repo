@@ -18,6 +18,9 @@ import DailyAttendanceList        from "./pages/DailyAttendance/DailyAttendanceL
 import DailyAttendanceAdd         from "./pages/DailyAttendance/DailyAttendanceAdd";
 import MaterialPurchaseList       from "./pages/MaterialPurchase/MaterialPurchaseList";
 import MaterialPurchaseAdd        from "./pages/MaterialPurchase/MaterialPurchaseAdd";
+import ServiceProviderList        from "./pages/ServiceProvider/ServiceProviderList";
+import ServiceProviderAdd         from "./pages/ServiceProvider/ServiceProviderAdd";
+import ServiceProviderEdit        from "./pages/ServiceProvider/ServiceProviderEdit";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -89,6 +92,18 @@ function AppRoutes() {
       <Route path="/material/add"
        element={<AppLayout><SessionCheck><MaterialPurchaseAdd /></SessionCheck></AppLayout>}
       />  
+
+      <Route path="/service-provider"
+       element={<AppLayout><SessionCheck><ServiceProviderList /></SessionCheck></AppLayout>}
+      />
+
+      <Route path="/service-provider/add"
+       element={<AppLayout><SessionCheck><ServiceProviderAdd /></SessionCheck></AppLayout>}
+      />
+
+      <Route path="/service-provider/edit/:id"
+       element={<AppLayout><SessionCheck><ServiceProviderEdit /></SessionCheck></AppLayout>}
+      />
 
       {/* Catch-all → always login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
