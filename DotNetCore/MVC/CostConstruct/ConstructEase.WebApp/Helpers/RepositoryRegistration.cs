@@ -55,6 +55,7 @@ namespace ConstructEase.WebApp.Helpers
 
         public void RegisterDapperRepositories(IServiceCollection services, string connectionString)
         {
+            services.AddScoped<IDashboardRepository>(svc => new DashboardRepositoryUsingDapper(connectionString));
             services.AddScoped<ICostMasterRepository>(svc => new CostMasterRepositoryUsingDapper(connectionString));
             services.AddScoped<IDailyAttendanceRepository>(svc => new DailyAttendanceRepositoryUsingDapper(connectionString));
             services.AddScoped<IMaterialPurchaseRepository>(svc => new MaterialPurchaseRepositoryUsingDapper(connectionString));
