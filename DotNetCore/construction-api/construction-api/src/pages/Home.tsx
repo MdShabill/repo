@@ -1,33 +1,181 @@
+// Path: src/pages/Home.tsx
+
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { getDashboardStats } from "../services/dashboardService";
+import type { DashboardStatsDto } from "../services/dashboardService";
+
+import { useSite } from "../context/Sitecontext";
+
 function Home() {
+  // ==================================================
+  // 1. SELECTED SITE
+  // ==================================================
+
+  const { selectedSite } = useSite();
+
+  /*
+    selectedSite = null
+      => siteId = 0
+      => All Sites ka complete data
+
+    selectedSite = { id: 5, ... }
+      => siteId = 5
+      => Sirf selected site ka complete data
+  */
+
+  const siteId = selectedSite?.id ?? 0;
+
+
+  // ==================================================
+  // 2. DASHBOARD STATE
+  // ==================================================
+
+  const [stats, setStats] =
+    useState<DashboardStatsDto | null>(null);
+
+  const [statsLoading, setStatsLoading] =
+    useState(true);
+
+  const [statsError, setStatsError] =
+    useState("");
+
+
+  // ==================================================
+  // 3. LOAD DASHBOARD STATS
+  // ==================================================
+
+  useEffect(() => {
+    /*
+      API call hogi:
+
+      1. Home page open hone par
+      2. Navbar se site select karne par
+      3. Site change karne par
+
+      siteId change hoga,
+      aur dashboard ka data dobara load hoga.
+    */
+
+    setStatsLoading(true);
+    setStatsError("");
+
+    getDashboardStats(siteId)
+      .then((data) => {
+        setStats(data);
+      })
+      .catch((error) => {
+        console.error("Dashboard stats error:", error);
+
+        setStats(null);
+        setStatsError(
+          "Unable to load dashboard statistics."
+        );
+      })
+      .finally(() => {
+        setStatsLoading(false);
+      });
+
+  }, [siteId]);
+
+
+  // ==================================================
+  // 4. FORMAT CURRENCY
+  // ==================================================
+
+  const formatCurrency = (value: number) => {
+    return "₹" + value.toLocaleString("en-IN", {
+      maximumFractionDigits: 0,
+    });
+  };
+
+
+  // ==================================================
+  // 5. REUSABLE CARD STYLES
+  // ==================================================
+
+  const miniCard: React.CSSProperties = {
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: "9px",
+    padding: "14px",
+  };
+
+  const miniLabel: React.CSSProperties = {
+    fontSize: "10px",
+    color: "#94A3B8",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    margin: "0 0 5px 0",
+  };
+
+  const miniValue: React.CSSProperties = {
+    fontSize: "22px",
+    fontWeight: 600,
+    color: "#fff",
+    margin: 0,
+  };
+
+  const miniSub: React.CSSProperties = {
+    fontSize: "12px",
+    margin: "5px 0 0 0",
+  };
+
+
+  // ==================================================
+  // UI
+  // ==================================================
+
   return (
-    <div style={{ margin: 0, padding: 0 }}>
-      {/* ── HERO ── */}
+    <div
+      style={{
+        margin: 0,
+        padding: 0,
+      }}
+    >
+
+      {/* ==================================================
+          HERO SECTION
+      ================================================== */}
+
       <section
         style={{
           background: "#1c2e46",
-          padding: "60px 20px",
+          padding: "52px 20px",
         }}
       >
+
         <div
           style={{
             display: "flex",
             alignItems: "flex-start",
-            gap: "20px",
+            gap: "40px",
             maxWidth: "1100px",
             margin: "0 auto",
           }}
         >
-          <div style={{ flex: 1, minWidth: 0 }}>
+
+          {/* ==================================================
+              LEFT SIDE: HERO CONTENT
+          ================================================== */}
+
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
+
             {/* Badge */}
+
             <div
               style={{
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "7px",
                 background: "rgba(245,158,11,0.15)",
-                border: "0.5px solid rgba(245,158,11,0.35)",
+                border: "1px solid rgba(245,158,11,0.35)",
                 color: "#FCD34D",
                 fontSize: "12px",
                 padding: "4px 12px",
@@ -35,52 +183,75 @@ function Home() {
                 marginBottom: "14px",
               }}
             >
+
               <span
                 style={{
                   width: "7px",
                   height: "7px",
                   background: "#F59E0B",
                   borderRadius: "50%",
-                  flexShrink: 0,
                   display: "inline-block",
                 }}
               />
+
               Construction management platform
+
             </div>
 
-            {/* Title */}
+
+            {/* Heading */}
+
             <h1
               style={{
                 fontSize: "36px",
                 fontWeight: 600,
                 color: "#fff",
-                marginBottom: "10px",
+                margin: "0 0 10px 0",
                 lineHeight: 1.25,
               }}
             >
+
               Control every rupee,
               <br />
-              <span style={{ color: "#F59E0B" }}>every site, every day.</span>
+
+              <span
+                style={{
+                  color: "#F59E0B",
+                }}
+              >
+                every site, every day.
+              </span>
+
             </h1>
 
-            {/* Desc */}
+
+            {/* Description */}
+
             <p
               style={{
                 fontSize: "13px",
                 color: "#94A3B8",
-                marginBottom: "16px",
+                margin: "0 0 18px 0",
                 maxWidth: "600px",
               }}
             >
               BuilderLedger brings your material purchases, labour attendance,
-              payments, site expenses into one place — so nothing slips through
+              payments, site expenses into one place, so nothing slips through
               the cracks.
             </p>
 
-            {/* CTAs */}
-            <div style={{ display: "flex", gap: "10px" }}>
+
+            {/* Buttons */}
+
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+              }}
+            >
+
               <Link
-                to="/material"
+                to="/material-report"
                 style={{
                   background: "#F59E0B",
                   color: "#1a2332",
@@ -88,13 +259,14 @@ function Home() {
                   fontWeight: 600,
                   padding: "10px 22px",
                   borderRadius: "7px",
-                  border: "none",
                   textDecoration: "none",
                   display: "inline-block",
                 }}
               >
                 View material report
               </Link>
+
+
               <Link
                 to="/cost-master"
                 style={{
@@ -103,576 +275,348 @@ function Home() {
                   fontSize: "13.5px",
                   padding: "10px 22px",
                   borderRadius: "7px",
-                  border: "0.5px solid rgba(255,255,255,0.3)",
+                  border: "1px solid rgba(255,255,255,0.3)",
                   textDecoration: "none",
                   display: "inline-block",
                 }}
               >
                 Open cost master
               </Link>
+
             </div>
+
           </div>
-        </div>
-      </section>
 
-      {/* ── FEATURES ── */}
-      <section
-        style={{
-          padding: "32px 20px 16px",
-          maxWidth: "1100px",
-          margin: "0 auto",
-        }}
-      >
-        <p
-          style={{
-            fontSize: "11px",
-            fontWeight: 600,
-            color: "#888780",
-            textTransform: "uppercase",
-            letterSpacing: "0.7px",
-            marginBottom: "6px",
-          }}
-        >
-          What BuilderLedger does
-        </p>
-        <h2 style={{ fontSize: "20px", color: "#1a2332", marginBottom: "4px" }}>
-          Everything your site needs, in one system
-        </h2>
-        <p
-          style={{
-            fontSize: "13px",
-            color: "#64748B",
-            marginBottom: "20px",
-            lineHeight: 1.65,
-          }}
-        >
-          Designed for construction teams managing multiple sites, vendors, and
-          budgets simultaneously.
-        </p>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "14px",
-          }}
-        >
-          {[
-            {
-              bg: "#FAEEDA",
-              icon: (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <rect
-                    x="2"
-                    y="2"
-                    width="5"
-                    height="5"
-                    rx="1"
-                    fill="#854F0B"
-                  />
-                  <rect
-                    x="9"
-                    y="2"
-                    width="5"
-                    height="5"
-                    rx="1"
-                    fill="#854F0B"
-                  />
-                  <rect
-                    x="2"
-                    y="9"
-                    width="5"
-                    height="5"
-                    rx="1"
-                    fill="#854F0B"
-                  />
-                  <rect
-                    x="9"
-                    y="9"
-                    width="5"
-                    height="5"
-                    rx="1"
-                    fill="#EF9F27"
-                  />
-                </svg>
-              ),
-              title: "Cost master",
-              desc: "Define standard rates for materials, labour, and equipment. All transactions reference these rates automatically.",
-            },
-            {
-              bg: "#E6F1FB",
-              icon: (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <circle
-                    cx="8"
-                    cy="6"
-                    r="3"
-                    stroke="#185FA5"
-                    strokeWidth="1.2"
-                  />
-                  <path
-                    d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5"
-                    stroke="#185FA5"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              ),
-              title: "Attendance tracking",
-              desc: "Record daily worker attendance per site. Calculate wages, overtime, and absenteeism across your workforce.",
-            },
-            {
-              bg: "#E1F5EE",
-              icon: (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path
-                    d="M2 13L5 7l3 3 3-4 3 4"
-                    stroke="#0F6E56"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              ),
-              title: "Material reports",
-              desc: "Track every purchase — quantity, brand, supplier, and cost. Identify overspend and compare against budget.",
-            },
-            {
-              bg: "#EEEDFE",
-              icon: (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <rect
-                    x="2"
-                    y="4"
-                    width="12"
-                    height="9"
-                    rx="1.5"
-                    stroke="#534AB7"
-                    strokeWidth="1.2"
-                  />
-                  <path
-                    d="M5 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"
-                    stroke="#534AB7"
-                    strokeWidth="1.2"
-                  />
-                  <path
-                    d="M5 8h6M5 11h3"
-                    stroke="#534AB7"
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              ),
-              title: "Service providers",
-              desc: "Maintain a directory of contractors and vendors. Log work orders, payments, and performance per site.",
-            },
-            {
-              bg: "#EAF3DE",
-              icon: (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <rect
-                    x="2"
-                    y="2"
-                    width="12"
-                    height="3"
-                    rx="1"
-                    fill="#3B6D11"
-                  />
-                  <rect
-                    x="2"
-                    y="6.5"
-                    width="12"
-                    height="3"
-                    rx="1"
-                    fill="#3B6D11"
-                  />
-                  <rect
-                    x="2"
-                    y="11"
-                    width="7"
-                    height="3"
-                    rx="1"
-                    fill="#3B6D11"
-                  />
-                </svg>
-              ),
-              title: "Site-wise reports",
-              desc: "Switch between Shaktinagar, Obra, and Lucknow to see isolated spend summaries, P&L, and material usage.",
-            },
-            {
-              bg: "#FAECE7",
-              icon: (
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path
-                    d="M8 2v4M8 10v4M2 8h4M10 8h4"
-                    stroke="#993C1D"
-                    strokeWidth="1.3"
-                    strokeLinecap="round"
-                  />
-                  <circle cx="8" cy="8" r="2" fill="#F0997B" />
-                </svg>
-              ),
-              title: "Expense control",
-              desc: "Set budgets per site and material category. Get visibility into variances before they become problems.",
-            },
-          ].map((f) => (
-            <div
-              key={f.title}
-              style={{
-                background: "#F8F7F4",
-                border: "0.5px solid #E2E0D8",
-                borderRadius: "12px",
-                padding: "14px 16px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  marginBottom: "8px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    borderRadius: "7px",
-                    background: f.bg,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  {f.icon}
-                </div>
-                <span
-                  style={{
-                    fontSize: "13.5px",
-                    fontWeight: 600,
-                    color: "#1a2332",
-                  }}
-                >
-                  {f.title}
-                </span>
-              </div>
-              <p
-                style={{
-                  fontSize: "12.5px",
-                  color: "#64748B",
-                  lineHeight: 1.6,
-                  margin: 0,
-                }}
-              >
-                {f.desc}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
+          {/* ==================================================
+              RIGHT SIDE: DASHBOARD STATS
+          ================================================== */}
 
-      {/* ── QUICK ACCESS ── */}
-      <section
-        style={{
-          padding: "16px 32px 36px",
-          maxWidth: "1100px",
-          margin: "0 auto",
-        }}
-      >
-        <div
-          style={{
-            fontSize: "15px",
-            fontWeight: 600,
-            color: "#1a2332",
-            marginBottom: "12px",
-          }}
-        >
-          Quick access
-        </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "10px",
-          }}
-        >
-          {[
-            {
-              to: "/cost-master",
-              dot: "#F59E0B",
-              name: "Cost master",
-              sub: "Rates & price lists",
-            },
-            {
-              to: "/attendance",
-              dot: "#378ADD",
-              name: "Attendance",
-              sub: "Daily worker log",
-            },
-            {
-              to: "/material",
-              dot: "#1D9E75",
-              name: "Material report",
-              sub: "Purchases & stock",
-            },
-            {
-              to: "/service-provider",
-              dot: "#7F77DD",
-              name: "Service providers",
-              sub: "Vendors & contractors",
-            },
-            {
-              to: "/sites",
-              dot: "#639922",
-              name: "Sites",
-              sub: "All active sites",
-            },
-            {
-              to: "/home",
-              dot: "#D85A30",
-              name: "Dashboard",
-              sub: "Overview & summary",
-            },
-          ].map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              style={{
-                background: "#fff",
-                border: "0.5px solid #E2E0D8",
-                borderRadius: "9px",
-                padding: "13px 16px",
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: "11px",
-              }}
-            >
-              <span
-                style={{
-                  width: "9px",
-                  height: "9px",
-                  borderRadius: "3px",
-                  background: item.dot,
-                  flexShrink: 0,
-                  display: "inline-block",
-                }}
-              />
-              <span>
-                <span
+          <div
+            style={{
+              width: "235px",
+              flexShrink: 0,
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+            }}
+          >
+
+            {/* ==================================================
+                LOADING STATE
+            ================================================== */}
+
+            {statsLoading && (
+              <div style={miniCard}>
+
+                <p
                   style={{
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    color: "#1a2332",
-                    display: "block",
-                  }}
-                >
-                  {item.name}
-                </span>
-                <span
-                  style={{
-                    fontSize: "11.5px",
                     color: "#94A3B8",
-                    display: "block",
-                    marginTop: "1px",
+                    fontSize: "13px",
+                    margin: 0,
                   }}
                 >
-                  {item.sub}
-                </span>
-              </span>
-            </Link>
-          ))}
+                  Loading dashboard...
+                </p>
+
+              </div>
+            )}
+
+
+            {/* ==================================================
+                ERROR STATE
+            ================================================== */}
+
+            {!statsLoading && statsError && (
+              <div style={miniCard}>
+
+                <p
+                  style={{
+                    color: "#F87171",
+                    fontSize: "13px",
+                    margin: 0,
+                  }}
+                >
+                  {statsError}
+                </p>
+
+              </div>
+            )}
+
+
+            {/* ==================================================
+                DASHBOARD CARDS
+            ================================================== */}
+
+            {!statsLoading && !statsError && stats && (
+              <>
+
+                {/* ==============================================
+                    CARD 1: TOTAL MATERIAL SPEND
+                ============================================== */}
+
+                <div style={miniCard}>
+
+                  <p style={miniLabel}>
+                    Total Material Spend
+                  </p>
+
+
+                  <p style={miniValue}>
+                    {formatCurrency(
+                      stats.totalMaterialSpend
+                    )}
+                  </p>
+
+
+                  <p
+                    style={{
+                      ...miniSub,
+                      color: "#F59E0B",
+                    }}
+                  >
+                    all-time material cost
+                  </p>
+
+                </div>
+
+
+                {/* ==============================================
+                    CARD 2: TOTAL PURCHASES
+                ============================================== */}
+
+                <div style={miniCard}>
+
+                  <p style={miniLabel}>
+                    Total Purchases
+                  </p>
+
+
+                  <p style={miniValue}>
+                    {stats.totalPurchases}
+                  </p>
+
+
+                  <p
+                    style={{
+                      ...miniSub,
+                      color: "#F59E0B",
+                    }}
+                  >
+                    all-time material entries
+                  </p>
+
+                </div>
+
+
+                {/* ==============================================
+                    CARD 3: TOTAL ATTENDANCE
+                ============================================== */}
+
+                <div style={miniCard}>
+
+                  <p style={miniLabel}>
+                    Total Attendance
+                  </p>
+
+
+                  <p style={miniValue}>
+                    {stats.totalAttendanceWorkers}
+                  </p>
+
+
+                  <p
+                    style={{
+                      ...miniSub,
+                      color: "#4ADE80",
+                    }}
+                  >
+                    all-time workers
+                  </p>
+
+                </div>
+
+              </>
+            )}
+
+          </div>
+
         </div>
+
       </section>
 
-      {/* ── FOOTER ── */}
-      <footer style={{ background: "#1a2332", padding: "28px 32px 0" }}>
+
+      {/* ==================================================
+          FEATURES SECTION
+      ================================================== */}
+
+      <section
+        style={{
+          background: "#fff",
+          padding: "26px 20px 50px",
+        }}
+      >
+
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "2fr 1fr 1fr 1fr",
-            gap: "24px",
-            maxWidth: "1100px",
+            maxWidth: "1030px",
             margin: "0 auto",
-            paddingBottom: "20px",
           }}
         >
-          {/* Brand */}
-          <div>
-            <img
-              src="/UploadedImage/WebSiteLogo.jpg"
-              alt="Builder Ledger"
-              style={{ height: "36px", marginBottom: "10px" }}
+
+          <p
+            style={{
+              color: "#94A3B8",
+              fontSize: "12px",
+              letterSpacing: "1px",
+              margin: "0 0 8px 0",
+            }}
+          >
+            WHAT BUILDERLEDGER DOES
+          </p>
+
+
+          <h2
+            style={{
+              color: "#14243A",
+              fontSize: "24px",
+              margin: "0 0 8px 0",
+            }}
+          >
+            Everything your site needs, in one system
+          </h2>
+
+
+          <p
+            style={{
+              color: "#64748B",
+              margin: "0 0 22px 0",
+            }}
+          >
+            Designed for construction teams managing multiple sites,
+            vendors, and budgets simultaneously.
+          </p>
+
+
+          {/* Feature Cards */}
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "18px",
+            }}
+          >
+
+            <FeatureCard
+              title="Cost master"
+              description="Define standard rates for materials, labour, and equipment. All transactions reference these rates automatically."
             />
-            <p
-              style={{
-                fontSize: "12px",
-                color: "#475569",
-                lineHeight: 1.65,
-                maxWidth: "200px",
-                margin: 0,
-              }}
-            >
-              Builder Ledger Construction &amp; Financial Management for site
-              supervisors, engineers, and project managers.
-            </p>
+
+
+            <FeatureCard
+              title="Attendance tracking"
+              description="Record daily worker attendance per site. Calculate wages, overtime, and absenteeism across your workforce."
+            />
+
+
+            <FeatureCard
+              title="Material reports"
+              description="Track every purchase, quantity, brand, supplier, and cost. Identify overspend and compare against budget."
+            />
+
+
+            <FeatureCard
+              title="Service providers"
+              description="Manage your contractors, workers, and service providers in one centralized system."
+            />
+
+
+            <FeatureCard
+              title="Site-wise reports"
+              description="View construction activity and financial information site by site."
+            />
+
+
+            <FeatureCard
+              title="Expense control"
+              description="Track expenses and maintain better control over your construction budget."
+            />
+
           </div>
 
-          {/* Modules */}
-          <div>
-            <div
-              style={{
-                fontSize: "10.5px",
-                fontWeight: 600,
-                color: "#64748B",
-                textTransform: "uppercase",
-                letterSpacing: "0.6px",
-                marginBottom: "10px",
-              }}
-            >
-              Modules
-            </div>
-            {[
-              { to: "/cost-master", label: "Cost master" },
-              { to: "/attendance", label: "Attendance" },
-              { to: "/material", label: "Material report" },
-              { to: "/service-provider", label: "Service providers" },
-              { to: "/sites", label: "Sites" },
-            ].map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                style={{
-                  display: "block",
-                  fontSize: "12.5px",
-                  color: "#64748B",
-                  textDecoration: "none",
-                  marginBottom: "6px",
-                }}
-              >
-                {l.label}
-              </Link>
-            ))}
-          </div>
-
-          {/* Account */}
-          <div>
-            <div
-              style={{
-                fontSize: "10.5px",
-                fontWeight: 600,
-                color: "#64748B",
-                textTransform: "uppercase",
-                letterSpacing: "0.6px",
-                marginBottom: "10px",
-              }}
-            >
-              Account
-            </div>
-            <Link
-              to="/home"
-              style={{
-                display: "block",
-                fontSize: "12.5px",
-                color: "#64748B",
-                textDecoration: "none",
-                marginBottom: "6px",
-              }}
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/login"
-              style={{
-                display: "block",
-                fontSize: "12.5px",
-                color: "#64748B",
-                textDecoration: "none",
-                marginBottom: "6px",
-              }}
-            >
-              Log out
-            </Link>
-          </div>
-
-          {/* Camp Offices */}
-          <div>
-            <div
-              style={{
-                fontSize: "10.5px",
-                fontWeight: 600,
-                color: "#64748B",
-                textTransform: "uppercase",
-                letterSpacing: "0.6px",
-                marginBottom: "10px",
-              }}
-            >
-              Camp Offices
-            </div>
-            {[
-              { href: "tel:05446233928", label: "Shaktinagar: 05446-233928" },
-              { href: "tel:05446262264", label: "Obra: 05446-262264" },
-              { href: "tel:05223200260", label: "Lucknow: 0522-3200260" },
-            ].map((c) => (
-              <a
-                key={c.href}
-                href={c.href}
-                style={{
-                  display: "block",
-                  fontSize: "12.5px",
-                  color: "#64748B",
-                  textDecoration: "none",
-                  marginBottom: "6px",
-                }}
-              >
-                {c.label}
-              </a>
-            ))}
-          </div>
         </div>
 
-        {/* Footer Bottom */}
-        <div
-          style={{
-            borderTop: "0.5px solid rgba(255,255,255,0.07)",
-            padding: "14px 0",
-            maxWidth: "1100px",
-            margin: "0 auto",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span style={{ fontSize: "11.5px", color: "#334155" }}>
-            © 2023 Builder Ledger — Construction &amp; Financial Management
-          </span>
-          <div style={{ display: "flex", gap: "16px" }}>
-            <Link
-              to="/privacy"
-              style={{
-                fontSize: "11.5px",
-                color: "#334155",
-                textDecoration: "none",
-              }}
-            >
-              Privacy
-            </Link>
-            <Link
-              to="/home"
-              style={{
-                fontSize: "11.5px",
-                color: "#334155",
-                textDecoration: "none",
-              }}
-            >
-              About
-            </Link>
-          </div>
-        </div>
+      </section>
+
+
+      {/* ==================================================
+          FOOTER
+      ================================================== */}
+
+      <footer
+        style={{
+          background: "#1c2e46",
+          color: "#94A3B8",
+          textAlign: "center",
+          padding: "20px",
+          fontSize: "12px",
+        }}
+      >
+        BuilderLedger © 2026. Construction management made simple.
       </footer>
+
     </div>
   );
 }
+
+
+// ==================================================
+// FEATURE CARD COMPONENT
+// ==================================================
+
+function FeatureCard({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div
+      style={{
+        border: "1px solid #E2E8F0",
+        borderRadius: "14px",
+        padding: "20px",
+        minHeight: "125px",
+      }}
+    >
+
+      <h3
+        style={{
+          color: "#14243A",
+          fontSize: "16px",
+          margin: "0 0 10px 0",
+        }}
+      >
+        {title}
+      </h3>
+
+
+      <p
+        style={{
+          color: "#64748B",
+          fontSize: "13px",
+          lineHeight: 1.7,
+          margin: 0,
+        }}
+      >
+        {description}
+      </p>
+
+    </div>
+  );
+}
+
 
 export default Home;
