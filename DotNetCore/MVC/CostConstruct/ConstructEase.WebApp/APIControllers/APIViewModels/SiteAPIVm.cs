@@ -1,10 +1,15 @@
-﻿namespace ConstructEase.WebApp.APIControllers.APIViewModels
+﻿using ConstructionApplication.Core.DataModels.SiteScope;
+
+namespace ConstructEase.WebApp.APIControllers.APIViewModels
 {
     public class SiteAPIVm
     {
         public int Id { get; set; }
         //public int SiteId { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
+
+        public string? ContactName { get; set; }
+        public string? ContactNumber { get; set; }
         public DateTime StartedDate { get; set; }
         //public int SiteStatusId { get; set; }
         public string Status { get; set; }
@@ -32,5 +37,22 @@
         public List<int> CarpenterIds { get; set; } = new();
 
         public List<int> TilerIds { get; set; } = new();
+
+        public decimal? ExpectedBudget { get; set; }
+        public DateTime? ExpectedCompletionDate { get; set; }
+        public int? SiteStatusId { get; set; }
+
+        public List<SiteScopeVm> Scopes { get; set; } = new();
+    }
+
+    public class SiteScopeVm
+    {
+        public int Id { get; set; }
+        public int SiteScopeMasterId { get; set; }
+        public string? ScopeName { get; set; }
+        public int ScopeStatusId { get; set; }
+        public string? StatusName { get; set; }
+        public string? Remarks { get; set; }
+        public DateTime? CompletedDate { get; set; }
     }
 }

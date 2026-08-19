@@ -22,7 +22,7 @@ USING (VALUES
       (16, 'Painting'),
       (17, 'Waterproofing'),
       (18, 'Finishing')
-      ) AS src ([SiteScopeId], [ScopeName])
+      ) AS src ([Id], [ScopeName])
 
 ON trgt.[SiteScopeId] = src.[SiteScopeId]
 
@@ -31,9 +31,9 @@ WHEN MATCHED THEN
         [ScopeName] = src.[ScopeName]
 
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([SiteScopeId], [ScopeName])
+    INSERT ([Id], [ScopeName])
     VALUES (
-        src.[SiteScopeId],
+        src.[Id],
         src.[ScopeName]
     );
 

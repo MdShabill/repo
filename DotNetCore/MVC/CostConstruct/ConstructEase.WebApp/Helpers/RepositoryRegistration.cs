@@ -66,6 +66,8 @@ namespace ConstructEase.WebApp.Helpers
             services.AddScoped<IServiceProviderRepository>(svc => new ServiceProviderRepositoryUsingDapper(connectionString));
             services.AddScoped<IUserRepository>(svc => new UserRepositoryUsingDapper(connectionString));
             services.AddScoped<ISiteRepository>(svc => new SiteRepositoryUsingDapper(connectionString));
+            services.AddScoped<ISiteScopeMasterRepository>(svc => new SiteScopeMasterRepositoryUsingDapper(connectionString));
+            services.AddScoped<ISiteScopeRepository>(svc => new SiteScopeRepositoryUsingDapper(connectionString));
             services.AddScoped<IAddressRepository>(svc => new AddressRepositoryUsingDapper(connectionString));
             services.AddScoped<ICountryRepository>(svc => new CountryRepositoryUsingDapper(connectionString));
             services.AddScoped<IAddressTypeRepository>(svc => new AddressTypeRepositoryUsingDapper(connectionString));

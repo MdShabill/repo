@@ -2,6 +2,8 @@
 (
     [Id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
     [Name] NVARCHAR(100) NOT NULL,
+    [ContactName] NVARCHAR(100) NOT NULL,
+    [ContactNumber] NVARCHAR(100) NOT NULL,
     [StartedDate] DATETIME NULL,
     ExpectedCompletionDate DATE NULL,
     ExpectedBudget DECIMAL(18,2) NULL,

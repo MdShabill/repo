@@ -12,32 +12,36 @@ namespace ConstructEase.WebApp.APIControllers
     [ApiController]
     public class SiteAPIController : ControllerBase
     {
-        private readonly ISiteStatusRepository _siteStatusRepository;
-        IAddressRepository _addressRepository;
-        IAddressTypeRepository _addressTypeRepository;
-        ICountryRepository _countryRepository;
-        IServiceProviderRepository _serviceProviderRepository;
-        private readonly ISiteRepository _siteRepository;
-        IMapper _imapper;
-        IMemoryCache _cache;
-        //private object _statusRepository;
+        private readonly ISiteStatusRepository      _siteStatusRepository;
+        IAddressRepository                          _addressRepository;
+        IAddressTypeRepository                      _addressTypeRepository;
+        ICountryRepository                          _countryRepository;
+        IServiceProviderRepository                  _serviceProviderRepository;
+        ISiteRepository                             _siteRepository;
+        IMapper                                     _imapper;
+        IMemoryCache                                _cache;
+        ISiteScopeMasterRepository                  _siteScopeMasterRepository;
+        ISiteScopeRepository                        _siteScopeRepository;
 
         public SiteAPIController(ISiteStatusRepository siteStatusRepository,
-
-                              IAddressRepository addressRepository,
-                              IAddressTypeRepository addressTypeRepository,
-                              ICountryRepository countryRepository,
-                              IServiceProviderRepository serviceProviderRepository,
-                              ISiteRepository siteRepository,
-                              IMemoryCache cache)
+                                 IAddressRepository addressRepository,
+                                 IAddressTypeRepository addressTypeRepository,
+                                 ICountryRepository countryRepository,
+                                 IServiceProviderRepository serviceProviderRepository,
+                                 ISiteRepository siteRepository,
+                                 IMemoryCache cache,
+                                 ISiteScopeMasterRepository siteScopeMasterRepository,
+                                 ISiteScopeRepository siteScopeRepository)
         {
-            _siteRepository = siteRepository;
-            _siteStatusRepository = siteStatusRepository;
-            _addressRepository = addressRepository;
-            _countryRepository = countryRepository;
+            _siteRepository            = siteRepository;
+            _siteStatusRepository      = siteStatusRepository;
+            _addressRepository         = addressRepository;
+            _addressTypeRepository     = addressTypeRepository;
+            _countryRepository         = countryRepository;
             _serviceProviderRepository = serviceProviderRepository;
-            _addressTypeRepository = addressTypeRepository;
-            _cache = cache;
+            _cache                     = cache;
+            _siteScopeMasterRepository = siteScopeMasterRepository;
+            _siteScopeRepository       = siteScopeRepository;
 
             var configuration = new MapperConfiguration(cfg =>
             {
@@ -48,7 +52,6 @@ namespace ConstructEase.WebApp.APIControllers
 
             _imapper = configuration.CreateMapper();
         }
-
 
         [HttpGet("GetAllSites")]
         public IActionResult GetAllSites()
@@ -66,8 +69,9 @@ namespace ConstructEase.WebApp.APIControllers
                 _cache.Set(cacheKey, sites, cacheEntryOptions);
             }
 
-            var siteApiVm = 
-                _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>,List<SiteAPIDTO>>(sites);
+            var siteApiVm =
+                _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>,
+                             List<SiteAPIDTO>>(sites);
 
             return Ok(siteApiVm);
         }
@@ -89,7 +93,9 @@ namespace ConstructEase.WebApp.APIControllers
             if (siteApiDto == null)
                 return BadRequest("Invalid data");
 
-            var site = _imapper.Map<SiteAPIDTO, ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
+            var site =
+                _imapper.Map<SiteAPIDTO,
+                             ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
 
             site.Id = _siteRepository.Create(site);
 
@@ -100,43 +106,76 @@ namespace ConstructEase.WebApp.APIControllers
 
             if (siteApiDto.SelectedMasterMasonIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteApiDto.SelectedMasterMasonIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.MasterMasion,
+                    siteApiDto.SelectedMasterMasonIds);
             }
 
             if (siteApiDto.SelectedElectricianIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteApiDto.SelectedElectricianIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Electrician,
+                    siteApiDto.SelectedElectricianIds);
             }
 
             if (siteApiDto.SelectedLabourIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteApiDto.SelectedLabourIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Labour,
+                    siteApiDto.SelectedLabourIds);
             }
 
             if (siteApiDto.SelectedPlumberIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteApiDto.SelectedPlumberIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Plumber,
+                    siteApiDto.SelectedPlumberIds);
             }
 
             if (siteApiDto.SelectedPainterIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteApiDto.SelectedPainterIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Painter,
+                    siteApiDto.SelectedPainterIds);
             }
 
             if (siteApiDto.SelectedCarpenterIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteApiDto.SelectedCarpenterIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Carpenter,
+                    siteApiDto.SelectedCarpenterIds);
             }
 
             if (siteApiDto.SelectedTilerIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteApiDto.SelectedTilerIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Tiler,
+                    siteApiDto.SelectedTilerIds);
             }
+
+            // NEW — Site Scopes save
+            if (siteApiDto.SelectedScopes?.Count > 0)
+            {
+                var mappedScopes = siteApiDto.SelectedScopes
+                    .Select(s => (s.SiteScopeMasterId, s.ScopeStatusId, s.Remarks))
+                    .ToList();
+
+                _siteScopeRepository.SaveScopes(site.Id, mappedScopes);
+            }
+
+            _cache.Remove("AllSites");
 
             return Ok(new
             {
                 message = "Add New Site Successful",
-                siteId = site.Id
+                siteId  = site.Id
             });
         }
 
@@ -148,8 +187,9 @@ namespace ConstructEase.WebApp.APIControllers
             if (selectedSite == null)
                 return NotFound(new { message = "Site not found" });
 
-            var siteApiVm = 
-                _imapper.Map<ConstructionApplication.Core.DataModels.Site.Site, SiteAPIVm>(selectedSite);
+            var siteApiVm =
+                _imapper.Map<ConstructionApplication.Core.DataModels.Site.Site,
+                             SiteAPIVm>(selectedSite);
 
             // Already selected service provider IDs
             siteApiVm.MasterMasonIds =
@@ -172,7 +212,6 @@ namespace ConstructEase.WebApp.APIControllers
                 _siteRepository.GetServiceProviderIdsByTypes(
                     id, new List<ServiceTypes> { ServiceTypes.Painter });
 
-
             siteApiVm.CarpenterIds =
                 _siteRepository.GetServiceProviderIdsByTypes(
                     id, new List<ServiceTypes> { ServiceTypes.Carpenter });
@@ -180,6 +219,19 @@ namespace ConstructEase.WebApp.APIControllers
             siteApiVm.TilerIds =
                 _siteRepository.GetServiceProviderIdsByTypes(
                     id, new List<ServiceTypes> { ServiceTypes.Tiler });
+
+            // NEW — Already selected scopes for this site
+            var scopes = _siteScopeRepository.GetBySiteId(id);
+            siteApiVm.Scopes = scopes.Select(scopes => new SiteScopeVm
+            {
+                Id                = scopes.Id,
+                SiteScopeMasterId = scopes.SiteScopeId,
+                ScopeName         = scopes.ScopeName,
+                ScopeStatusId     = scopes.ScopeStatusId,
+                StatusName        = scopes.StatusName,
+                Remarks           = scopes.Remarks,
+                CompletedDate     = scopes.CompletedDate,
+            }).ToList();
 
             return Ok(siteApiVm);
         }
@@ -191,57 +243,81 @@ namespace ConstructEase.WebApp.APIControllers
                 return BadRequest("Invalid data");
 
             var site =
-                _imapper.Map<SiteAPIDTO, ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
+                _imapper.Map<SiteAPIDTO,
+                             ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
 
             int affectedRowCount = _siteRepository.Update(site);
 
             if (affectedRowCount <= 0)
                 return NotFound(new { message = "Site not found or update failed" });
 
-            // Address update
             AddAddressIfPresent(site.Id, siteApiDto);
 
-            //// Service Providers Update
             if (siteApiDto.SelectedMasterMasonIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteApiDto.SelectedMasterMasonIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.MasterMasion,
+                    siteApiDto.SelectedMasterMasonIds);
             }
 
             if (siteApiDto.SelectedElectricianIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteApiDto.SelectedElectricianIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Electrician,
+                    siteApiDto.SelectedElectricianIds);
             }
 
             if (siteApiDto.SelectedLabourIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteApiDto.SelectedLabourIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Labour,
+                    siteApiDto.SelectedLabourIds);
             }
 
             if (siteApiDto.SelectedPlumberIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteApiDto.SelectedPlumberIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Plumber,
+                    siteApiDto.SelectedPlumberIds);
             }
 
             if (siteApiDto.SelectedPainterIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteApiDto.SelectedPainterIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Painter,
+                    siteApiDto.SelectedPainterIds);
             }
 
             if (siteApiDto.SelectedCarpenterIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteApiDto.SelectedCarpenterIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Carpenter,
+                    siteApiDto.SelectedCarpenterIds);
             }
 
             if (siteApiDto.SelectedTilerIds?.Count > 0)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteApiDto.SelectedTilerIds);
+                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                    site.Id,
+                    ServiceTypes.Tiler,
+                    siteApiDto.SelectedTilerIds);
             }
 
-            return Ok(new
-            {
-                message = "Site updated successfully",
-                siteId = site.Id
-            });
+            var mappedScopes = (siteApiDto.SelectedScopes ?? new List<ScopeSaveItem>())
+                .Select(s => (s.SiteScopeMasterId, s.ScopeStatusId, s.Remarks))
+                .ToList();
+
+            _siteScopeRepository.SaveScopes(site.Id, mappedScopes);
+
+            _cache.Remove("AllSites");
+
+            return Ok(new { message = "Site updated successfully." });
         }
 
         [HttpDelete("{siteId}")]
@@ -250,8 +326,13 @@ namespace ConstructEase.WebApp.APIControllers
             if (siteId <= 0)
                 return BadRequest();
 
+            _siteScopeRepository.SaveScopes(
+                siteId, new List<(int, int, string?)>());
+
             _addressRepository.Delete(0, siteId);
             _siteRepository.Delete(siteId);
+
+            _cache.Remove("AllSites");
 
             return NoContent();
         }
@@ -264,22 +345,37 @@ namespace ConstructEase.WebApp.APIControllers
                 Statuses = _siteStatusRepository.GetAll()
                     .Select(statuses => new DropdownItemDTO
                     {
-                        Id = statuses.Id,
+                        Id   = statuses.Id,
                         Name = statuses.Status
                     }).ToList(),
 
                 AddressTypes = _addressTypeRepository.GetAll()
                     .Select(addressTypes => new DropdownItemDTO
                     {
-                        Id = addressTypes.Id,
+                        Id   = addressTypes.Id,
                         Name = addressTypes.Name
                     }).ToList(),
 
                 Countries = _countryRepository.GetAllCountries()
                     .Select(countries => new DropdownItemDTO
                     {
-                        Id = countries.Id,
+                        Id   = countries.Id,
                         Name = countries.Name
+                    }).ToList(),
+
+                // NEW
+                ScopeMasters = _siteScopeMasterRepository.GetAll()
+                    .Select(s => new DropdownItemDTO
+                    {
+                        Id   = s.Id,
+                        Name = s.ScopeName
+                    }).ToList(),
+
+                ScopeStatuses = _siteScopeRepository.GetAllStatuses()
+                    .Select(s => new DropdownItemDTO
+                    {
+                        Id   = s.Id,
+                        Name = s.StatusName
                     }).ToList()
             };
 
@@ -294,64 +390,71 @@ namespace ConstructEase.WebApp.APIControllers
             var response = new
             {
                 masterMasons = allServiceProviders
-                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.MasterMasion)
+                    .Where(serviceProvider =>
+                        serviceProvider.ServiceTypeId == (int)ServiceTypes.MasterMasion)
                     .Select(serviceProvider => new
                     {
-                        id = serviceProvider.Id,
+                        id   = serviceProvider.Id,
                         name = serviceProvider.Name
                     })
                     .ToList(),
 
                 electricians = allServiceProviders
-                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Electrician)
+                    .Where(serviceProvider =>
+                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Electrician)
                     .Select(serviceProvider => new
                     {
-                        id = serviceProvider.Id,
+                        id   = serviceProvider.Id,
                         name = serviceProvider.Name
                     })
                     .ToList(),
 
                 labours = allServiceProviders
-                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Labour)
+                    .Where(serviceProvider =>
+                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Labour)
                     .Select(serviceProvider => new
                     {
-                        id = serviceProvider.Id,
+                        id   = serviceProvider.Id,
                         name = serviceProvider.Name
                     })
                     .ToList(),
 
                 plumbers = allServiceProviders
-                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Plumber)
+                    .Where(serviceProvider =>
+                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Plumber)
                     .Select(serviceProvider => new
                     {
-                        id = serviceProvider.Id,
+                        id   = serviceProvider.Id,
                         name = serviceProvider.Name
                     })
                     .ToList(),
 
                 painters = allServiceProviders
-                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Painter)
+                    .Where(serviceProvider =>
+                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Painter)
                     .Select(serviceProvider => new
                     {
-                        id = serviceProvider.Id,
+                        id   = serviceProvider.Id,
                         name = serviceProvider.Name
                     })
                     .ToList(),
 
                 carpenters = allServiceProviders
-                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Carpenter)
+                    .Where(serviceProvider =>
+                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Carpenter)
                     .Select(serviceProvider => new
                     {
-                        id = serviceProvider.Id,
+                        id   = serviceProvider.Id,
                         name = serviceProvider.Name
                     })
                     .ToList(),
 
                 tilers = allServiceProviders
-                    .Where(serviceProvider => serviceProvider.ServiceTypeId == (int)ServiceTypes.Tiler)
+                    .Where(serviceProvider =>
+                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Tiler)
                     .Select(serviceProvider => new
                     {
-                        id = serviceProvider.Id,
+                        id   = serviceProvider.Id,
                         name = serviceProvider.Name
                     })
                     .ToList()
@@ -360,15 +463,27 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(response);
         }
 
+        [HttpPatch("scope-status")]
+        public IActionResult UpdateScopeStatus([FromBody] UpdateScopeStatusDto dto)
+        {
+            DateTime? completedDate =
+                dto.ScopeStatusId == 3 ? DateTime.Today : (DateTime?)null;
+
+            _siteScopeRepository.UpdateScopeStatus(
+                dto.SiteScopeId,
+                dto.ScopeStatusId,
+                dto.Remarks,
+                completedDate);
+
+            return Ok(new { message = "Scope status updated." });
+        }
+
         private void AddAddressIfPresent(int siteId, SiteAPIDTO siteApiDto)
         {
-            if (siteId <= 0)
-                return;
-
-            if (!string.IsNullOrEmpty(siteApiDto.AddressLine1) ||
-                (siteApiDto.AddressTypeId.HasValue && siteApiDto.AddressTypeId > 0) ||
-                (siteApiDto.CountryId.HasValue && siteApiDto.CountryId > 0) ||
-                (siteApiDto.PinCode.HasValue && siteApiDto.PinCode > 0))
+            if (!string.IsNullOrEmpty(siteApiDto.AddressLine1)
+                || siteApiDto.AddressTypeId > 0
+                || siteApiDto.CountryId     > 0
+                || siteApiDto.PinCode       > 0)
             {
                 Address address = new Address(
                     0,
@@ -381,10 +496,13 @@ namespace ConstructEase.WebApp.APIControllers
 
                 _addressRepository.InsertOrUpdateAddress(address);
             }
-            else
-            {
-                _addressRepository.Delete(0, siteId);
-            }
         }
+    }
+
+    public class UpdateScopeStatusDto
+    {
+        public int     SiteScopeId   { get; set; }
+        public int     ScopeStatusId { get; set; }
+        public string? Remarks       { get; set; }
     }
 }

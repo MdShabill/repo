@@ -8,18 +8,18 @@ USING (VALUES
       (2, 'In Progress'),
       (3, 'Completed'),
       (4, 'On Hold')
-      ) AS src ([ScopeStatusId], [StatusName])
+      ) AS src ([Id], [StatusName])
 
-ON trgt.[ScopeStatusId] = src.[ScopeStatusId]
+ON trgt.[Id] = src.[Id]
 
 WHEN MATCHED THEN
     UPDATE SET
         [StatusName] = src.[StatusName]
 
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([ScopeStatusId], [StatusName])
+    INSERT ([Id], [StatusName])
     VALUES (
-        src.[ScopeStatusId],
+        src.[Id],
         src.[StatusName]
     );
 

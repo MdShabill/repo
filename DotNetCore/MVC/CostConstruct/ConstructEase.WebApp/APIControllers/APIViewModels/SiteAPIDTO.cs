@@ -4,7 +4,11 @@
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
+
+        public string? ContactName { get; set; }
+
+        public string? ContactNumber { get; set; }
 
         public DateTime StartedDate { get; set; }
 
@@ -39,5 +43,17 @@
         public List<int> SelectedCarpenterIds { get; set; } = new();
 
         public List<int> SelectedTilerIds { get; set; } = new();
+
+        public decimal? ExpectedBudget { get; set; }
+        public DateTime? ExpectedCompletionDate { get; set; }
+
+        public List<ScopeSaveItem> SelectedScopes { get; set; } = new();
+    }
+
+    public class ScopeSaveItem
+    {
+        public int SiteScopeMasterId { get; set; }
+        public int ScopeStatusId { get; set; }
+        public string? Remarks { get; set; }
     }
 }

@@ -10,6 +10,8 @@ namespace ConstructionApplication.Core.DataModels.Site
     {
         public int Id { get; set; }
         public string? Name { get; set; }
+        public string? ContactName { get; set; }
+        public string? ContactNumber { get; set; }
         public DateTime? StartedDate { get; set; }
         public int? SiteStatusId { get; set; }
         public string? Status { get; set; }
@@ -23,6 +25,9 @@ namespace ConstructionApplication.Core.DataModels.Site
         public int? PinCode { get; set; }
 
         public List<int>? ServiceProviderIds { get; set; }
+
+        public decimal? ExpectedBudget { get; set; }
+        public DateTime? ExpectedCompletionDate { get; set; }
 
     }
 }

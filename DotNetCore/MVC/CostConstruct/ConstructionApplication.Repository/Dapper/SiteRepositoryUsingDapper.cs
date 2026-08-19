@@ -22,16 +22,23 @@ namespace ConstructionApplication.Repository.Dapper
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                string query = @"SELECT Sites.Id, Sites.Name, Sites.StartedDate,
-                                Sites.SiteStatusId, SiteStatus.Status, Addresses.AddressLine1,
-                                Addresses.AddressTypeId, AddressTypes.Name AS AddressTypes,
-                                Addresses.CountryId, Countries.Name AS CountryName,
-                                Addresses.PinCode
-                                FROM Sites
-                                LEFT JOIN SiteStatus ON Sites.SiteStatusId = SiteStatus.Id
-                                LEFT JOIN Addresses ON Sites.Id = Addresses.SiteId
-                                LEFT JOIN AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
-                                LEFT JOIN Countries ON Addresses.CountryId = Countries.Id";
+                string query = @"SELECT 
+                                    Sites.Id, Sites.Name, Sites.ContactName, Sites.ContactNumber,
+                                    Sites.StartedDate, Sites.SiteStatusId, Sites.ExpectedBudget, 
+                                    Sites.ExpectedCompletionDate, SiteStatus.Status, 
+                                    Addresses.AddressLine1, Addresses.AddressTypeId, 
+                                    AddressTypes.Name AS AddressTypes, Addresses.CountryId, 
+                                    Countries.Name AS CountryName, Addresses.PinCode
+                                FROM 
+                                    Sites
+                                LEFT JOIN 
+                                    SiteStatus ON Sites.SiteStatusId = SiteStatus.Id
+                                LEFT JOIN 
+                                    Addresses ON Sites.Id = Addresses.SiteId
+                                LEFT JOIN   
+                                    AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
+                                LEFT JOIN 
+                                    Countries ON Addresses.CountryId = Countries.Id";
 
                 return db.Query<Site>(query).AsList();
             }
@@ -41,17 +48,23 @@ namespace ConstructionApplication.Repository.Dapper
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                string query = @"SELECT Sites.Id, Sites.Name, Sites.StartedDate,
-                                Sites.SiteStatusId, SiteStatus.Status, 
-                                Addresses.AddressLine1,
-                                AddressTypes.Name AS AddressTypes,
-                                Countries.Name AS CountryName,
-                                Addresses.PinCode
-                                FROM Sites
-                                LEFT JOIN SiteStatus ON Sites.SiteStatusId = SiteStatus.Id
-                                LEFT JOIN Addresses ON Sites.Id = Addresses.SiteId
-                                LEFT JOIN AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
-                                LEFT JOIN Countries ON Addresses.CountryId = Countries.Id
+                string query = @"SELECT 
+                                    Sites.Id, Sites.Name, Sites.ContactName, Sites.ContactNumber,
+                                    Sites.StartedDate, Sites.ExpectedBudget, 
+                                    Sites.ExpectedCompletionDate, Sites.SiteStatusId, 
+                                    SiteStatus.Status, Addresses.AddressLine1, 
+                                    AddressTypes.Name AS AddressTypes, Countries.Name AS CountryName, 
+                                    Addresses.PinCode
+                                FROM 
+                                    Sites
+                                LEFT JOIN 
+                                    SiteStatus ON Sites.SiteStatusId = SiteStatus.Id
+                                LEFT JOIN 
+                                    Addresses ON Sites.Id = Addresses.SiteId
+                                LEFT JOIN 
+                                    AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
+                                LEFT JOIN 
+                                    Countries ON Addresses.CountryId = Countries.Id
                                 WHERE Sites.Id = @Id";
 
                 return db.QueryFirstOrDefault<Site>(query, new { Id = id });
@@ -62,16 +75,25 @@ namespace ConstructionApplication.Repository.Dapper
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                string insertQuery = @"INSERT INTO Sites (Name, StartedDate, SiteStatusId, Note)
-                                       VALUES (@Name, @StartedDate, @SiteStatusId, @Note);
-                                       SELECT CAST(SCOPE_IDENTITY() as int);";
+                string insertQuery = @"
+                                     INSERT INTO Sites 
+                                       (Name, ContactName, ContactNumber, StartedDate, SiteStatusId, 
+                                                        Note, ExpectedBudget, ExpectedCompletionDate)
+                                     VALUES 
+                                       (@Name, @ContactName, @ContactNumber, @StartedDate, @SiteStatusId, 
+                                                        @Note, @ExpectedBudget, @ExpectedCompletionDate);
+                                     SELECT CAST(SCOPE_IDENTITY() as int);";
 
                 return db.ExecuteScalar<int>(insertQuery, new
                 {
                     site.Name,
+                    site.ContactName,
+                    site.ContactNumber,
                     site.StartedDate,
                     site.SiteStatusId,
-                    Note = string.IsNullOrEmpty(site.Note) ? null : site.Note
+                    Note = string.IsNullOrEmpty(site.Note) ? null : site.Note,
+                    site.ExpectedBudget,
+                    site.ExpectedCompletionDate
                 });
             }
         }
@@ -81,19 +103,27 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 string updateQuery = @"UPDATE Sites SET
-                                       Name = @Name,
-                                       StartedDate = @StartedDate,
-                                       SiteStatusId = @SiteStatusId,
-                                       Note = @Note
+                                        Name = @Name,
+                                        ContactName = @ContactName,
+                                        ContactNumber = @ContactNumber,
+                                        StartedDate = @StartedDate,
+                                        SiteStatusId = @SiteStatusId,
+                                        Note = @Note,
+                                        ExpectedBudget = @ExpectedBudget,
+                                        ExpectedCompletionDate = @ExpectedCompletionDate
                                        WHERE Id = @Id";
 
                 return db.Execute(updateQuery, new
                 {
                     site.Id,
                     site.Name,
+                    site.ContactName,
+                    site.ContactNumber,
                     site.StartedDate,
                     site.SiteStatusId,
-                    Note = string.IsNullOrEmpty(site.Note) ? null : site.Note
+                    Note = string.IsNullOrEmpty(site.Note) ? null : site.Note,
+                    site.ExpectedBudget,
+                    site.ExpectedCompletionDate
                 });
             }
         }
