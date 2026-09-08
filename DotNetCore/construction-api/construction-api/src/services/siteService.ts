@@ -106,6 +106,15 @@ export interface ServiceProviderResponse {
   tilers:       ProviderOption[];
 }
 
+export interface SiteFilterParams {
+  search?: string;
+  statusId?: number;
+  fromDate?: string;
+  toDate?: string;
+  budgetFrom?: number;
+  budgetTo?: number;
+}
+
 export const getNavbarSites = async (): Promise<SiteDropdownDto[]> => {
   const res = await fetch(`${BASE}/GetAllSites`);
   if (!res.ok) throw new Error("Failed to fetch sites");
@@ -181,4 +190,54 @@ export const updateScopeStatus = async (
     body:    JSON.stringify({ siteScopeId, scopeStatusId, remarks }),
   });
   if (!res.ok) throw new Error("Failed to update scope status");
+};
+
+export const filterSites = async (
+  filters: SiteFilterParams
+): Promise<SiteListDto[]> => {
+  const params = new URLSearchParams();
+
+  if (filters.search?.trim()) {
+    params.append("search", filters.search.trim());
+  }
+
+  if (filters.statusId !== undefined && filters.statusId !== null) {
+    params.append("statusId", filters.statusId.toString());
+  }
+
+  if (filters.fromDate) {
+    params.append("fromDate", filters.fromDate);
+  }
+
+  if (filters.toDate) {
+    params.append("toDate", filters.toDate);
+  }
+
+  if (filters.budgetFrom !== undefined && filters.budgetFrom !== null
+  ) {
+    params.append("budgetFrom", filters.budgetFrom.toString());
+  }
+
+  if (filters.budgetTo !== undefined && filters.budgetTo !== null
+  ) {
+    params.append("budgetTo", filters.budgetTo.toString());
+  }
+
+  const queryString = params.toString();
+
+  const url = queryString
+    ? `${BASE}/filter?${queryString}`
+    : `${BASE}/filter`;
+
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+
+    throw new Error(
+      (data as any).message || "Failed to filter sites"
+    );
+  }
+
+  return res.json();
 };
