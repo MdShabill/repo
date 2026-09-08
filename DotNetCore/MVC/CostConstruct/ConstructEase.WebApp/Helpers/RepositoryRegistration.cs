@@ -34,7 +34,7 @@ namespace ConstructEase.WebApp.Helpers
             services.AddScoped<ICountryRepository>(svc => new CountryRepository(connectionString));
             services.AddScoped<IAddressTypeRepository>(svc => new AddressTypeRepository(connectionString));
             services.AddScoped<IUserRepository>(svc => new UserRepository(connectionString));
-            services.AddScoped<ISiteRepository>(svc => new SiteRepository(connectionString));
+            //services.AddScoped<ISiteRepository>(svc => new SiteRepository(connectionString));
             services.AddScoped<ISiteStatusRepository>(svc => new SiteStatusRepository(connectionString));
         }
 

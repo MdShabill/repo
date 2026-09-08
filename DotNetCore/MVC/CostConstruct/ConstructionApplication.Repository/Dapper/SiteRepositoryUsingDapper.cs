@@ -44,6 +44,99 @@ namespace ConstructionApplication.Repository.Dapper
             }
         }
 
+        public List<Site> GetSites(string? search, int? statusId, DateTime? fromDate, DateTime? toDate, 
+                                   decimal? budgetFrom, decimal? budgetTo)
+        {
+            using (IDbConnection db = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT 
+                        Sites.Id, Sites.Name, Sites.ContactName, Sites.ContactNumber, Sites.StartedDate,
+                        Sites.SiteStatusId, Sites.ExpectedBudget, Sites.ExpectedCompletionDate,
+                        SiteStatus.Status, Addresses.AddressLine1, Addresses.AddressTypeId,
+                        AddressTypes.Name AS AddressTypes, Addresses.CountryId,
+                        Countries.Name AS CountryName, Addresses.PinCode
+                    FROM 
+                        Sites
+
+                    LEFT JOIN SiteStatus
+                        ON Sites.SiteStatusId = SiteStatus.Id
+
+                    LEFT JOIN Addresses
+                        ON Sites.Id = Addresses.SiteId
+
+                    LEFT JOIN AddressTypes
+                        ON Addresses.AddressTypeId = AddressTypes.Id
+
+                    LEFT JOIN Countries
+                        ON Addresses.CountryId = Countries.Id
+
+                    WHERE
+                        (
+                            @Search IS NULL
+                            OR @Search = ''
+                            OR Sites.Name LIKE '%' + @Search + '%'
+                            OR Sites.ContactName LIKE '%' + @Search + '%'
+                        )
+
+                        AND
+                        (
+                            @StatusId IS NULL
+                            OR Sites.SiteStatusId = @StatusId
+                        )
+
+                        AND
+                        (
+                            @FromDate IS NULL
+                            OR
+                            (
+                                Sites.ExpectedCompletionDate IS NULL
+                                OR Sites.ExpectedCompletionDate >= @FromDate
+                            )
+                        )
+
+                        AND
+                        (
+                            @ToDate IS NULL
+                            OR
+                            (
+                                Sites.StartedDate IS NULL
+                                OR Sites.StartedDate <= @ToDate
+                            )
+                        )
+
+                        AND
+                        (
+                            @BudgetFrom IS NULL
+                            OR Sites.ExpectedBudget >= @BudgetFrom
+                        )
+
+                        AND
+                        (
+                            @BudgetTo IS NULL
+                            OR Sites.ExpectedBudget <= @BudgetTo
+                        )";
+
+                var parameters = new
+                {
+                    Search = string.IsNullOrWhiteSpace(search)
+                        ? null
+                        : search.Trim(),
+
+                    StatusId = statusId,
+
+                    FromDate = fromDate?.Date,
+
+                    ToDate = toDate?.Date,
+
+                    BudgetFrom = budgetFrom,
+
+                    BudgetTo = budgetTo
+                };
+
+                return db.Query<Site>(query, parameters).AsList();
+            }
+        }
+
         public Site GetSiteById(int id)
         {
             using (IDbConnection db = new SqlConnection(_connectionString))

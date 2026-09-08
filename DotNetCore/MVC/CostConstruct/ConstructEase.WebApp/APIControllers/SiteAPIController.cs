@@ -76,6 +76,49 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(siteApiVm);
         }
 
+        [HttpGet("filter")]
+        public IActionResult FilterSites(string? search, int? statusId,DateTime? fromDate, 
+                                         DateTime? toDate, decimal? budgetFrom, decimal? budgetTo)
+        {
+            if (fromDate.HasValue && toDate.HasValue && fromDate > toDate)
+            {
+                return BadRequest(new
+                {
+                    message = "From Date cannot be greater than To Date."
+                });
+            }
+
+            if (budgetFrom.HasValue && budgetFrom < 0)
+            {
+                return BadRequest(new
+                {
+                    message = "Budget From cannot be negative."
+                });
+            }
+
+            if (budgetTo.HasValue && budgetTo < 0)
+            {
+                return BadRequest(new
+                {
+                    message = "Budget To cannot be negative."
+                });
+            }
+
+            if (budgetFrom.HasValue && budgetTo.HasValue && budgetFrom > budgetTo)
+            {
+                return BadRequest(new
+                {
+                    message = "Budget From cannot be greater than Budget To."
+                });
+            }
+
+            var sites = _siteRepository.GetSites(search, statusId, fromDate, toDate, budgetFrom, budgetTo);
+
+            var siteApiVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>,List<SiteAPIDTO>>(sites);
+
+            return Ok(siteApiVm);
+        }
+
         [HttpGet("select-site")]
         public IActionResult SelectSite(int id)
         {

@@ -34,7 +34,7 @@ namespace ConstructionApplication.Helpers
             services.AddTransient<ICountryRepository>(svc => new CountryRepository(connectionString));
             services.AddTransient<IAddressTypeRepository>(svc => new AddressTypeRepository(connectionString));
             services.AddTransient<IUserRepository>(svc => new UserRepository(connectionString));
-            services.AddTransient<ISiteRepository>(svc => new SiteRepository(connectionString));
+            //services.AddTransient<ISiteRepository>(svc => new SiteRepository(connectionString));
             services.AddTransient<ISiteStatusRepository>(svc => new SiteStatusRepository(connectionString));
         }
 

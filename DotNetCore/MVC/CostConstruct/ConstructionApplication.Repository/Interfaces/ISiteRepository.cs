@@ -6,6 +6,7 @@ namespace ConstructionApplication.Repository.Interfaces
     public interface ISiteRepository
     {
         public List<Site> GetAllSites();
+        public List<Site> GetSites(string? search, int? statusId, DateTime? fromDate, DateTime? toDate, decimal? budgetFrom,decimal? budgetTo);
         public Site GetSiteById(int id);
         public int Update(Site site);
         public int Create(Site site);
