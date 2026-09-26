@@ -1,29 +1,30 @@
+// Path: src/components/Navbar.tsx
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
-import { getNavbarSites } from "../services/siteService";
+import { getNavbarSites }    from "../services/siteService";
 import type { SiteDropdownDto } from "../services/siteService";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/Authcontext";
-import { useSite } from "../context/Sitecontext";
+import { useAuth }             from "../context/Authcontext";
+import { useSite }             from "../context/Sitecontext";
 
 function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout }                = useAuth();
   const { selectedSite, setSelectedSite } = useSite();
-  const navigate = useNavigate();
+  const navigate                        = useNavigate();
+  //const location                        = useLocation();   // ← NEW
 
-  const [sites, setSites] = useState<SiteDropdownDto[]>([]);
-
+  const [sites,        setSites]        = useState<SiteDropdownDto[]>([]);
   const [pendingSiteId, setPendingSiteId] = useState<string>(
     selectedSite ? String(selectedSite.id) : ""
   );
 
-  useEffect(() => {
-    loadSites();
-  }, []);
+  // Dark navbar only on home page
+  //const isHomePage = location.pathname === "/home";   // ← NEW
 
-  // Keep dropdown in sync if selectedSite changes elsewhere (e.g. on mount from localStorage)
+  useEffect(() => { loadSites(); }, []);
+
   useEffect(() => {
     setPendingSiteId(selectedSite ? String(selectedSite.id) : "");
   }, [selectedSite]);
@@ -47,20 +48,20 @@ function Navbar() {
       alert("Please select site");
       return;
     }
-
     const site = sites.find((s) => String(s.id) === pendingSiteId);
     if (!site) {
       alert("Selected site not found");
       return;
     }
-
     setSelectedSite(site);
     navigate("/home");
   };
 
   return (
+    // isHomePage ? dark variant : default white
     <nav className="ce-navbar">
       <div className="ce-container">
+
         {/* Logo */}
         <Link to="/home" className="ce-brand">
           <img src="/UploadedImage/WebSiteLogo.jpg" alt="Builder Ledger" />
@@ -97,15 +98,17 @@ function Navbar() {
             Go
           </button>
 
-          <div className="ce-divider"></div>
+          <div className="ce-divider" />
 
-          {/* Mirrors @Context.Session.GetString("UserName") in _Layout.cshtml */}
-          <span className="ce-user">Welcome, {user?.fullName || "User"}</span>
+          <span className="ce-user">
+            Welcome, {user?.fullName || "User"}
+          </span>
 
           <button className="ce-logout" onClick={handleLogout}>
             Log Out
           </button>
         </div>
+
       </div>
     </nav>
   );

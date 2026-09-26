@@ -12,6 +12,7 @@ import CostMasterList             from "./pages/CostMaster/CostMasterList";
 import CostMasterAdd              from "./pages/CostMaster/CostMasterAdd";
 import CostMasterEdit             from "./pages/CostMaster/CostMasterEdit";
 import SiteList                   from "./components/SiteList";
+import SiteDetail                 from "./components/SiteDetail";
 import SiteAdd                    from "./components/SiteAdd";
 import SiteEdit                   from "./components/SiteEdit";
 import DailyAttendanceList        from "./pages/DailyAttendance/DailyAttendanceList";
@@ -22,12 +23,14 @@ import ServiceProviderList        from "./pages/ServiceProvider/ServiceProviderL
 import ServiceProviderAdd         from "./pages/ServiceProvider/ServiceProviderAdd";
 import ServiceProviderEdit        from "./pages/ServiceProvider/ServiceProviderEdit";
 
+
 function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   return (
     <>
       <Navbar />
+      {/* paddingTop: 68px — navbar ki height compensate karta hai */}
       <main style={{ paddingTop: "68px" }}>{children}</main>
     </>
   );
@@ -55,6 +58,9 @@ function AppRoutes() {
       {/* Site module — login only, no site selection required */}
       <Route path="/sites"
         element={<AppLayout><RequireAuth><SiteList /></RequireAuth></AppLayout>}
+      />
+      <Route path="/site-detail/:id"
+        element={<AppLayout><RequireAuth><SiteDetail /></RequireAuth></AppLayout>}
       />
       <Route path="/site-add"
         element={<AppLayout><RequireAuth><SiteAdd /></RequireAuth></AppLayout>}

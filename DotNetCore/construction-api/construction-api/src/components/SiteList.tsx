@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {getAllSites, filterSites, getDropdownData, deleteSite,} from "../services/siteService";
-import type {SiteListDto, DropdownItem,} from "../services/siteService";
+import { getAllSites, filterSites, getDropdownData, deleteSite, } from "../services/siteService";
+import type { SiteListDto, DropdownItem, } from "../services/siteService";
 
 function SiteList() {
   const location = useLocation();
@@ -1147,7 +1147,16 @@ function SiteList() {
                             "1px solid #E5E7EB",
                         }}
                       >
-                        <b>{site.name}</b>
+                        <Link
+                          to={`/site-detail/${site.id}`}
+                          style={{
+                            color: "inherit",
+                            textDecoration: "none",
+                            fontWeight: "inherit",
+                          }}
+                        >
+                          <b>{site.name}</b>
+                        </Link>
                       </td>
 
                       {/* ================= STARTED DATE ================= */}
