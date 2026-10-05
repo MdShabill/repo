@@ -11,15 +11,13 @@ namespace ConstructEase.WebApp.Controllers
     {
         private readonly SiteReportPdfService _pdfService;
 
-        public SiteReportAPIController(
-            SiteReportPdfService pdfService)
+        public SiteReportAPIController(SiteReportPdfService pdfService)
         {
             _pdfService = pdfService;
         }
 
         [HttpPost("generate-pdf")]
-        public async Task<IActionResult> GeneratePdf(
-            [FromBody] GeneratePdfRequest request)
+        public async Task<IActionResult> GeneratePdf([FromBody] GeneratePdfRequest request)
         {
             if (request == null ||
                 string.IsNullOrWhiteSpace(request.Html))

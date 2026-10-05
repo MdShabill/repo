@@ -8,76 +8,63 @@ namespace ConstructEase.WebApp.Services
         private IBrowser? _browser;
         private IBrowserContext? _context;
 
-        public async Task StartAsync(
-            CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _playwright =
-                await Playwright.CreateAsync();
+            _playwright = await Playwright.CreateAsync();
 
-            _browser =
-                await _playwright.Chromium.LaunchAsync(
+            _browser =await _playwright.Chromium.LaunchAsync(
                     new BrowserTypeLaunchOptions
                     {
                         Headless = true
                     });
 
-            _context =
-                await _browser.NewContextAsync(
+            _context =await _browser.NewContextAsync(
                     new BrowserNewContextOptions
                     {
                         ViewportSize =
-                            new ViewportSize
-                            {
-                                Width = 1200,
-                                Height = 800
-                            }
+                        new ViewportSize
+                        {
+                            Width = 1200,
+                            Height = 800
+                        }
                     });
         }
 
-        public async Task<byte[]> GeneratePdfAsync(
-            string html)
+        public async Task<byte[]> GeneratePdfAsync(string html)
         {
             if (_context == null)
             {
-                throw new InvalidOperationException(
-                    "PDF browser context is not initialized."
-                );
+                throw new InvalidOperationException("PDF browser context is not initialized.");
             }
 
-            await using var page =
-                await _context.NewPageAsync();
+            await using var page = await _context.NewPageAsync();
 
-            await page.SetContentAsync(
-                html,
+            await page.SetContentAsync(html,
                 new PageSetContentOptions
                 {
-                    WaitUntil =
-                        WaitUntilState.DOMContentLoaded
+                    WaitUntil =WaitUntilState.DOMContentLoaded
                 });
 
-            var pdfBytes =
-                await page.PdfAsync(
+            var pdfBytes =await page.PdfAsync(
                     new PagePdfOptions
                     {
                         Format = "A4",
                         PrintBackground = true,
                         PreferCSSPageSize = true,
 
-                        Margin =
-                            new Margin
-                            {
-                                Top = "10mm",
-                                Right = "10mm",
-                                Bottom = "10mm",
-                                Left = "10mm"
-                            }
+                        Margin = new Margin
+                        {
+                            Top = "10mm",
+                            Right = "10mm",
+                            Bottom = "10mm",
+                            Left = "10mm"
+                        }
                     });
 
             return pdfBytes;
         }
 
-        public async Task StopAsync(
-            CancellationToken cancellationToken)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
             if (_context != null)
             {

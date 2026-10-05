@@ -5,6 +5,8 @@ using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace ConstructEase.WebApp.APIControllers
 {
@@ -12,521 +14,975 @@ namespace ConstructEase.WebApp.APIControllers
     [ApiController]
     public class SiteAPIController : ControllerBase
     {
-        private readonly ISiteStatusRepository      _siteStatusRepository;
-        IAddressRepository                          _addressRepository;
-        IAddressTypeRepository                      _addressTypeRepository;
-        ICountryRepository                          _countryRepository;
-        IServiceProviderRepository                  _serviceProviderRepository;
-        ISiteRepository                             _siteRepository;
-        IMapper                                     _imapper;
-        IMemoryCache                                _cache;
-        ISiteScopeMasterRepository                  _siteScopeMasterRepository;
-        ISiteScopeRepository                        _siteScopeRepository;
+        private readonly ISiteStatusRepository          _siteStatusRepository;
+        private readonly IAddressRepository             _addressRepository;
+        private readonly IAddressTypeRepository         _addressTypeRepository;
+        private readonly ICountryRepository             _countryRepository;
+        private readonly IServiceProviderRepository     _serviceProviderRepository;
+        private readonly ISiteRepository                _siteRepository;
+        private readonly IMapper                        _imapper;
+        private readonly IMemoryCache                   _cache;
+        private readonly ISiteScopeMasterRepository     _siteScopeMasterRepository;
+        private readonly ISiteScopeRepository           _siteScopeRepository;
+        private readonly ILogger<SiteAPIController>     _logger;
 
-        public SiteAPIController(ISiteStatusRepository siteStatusRepository,
-                                 IAddressRepository addressRepository,
-                                 IAddressTypeRepository addressTypeRepository,
-                                 ICountryRepository countryRepository,
-                                 IServiceProviderRepository serviceProviderRepository,
-                                 ISiteRepository siteRepository,
-                                 IMemoryCache cache,
-                                 ISiteScopeMasterRepository siteScopeMasterRepository,
-                                 ISiteScopeRepository siteScopeRepository)
+        public SiteAPIController(
+            ISiteStatusRepository           siteStatusRepository,
+            IAddressRepository              addressRepository,
+            IAddressTypeRepository          addressTypeRepository,
+            ICountryRepository              countryRepository,
+            IServiceProviderRepository      serviceProviderRepository,
+            ISiteRepository                 siteRepository,
+            IMemoryCache                    cache,
+            ISiteScopeMasterRepository      siteScopeMasterRepository,
+            ISiteScopeRepository            siteScopeRepository,
+            ILogger<SiteAPIController>      logger)
         {
-            _siteRepository            = siteRepository;
-            _siteStatusRepository      = siteStatusRepository;
-            _addressRepository         = addressRepository;
-            _addressTypeRepository     = addressTypeRepository;
-            _countryRepository         = countryRepository;
-            _serviceProviderRepository = serviceProviderRepository;
-            _cache                     = cache;
-            _siteScopeMasterRepository = siteScopeMasterRepository;
-            _siteScopeRepository       = siteScopeRepository;
+            _siteRepository                 = siteRepository;
+            _siteStatusRepository           = siteStatusRepository;
+            _addressRepository              = addressRepository;
+            _addressTypeRepository          = addressTypeRepository;
+            _countryRepository              = countryRepository;
+            _serviceProviderRepository      = serviceProviderRepository;
+            _cache = cache;
+            _siteScopeMasterRepository      = siteScopeMasterRepository;
+            _siteScopeRepository            = siteScopeRepository;
+            _logger                         = logger;
 
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<ConstructionApplication.Core.DataModels.Site.Site, SiteAPIDTO>();
+
                 cfg.CreateMap<SiteAPIDTO, ConstructionApplication.Core.DataModels.Site.Site>();
+
                 cfg.CreateMap<ConstructionApplication.Core.DataModels.Site.Site, SiteAPIVm>();
             });
-
             _imapper = configuration.CreateMapper();
         }
 
         [HttpGet("GetAllSites")]
         public IActionResult GetAllSites()
         {
-            const string cacheKey = "AllSites";
-            List<ConstructionApplication.Core.DataModels.Site.Site> sites;
+            Stopwatch actionTimer = Stopwatch.StartNew();
 
-            if (!_cache.TryGetValue(cacheKey, out sites))
+            _logger.LogInformation("API Action: GetAllSites | Invoked: {InvokedAt}",
+                DateTime.Now.ToString("HH:mm:ss.fff"));
+            try
             {
-                sites = _siteRepository.GetAllSites();
+                const string cacheKey = "AllSites";
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(10));
+                List<ConstructionApplication.Core.DataModels.Site.Site> sites;
 
-                _cache.Set(cacheKey, sites, cacheEntryOptions);
+                if (!_cache.TryGetValue(cacheKey, out sites))
+                {
+                    sites = ExecuteAndLog("ISiteRepository.GetAllSites",
+                            () => _siteRepository.GetAllSites());
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(10));
+
+                    _cache.Set(cacheKey, sites, cacheEntryOptions);
+                }
+
+                var siteApiVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>,
+                                             List<SiteAPIDTO>>(sites);
+
+                _logger.LogInformation("\nTotal Site: {TotalSite}", sites?.Count ?? 0);
+
+                _logger.LogInformation("\nError: None | Exception: None");
+
+                return Ok(siteApiVm);
             }
+            catch (Exception ex)
+            {
+                LogException("GetAllSites", ex);
+                throw;
+            }
+            finally
+            {
+                actionTimer.Stop();
 
-            var siteApiVm =
-                _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>,
-                             List<SiteAPIDTO>>(sites);
-
-            return Ok(siteApiVm);
+                _logger.LogInformation("\nAPI Action: GetAllSites | Completed | Total Time: {ElapsedMs} ms",
+                    actionTimer.ElapsedMilliseconds);
+            }
         }
 
         [HttpGet("filter")]
-        public IActionResult FilterSites(string? search, int? statusId,DateTime? fromDate, 
+        public IActionResult FilterSites(string? search, int? statusId, DateTime? fromDate,
                                          DateTime? toDate, decimal? budgetFrom, decimal? budgetTo)
         {
-            if (fromDate.HasValue && toDate.HasValue && fromDate > toDate)
+            Stopwatch actionTimer = Stopwatch.StartNew();
+
+            _logger.LogInformation("API Action: FilterSites | Invoked: {InvokedAt}",
+                DateTime.Now.ToString("HH:mm:ss.fff"));
+
+            try
             {
-                return BadRequest(new
+                if (fromDate.HasValue && toDate.HasValue && fromDate > toDate)
                 {
-                    message = "From Date cannot be greater than To Date."
-                });
-            }
+                    _logger.LogInformation("\nError: From Date cannot be greater than To Date | Exception: None");
 
-            if (budgetFrom.HasValue && budgetFrom < 0)
+                    return BadRequest(new
+                    {
+                        message = "From Date cannot be greater than To Date."
+                    });
+                }
+
+                if (budgetFrom.HasValue && budgetFrom < 0)
+                {
+                    _logger.LogInformation("\nError: Budget From cannot be negative | Exception: None");
+
+                    return BadRequest(new
+                    {
+                        message = "Budget From cannot be negative."
+                    });
+                }
+
+                if (budgetTo.HasValue && budgetTo < 0)
+                {
+                    _logger.LogInformation("\nError: Budget To cannot be negative | Exception: None");
+
+                    return BadRequest(new
+                    {
+                        message = "Budget To cannot be negative."
+                    });
+                }
+
+                if (budgetFrom.HasValue && budgetTo.HasValue && budgetFrom > budgetTo)
+                {
+                    _logger.LogInformation("\nError: Budget From cannot be greater than Budget To | Exception: None");
+
+                    return BadRequest(new
+                    {
+                        message = "Budget From cannot be greater than Budget To."
+                    });
+                }
+
+                var sites = ExecuteAndLog("ISiteRepository.GetSites",
+                    () => _siteRepository.GetSites(search, statusId, fromDate,
+                                                    toDate, budgetFrom, budgetTo));
+                var siteApiVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>,
+                                             List<SiteAPIDTO>>(sites);
+
+                _logger.LogInformation("\nTotal Site: {TotalSite}", sites?.Count ?? 0);
+
+                _logger.LogInformation("\nError: None | Exception: None");
+
+                return Ok(siteApiVm);
+            }
+            catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    message = "Budget From cannot be negative."
-                });
+                LogException("FilterSites", ex);
+                throw;
             }
-
-            if (budgetTo.HasValue && budgetTo < 0)
+            finally
             {
-                return BadRequest(new
-                {
-                    message = "Budget To cannot be negative."
-                });
+                actionTimer.Stop();
+
+                _logger.LogInformation("\nAPI Action: FilterSites | Completed | Total Time: {ElapsedMs} ms",
+                    actionTimer.ElapsedMilliseconds);
             }
-
-            if (budgetFrom.HasValue && budgetTo.HasValue && budgetFrom > budgetTo)
-            {
-                return BadRequest(new
-                {
-                    message = "Budget From cannot be greater than Budget To."
-                });
-            }
-
-            var sites = _siteRepository.GetSites(search, statusId, fromDate, toDate, budgetFrom, budgetTo);
-
-            var siteApiVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>,List<SiteAPIDTO>>(sites);
-
-            return Ok(siteApiVm);
         }
 
         [HttpGet("select-site")]
         public IActionResult SelectSite(int id)
         {
-            var selectedSite = _siteRepository.GetSiteById(id);
+            Stopwatch actionTimer = Stopwatch.StartNew();
 
-            if (selectedSite == null)
-                return NotFound(new { message = "Site not found" });
+            _logger.LogInformation("API Action: SelectSite | Invoked: {InvokedAt}",
+                DateTime.Now.ToString("HH:mm:ss.fff"));
+            try
+            {
+                var selectedSite = ExecuteAndLog("ISiteRepository.GetSiteById",
+                    () => _siteRepository.GetSiteById(id));
 
-            return Ok(selectedSite);
+                if (selectedSite == null)
+                {
+                    _logger.LogInformation("\nError: Site not found | Exception: None");
+
+                    return NotFound(new
+                    {
+                        message = "Site not found"
+                    });
+                }
+
+                _logger.LogInformation("\nError: None | Exception: None");
+
+                return Ok(selectedSite);
+            }
+            catch (Exception ex)
+            {
+                LogException("SelectSite", ex);
+                throw;
+            }
+            finally
+            {
+                actionTimer.Stop();
+
+                _logger.LogInformation("\nAPI Action: SelectSite | Completed | Total Time: {ElapsedMs} ms",
+                    actionTimer.ElapsedMilliseconds);
+            }
         }
 
         [HttpPost("add")]
         public IActionResult Add(SiteAPIDTO siteApiDto)
         {
-            if (siteApiDto == null)
-                return BadRequest("Invalid data");
+            Stopwatch actionTimer = Stopwatch.StartNew();
 
-            var site =
-                _imapper.Map<SiteAPIDTO,
-                             ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
+            _logger.LogInformation("API Action: Add | Invoked: {InvokedAt}",
+                DateTime.Now.ToString("HH:mm:ss.fff"));
 
-            site.Id = _siteRepository.Create(site);
-
-            if (site.Id <= 0)
-                return StatusCode(500, "Failed to create site");
-
-            AddAddressIfPresent(site.Id, siteApiDto);
-
-            if (siteApiDto.SelectedMasterMasonIds?.Count > 0)
+            try
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.MasterMasion,
-                    siteApiDto.SelectedMasterMasonIds);
+                if (siteApiDto == null)
+                {
+                    _logger.LogInformation("\nError: Invalid data | Exception: None");
+
+                    return BadRequest("Invalid data");
+                }
+
+                var site =_imapper.Map<SiteAPIDTO, ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
+
+                site.Id = ExecuteAndLog("ISiteRepository.Create", () => _siteRepository.Create(site));
+
+                if (site.Id <= 0)
+                {
+                    _logger.LogInformation("\nError: Failed to create site | Exception: None");
+
+                    return StatusCode(500,"Failed to create site");
+                }
+
+                ExecuteAndLog("AddAddressIfPresent", () => AddAddressIfPresent(site.Id, siteApiDto));
+
+                if (siteApiDto.SelectedMasterMasonIds?.Count > 0)
+                {
+                    ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id,
+                                              ServiceTypes.MasterMasion, siteApiDto.SelectedMasterMasonIds));
+                }
+
+                if (siteApiDto.SelectedElectricianIds?.Count > 0)
+                {
+                    ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician,
+                                              siteApiDto.SelectedElectricianIds));
+                }
+
+                if (siteApiDto.SelectedLabourIds?.Count > 0)
+                {
+                    ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour,
+                                              siteApiDto.SelectedLabourIds));
+                }
+
+                if (siteApiDto.SelectedPlumberIds?.Count > 0)
+                {
+                    ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber,
+                                              siteApiDto.SelectedPlumberIds));
+                }
+
+                if (siteApiDto.SelectedPainterIds?.Count > 0)
+                {
+                    ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter,
+                                              siteApiDto.SelectedPainterIds));
+                }
+
+                if (siteApiDto.SelectedCarpenterIds?.Count > 0)
+                {
+                    ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter,
+                                              siteApiDto.SelectedCarpenterIds));
+                }
+
+                if (siteApiDto.SelectedTilerIds?.Count > 0)
+                {
+                    ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler,
+                                              siteApiDto.SelectedTilerIds));
+                }
+
+                if (siteApiDto.SelectedScopes?.Count > 0)
+                {
+                    var mappedScopes = siteApiDto.SelectedScopes
+                        .Select(s => (s.SiteScopeMasterId, s.ScopeStatusId, s.Remarks))
+                        .ToList();
+
+                    ExecuteAndLog(
+                        "ISiteScopeRepository.SaveScopes",
+                        () => _siteScopeRepository.SaveScopes(site.Id, mappedScopes));
+                }
+
+                _cache.Remove("AllSites");
+
+                _logger.LogInformation("\nSuccess: Add New Site Successful | Last Insert ID: {SiteId}", site.Id);
+
+                _logger.LogInformation("\nError: None | Exception: None");
+
+                return Ok(new
+                {
+                    message = "Add New Site Successful",
+                    siteId = site.Id
+                });
             }
-
-            if (siteApiDto.SelectedElectricianIds?.Count > 0)
+            catch (Exception ex)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Electrician,
-                    siteApiDto.SelectedElectricianIds);
+                LogException("Add", ex);
+                throw;
             }
-
-            if (siteApiDto.SelectedLabourIds?.Count > 0)
+            finally
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Labour,
-                    siteApiDto.SelectedLabourIds);
+                actionTimer.Stop();
+
+                _logger.LogInformation("\nAPI Action: Add | Completed | Total Time: {ElapsedMs} ms",
+                    actionTimer.ElapsedMilliseconds);
             }
-
-            if (siteApiDto.SelectedPlumberIds?.Count > 0)
-            {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Plumber,
-                    siteApiDto.SelectedPlumberIds);
-            }
-
-            if (siteApiDto.SelectedPainterIds?.Count > 0)
-            {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Painter,
-                    siteApiDto.SelectedPainterIds);
-            }
-
-            if (siteApiDto.SelectedCarpenterIds?.Count > 0)
-            {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Carpenter,
-                    siteApiDto.SelectedCarpenterIds);
-            }
-
-            if (siteApiDto.SelectedTilerIds?.Count > 0)
-            {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Tiler,
-                    siteApiDto.SelectedTilerIds);
-            }
-
-            // NEW — Site Scopes save
-            if (siteApiDto.SelectedScopes?.Count > 0)
-            {
-                var mappedScopes = siteApiDto.SelectedScopes
-                    .Select(s => (s.SiteScopeMasterId, s.ScopeStatusId, s.Remarks))
-                    .ToList();
-
-                _siteScopeRepository.SaveScopes(site.Id, mappedScopes);
-            }
-
-            _cache.Remove("AllSites");
-
-            return Ok(new
-            {
-                message = "Add New Site Successful",
-                siteId  = site.Id
-            });
         }
 
         [HttpGet("edit/{id}")]
         public IActionResult Edit(int id)
         {
-            var selectedSite = _siteRepository.GetSiteById(id);
+            Stopwatch actionTimer = Stopwatch.StartNew();
 
-            if (selectedSite == null)
-                return NotFound(new { message = "Site not found" });
+            _logger.LogInformation(
+                "API Action: Edit | Invoked: {InvokedAt}",
+                DateTime.Now.ToString("HH:mm:ss.fff"));
 
-            var siteApiVm =
-                _imapper.Map<ConstructionApplication.Core.DataModels.Site.Site,
-                             SiteAPIVm>(selectedSite);
-
-            // Already selected service provider IDs
-            siteApiVm.MasterMasonIds =
-                _siteRepository.GetServiceProviderIdsByTypes(
-                    id, new List<ServiceTypes> { ServiceTypes.MasterMasion });
-
-            siteApiVm.ElectricianIds =
-                _siteRepository.GetServiceProviderIdsByTypes(
-                    id, new List<ServiceTypes> { ServiceTypes.Electrician });
-
-            siteApiVm.LabourIds =
-                _siteRepository.GetServiceProviderIdsByTypes(
-                    id, new List<ServiceTypes> { ServiceTypes.Labour });
-
-            siteApiVm.PlumberIds =
-                _siteRepository.GetServiceProviderIdsByTypes(
-                    id, new List<ServiceTypes> { ServiceTypes.Plumber });
-
-            siteApiVm.PainterIds =
-                _siteRepository.GetServiceProviderIdsByTypes(
-                    id, new List<ServiceTypes> { ServiceTypes.Painter });
-
-            siteApiVm.CarpenterIds =
-                _siteRepository.GetServiceProviderIdsByTypes(
-                    id, new List<ServiceTypes> { ServiceTypes.Carpenter });
-
-            siteApiVm.TilerIds =
-                _siteRepository.GetServiceProviderIdsByTypes(
-                    id, new List<ServiceTypes> { ServiceTypes.Tiler });
-
-            // NEW — Already selected scopes for this site
-            var scopes = _siteScopeRepository.GetBySiteId(id);
-            siteApiVm.Scopes = scopes.Select(scopes => new SiteScopeVm
+            try
             {
-                Id                = scopes.Id,
-                SiteScopeMasterId = scopes.SiteScopeId,
-                ScopeName         = scopes.ScopeName,
-                ScopeStatusId     = scopes.ScopeStatusId,
-                StatusName        = scopes.StatusName,
-                Remarks           = scopes.Remarks,
-                CompletedDate     = scopes.CompletedDate,
-            }).ToList();
+                var selectedSite = ExecuteAndLog(
+                    "ISiteRepository.GetSiteById",
+                    () => _siteRepository.GetSiteById(id));
 
-            return Ok(siteApiVm);
+                if (selectedSite == null)
+                {
+                    _logger.LogInformation(
+                        "\nError: Site not found | Exception: None");
+
+                    return NotFound(new
+                    {
+                        message = "Site not found"
+                    });
+                }
+
+                var siteApiVm =
+                    _imapper.Map<
+                        ConstructionApplication.Core.DataModels.Site.Site,
+                        SiteAPIVm>(selectedSite);
+
+                siteApiVm.MasterMasonIds = ExecuteAndLog(
+                    "ISiteRepository.GetServiceProviderIdsByTypes",
+                    () => _siteRepository.GetServiceProviderIdsByTypes(
+                        id,
+                        new List<ServiceTypes>
+                        {
+                            ServiceTypes.MasterMasion
+                        }));
+
+                siteApiVm.ElectricianIds = ExecuteAndLog(
+                    "ISiteRepository.GetServiceProviderIdsByTypes",
+                    () => _siteRepository.GetServiceProviderIdsByTypes(
+                        id,
+                        new List<ServiceTypes>
+                        {
+                            ServiceTypes.Electrician
+                        }));
+
+                siteApiVm.LabourIds = ExecuteAndLog(
+                    "ISiteRepository.GetServiceProviderIdsByTypes",
+                    () => _siteRepository.GetServiceProviderIdsByTypes(
+                        id,
+                        new List<ServiceTypes>
+                        {
+                            ServiceTypes.Labour
+                        }));
+
+                siteApiVm.PlumberIds = ExecuteAndLog(
+                    "ISiteRepository.GetServiceProviderIdsByTypes",
+                    () => _siteRepository.GetServiceProviderIdsByTypes(
+                        id,
+                        new List<ServiceTypes>
+                        {
+                            ServiceTypes.Plumber
+                        }));
+
+                siteApiVm.PainterIds = ExecuteAndLog(
+                    "ISiteRepository.GetServiceProviderIdsByTypes",
+                    () => _siteRepository.GetServiceProviderIdsByTypes(
+                        id,
+                        new List<ServiceTypes>
+                        {
+                            ServiceTypes.Painter
+                        }));
+
+                siteApiVm.CarpenterIds = ExecuteAndLog(
+                    "ISiteRepository.GetServiceProviderIdsByTypes",
+                    () => _siteRepository.GetServiceProviderIdsByTypes(
+                        id,
+                        new List<ServiceTypes>
+                        {
+                            ServiceTypes.Carpenter
+                        }));
+
+                siteApiVm.TilerIds = ExecuteAndLog(
+                    "ISiteRepository.GetServiceProviderIdsByTypes",
+                    () => _siteRepository.GetServiceProviderIdsByTypes(
+                        id,
+                        new List<ServiceTypes>
+                        {
+                            ServiceTypes.Tiler
+                        }));
+
+                var scopes = ExecuteAndLog(
+                    "ISiteScopeRepository.GetBySiteId",
+                    () => _siteScopeRepository.GetBySiteId(id));
+
+                siteApiVm.Scopes = scopes
+                    .Select(scopes => new SiteScopeVm
+                    {
+                        Id = scopes.Id,
+                        SiteScopeMasterId = scopes.SiteScopeId,
+                        ScopeName = scopes.ScopeName,
+                        ScopeStatusId = scopes.ScopeStatusId,
+                        StatusName = scopes.StatusName,
+                        Remarks = scopes.Remarks,
+                        CompletedDate = scopes.CompletedDate,
+                    })
+                    .ToList();
+
+                _logger.LogInformation(
+                    "\nError: None | Exception: None");
+
+                return Ok(siteApiVm);
+            }
+            catch (Exception ex)
+            {
+                LogException("Edit", ex);
+                throw;
+            }
+            finally
+            {
+                actionTimer.Stop();
+
+                _logger.LogInformation(
+                    "\nAPI Action: Edit | Completed | Total Time: {ElapsedMs} ms",
+                    actionTimer.ElapsedMilliseconds);
+            }
         }
+
+        // ============================================================
+        // UPDATE SITE
+        // ============================================================
 
         [HttpPost("update")]
         public IActionResult Update(SiteAPIDTO siteApiDto)
         {
-            if (siteApiDto == null)
-                return BadRequest("Invalid data");
+            Stopwatch actionTimer = Stopwatch.StartNew();
 
-            var site =
-                _imapper.Map<SiteAPIDTO,
-                             ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
+            _logger.LogInformation(
+                "API Action: Update | Invoked: {InvokedAt}",
+                DateTime.Now.ToString("HH:mm:ss.fff"));
 
-            int affectedRowCount = _siteRepository.Update(site);
-
-            if (affectedRowCount <= 0)
-                return NotFound(new { message = "Site not found or update failed" });
-
-            AddAddressIfPresent(site.Id, siteApiDto);
-
-            if (siteApiDto.SelectedMasterMasonIds?.Count > 0)
+            try
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.MasterMasion,
-                    siteApiDto.SelectedMasterMasonIds);
-            }
+                if (siteApiDto == null)
+                {
+                    _logger.LogInformation(
+                        "\nError: Invalid data | Exception: None");
 
-            if (siteApiDto.SelectedElectricianIds?.Count > 0)
+                    return BadRequest("Invalid data");
+                }
+
+                var site =
+                    _imapper.Map<
+                        SiteAPIDTO,
+                        ConstructionApplication.Core.DataModels.Site.Site>(
+                            siteApiDto);
+
+                int affectedRowCount = ExecuteAndLog(
+                    "ISiteRepository.Update",
+                    () => _siteRepository.Update(site));
+
+                if (affectedRowCount <= 0)
+                {
+                    _logger.LogInformation(
+                        "\nError: Site not found or update failed | Exception: None");
+
+                    return NotFound(new
+                    {
+                        message = "Site not found or update failed"
+                    });
+                }
+
+                ExecuteAndLog(
+                    "AddAddressIfPresent",
+                    () => AddAddressIfPresent(site.Id, siteApiDto));
+
+                if (siteApiDto.SelectedMasterMasonIds?.Count > 0)
+                {
+                    ExecuteAndLog(
+                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.MasterMasion,
+                            siteApiDto.SelectedMasterMasonIds));
+                }
+
+                if (siteApiDto.SelectedElectricianIds?.Count > 0)
+                {
+                    ExecuteAndLog(
+                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Electrician,
+                            siteApiDto.SelectedElectricianIds));
+                }
+
+                if (siteApiDto.SelectedLabourIds?.Count > 0)
+                {
+                    ExecuteAndLog(
+                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Labour,
+                            siteApiDto.SelectedLabourIds));
+                }
+
+                if (siteApiDto.SelectedPlumberIds?.Count > 0)
+                {
+                    ExecuteAndLog(
+                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Plumber,
+                            siteApiDto.SelectedPlumberIds));
+                }
+
+                if (siteApiDto.SelectedPainterIds?.Count > 0)
+                {
+                    ExecuteAndLog(
+                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Painter,
+                            siteApiDto.SelectedPainterIds));
+                }
+
+                if (siteApiDto.SelectedCarpenterIds?.Count > 0)
+                {
+                    ExecuteAndLog(
+                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Carpenter,
+                            siteApiDto.SelectedCarpenterIds));
+                }
+
+                if (siteApiDto.SelectedTilerIds?.Count > 0)
+                {
+                    ExecuteAndLog(
+                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Tiler,
+                            siteApiDto.SelectedTilerIds));
+                }
+
+                var mappedScopes =
+                    (siteApiDto.SelectedScopes ??
+                     new List<ScopeSaveItem>())
+                    .Select(s => (
+                        s.SiteScopeMasterId,
+                        s.ScopeStatusId,
+                        s.Remarks))
+                    .ToList();
+
+                ExecuteAndLog(
+                    "ISiteScopeRepository.SaveScopes",
+                    () => _siteScopeRepository.SaveScopes(
+                        site.Id,
+                        mappedScopes));
+
+                _cache.Remove("AllSites");
+
+                _logger.LogInformation(
+                    "\nSuccess: Site updated successfully | Last Updated ID: {SiteId}",
+                    site.Id);
+
+                _logger.LogInformation(
+                    "\nError: None | Exception: None");
+
+                return Ok(new
+                {
+                    message = "Site updated successfully."
+                });
+            }
+            catch (Exception ex)
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Electrician,
-                    siteApiDto.SelectedElectricianIds);
+                LogException("Update", ex);
+                throw;
             }
-
-            if (siteApiDto.SelectedLabourIds?.Count > 0)
+            finally
             {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Labour,
-                    siteApiDto.SelectedLabourIds);
+                actionTimer.Stop();
+
+                _logger.LogInformation(
+                    "\nAPI Action: Update | Completed | Total Time: {ElapsedMs} ms",
+                    actionTimer.ElapsedMilliseconds);
             }
-
-            if (siteApiDto.SelectedPlumberIds?.Count > 0)
-            {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Plumber,
-                    siteApiDto.SelectedPlumberIds);
-            }
-
-            if (siteApiDto.SelectedPainterIds?.Count > 0)
-            {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Painter,
-                    siteApiDto.SelectedPainterIds);
-            }
-
-            if (siteApiDto.SelectedCarpenterIds?.Count > 0)
-            {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Carpenter,
-                    siteApiDto.SelectedCarpenterIds);
-            }
-
-            if (siteApiDto.SelectedTilerIds?.Count > 0)
-            {
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                    site.Id,
-                    ServiceTypes.Tiler,
-                    siteApiDto.SelectedTilerIds);
-            }
-
-            var mappedScopes = (siteApiDto.SelectedScopes ?? new List<ScopeSaveItem>())
-                .Select(s => (s.SiteScopeMasterId, s.ScopeStatusId, s.Remarks))
-                .ToList();
-
-            _siteScopeRepository.SaveScopes(site.Id, mappedScopes);
-
-            _cache.Remove("AllSites");
-
-            return Ok(new { message = "Site updated successfully." });
         }
+
+        // ============================================================
+        // DELETE SITE
+        // ============================================================
 
         [HttpDelete("{siteId}")]
         public IActionResult Delete(int siteId)
         {
-            if (siteId <= 0)
-                return BadRequest();
+            Stopwatch actionTimer = Stopwatch.StartNew();
 
-            _siteScopeRepository.SaveScopes(
-                siteId, new List<(int, int, string?)>());
+            _logger.LogInformation(
+                "API Action: Delete | Invoked: {InvokedAt}",
+                DateTime.Now.ToString("HH:mm:ss.fff"));
 
-            _addressRepository.Delete(0, siteId);
-            _siteRepository.Delete(siteId);
+            try
+            {
+                if (siteId <= 0)
+                {
+                    _logger.LogInformation(
+                        "\nError: Invalid Site ID | Exception: None");
 
-            _cache.Remove("AllSites");
+                    return BadRequest();
+                }
 
-            return NoContent();
+                ExecuteAndLog(
+                    "ISiteScopeRepository.SaveScopes",
+                    () => _siteScopeRepository.SaveScopes(
+                        siteId,
+                        new List<(int, int, string?)>()));
+
+                ExecuteAndLog(
+                    "IAddressRepository.Delete",
+                    () => _addressRepository.Delete(
+                        0,
+                        siteId));
+
+                ExecuteAndLog(
+                    "ISiteRepository.Delete",
+                    () => _siteRepository.Delete(siteId));
+
+                _cache.Remove("AllSites");
+
+                _logger.LogInformation(
+                    "\nSuccess: Site deleted successfully | Deleted ID: {SiteId}",
+                    siteId);
+
+                _logger.LogInformation(
+                    "\nError: None | Exception: None");
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                LogException("Delete", ex);
+                throw;
+            }
+            finally
+            {
+                actionTimer.Stop();
+
+                _logger.LogInformation(
+                    "\nAPI Action: Delete | Completed | Total Time: {ElapsedMs} ms",
+                    actionTimer.ElapsedMilliseconds);
+            }
         }
+
+        // ============================================================
+        // GET DROPDOWN DATA
+        // ============================================================
 
         [HttpGet("dropdown-data")]
         public IActionResult GetDropdownData()
         {
-            var response = new SiteDropdownDTO
+            Stopwatch actionTimer = Stopwatch.StartNew();
+
+            _logger.LogInformation(
+                "API Action: GetDropdownData | Invoked: {InvokedAt}",
+                DateTime.Now.ToString("HH:mm:ss.fff"));
+
+            try
             {
-                Statuses = _siteStatusRepository.GetAll()
-                    .Select(statuses => new DropdownItemDTO
-                    {
-                        Id   = statuses.Id,
-                        Name = statuses.Status
-                    }).ToList(),
+                var statuses = ExecuteAndLog(
+                    "ISiteStatusRepository.GetAll",
+                    () => _siteStatusRepository.GetAll());
 
-                AddressTypes = _addressTypeRepository.GetAll()
-                    .Select(addressTypes => new DropdownItemDTO
-                    {
-                        Id   = addressTypes.Id,
-                        Name = addressTypes.Name
-                    }).ToList(),
+                var addressTypes = ExecuteAndLog(
+                    "IAddressTypeRepository.GetAll",
+                    () => _addressTypeRepository.GetAll());
 
-                Countries = _countryRepository.GetAllCountries()
-                    .Select(countries => new DropdownItemDTO
-                    {
-                        Id   = countries.Id,
-                        Name = countries.Name
-                    }).ToList(),
+                var countries = ExecuteAndLog(
+                    "ICountryRepository.GetAllCountries",
+                    () => _countryRepository.GetAllCountries());
 
-                // NEW
-                ScopeMasters = _siteScopeMasterRepository.GetAll()
-                    .Select(s => new DropdownItemDTO
-                    {
-                        Id   = s.Id,
-                        Name = s.ScopeName
-                    }).ToList(),
+                var scopeMasters = ExecuteAndLog(
+                    "ISiteScopeMasterRepository.GetAll",
+                    () => _siteScopeMasterRepository.GetAll());
 
-                ScopeStatuses = _siteScopeRepository.GetAllStatuses()
-                    .Select(s => new DropdownItemDTO
-                    {
-                        Id   = s.Id,
-                        Name = s.StatusName
-                    }).ToList()
-            };
+                var scopeStatuses = ExecuteAndLog(
+                    "ISiteScopeRepository.GetAllStatuses",
+                    () => _siteScopeRepository.GetAllStatuses());
 
-            return Ok(response);
+                var response = new SiteDropdownDTO
+                {
+                    Statuses = statuses
+                        .Select(status => new DropdownItemDTO
+                        {
+                            Id = status.Id,
+                            Name = status.Status
+                        })
+                        .ToList(),
+
+                    AddressTypes = addressTypes
+                        .Select(addressType => new DropdownItemDTO
+                        {
+                            Id = addressType.Id,
+                            Name = addressType.Name
+                        })
+                        .ToList(),
+
+                    Countries = countries
+                        .Select(country => new DropdownItemDTO
+                        {
+                            Id = country.Id,
+                            Name = country.Name
+                        })
+                        .ToList(),
+
+                    ScopeMasters = scopeMasters
+                        .Select(scope => new DropdownItemDTO
+                        {
+                            Id = scope.Id,
+                            Name = scope.ScopeName
+                        })
+                        .ToList(),
+
+                    ScopeStatuses = scopeStatuses
+                        .Select(scopeStatus => new DropdownItemDTO
+                        {
+                            Id = scopeStatus.Id,
+                            Name = scopeStatus.StatusName
+                        })
+                        .ToList()
+                };
+
+                _logger.LogInformation(
+                    "\nError: None | Exception: None");
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                LogException("GetDropdownData", ex);
+                throw;
+            }
+            finally
+            {
+                actionTimer.Stop();
+
+                _logger.LogInformation(
+                    "\nAPI Action: GetDropdownData | Completed | Total Time: {ElapsedMs} ms",
+                    actionTimer.ElapsedMilliseconds);
+            }
         }
+
+        // ============================================================
+        // GET SERVICE PROVIDERS
+        // ============================================================
 
         [HttpGet("service-providers")]
         public IActionResult GetServiceProviders()
         {
-            var allServiceProviders = _serviceProviderRepository.GetAllServiceProviders();
+            Stopwatch actionTimer = Stopwatch.StartNew();
 
-            var response = new
+            _logger.LogInformation(
+                "API Action: GetServiceProviders | Invoked: {InvokedAt}",
+                DateTime.Now.ToString("HH:mm:ss.fff"));
+
+            try
             {
-                masterMasons = allServiceProviders
-                    .Where(serviceProvider =>
-                        serviceProvider.ServiceTypeId == (int)ServiceTypes.MasterMasion)
-                    .Select(serviceProvider => new
-                    {
-                        id   = serviceProvider.Id,
-                        name = serviceProvider.Name
-                    })
-                    .ToList(),
+                var allServiceProviders = ExecuteAndLog(
+                    "IServiceProviderRepository.GetAllServiceProviders",
+                    () => _serviceProviderRepository.GetAllServiceProviders());
 
-                electricians = allServiceProviders
-                    .Where(serviceProvider =>
-                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Electrician)
-                    .Select(serviceProvider => new
-                    {
-                        id   = serviceProvider.Id,
-                        name = serviceProvider.Name
-                    })
-                    .ToList(),
+                var response = new
+                {
+                    masterMasons = allServiceProviders
+                        .Where(serviceProvider =>
+                            serviceProvider.ServiceTypeId ==
+                            (int)ServiceTypes.MasterMasion)
+                        .Select(serviceProvider => new
+                        {
+                            id = serviceProvider.Id,
+                            name = serviceProvider.Name
+                        })
+                        .ToList(),
 
-                labours = allServiceProviders
-                    .Where(serviceProvider =>
-                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Labour)
-                    .Select(serviceProvider => new
-                    {
-                        id   = serviceProvider.Id,
-                        name = serviceProvider.Name
-                    })
-                    .ToList(),
+                    electricians = allServiceProviders
+                        .Where(serviceProvider =>
+                            serviceProvider.ServiceTypeId ==
+                            (int)ServiceTypes.Electrician)
+                        .Select(serviceProvider => new
+                        {
+                            id = serviceProvider.Id,
+                            name = serviceProvider.Name
+                        })
+                        .ToList(),
 
-                plumbers = allServiceProviders
-                    .Where(serviceProvider =>
-                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Plumber)
-                    .Select(serviceProvider => new
-                    {
-                        id   = serviceProvider.Id,
-                        name = serviceProvider.Name
-                    })
-                    .ToList(),
+                    labours = allServiceProviders
+                        .Where(serviceProvider =>
+                            serviceProvider.ServiceTypeId ==
+                            (int)ServiceTypes.Labour)
+                        .Select(serviceProvider => new
+                        {
+                            id = serviceProvider.Id,
+                            name = serviceProvider.Name
+                        })
+                        .ToList(),
 
-                painters = allServiceProviders
-                    .Where(serviceProvider =>
-                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Painter)
-                    .Select(serviceProvider => new
-                    {
-                        id   = serviceProvider.Id,
-                        name = serviceProvider.Name
-                    })
-                    .ToList(),
+                    plumbers = allServiceProviders
+                        .Where(serviceProvider =>
+                            serviceProvider.ServiceTypeId ==
+                            (int)ServiceTypes.Plumber)
+                        .Select(serviceProvider => new
+                        {
+                            id = serviceProvider.Id,
+                            name = serviceProvider.Name
+                        })
+                        .ToList(),
 
-                carpenters = allServiceProviders
-                    .Where(serviceProvider =>
-                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Carpenter)
-                    .Select(serviceProvider => new
-                    {
-                        id   = serviceProvider.Id,
-                        name = serviceProvider.Name
-                    })
-                    .ToList(),
+                    painters = allServiceProviders
+                        .Where(serviceProvider =>
+                            serviceProvider.ServiceTypeId ==
+                            (int)ServiceTypes.Painter)
+                        .Select(serviceProvider => new
+                        {
+                            id = serviceProvider.Id,
+                            name = serviceProvider.Name
+                        })
+                        .ToList(),
 
-                tilers = allServiceProviders
-                    .Where(serviceProvider =>
-                        serviceProvider.ServiceTypeId == (int)ServiceTypes.Tiler)
-                    .Select(serviceProvider => new
-                    {
-                        id   = serviceProvider.Id,
-                        name = serviceProvider.Name
-                    })
-                    .ToList()
-            };
+                    carpenters = allServiceProviders
+                        .Where(serviceProvider =>
+                            serviceProvider.ServiceTypeId ==
+                            (int)ServiceTypes.Carpenter)
+                        .Select(serviceProvider => new
+                        {
+                            id = serviceProvider.Id,
+                            name = serviceProvider.Name
+                        })
+                        .ToList(),
 
-            return Ok(response);
+                    tilers = allServiceProviders
+                        .Where(serviceProvider =>
+                            serviceProvider.ServiceTypeId ==
+                            (int)ServiceTypes.Tiler)
+                        .Select(serviceProvider => new
+                        {
+                            id = serviceProvider.Id,
+                            name = serviceProvider.Name
+                        })
+                        .ToList()
+                };
+
+                _logger.LogInformation(
+                    "\nError: None | Exception: None");
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                LogException("GetServiceProviders", ex);
+                throw;
+            }
+            finally
+            {
+                actionTimer.Stop();
+
+                _logger.LogInformation(
+                    "\nAPI Action: GetServiceProviders | Completed | Total Time: {ElapsedMs} ms",
+                    actionTimer.ElapsedMilliseconds);
+            }
         }
+
+        // ============================================================
+        // UPDATE SCOPE STATUS
+        // ============================================================
 
         [HttpPatch("scope-status")]
-        public IActionResult UpdateScopeStatus([FromBody] UpdateScopeStatusDto dto)
+        public IActionResult UpdateScopeStatus(
+            [FromBody] UpdateScopeStatusDto dto)
         {
-            DateTime? completedDate =
-                dto.ScopeStatusId == 3 ? DateTime.Today : (DateTime?)null;
+            Stopwatch actionTimer = Stopwatch.StartNew();
 
-            _siteScopeRepository.UpdateScopeStatus(
-                dto.SiteScopeId,
-                dto.ScopeStatusId,
-                dto.Remarks,
-                completedDate);
+            _logger.LogInformation(
+                "API Action: UpdateScopeStatus | Invoked: {InvokedAt}",
+                DateTime.Now.ToString("HH:mm:ss.fff"));
 
-            return Ok(new { message = "Scope status updated." });
+            try
+            {
+                DateTime? completedDate =
+                    dto.ScopeStatusId == 3
+                        ? DateTime.Today
+                        : (DateTime?)null;
+
+                ExecuteAndLog(
+                    "ISiteScopeRepository.UpdateScopeStatus",
+                    () => _siteScopeRepository.UpdateScopeStatus(
+                        dto.SiteScopeId,
+                        dto.ScopeStatusId,
+                        dto.Remarks,
+                        completedDate));
+
+                _logger.LogInformation(
+                    "\nSuccess: Scope status updated | Updated ID: {SiteScopeId}",
+                    dto.SiteScopeId);
+
+                _logger.LogInformation(
+                    "\nError: None | Exception: None");
+
+                return Ok(new
+                {
+                    message = "Scope status updated."
+                });
+            }
+            catch (Exception ex)
+            {
+                LogException("UpdateScopeStatus", ex);
+                throw;
+            }
+            finally
+            {
+                actionTimer.Stop();
+
+                _logger.LogInformation(
+                    "\nAPI Action: UpdateScopeStatus | Completed | Total Time: {ElapsedMs} ms",
+                    actionTimer.ElapsedMilliseconds);
+            }
         }
 
-        private void AddAddressIfPresent(int siteId, SiteAPIDTO siteApiDto)
+        // ============================================================
+        // PRIVATE METHOD
+        // ============================================================
+
+        private void AddAddressIfPresent(
+            int siteId,
+            SiteAPIDTO siteApiDto)
         {
             if (!string.IsNullOrEmpty(siteApiDto.AddressLine1)
                 || siteApiDto.AddressTypeId > 0
-                || siteApiDto.CountryId     > 0
-                || siteApiDto.PinCode       > 0)
+                || siteApiDto.CountryId > 0
+                || siteApiDto.PinCode > 0)
             {
                 Address address = new Address(
                     0,
@@ -540,12 +996,80 @@ namespace ConstructEase.WebApp.APIControllers
                 _addressRepository.InsertOrUpdateAddress(address);
             }
         }
+
+        // ============================================================
+        // METHOD TIMING HELPER - RETURN VALUE
+        // ============================================================
+
+        private T ExecuteAndLog<T>(
+            string methodName,
+            Func<T> action)
+        {
+            Stopwatch methodTimer = Stopwatch.StartNew();
+
+            try
+            {
+                return action();
+            }
+            finally
+            {
+                methodTimer.Stop();
+
+                _logger.LogInformation(
+                    "\nMethod: {Method} | Time: {ElapsedMs} ms",
+                    methodName,
+                    methodTimer.ElapsedMilliseconds);
+            }
+        }
+
+        // ============================================================
+        // METHOD TIMING HELPER - VOID METHOD
+        // ============================================================
+
+        private void ExecuteAndLog(
+            string methodName,
+            Action action)
+        {
+            Stopwatch methodTimer = Stopwatch.StartNew();
+
+            try
+            {
+                action();
+            }
+            finally
+            {
+                methodTimer.Stop();
+
+                _logger.LogInformation(
+                    "\nMethod: {Method} | Time: {ElapsedMs} ms",
+                    methodName,
+                    methodTimer.ElapsedMilliseconds);
+            }
+        }
+
+        // ============================================================
+        // EXCEPTION LOGGING
+        // ============================================================
+
+        private void LogException(
+            string actionName,
+            Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "\nError: API Action {Action} failed | Exception: {ExceptionType}: {ExceptionMessage}",
+                actionName,
+                ex.GetType().Name,
+                ex.Message);
+        }
     }
 
     public class UpdateScopeStatusDto
     {
-        public int     SiteScopeId   { get; set; }
-        public int     ScopeStatusId { get; set; }
-        public string? Remarks       { get; set; }
+        public int SiteScopeId { get; set; }
+
+        public int ScopeStatusId { get; set; }
+
+        public string? Remarks { get; set; }
     }
 }

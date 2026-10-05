@@ -1,77 +1,154 @@
 ﻿using ConstructionApplication.Core.DataModels.Usres;
 using ConstructionApplication.Repository.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
 using Dapper;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace ConstructionApplication.Repository.Dapper
 {
     public class UserRepositoryUsingDapper : IUserRepository
     {
         private readonly string _connectionString;
+        private readonly ILogger<UserRepositoryUsingDapper> _logger;
 
-        public UserRepositoryUsingDapper(string connectionString)
+        public UserRepositoryUsingDapper(string connectionString,
+               ILogger<UserRepositoryUsingDapper> logger)
         {
             _connectionString = connectionString;
+            _logger = logger;
         }
 
         public User GetUserDetailByEmail(string email)
         {
-            using (IDbConnection db = new SqlConnection(_connectionString))
-            {
-                string query = @"SELECT TOP 1
-                                    Id, Name, Gender, Email, Password,
-                                    Mobile, LoginFailedCount, IsLocked
-                                 FROM Users 
-                                 WHERE Email = @email
-                                 ORDER BY Id DESC";
+            using var db = new SqlConnection(_connectionString);
 
-                return db.QueryFirstOrDefault<User>(query, new { email });
+            string query = @"SELECT TOP 1
+                                Id, Name, Gender, Email, Password,
+                                Mobile, LoginFailedCount, IsLocked
+                             FROM 
+                                Users
+                             WHERE 
+                                Email = @email
+                             ORDER BY Id DESC";
+
+            Stopwatch dbTimer = Stopwatch.StartNew();
+
+            try
+            {
+                User user = db.QueryFirstOrDefault<User>(query, new { email });
+
+                dbTimer.Stop();
+
+                _logger.LogInformation("\nDatabase: SELECT User | Time: {Time} ms", dbTimer.ElapsedMilliseconds);
+
+                return user;
+            }
+            catch
+            {
+                dbTimer.Stop();
+
+                _logger.LogError(
+                    "\nDatabase: SELECT User | Failed | Time: {Time} ms",
+                    dbTimer.ElapsedMilliseconds);
+
+                throw;
             }
         }
 
         public void UpdateOnLoginSuccessful(string email)
         {
-            using (IDbConnection db = new SqlConnection(_connectionString))
-            {
-                string query = @"UPDATE Users 
-                                 SET 
-                                 LastSuccessFulLoginDate = GETDATE(), 
-                                 LoginFailedCount = 0 
-                                 WHERE Email = @email";
+            using var db = new SqlConnection(_connectionString);
 
+            string query = @"
+                        UPDATE Users
+                        SET 
+                          LastSuccessFulLoginDate = GETDATE(),
+                          LoginFailedCount = 0
+                        WHERE 
+                            Email = @email";
+
+            Stopwatch dbTimer = Stopwatch.StartNew();
+
+            try
+            {
                 db.Execute(query, new { email });
+
+                dbTimer.Stop();
+
+                _logger.LogInformation("\nDatabase: UPDATE Login Success | Time: {Time} ms",
+                    dbTimer.ElapsedMilliseconds);
+            }
+            catch
+            {
+                dbTimer.Stop();
+
+                _logger.LogError("\nDatabase: UPDATE Login Success | Failed | Time: {Time} ms",
+                    dbTimer.ElapsedMilliseconds);
+
+                throw;
             }
         }
 
         public void UpdateOnLoginFailed(string email)
         {
-            using (IDbConnection db = new SqlConnection(_connectionString))
+            try
             {
-                string query = @"UPDATE Users
-                                 SET
-                                 LoginFailedCount = ISNULL(LoginFailedCount, 0) + 1,
-                                 LastFailedLoginDate = GETDATE()
-                                 WHERE Email = @Email";
+                using (IDbConnection db = new SqlConnection(_connectionString))
+                {
+                    string query = @"
+                             UPDATE Users
+                             SET 
+                                LoginFailedCount = ISNULL(LoginFailedCount, 0) + 1,
+                                LastFailedLoginDate = GETDATE()
+                             WHERE 
+                                Email = @Email";
 
-                db.Execute(query, new { Email = email });
+                    Stopwatch dbStopwatch = Stopwatch.StartNew();
+
+                    db.Execute(query, new { Email = email });
+
+                    dbStopwatch.Stop();
+
+                    _logger.LogInformation("\nDatabase: UPDATE Login Failed | Time: {ElapsedMs} ms",
+                        dbStopwatch.ElapsedMilliseconds);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Database: UPDATE Login Failed | Failed");
+                throw;
             }
         }
 
         public void UpdateIsLocked(string email, bool isLocked)
         {
-            using (IDbConnection db = new SqlConnection(_connectionString))
+            try
             {
-                string query = @"UPDATE Users 
-                                 SET IsLocked = @isLocked 
-                                 WHERE Email = @email";
+                using (IDbConnection db = new SqlConnection(_connectionString))
+                {
+                    string query = @"
+                            UPDATE Users
+                             SET 
+                                IsLocked = @isLocked
+                             WHERE 
+                                Email = @email";
 
-                db.Execute(query, new { email, isLocked });
+                    Stopwatch dbStopwatch = Stopwatch.StartNew();
+
+                    db.Execute(query, new {email, isLocked});
+                    dbStopwatch.Stop();
+
+                    _logger.LogInformation("\nDatabase: UPDATE User Lock | Time: {ElapsedMs} ms",
+                        dbStopwatch.ElapsedMilliseconds);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,"Database: UPDATE User Lock | Failed");
+                throw;
             }
         }
     }

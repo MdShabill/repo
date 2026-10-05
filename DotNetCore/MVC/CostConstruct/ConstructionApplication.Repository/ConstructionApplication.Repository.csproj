@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ConstructionApplication.Core\ConstructionApplication.Core.csproj" />
     <PackageReference Include="Dapper" Version="2.1.66" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.12" />
 	<PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
   </ItemGroup>
 

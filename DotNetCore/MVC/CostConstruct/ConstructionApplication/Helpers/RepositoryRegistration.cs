@@ -55,20 +55,48 @@ namespace ConstructionApplication.Helpers
 
         public void RegisterDapperRepositories(IServiceCollection services, string connectionString)
         {
-            services.AddTransient<ICostMasterRepository>(svc => new CostMasterRepositoryUsingDapper(connectionString));
-            services.AddTransient<IDailyAttendanceRepository>(svc => new DailyAttendanceRepositoryUsingDapper(connectionString));
-            services.AddTransient<IMaterialPurchaseRepository>(svc => new MaterialPurchaseRepositoryUsingDapper(connectionString));
-            services.AddTransient<IMaterialRepository>(svc => new MaterialRepositoryUsingDapper(connectionString));
-            services.AddTransient<ISupplierRepository>(svc => new SupplierRepositoryUsingDapper(connectionString));
-            services.AddTransient<IBrandRepository>(svc => new BrandRepositoryUsingDapper(connectionString));
-            services.AddTransient<IServiceTypeRepository>(svc => new ServiceTypeRepositoryUsingDapper(connectionString));
-            services.AddTransient<IServiceProviderRepository>(svc => new ServiceProviderRepositoryUsingDapper(connectionString));
-            services.AddTransient<IUserRepository>(svc => new UserRepositoryUsingDapper(connectionString));
-            services.AddTransient<ISiteRepository>(svc => new SiteRepositoryUsingDapper(connectionString));
-            services.AddTransient<IAddressRepository>(svc => new AddressRepositoryUsingDapper(connectionString));
-            services.AddTransient<ICountryRepository>(svc => new CountryRepositoryUsingDapper(connectionString));
-            services.AddTransient<IAddressTypeRepository>(svc => new AddressTypeRepositoryUsingDapper(connectionString));
-            services.AddTransient<ISiteStatusRepository>(svc => new SiteStatusRepositoryUsingDapper(connectionString));
+            services.AddScoped<IDashboardRepository>(svc => new DashboardRepositoryUsingDapper(connectionString));
+
+            services.AddScoped<ICostMasterRepository>(svc => new CostMasterRepositoryUsingDapper(connectionString));
+
+            services.AddScoped<IDailyAttendanceRepository>(svc => new DailyAttendanceRepositoryUsingDapper(connectionString));
+
+            services.AddScoped<IMaterialPurchaseRepository>(svc => new MaterialPurchaseRepositoryUsingDapper(connectionString));
+
+            services.AddScoped<IMaterialRepository>(svc => new MaterialRepositoryUsingDapper(connectionString));
+
+            services.AddScoped<ISupplierRepository>(svc => new SupplierRepositoryUsingDapper(connectionString));
+
+            services.AddScoped<IBrandRepository>(svc => new BrandRepositoryUsingDapper(connectionString));
+
+            services.AddScoped<IServiceTypeRepository>(svc => new ServiceTypeRepositoryUsingDapper(connectionString));
+
+            services.AddScoped<IServiceProviderRepository>(provider => new ServiceProviderRepositoryUsingDapper(connectionString,
+            provider.GetRequiredService<ILogger<ServiceProviderRepositoryUsingDapper>>()));
+
+            services.AddScoped<IUserRepository>(svc => new UserRepositoryUsingDapper(connectionString,
+            svc.GetRequiredService<ILogger<UserRepositoryUsingDapper>>()));
+
+            services.AddScoped<ISiteRepository>(svc => new SiteRepositoryUsingDapper(connectionString,
+            svc.GetRequiredService<ILogger<SiteRepositoryUsingDapper>>()));
+
+            services.AddScoped<ISiteScopeMasterRepository>(provider => new SiteScopeMasterRepositoryUsingDapper(connectionString,
+            provider.GetRequiredService<ILogger<SiteScopeMasterRepositoryUsingDapper>>()));
+
+            services.AddScoped<ISiteScopeRepository>(provider => new SiteScopeRepositoryUsingDapper(connectionString,
+            provider.GetRequiredService<ILogger<SiteScopeRepositoryUsingDapper>>()));
+
+            services.AddScoped<IAddressRepository>(svc => new AddressRepositoryUsingDapper(connectionString,
+            svc.GetRequiredService<ILogger<AddressRepositoryUsingDapper>>()));
+
+            services.AddScoped<ICountryRepository>(svc => new CountryRepositoryUsingDapper(connectionString,
+            svc.GetRequiredService<ILogger<CountryRepositoryUsingDapper>>()));
+
+            services.AddScoped<IAddressTypeRepository>(svc => new AddressTypeRepositoryUsingDapper(connectionString,
+            svc.GetRequiredService<ILogger<AddressTypeRepositoryUsingDapper>>()));
+
+            services.AddScoped<ISiteStatusRepository>(svc => new SiteStatusRepositoryUsingDapper(connectionString,
+            svc.GetRequiredService<ILogger<SiteStatusRepositoryUsingDapper>>()));
         }
 
         public void RegisterDapperUsingSpRepositories(IServiceCollection services, string connectionString)

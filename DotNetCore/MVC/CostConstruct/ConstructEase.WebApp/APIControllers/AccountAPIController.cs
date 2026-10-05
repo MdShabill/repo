@@ -3,6 +3,7 @@ using ConstructEase.WebApp.ViewModels;
 using ConstructionApplication.Core.DataModels.Usres;
 using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace ConstructEase.WebApp.APIControllers
 {
@@ -12,10 +13,13 @@ namespace ConstructEase.WebApp.APIControllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _imapper;
+        private readonly ILogger<AccountAPIController> _logger;
 
-        public AccountAPIController(IUserRepository userRepository)
+        public AccountAPIController(IUserRepository userRepository,
+                                    ILogger<AccountAPIController> logger)
         {
             _userRepository = userRepository;
+            _logger = logger;
 
             var configuration = new MapperConfiguration(cfg =>
             {
@@ -26,39 +30,54 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         [HttpPost("login")]
-        
         public IActionResult Login(UserVm userVm)
-        
         {
-            if (userVm == null || string.IsNullOrEmpty(userVm.Email) || string.IsNullOrEmpty(userVm.Password))
-                return BadRequest(new { message = "Email and Password are required." });
+            Stopwatch actionTimer = Stopwatch.StartNew();
 
-            User user = _userRepository.GetUserDetailByEmail(userVm.Email);
+            _logger.LogInformation("\nAPI Action: {Action} | Invoked: {Time}", nameof(Login),
+                    DateTime.Now.ToString("HH:mm:ss.fff"));
 
-            if (user == null)
-                return BadRequest(new { message = "Invalid Email Or Password" });
-
-            if (user.IsLocked)
-                return BadRequest(new { message = "Your Account Has Been Locked. Contact Administrator." });
-
-            if (user.Password != userVm.Password)
+            try
             {
-                _userRepository.UpdateOnLoginFailed(userVm.Email);
-                if (user.LoginFailedCount >= 2)
-                    _userRepository.UpdateIsLocked(userVm.Email);
+                Stopwatch methodTimer = Stopwatch.StartNew();
 
-                return BadRequest(new { message = "Invalid Email Or Password" });
+                User user = _userRepository.GetUserDetailByEmail(userVm.Email);
+
+                methodTimer.Stop();
+
+                _logger.LogInformation("\nMethod: {Method} | Time: {Time} ms",
+                    nameof(IUserRepository.GetUserDetailByEmail), methodTimer.ElapsedMilliseconds);
+
+                Stopwatch updateTimer = Stopwatch.StartNew();
+
+                _userRepository.UpdateOnLoginSuccessful(userVm.Email);
+
+                updateTimer.Stop();
+
+                _logger.LogInformation("\nMethod: {Method} | Time: {Time} ms",
+                    nameof(IUserRepository.UpdateOnLoginSuccessful), updateTimer.ElapsedMilliseconds);
+
+
+                return Ok(new UserVm
+                {
+                    FullName = user.Name,
+                    Email = user.Email
+                });
             }
-
-            _userRepository.UpdateOnLoginSuccessful(userVm.Email);
-
-            // Only return Name + Email — never send Password back to client
-            return Ok(
-            new UserVm
+            catch (Exception ex)
             {
-                FullName = user.Name,
-                Email = user.Email
-            });
+                _logger.LogError(ex,
+                    "API Action: {Action} | Failed", nameof(Login));
+
+                return StatusCode(500, "An error occurred while processing login.");
+            }
+            finally
+            {
+                actionTimer.Stop();
+
+                _logger.LogInformation("\nAPI Action: {Action} | Completed | Total Time: {Time} ms", nameof(Login),
+                    actionTimer.ElapsedMilliseconds);
+            }
         }
     }
 }

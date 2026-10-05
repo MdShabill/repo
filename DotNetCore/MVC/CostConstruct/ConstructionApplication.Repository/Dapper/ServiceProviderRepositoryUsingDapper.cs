@@ -1,28 +1,29 @@
 ﻿using ConstructionApplication.Core.DataModels.ServiceProviders;
-using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace ConstructionApplication.Repository.Dapper
 {
     public class ServiceProviderRepositoryUsingDapper : IServiceProviderRepository
     {
         private readonly string _connectionString;
+        private readonly ILogger<ServiceProviderRepositoryUsingDapper> _logger;
 
-        public ServiceProviderRepositoryUsingDapper(string connectionString)
+        public ServiceProviderRepositoryUsingDapper(string connectionString,
+               ILogger<ServiceProviderRepositoryUsingDapper> logger)
         {
             _connectionString = connectionString;
+            _logger = logger;
         }
 
         public List<ServiceProvider> GetAll(int? serviceTypeId, int? id)
         {
+            var methodStopwatch = Stopwatch.StartNew();
+
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"
@@ -45,22 +46,87 @@ namespace ConstructionApplication.Repository.Dapper
                        WHERE 
                            (@serviceTypeId IS NULL OR ServiceProviders.ServiceTypeId = @serviceTypeId)
                        AND (@id IS NULL OR ServiceProviders.Id = @id);";
-                // Execute query and return mapped list
-                return connection.Query<ServiceProvider>(sqlQuery, new { serviceTypeId, id }).ToList();
+
+                var databaseStopwatch = Stopwatch.StartNew();
+
+                try
+                {
+                    var result = connection.Query<ServiceProvider>(sqlQuery, new { serviceTypeId, id }).ToList();
+
+                    databaseStopwatch.Stop();
+
+                    _logger.LogInformation("Database: SELECT Service Providers | Time: {ElapsedMs} ms",
+                        databaseStopwatch.ElapsedMilliseconds);
+
+                    methodStopwatch.Stop();
+
+                    _logger.LogInformation("Method: IServiceProviderRepository.GetAll | Time: {ElapsedMs} ms",
+                        methodStopwatch.ElapsedMilliseconds);
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    databaseStopwatch.Stop();
+
+                    _logger.LogError(ex, "Database: SELECT Service Providers | Failed | Time: {ElapsedMs} ms",
+                                     databaseStopwatch.ElapsedMilliseconds);
+
+                    methodStopwatch.Stop();
+
+                    _logger.LogInformation("Method: IServiceProviderRepository.GetAll | Time: {ElapsedMs} ms",
+                        methodStopwatch.ElapsedMilliseconds);
+                    throw;
+                }
             }
         }
 
         public List<ServiceProviderName> GetAllServiceProviders()
         {
+            var methodStopwatch = Stopwatch.StartNew();
+
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"SELECT Id, Name, ServiceTypeId FROM ServiceProviders";
-                return connection.Query<ServiceProviderName>(sqlQuery).ToList();
+
+                var databaseStopwatch = Stopwatch.StartNew();
+
+                try
+                {
+                    var result = connection.Query<ServiceProviderName>(sqlQuery).ToList();
+
+                    databaseStopwatch.Stop();
+
+                    _logger.LogInformation("Database: SELECT All Service Providers | Time: {ElapsedMs} ms",
+                        databaseStopwatch.ElapsedMilliseconds);
+
+                    methodStopwatch.Stop();
+
+                    _logger.LogInformation("Method: IServiceProviderRepository.GetAllServiceProviders | Time: {ElapsedMs} ms",
+                        methodStopwatch.ElapsedMilliseconds);
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    databaseStopwatch.Stop();
+
+                    _logger.LogError(ex, "Database: SELECT All Service Providers | Failed | Time: {ElapsedMs} ms",
+                        databaseStopwatch.ElapsedMilliseconds);
+
+                    methodStopwatch.Stop();
+
+                    _logger.LogInformation("Method: IServiceProviderRepository.GetAllServiceProviders | Time: {ElapsedMs} ms",
+                        methodStopwatch.ElapsedMilliseconds);
+                    throw;
+                }
             }
         }
 
         public int Add(ServiceProvider serviceProvider)
         {
+            var methodStopwatch = Stopwatch.StartNew();
+
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"
@@ -70,24 +136,84 @@ namespace ConstructionApplication.Repository.Dapper
                                (@ServiceTypeId, @ServiceProviderName, @Gender, @DOB, @ImageName, @MobileNumber, @ReferredBy);
                         SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
-                // Executes the SQL query and returns the newly inserted ServiceProviderId
-                return connection.ExecuteScalar<int>(sqlQuery, serviceProvider);
+                var databaseStopwatch = Stopwatch.StartNew();
+                try
+                {
+                    int result = connection.ExecuteScalar<int>(sqlQuery, serviceProvider);
+
+                    databaseStopwatch.Stop();
+
+                    _logger.LogInformation("Database: INSERT Service Provider | Time: {ElapsedMs} ms",
+                        databaseStopwatch.ElapsedMilliseconds);
+
+                    methodStopwatch.Stop();
+
+                    _logger.LogInformation("Method: IServiceProviderRepository.Add | Time: {ElapsedMs} ms",
+                        methodStopwatch.ElapsedMilliseconds);
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    databaseStopwatch.Stop();
+
+                    _logger.LogError(ex, "Database: INSERT Service Provider | Failed | Time: {ElapsedMs} ms",
+                                     databaseStopwatch.ElapsedMilliseconds);
+
+                    methodStopwatch.Stop();
+
+                    _logger.LogInformation("Method: IServiceProviderRepository.Add | Time: {ElapsedMs} ms",
+                        methodStopwatch.ElapsedMilliseconds);
+
+                    throw;
+                }
             }
         }
 
         public void Delete(int serviceProviderId)
         {
+            var methodStopwatch = Stopwatch.StartNew();
+
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = "DELETE FROM ServiceProviders WHERE Id = @ServiceProviderId";
-                // Executes the delete query
-                connection.Execute(sqlQuery, new { ServiceProviderId = serviceProviderId });
+
+                var databaseStopwatch = Stopwatch.StartNew();
+                try
+                {
+                    connection.Execute(sqlQuery, new { ServiceProviderId = serviceProviderId });
+
+                    databaseStopwatch.Stop();
+
+                    _logger.LogInformation("Database: DELETE Service Provider | Time: {ElapsedMs} ms",
+                        databaseStopwatch.ElapsedMilliseconds);
+
+                    methodStopwatch.Stop();
+
+                    _logger.LogInformation("Method: IServiceProviderRepository.Delete | Time: {ElapsedMs} ms",
+                        methodStopwatch.ElapsedMilliseconds);
+                }
+                catch (Exception ex)
+                {
+                    databaseStopwatch.Stop();
+
+                    _logger.LogError(ex, "Database: DELETE Service Provider | Failed | Time: {ElapsedMs} ms",
+                                     databaseStopwatch.ElapsedMilliseconds);
+
+                    methodStopwatch.Stop();
+
+                    _logger.LogInformation("Method: IServiceProviderRepository.Delete | Time: {ElapsedMs} ms",
+                        methodStopwatch.ElapsedMilliseconds);
+
+                    throw;
+                }
             }
         }
 
-
         public int Update(ServiceProvider serviceProvider)
         {
+            var methodStopwatch = Stopwatch.StartNew();
+
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = @"
@@ -99,8 +225,38 @@ namespace ConstructionApplication.Repository.Dapper
                               MobileNumber = @MobileNumber,
                               ReferredBy = @ReferredBy
                        WHERE Id = @ServiceProviderId";
-                // Executes and returns affected rows
-                return connection.Execute(sqlQuery, serviceProvider);
+
+                var databaseStopwatch = Stopwatch.StartNew();
+
+                try
+                {
+                    int result = connection.Execute(sqlQuery,serviceProvider);
+
+                    databaseStopwatch.Stop();
+
+                    _logger.LogInformation("Database: UPDATE Service Provider | Time: {ElapsedMs} ms",
+                        databaseStopwatch.ElapsedMilliseconds);
+
+                    methodStopwatch.Stop();
+
+                    _logger.LogInformation("Method: IServiceProviderRepository.Update | Time: {ElapsedMs} ms",
+                        methodStopwatch.ElapsedMilliseconds);
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    databaseStopwatch.Stop();
+
+                    _logger.LogError(ex, "Database: UPDATE Service Provider | Failed | Time: {ElapsedMs} ms",
+                                     databaseStopwatch.ElapsedMilliseconds);
+
+                    methodStopwatch.Stop();
+
+                    _logger.LogInformation("Method: IServiceProviderRepository.Update | Time: {ElapsedMs} ms",
+                        methodStopwatch.ElapsedMilliseconds);
+                    throw;
+                }
             }
         }
     }
