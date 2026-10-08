@@ -10,7 +10,7 @@
 
         public string? ContactNumber { get; set; }
 
-        public DateTime StartedDate { get; set; }
+        public DateTime? StartedDate { get; set; }
 
         public int SiteStatusId { get; set; }
 

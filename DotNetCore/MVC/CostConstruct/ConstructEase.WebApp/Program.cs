@@ -5,6 +5,7 @@ using ConstructionApplication.Repository.AdoDotNetUsingSp;
 using ConstructionApplication.Repository.Dapper;
 using ConstructionApplication.Repository.DapperUsingSp;
 using ConstructionApplication.Repository.Interfaces;
+using ConstructEase.WebApp.Services;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -47,6 +48,12 @@ try
 
     builder.Services.AddHostedService(sp => sp.GetRequiredService<ConstructEase.WebApp.Services.SiteReportPdfService>()
     );
+
+    // Email service
+    builder.Services.Configure<EmailSettings>(
+        builder.Configuration.GetSection("EmailSettings"));
+
+    builder.Services.AddScoped<IEmailService, EmailService>();
 
     // CORS
     builder.Services.AddCors(options =>

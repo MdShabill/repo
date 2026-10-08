@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.Address;
 using ConstructEase.WebApp.APIControllers.APIViewModels;
+using ConstructEase.WebApp.Services;
+using ConstructionApplication.Core.DataModels.Address;
 using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,7 @@ namespace ConstructEase.WebApp.APIControllers
         private readonly ISiteScopeMasterRepository     _siteScopeMasterRepository;
         private readonly ISiteScopeRepository           _siteScopeRepository;
         private readonly ILogger<SiteAPIController>     _logger;
+        private readonly IEmailService                  _emailService;
 
         public SiteAPIController(
             ISiteStatusRepository           siteStatusRepository,
@@ -36,7 +38,8 @@ namespace ConstructEase.WebApp.APIControllers
             IMemoryCache                    cache,
             ISiteScopeMasterRepository      siteScopeMasterRepository,
             ISiteScopeRepository            siteScopeRepository,
-            ILogger<SiteAPIController>      logger)
+            ILogger<SiteAPIController>      logger,
+            IEmailService                   emailService)
         {
             _siteRepository                 = siteRepository;
             _siteStatusRepository           = siteStatusRepository;
@@ -48,6 +51,7 @@ namespace ConstructEase.WebApp.APIControllers
             _siteScopeMasterRepository      = siteScopeMasterRepository;
             _siteScopeRepository            = siteScopeRepository;
             _logger                         = logger;
+            _emailService                   = emailService;
 
             var configuration = new MapperConfiguration(cfg =>
             {
@@ -225,7 +229,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         [HttpPost("add")]
-        public IActionResult Add(SiteAPIDTO siteApiDto)
+        public async Task<IActionResult> Add(SiteAPIDTO siteApiDto)
         {
             Stopwatch actionTimer = Stopwatch.StartNew();
 
@@ -241,7 +245,9 @@ namespace ConstructEase.WebApp.APIControllers
                     return BadRequest("Invalid data");
                 }
 
-                var site =_imapper.Map<SiteAPIDTO, ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
+                var site = _imapper.Map<
+                    SiteAPIDTO,
+                    ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
 
                 site.Id = ExecuteAndLog("ISiteRepository.Create", () => _siteRepository.Create(site));
 
@@ -249,7 +255,7 @@ namespace ConstructEase.WebApp.APIControllers
                 {
                     _logger.LogInformation("\nError: Failed to create site | Exception: None");
 
-                    return StatusCode(500,"Failed to create site");
+                    return StatusCode(500, "Failed to create site");
                 }
 
                 ExecuteAndLog("AddAddressIfPresent", () => AddAddressIfPresent(site.Id, siteApiDto));
@@ -257,73 +263,139 @@ namespace ConstructEase.WebApp.APIControllers
                 if (siteApiDto.SelectedMasterMasonIds?.Count > 0)
                 {
                     ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id,
-                                              ServiceTypes.MasterMasion, siteApiDto.SelectedMasterMasonIds));
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.MasterMasion,
+                            siteApiDto.SelectedMasterMasonIds));
                 }
 
                 if (siteApiDto.SelectedElectricianIds?.Count > 0)
                 {
                     ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician,
-                                              siteApiDto.SelectedElectricianIds));
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Electrician,
+                            siteApiDto.SelectedElectricianIds));
                 }
 
                 if (siteApiDto.SelectedLabourIds?.Count > 0)
                 {
                     ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour,
-                                              siteApiDto.SelectedLabourIds));
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Labour,
+                            siteApiDto.SelectedLabourIds));
                 }
 
                 if (siteApiDto.SelectedPlumberIds?.Count > 0)
                 {
                     ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber,
-                                              siteApiDto.SelectedPlumberIds));
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Plumber,
+                            siteApiDto.SelectedPlumberIds));
                 }
 
                 if (siteApiDto.SelectedPainterIds?.Count > 0)
                 {
                     ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter,
-                                              siteApiDto.SelectedPainterIds));
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Painter,
+                            siteApiDto.SelectedPainterIds));
                 }
 
                 if (siteApiDto.SelectedCarpenterIds?.Count > 0)
                 {
                     ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter,
-                                              siteApiDto.SelectedCarpenterIds));
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Carpenter,
+                            siteApiDto.SelectedCarpenterIds));
                 }
 
                 if (siteApiDto.SelectedTilerIds?.Count > 0)
                 {
                     ExecuteAndLog("ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler,
-                                              siteApiDto.SelectedTilerIds));
+                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
+                            site.Id,
+                            ServiceTypes.Tiler,
+                            siteApiDto.SelectedTilerIds));
                 }
 
                 if (siteApiDto.SelectedScopes?.Count > 0)
                 {
                     var mappedScopes = siteApiDto.SelectedScopes
-                        .Select(s => (s.SiteScopeMasterId, s.ScopeStatusId, s.Remarks))
-                        .ToList();
+                        .Select(s => (s.SiteScopeMasterId, s.ScopeStatusId, s.Remarks)).ToList();
 
-                    ExecuteAndLog(
-                        "ISiteScopeRepository.SaveScopes",
+                    ExecuteAndLog("ISiteScopeRepository.SaveScopes",
                         () => _siteScopeRepository.SaveScopes(site.Id, mappedScopes));
                 }
 
                 _cache.Remove("AllSites");
 
-                _logger.LogInformation("\nSuccess: Add New Site Successful | Last Insert ID: {SiteId}", site.Id);
+                // Get the actual Site Status name from the database.
+                var siteStatuses = ExecuteAndLog("ISiteStatusRepository.GetAll", () => _siteStatusRepository.GetAll());
 
-                _logger.LogInformation("\nError: None | Exception: None");
+                var siteStatus = siteStatuses.FirstOrDefault(x => x.Id == site.SiteStatusId);
+
+                string siteStatusName = siteStatus?.Status ?? "Not Provided";
+
+                // Build site address for email.
+                string siteAddress = string.Join(", ", new[] {
+                       siteApiDto.AddressLine1,
+                       siteApiDto.CountryName,
+                       siteApiDto.PinCode?.ToString()
+                       }
+                       .Where(x => !string.IsNullOrWhiteSpace(x)));
+
+                // Get selected work scopes for email.
+                var siteScopes = ExecuteAndLog("ISiteScopeRepository.GetBySiteId", () => _siteScopeRepository.GetBySiteId(site.Id));
+
+                string workScope = string.Join(" · ",
+                    siteScopes.Select(x => x.ScopeName)
+                              .Where(x => !string.IsNullOrWhiteSpace(x))
+                              .Distinct());
+
+                // Get logged-in user's name.
+                string addedByName = User?.Identity?.Name ?? "System";
+
+                // Send email BEFORE returning successful response.
+                try
+                {
+                    await _emailService.SendNewSiteNotificationAsync(
+                          site.Id,
+                          site.Name ?? "Not Provided",
+                          site.ContactName ?? "Not Provided",
+                          site.ContactNumber ?? "Not Provided",
+                          siteStatusName,
+                          site.ExpectedBudget,
+                          site.StartedDate,
+                          site.ExpectedCompletionDate,
+                          siteAddress,
+                          workScope,
+                          site.Note,
+                          addedByName);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Site created but email notification failed | SiteId: {SiteId}",site.Id);
+
+                    return Ok(new
+                    {
+                        message = "Site was successfully saved, but the notification email could not be sent.",
+                        siteId = site.Id,
+                        emailSent = false
+                    });
+                }
+
+                _logger.LogInformation("Success: Add New Site Successful | SiteId: {SiteId} | Email Sent: True", site.Id);
 
                 return Ok(new
                 {
-                    message = "Add New Site Successful",
-                    siteId = site.Id
+                    message = "Site was successfully saved and the notification email was sent.",
+                    siteId = site.Id,
+                    emailSent = true
                 });
             }
             catch (Exception ex)
@@ -343,18 +415,16 @@ namespace ConstructEase.WebApp.APIControllers
         [HttpGet("edit/{id}")]
         public IActionResult Edit(int id)
         {
-            Stopwatch actionTimer = Stopwatch.StartNew();
-
-            _logger.LogInformation(
-                "API Action: Edit | Invoked: {InvokedAt}",
-                DateTime.Now.ToString("HH:mm:ss.fff"));
+            _logger.LogInformation("API Action: Edit | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
 
             try
             {
-                var selectedSite = ExecuteAndLog(
-                    "ISiteRepository.GetSiteById",
-                    () => _siteRepository.GetSiteById(id));
+                ConstructionApplication.Core.DataModels.Site.Site selectedSite = ExecuteAndLog(
+                    "ISiteRepository.GetSiteById", () => _siteRepository.GetSiteById(id));
 
+                _siteRepository.GetSiteById(id);
+                
+                
                 if (selectedSite == null)
                 {
                     _logger.LogInformation(
@@ -366,10 +436,7 @@ namespace ConstructEase.WebApp.APIControllers
                     });
                 }
 
-                var siteApiVm =
-                    _imapper.Map<
-                        ConstructionApplication.Core.DataModels.Site.Site,
-                        SiteAPIVm>(selectedSite);
+                var siteApiVm =_imapper.Map< ConstructionApplication.Core.DataModels.Site.Site, SiteAPIVm>(selectedSite);
 
                 siteApiVm.MasterMasonIds = ExecuteAndLog(
                     "ISiteRepository.GetServiceProviderIdsByTypes",
@@ -389,8 +456,7 @@ namespace ConstructEase.WebApp.APIControllers
                             ServiceTypes.Electrician
                         }));
 
-                siteApiVm.LabourIds = ExecuteAndLog(
-                    "ISiteRepository.GetServiceProviderIdsByTypes",
+                siteApiVm.LabourIds = ExecuteAndLog("ISiteRepository.GetServiceProviderIdsByTypes",
                     () => _siteRepository.GetServiceProviderIdsByTypes(
                         id,
                         new List<ServiceTypes>
@@ -463,11 +529,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             finally
             {
-                actionTimer.Stop();
-
-                _logger.LogInformation(
-                    "\nAPI Action: Edit | Completed | Total Time: {ElapsedMs} ms",
-                    actionTimer.ElapsedMilliseconds);
+                _logger.LogInformation("API Action: Edit | Completed" + DateTime.Now.ToString("HH:mm:ss.fff"));
             }
         }
 
@@ -478,145 +540,75 @@ namespace ConstructEase.WebApp.APIControllers
         [HttpPost("update")]
         public IActionResult Update(SiteAPIDTO siteApiDto)
         {
-            Stopwatch actionTimer = Stopwatch.StartNew();
-
-            _logger.LogInformation(
-                "API Action: Update | Invoked: {InvokedAt}",
-                DateTime.Now.ToString("HH:mm:ss.fff"));
+            
+            _logger.LogInformation("API Action: Update | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
 
             try
             {
                 if (siteApiDto == null)
                 {
-                    _logger.LogInformation(
-                        "\nError: Invalid data | Exception: None");
+                    _logger.LogInformation("\nError: Invalid data | Exception: None");
 
                     return BadRequest("Invalid data");
                 }
 
-                var site =
-                    _imapper.Map<
-                        SiteAPIDTO,
-                        ConstructionApplication.Core.DataModels.Site.Site>(
-                            siteApiDto);
+                var site =_imapper.Map<SiteAPIDTO,ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
 
-                int affectedRowCount = ExecuteAndLog(
-                    "ISiteRepository.Update",
-                    () => _siteRepository.Update(site));
+                int affectedRowCount = _siteRepository.Update(site);
 
                 if (affectedRowCount <= 0)
                 {
-                    _logger.LogInformation(
-                        "\nError: Site not found or update failed | Exception: None");
-
-                    return NotFound(new
-                    {
-                        message = "Site not found or update failed"
-                    });
+                    return NotFound("Site not found or update failed");
                 }
-
-                ExecuteAndLog(
-                    "AddAddressIfPresent",
-                    () => AddAddressIfPresent(site.Id, siteApiDto));
+                AddAddressIfPresent(site.Id, siteApiDto);
 
                 if (siteApiDto.SelectedMasterMasonIds?.Count > 0)
                 {
-                    ExecuteAndLog(
-                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                            site.Id,
-                            ServiceTypes.MasterMasion,
-                            siteApiDto.SelectedMasterMasonIds));
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteApiDto.SelectedMasterMasonIds);
                 }
 
                 if (siteApiDto.SelectedElectricianIds?.Count > 0)
                 {
-                    ExecuteAndLog(
-                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                            site.Id,
-                            ServiceTypes.Electrician,
-                            siteApiDto.SelectedElectricianIds));
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteApiDto.SelectedElectricianIds);
                 }
 
                 if (siteApiDto.SelectedLabourIds?.Count > 0)
                 {
-                    ExecuteAndLog(
-                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                            site.Id,
-                            ServiceTypes.Labour,
-                            siteApiDto.SelectedLabourIds));
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteApiDto.SelectedLabourIds);
                 }
 
                 if (siteApiDto.SelectedPlumberIds?.Count > 0)
                 {
-                    ExecuteAndLog(
-                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                            site.Id,
-                            ServiceTypes.Plumber,
-                            siteApiDto.SelectedPlumberIds));
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteApiDto.SelectedPlumberIds);
                 }
 
                 if (siteApiDto.SelectedPainterIds?.Count > 0)
                 {
-                    ExecuteAndLog(
-                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                            site.Id,
-                            ServiceTypes.Painter,
-                            siteApiDto.SelectedPainterIds));
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteApiDto.SelectedPainterIds);
                 }
 
                 if (siteApiDto.SelectedCarpenterIds?.Count > 0)
                 {
-                    ExecuteAndLog(
-                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                            site.Id,
-                            ServiceTypes.Carpenter,
-                            siteApiDto.SelectedCarpenterIds));
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteApiDto.SelectedCarpenterIds);
                 }
 
                 if (siteApiDto.SelectedTilerIds?.Count > 0)
                 {
-                    ExecuteAndLog(
-                        "ISiteRepository.AddAndUpdateSiteServiceProviderBridge",
-                        () => _siteRepository.AddAndUpdateSiteServiceProviderBridge(
-                            site.Id,
-                            ServiceTypes.Tiler,
-                            siteApiDto.SelectedTilerIds));
+                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteApiDto.SelectedTilerIds);
                 }
 
-                var mappedScopes =
-                    (siteApiDto.SelectedScopes ??
-                     new List<ScopeSaveItem>())
-                    .Select(s => (
-                        s.SiteScopeMasterId,
-                        s.ScopeStatusId,
-                        s.Remarks))
-                    .ToList();
+                var mappedScopes = (siteApiDto.SelectedScopes ?? new List<ScopeSaveItem>())
+                    .Select(s => (s.SiteScopeMasterId, s.ScopeStatusId, s.Remarks)).ToList();
 
-                ExecuteAndLog(
-                    "ISiteScopeRepository.SaveScopes",
-                    () => _siteScopeRepository.SaveScopes(
-                        site.Id,
-                        mappedScopes));
+                _siteScopeRepository.SaveScopes(site.Id, mappedScopes);
 
                 _cache.Remove("AllSites");
 
-                _logger.LogInformation(
-                    "\nSuccess: Site updated successfully | Last Updated ID: {SiteId}",
-                    site.Id);
+                _logger.LogInformation("\nSuccess: Site updated successfully | Last Updated ID: {SiteId}", site.Id);
 
-                _logger.LogInformation(
-                    "\nError: None | Exception: None");
+                _logger.LogInformation("\nError: None | Exception: None");
 
-                return Ok(new
-                {
-                    message = "Site updated successfully."
-                });
+                return Ok("Site updated successfully.");
             }
             catch (Exception ex)
             {
@@ -625,11 +617,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             finally
             {
-                actionTimer.Stop();
-
-                _logger.LogInformation(
-                    "\nAPI Action: Update | Completed | Total Time: {ElapsedMs} ms",
-                    actionTimer.ElapsedMilliseconds);
+                _logger.LogInformation("API Action: Update | Completed" + DateTime.Now.ToString("HH:mm:ss.fff"));
             }
         }
 
@@ -1051,16 +1039,12 @@ namespace ConstructEase.WebApp.APIControllers
         // EXCEPTION LOGGING
         // ============================================================
 
-        private void LogException(
-            string actionName,
-            Exception ex)
+        private void LogException(string actionName, Exception ex)
         {
-            _logger.LogError(
-                ex,
-                "\nError: API Action {Action} failed | Exception: {ExceptionType}: {ExceptionMessage}",
-                actionName,
-                ex.GetType().Name,
-                ex.Message);
+            _logger.LogError(ex, "\nError: API Action {Action} failed | Exception: {ExceptionType}: {ExceptionMessage}",
+                             actionName,
+                             ex.GetType().Name,
+                             ex.Message);
         }
     }
 
