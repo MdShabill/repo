@@ -1,17 +1,11 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.Address;
-using ConstructionApplication.Core.DataModels.AddressType;
-using ConstructionApplication.Core.DataModels.ServiceProviders;
-using ConstructionApplication.Core.DataModels.Country;
-using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
 using System.Transactions;
-using ConstructionApplication.Repository.AdoDotNet;
-using Microsoft.Extensions.DependencyInjection;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Controllers
 {
@@ -47,8 +41,8 @@ namespace ConstructionApplication.Controllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<ServiceProviderVm, Core.DataModels.ServiceProviders.ServiceProvider>();
-                cfg.CreateMap<Core.DataModels.ServiceProviders.ServiceProvider, ServiceProviderVm>();
+                cfg.CreateMap<ServiceProviderVm, Core.DataModels.ServiceProvider>();
+                cfg.CreateMap<Core.DataModels.ServiceProvider, ServiceProviderVm>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -58,8 +52,8 @@ namespace ConstructionApplication.Controllers
         [SessionCheck]
         public IActionResult Index(int? serviceTypeId, int? id)
         {
-            List<Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(serviceTypeId, id);
-            List<ServiceProviderVm> serviceProviderVm = _imapper.Map<List<Core.DataModels.ServiceProviders.ServiceProvider>, List<ServiceProviderVm>>(serviceProviders);
+            List<Core.DataModels.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(serviceTypeId, id);
+            List<ServiceProviderVm> serviceProviderVm = _imapper.Map<List<Core.DataModels.ServiceProvider>, List<ServiceProviderVm>>(serviceProviders);
             ViewBag.ServiceProviderCount = serviceProviderVm.Count;
             return View(serviceProviderVm);
         }
@@ -87,7 +81,7 @@ namespace ConstructionApplication.Controllers
 
             string uniqueFileName = ValidateAndUploadFile(serviceProviderVm);
 
-            Core.DataModels.ServiceProviders.ServiceProvider serviceProvider = _imapper.Map<ServiceProviderVm, Core.DataModels.ServiceProviders.ServiceProvider>(serviceProviderVm);
+            Core.DataModels.ServiceProvider serviceProvider = _imapper.Map<ServiceProviderVm, Core.DataModels.ServiceProvider>(serviceProviderVm);
             serviceProvider.ImageName = uniqueFileName;
             serviceProvider.ServiceProviderId = _serviceProviderRepository.Add(serviceProvider);
             if (serviceProvider.ServiceProviderId > 0)
@@ -108,7 +102,7 @@ namespace ConstructionApplication.Controllers
                 return NotFound();
             }
 
-            List<Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(null, id);
+            List<Core.DataModels.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(null, id);
             if (serviceProviders.Count == 0)
             {
                 return NotFound();
@@ -133,7 +127,7 @@ namespace ConstructionApplication.Controllers
                 return View("Edit", serviceProviderVm);
             }
 
-            Core.DataModels.ServiceProviders.ServiceProvider serviceProvider = _imapper.Map<ServiceProviderVm, Core.DataModels.ServiceProviders.ServiceProvider>(serviceProviderVm);
+            Core.DataModels.ServiceProvider serviceProvider = _imapper.Map<ServiceProviderVm, Core.DataModels.ServiceProvider>(serviceProviderVm);
             int affectedRowCount = _serviceProviderRepository.Update(serviceProvider);
 
             if (affectedRowCount > 0)

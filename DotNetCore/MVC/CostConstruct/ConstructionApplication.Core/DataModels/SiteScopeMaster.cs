@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.Core.DataModels.SiteScopeMaster
+﻿namespace ConstructionApplication.Core.DataModels
 {
     public class SiteScopeMaster
     {

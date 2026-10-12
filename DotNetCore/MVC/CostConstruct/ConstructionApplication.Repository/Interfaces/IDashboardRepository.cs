@@ -1,6 +1,5 @@
 ﻿// Path: ConstructionApplication.Repository/Interfaces/IDashboardRepository.cs
-using ConstructionApplication.Core.DataModels.Dashboard;
-using ConstructionApplication.Core.DataModels.SiteScope;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.Interfaces
 {

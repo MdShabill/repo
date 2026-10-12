@@ -1,5 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.CostMaster;
-using ConstructionApplication.Core.DataModels.ServiceTypes;
+﻿using ConstructionApplication.Core.DataModels;
 using System.Data.SqlClient;
 using System.Data;
 using ConstructionApplication.Repository.Interfaces;

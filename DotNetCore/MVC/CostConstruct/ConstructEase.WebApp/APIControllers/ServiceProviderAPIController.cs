@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.Address;
-using ConstructionApplication.Core.DataModels.AddressType;
-using ConstructionApplication.Core.DataModels.Country;
-using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructEase.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using System.Transactions;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructEase.WebApp.APIControllers
 {
@@ -42,11 +39,11 @@ namespace ConstructEase.WebApp.APIControllers
             {
                 cfg.CreateMap<
                     ServiceProviderVm,
-                    ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider
+                    ConstructionApplication.Core.DataModels.ServiceProvider
                 >();
 
                 cfg.CreateMap<
-                    ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider,
+                    ConstructionApplication.Core.DataModels.ServiceProvider,
                     ServiceProviderVm
                 >();
             });
@@ -57,8 +54,8 @@ namespace ConstructEase.WebApp.APIControllers
         [HttpGet]
         public IActionResult Index(int? serviceTypeId, int? id)
         {
-            List<ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(serviceTypeId, id);
-            List<ServiceProviderVm> serviceProviderVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider>, List<ServiceProviderVm>>(serviceProviders);
+            List<ConstructionApplication.Core.DataModels.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(serviceTypeId, id);
+            List<ServiceProviderVm> serviceProviderVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.ServiceProvider>, List<ServiceProviderVm>>(serviceProviders);
             return Ok(new
             {
                 items = serviceProviderVm,
@@ -69,7 +66,7 @@ namespace ConstructEase.WebApp.APIControllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            List<ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(null, id);
+            List<ConstructionApplication.Core.DataModels.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(null, id);
             if (serviceProviders.Count == 0)
                 return NotFound(new { message = "Service Provider not found" });
 
@@ -84,8 +81,8 @@ namespace ConstructEase.WebApp.APIControllers
             if (error != null)
                 return BadRequest(new { message = error });
 
-            ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider serviceProvider = 
-                _imapper.Map<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider>(serviceProviderVm);
+            ConstructionApplication.Core.DataModels.ServiceProvider serviceProvider = 
+                _imapper.Map<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProvider>(serviceProviderVm);
 
             serviceProvider.ServiceProviderId = _serviceProviderRepository.Add(serviceProvider);
 
@@ -107,8 +104,8 @@ namespace ConstructEase.WebApp.APIControllers
 
             serviceProviderVm.ServiceProviderId = id;
 
-            ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider serviceProvider = 
-                _imapper.Map<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider>(serviceProviderVm);
+            ConstructionApplication.Core.DataModels.ServiceProvider serviceProvider = 
+                _imapper.Map<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProvider>(serviceProviderVm);
 
             int affectedRowCount = _serviceProviderRepository.Update(serviceProvider);
 

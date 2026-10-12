@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.Core.DataModels.AddressType
+﻿namespace ConstructionApplication.Core.DataModels
 {
     public class AddressType
     {

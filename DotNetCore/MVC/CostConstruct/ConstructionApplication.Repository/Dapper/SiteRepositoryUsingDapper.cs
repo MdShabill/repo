@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.Site;
+﻿using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
 using Dapper;

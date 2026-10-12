@@ -1,5 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.SiteScope;
-using ConstructionApplication.Core.DataModels.SiteScopeMaster;
+﻿using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.Interfaces
 {

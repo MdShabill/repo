@@ -1,12 +1,8 @@
-﻿using ConstructionApplication.Core.DataModels.ServiceProviders;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.Data;
 using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
-using System;
-using ConstructionApplication.Core.DataModels.ServiceTypes;
-using System.Collections.Generic;
-using ConstructionApplication.Core.DataModels.Country;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.AdoDotNet
 {
@@ -100,27 +96,36 @@ namespace ConstructionApplication.Repository.AdoDotNet
             }
         }
 
-        public List<ServiceProviderName> GetServiceProviders(ServiceTypes ServiceType)
+
+        public List<ServiceProviderName> GetAllServiceProviders()
         {
-            using (SqlConnection sqlConnection = new(_connectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = @$"SELECT  id, Name FROM ServiceProviders where ServiceTypeId= {(int)ServiceType}";
-                SqlDataAdapter sqlDataAdapter = new(sqlQuery, sqlConnection);
-                DataTable dataTable = new();
+                string sqlQuery = @"
+                        SELECT 
+                            Id, Name, ServiceTypeId
+                        FROM 
+                            ServiceProviders";
+
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlQuery, sqlConnection);
+
+                DataTable dataTable = new DataTable();
+
                 sqlDataAdapter.Fill(dataTable);
 
-                List<ServiceProviderName> serviceProviders = new();
+                List<ServiceProviderName> serviceProviders = new List<ServiceProviderName>();
 
                 for (int i = 0; i < dataTable.Rows.Count; i++)
                 {
-                    ServiceProviderName serviceProvider = new()
+                    ServiceProviderName serviceProvider = new ServiceProviderName
                     {
-                        //ServiceProviderId = (int)dataTable.Rows[i]["ServiceProviderId"],
-                        //ServiceProviderName = (string)dataTable.Rows[i]["ServiceProviderName"],
-                        //ServiceTypes = (string)dataTable.Rows[i]["ServiceTypes"]
+                        Id = Convert.ToInt32(dataTable.Rows[i]["Id"]),
+                        Name = Convert.ToString(dataTable.Rows[i]["Name"]) ?? "",
+                        ServiceTypeId = Convert.ToInt32(dataTable.Rows[i]["ServiceTypeId"])
                     };
                     serviceProviders.Add(serviceProvider);
                 }
+
                 return serviceProviders;
             }
         }
@@ -198,11 +203,6 @@ namespace ConstructionApplication.Repository.AdoDotNet
                     return affectedRowCount;
                 }
             }
-        }
-
-        public List<ServiceProviderName> GetAllServiceProviders()
-        {
-            throw new NotImplementedException();
         }
     }
 }

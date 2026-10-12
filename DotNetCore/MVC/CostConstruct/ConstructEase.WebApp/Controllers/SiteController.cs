@@ -1,12 +1,7 @@
 ﻿using AutoMapper;
 using ConstructEase.WebApp.ViewModels;
 using ConstructionApplication.Core;
-using ConstructionApplication.Core.DataModels.Address;
-using ConstructionApplication.Core.DataModels.AddressType;
-using ConstructionApplication.Core.DataModels.Country;
-using ConstructionApplication.Core.DataModels.ServiceProviders;
-using ConstructionApplication.Core.DataModels.Site;
-using ConstructionApplication.Core.DataModels.SiteStatus;
+using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.AdoDotNet;
 using ConstructionApplication.Repository.Interfaces;
@@ -48,8 +43,8 @@ namespace ConstructEase.WebApp.Controllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<ConstructionApplication.Core.DataModels.Site.Site, SiteVm>();
-                cfg.CreateMap<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>();
+                cfg.CreateMap<ConstructionApplication.Core.DataModels.Site, SiteVm>();
+                cfg.CreateMap<SiteVm, ConstructionApplication.Core.DataModels.Site>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -60,7 +55,7 @@ namespace ConstructEase.WebApp.Controllers
         public IActionResult Index()
         {
             const string cacheKey = "AllSites";
-            List<ConstructionApplication.Core.DataModels.Site.Site> sites;
+            List<ConstructionApplication.Core.DataModels.Site> sites;
 
             if (!_cache.TryGetValue(cacheKey, out sites))
             {
@@ -70,7 +65,7 @@ namespace ConstructEase.WebApp.Controllers
                 _cache.Set(cacheKey, sites, cacheEntryOptions);
             }
 
-            List<SiteVm> siteVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>,List<SiteVm>>(sites);
+            List<SiteVm> siteVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.Site>,List<SiteVm>>(sites);
 
             int? selectedSiteId = HttpContext.Session.GetInt32("SelectedSiteId");
 
@@ -130,7 +125,7 @@ namespace ConstructEase.WebApp.Controllers
                 return View(siteVm);
             }
 
-            var site = _imapper.Map<SiteVm,ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
+            var site = _imapper.Map<SiteVm,ConstructionApplication.Core.DataModels.Site>(siteVm);
 
             site.Id = _siteRepository.Create(site);
 
@@ -188,7 +183,7 @@ namespace ConstructEase.WebApp.Controllers
                 return NotFound();
             }
 
-            SiteVm siteVm = _imapper.Map<ConstructionApplication.Core.DataModels.Site.Site, SiteVm>(selectedSite);
+            SiteVm siteVm = _imapper.Map<ConstructionApplication.Core.DataModels.Site, SiteVm>(selectedSite);
 
             var address = _addressRepository.GetBySiteId(id);
             if (address != null)
@@ -217,7 +212,7 @@ namespace ConstructEase.WebApp.Controllers
         {
             DropDownSelectList(siteVm.SiteStatusId, siteVm.AddressTypeId, siteVm.CountryId);
 
-            var site = _imapper.Map<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
+            var site = _imapper.Map<SiteVm, ConstructionApplication.Core.DataModels.Site>(siteVm);
             int affectedRowCount = _siteRepository.Update(site);
 
             if (affectedRowCount > 0)

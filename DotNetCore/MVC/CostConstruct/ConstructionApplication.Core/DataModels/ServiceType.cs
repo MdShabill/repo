@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.Core.DataModels.ServiceTypes
+﻿namespace ConstructionApplication.Core.DataModels
 {
     public class ServiceType
     {

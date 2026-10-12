@@ -1,10 +1,5 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.Address;
-using ConstructionApplication.Core.DataModels.AddressType;
-using ConstructionApplication.Core.DataModels.Country;
-using ConstructionApplication.Core.DataModels.ServiceProviders;
-using ConstructionApplication.Core.DataModels.Site;
-using ConstructionApplication.Core.DataModels.SiteStatus;
+using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.AdoDotNet;
 using ConstructionApplication.Repository.Interfaces;
@@ -42,8 +37,8 @@ namespace ConstructionApplication.Controllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Core.DataModels.Site.Site, SiteVm>();
-                cfg.CreateMap<SiteVm, Core.DataModels.Site.Site>();
+                cfg.CreateMap<Core.DataModels.Site, SiteVm>();
+                cfg.CreateMap<SiteVm, Core.DataModels.Site>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -53,8 +48,8 @@ namespace ConstructionApplication.Controllers
         [SessionCheck]
         public IActionResult Index()
         {
-            List<ConstructionApplication.Core.DataModels.Site.Site> sites = _siteRepository.GetAllSites();
-            List<SiteVm> siteVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>, List<SiteVm>>(sites);
+            List<Core.DataModels.Site> sites = _siteRepository.GetAllSites();
+            List<SiteVm> siteVm = _imapper.Map<List<Core.DataModels.Site>, List<SiteVm>>(sites);
 
             int? selectedSiteId = HttpContext.Session.GetInt32("SelectedSiteId");
 
@@ -108,7 +103,7 @@ namespace ConstructionApplication.Controllers
         [HttpPost]
         public IActionResult Add(SiteVm siteVm)
         {
-            ConstructionApplication.Core.DataModels.Site.Site site = _imapper.Map<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
+            Core.DataModels.Site site = _imapper.Map<SiteVm, Core.DataModels.Site>(siteVm);
             site.Id = _siteRepository.Create(site);
 
             if (site.Id > 0)
@@ -165,7 +160,7 @@ namespace ConstructionApplication.Controllers
                 return NotFound();
             }
 
-            SiteVm siteVm = _imapper.Map<ConstructionApplication.Core.DataModels.Site.Site, SiteVm>(selectedSite);
+            SiteVm siteVm = _imapper.Map<Core.DataModels.Site, SiteVm>(selectedSite);
 
             // Get already selected service provider IDs per service type
             siteVm.SelectedMasterMasonIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.MasterMasion });
@@ -185,7 +180,7 @@ namespace ConstructionApplication.Controllers
         {
             DropDownSelectList();
 
-            var site = _imapper.Map<SiteVm, ConstructionApplication.Core.DataModels.Site.Site>(siteVm);
+            var site = _imapper.Map<SiteVm, Core.DataModels.Site>(siteVm);
             int affectedRowCount = _siteRepository.Update(site);
 
             if (affectedRowCount > 0)

@@ -1,7 +1,7 @@
-﻿using ConstructionApplication.Core.DataModels.Material;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.Data;
 using ConstructionApplication.Repository.Interfaces;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.AdoDotNet
 {

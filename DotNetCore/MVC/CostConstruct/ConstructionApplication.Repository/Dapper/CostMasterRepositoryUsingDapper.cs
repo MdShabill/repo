@@ -1,14 +1,8 @@
-﻿using ConstructionApplication.Core.DataModels.CostMaster;
-using ConstructionApplication.Repository.Interfaces;
-using System;
-using System.Collections.Generic;
+﻿using ConstructionApplication.Repository.Interfaces;
 using System.Data.SqlClient;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dapper;
-using ConstructionApplication.Core.DataModels.ServiceTypes;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.Dapper
 {

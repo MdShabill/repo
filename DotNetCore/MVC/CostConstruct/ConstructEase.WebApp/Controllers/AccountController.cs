@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.Usres;
 using ConstructionApplication.Repository.AdoDotNet;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructEase.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructEase.WebApp.Controllers
 {

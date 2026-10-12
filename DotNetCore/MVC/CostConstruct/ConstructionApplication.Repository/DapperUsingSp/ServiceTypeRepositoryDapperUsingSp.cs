@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.ServiceTypes;
+﻿using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Repository.Interfaces;
 using System.Data.SqlClient;
 using System.Data;

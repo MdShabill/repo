@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.CostMaster;
-using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructEase.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NuGet.Protocol;
 using System.Text.RegularExpressions;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructEase.WebApp.Controllers
 {

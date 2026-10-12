@@ -1,15 +1,9 @@
-﻿using ConstructionApplication.Core.DataModels.ServiceProviders;
-using ConstructionApplication.Repository.Interfaces;
-using System;
-using System.Collections.Generic;
+﻿using ConstructionApplication.Repository.Interfaces;
 using System.Data.SqlClient;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dapper;
-using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Core.Enums;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.DapperUsingSp
 {
@@ -38,24 +32,45 @@ namespace ConstructionApplication.Repository.DapperUsingSp
             }
         }
 
-        public List<ServiceProviderName> GetServiceProviders(ServiceTypes serviceType)
+
+        public List<ServiceProviderName> GetAllServiceProviders()
         {
-            throw new NotImplementedException();
-            //using (SqlConnection sqlConnection = new(_connectionString))
-            //{
-            //    string storedProcedure = "SP_ServiceProviderCRUD";
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
+            {
+                string storedProcedure = "SP_ServiceProviderCRUD";
 
-            //    var parameters = new DynamicParameters();
-            //    parameters.Add("@Mode", 2);
-            //    parameters.Add("@serviceTypeId", dbType: DbType.Int32, value: null);
-            //    parameters.Add("@ServiceProviderId", dbType: DbType.Int32, value: null);
+                using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(storedProcedure, sqlConnection))
+                {
+                    sqlDataAdapter.SelectCommand.CommandType = CommandType.StoredProcedure;
 
-            //    var result = sqlConnection.Query<ServiceProvider>(storedProcedure, parameters, commandType: CommandType.StoredProcedure).ToList();
+                    sqlDataAdapter.SelectCommand.Parameters.Add("@Mode", SqlDbType.Int).Value = 2;
 
-            //    return result;
-            //}
+                    sqlDataAdapter.SelectCommand.Parameters.Add("@ServiceProviderId", SqlDbType.Int).Value = DBNull.Value;
+
+                    sqlDataAdapter.SelectCommand.Parameters.Add("@FilterServiceTypeId", SqlDbType.Int).Value = DBNull.Value;
+
+                    DataTable dataTable = new DataTable();
+
+                    sqlDataAdapter.Fill(dataTable);
+
+                    List<ServiceProviderName> serviceProviders = new List<ServiceProviderName>();
+
+                    foreach (DataRow row in dataTable.Rows)
+                    {
+                        ServiceProviderName serviceProvider = new ServiceProviderName
+                        {
+                            Id = Convert.ToInt32(row["ServiceProviderId"]),
+                            Name = Convert.ToString(row["ServiceProviderName"]) ?? "",
+                            ServiceTypeId = Convert.ToInt32(row["ServiceTypeId"])
+                        };
+
+                        serviceProviders.Add(serviceProvider);
+                    }
+
+                    return serviceProviders;
+                }
+            }
         }
-
 
         public int Add(ServiceProvider serviceProvider)
         {
@@ -113,11 +128,6 @@ namespace ConstructionApplication.Repository.DapperUsingSp
                 // Execute the stored procedure and return affected rows
                 return connection.Execute(sqlQuery, parameters, commandType: CommandType.StoredProcedure);
             }
-        }
-
-        public List<ServiceProviderName> GetAllServiceProviders()
-        {
-            throw new NotImplementedException();
         }
     }
 }

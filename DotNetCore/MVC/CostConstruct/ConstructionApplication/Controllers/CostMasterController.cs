@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.CostMaster;
-using ConstructionApplication.Core.DataModels.ServiceTypes;
+using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using NuGet.Protocol;
 using System.Text.RegularExpressions;
 
 namespace ConstructionApplication.Controllers

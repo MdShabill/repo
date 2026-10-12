@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.Core.DataModels.Brands
+﻿namespace ConstructionApplication.Core.DataModels
 {
     public class Brand
     {

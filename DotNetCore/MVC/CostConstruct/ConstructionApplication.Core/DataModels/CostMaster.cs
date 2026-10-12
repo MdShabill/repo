@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.Core.DataModels.CostMaster
+﻿namespace ConstructionApplication.Core.DataModels
 {
     public class CostMaster
     {

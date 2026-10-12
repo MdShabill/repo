@@ -1,13 +1,7 @@
-﻿using ConstructionApplication.Core.DataModels.DailyAttendance;
-using ConstructionApplication.Repository.Interfaces;
-using System;
-using System.Collections.Generic;
+﻿using ConstructionApplication.Repository.Interfaces;
 using System.Data.SqlClient;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ConstructionApplication.Core.DataModels.ServiceProviders;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.AdoDotNetUsingSp
 {

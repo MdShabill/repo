@@ -1,8 +1,8 @@
-﻿using ConstructionApplication.Core.DataModels.Suppliers;
-using ConstructionApplication.Repository.Interfaces;
+﻿using ConstructionApplication.Repository.Interfaces;
 using System.Data.SqlClient;
 using System.Data;
 using Dapper;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.DapperUsingSp
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConstructionApplication.Core.DataModels.Site
+namespace ConstructionApplication.Core.DataModels
 {
     public class Site
     {

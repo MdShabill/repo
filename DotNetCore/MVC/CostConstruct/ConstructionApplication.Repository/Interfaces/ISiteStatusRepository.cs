@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.SiteStatus;
+﻿using ConstructionApplication.Core.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

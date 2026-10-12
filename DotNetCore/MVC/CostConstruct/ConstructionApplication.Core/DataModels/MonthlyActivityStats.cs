@@ -1,5 +1,5 @@
 ﻿// Path: ConstructionApplication.Core/DataModels/Dashboard/MonthlyActivityStats.cs
-namespace ConstructionApplication.Core.DataModels.Dashboard
+namespace ConstructionApplication.Core.DataModels
 {
     public class MonthlyActivityStats
     {

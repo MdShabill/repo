@@ -1,5 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.SiteScope;
-
+﻿
 namespace ConstructEase.WebApp.APIControllers.APIViewModels
 {
     public class SiteAPIVm

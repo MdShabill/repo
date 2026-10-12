@@ -1,10 +1,9 @@
-﻿using ConstructionApplication.Core.DataModels.SiteScope;
-using ConstructionApplication.Core.DataModels.SiteScopeStatus;
-using ConstructionApplication.Repository.Interfaces;
+﻿using ConstructionApplication.Repository.Interfaces;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Data.SqlClient;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.Dapper
 {

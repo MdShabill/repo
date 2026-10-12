@@ -1,5 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.Usres;
-using ConstructionApplication.Core.Enums;
+﻿using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.AdoDotNet
 {

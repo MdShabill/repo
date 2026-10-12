@@ -1,5 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.Address;
-using ConstructionApplication.Core.DataModels.ServiceProviders;
+﻿using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Repository.Interfaces;
 using System.Data.SqlClient;
 

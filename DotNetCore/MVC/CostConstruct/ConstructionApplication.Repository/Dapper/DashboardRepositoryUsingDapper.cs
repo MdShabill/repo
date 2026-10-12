@@ -1,6 +1,5 @@
 ﻿// Path: ConstructionApplication.Repository/Dapper/DashboardRepositoryUsingDapper.cs
-using ConstructionApplication.Core.DataModels.Dashboard;
-using ConstructionApplication.Core.DataModels.SiteScope;
+using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Repository.Interfaces;
 using Dapper;
 using System.Data.SqlClient;

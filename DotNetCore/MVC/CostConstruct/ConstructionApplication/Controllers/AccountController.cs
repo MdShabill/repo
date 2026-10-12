@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.Usres;
+using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Repository.AdoDotNet;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels;

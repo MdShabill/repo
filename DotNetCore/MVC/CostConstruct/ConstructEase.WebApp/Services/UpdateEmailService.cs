@@ -1,4 +1,5 @@
-﻿using MailKit.Net.Smtp;
+﻿
+using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
@@ -12,8 +13,7 @@ namespace ConstructEase.WebApp.Services
         private readonly EmailSettings _settings;
         private readonly ILogger<UpdateEmailService> _logger;
 
-        public UpdateEmailService(IOptions<EmailSettings> settings,
-                                  ILogger<UpdateEmailService> logger)
+        public UpdateEmailService(IOptions<EmailSettings> settings, ILogger<UpdateEmailService> logger)
         {
             _settings = settings.Value;
             _logger = logger;
@@ -21,6 +21,7 @@ namespace ConstructEase.WebApp.Services
 
         public async Task SendAsync(string siteName, string updatedBy, DateTime updatedAt, List<SiteUpdateChange> changes)
         {
+            // No changes means no email is required.
             if (changes == null || changes.Count == 0)
                 return;
 
@@ -33,35 +34,45 @@ namespace ConstructEase.WebApp.Services
 
                 string safeRecipient = WebUtility.HtmlEncode(string.IsNullOrWhiteSpace(_settings.ToName) ? "User" : _settings.ToName);
 
-                string rows = string.Join("", changes.Select(change => $"""
-                    <tr>
-                        <td style="padding:10px;border-bottom:1px solid #eeeeee;">
-                            <strong>{WebUtility.HtmlEncode(change.FieldName)}</strong>
-                        </td>
-                        <td style="padding:10px;border-bottom:1px solid #eeeeee;">
-                            {WebUtility.HtmlEncode(change.OldValue)}
-                        </td>
-                        <td style="padding:10px;border-bottom:1px solid #eeeeee;">
-                            {WebUtility.HtmlEncode(change.NewValue)}
-                        </td>
-                    </tr>
-                    """));
+                // Create table rows for changed fields.
+                string rows = "";
 
+                foreach (var change in changes)
+                {
+                    rows += $"""
+                        <tr>
+                            <td style="padding:10px;border-bottom:1px solid #eeeeee;">
+                                <strong>{WebUtility.HtmlEncode(change.FieldName)}</strong>
+                            </td>
+                            <td style="padding:10px;border-bottom:1px solid #eeeeee;">
+                                {WebUtility.HtmlEncode(change.OldValue ?? "")}
+                            </td>
+                            <td style="padding:10px;border-bottom:1px solid #eeeeee;">
+                                {WebUtility.HtmlEncode(change.NewValue ?? "")}
+                            </td>
+                        </tr>
+                        """;
+                }
+
+                // Create the email HTML.
                 string body = $"""
                     <!DOCTYPE html>
                     <html>
                     <body style="margin:0;padding:24px;background:#f5f3ee;
                                  font-family:Arial,Helvetica,sans-serif;color:#333;">
+
                         <table width="100%" cellpadding="0" cellspacing="0"
-                               style="max-width:700px;margin:auto;background:#fff;">
+                               style="max-width:700px;margin:auto;background:#ffffff;">
+
                             <tr>
-                                <td style="padding:24px;background:#1a2e44;color:#fff;">
+                                <td style="padding:24px;background:#1a2e44;color:#ffffff;">
                                     <h2 style="margin:0;">BUILDER LEDGER</h2>
                                     <p style="margin:6px 0 0;">
                                         Construction Management System
                                     </p>
                                 </td>
                             </tr>
+
                             <tr>
                                 <td style="padding:24px;">
                                     <p>Hello <strong>{safeRecipient}</strong>,</p>
@@ -77,17 +88,21 @@ namespace ConstructEase.WebApp.Services
 
                                     <table width="100%" cellpadding="0" cellspacing="0"
                                            style="border-collapse:collapse;font-size:14px;">
-                                        <tr style="background:#f0a500;color:#fff;">
+
+                                        <tr style="background:#f0a500;color:#ffffff;">
                                             <th align="left" style="padding:10px;">Field</th>
                                             <th align="left" style="padding:10px;">Previous Value</th>
                                             <th align="left" style="padding:10px;">New Value</th>
                                         </tr>
+
                                         {rows}
+
                                     </table>
 
                                     <p style="margin-top:24px;">
                                         <strong>Updated By:</strong> {safeUpdatedBy}<br>
-                                        <strong>Updated At:</strong> {updatedAt:dd MMMM yyyy, hh:mm tt}
+                                        <strong>Updated At:</strong>
+                                        {updatedAt:dd MMMM yyyy, hh:mm tt}
                                     </p>
 
                                     <p style="font-size:14px;line-height:1.6;">
@@ -97,11 +112,13 @@ namespace ConstructEase.WebApp.Services
                                     </p>
                                 </td>
                             </tr>
+
                         </table>
                     </body>
                     </html>
                     """;
 
+                // Prepare the email.
                 var message = new MimeMessage();
 
                 message.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
@@ -109,8 +126,9 @@ namespace ConstructEase.WebApp.Services
                 message.To.Add(new MailboxAddress(_settings.ToName, _settings.ToEmail));
 
                 message.Subject = $"Site Updated - {siteName}";
-                message.Body = new BodyBuilder { HtmlBody = body }.ToMessageBody();
+                message.Body = new BodyBuilder{HtmlBody = body}.ToMessageBody();
 
+                // Connect to SMTP and send the email.
                 using var smtp = new SmtpClient();
 
                 await smtp.ConnectAsync(_settings.SmtpHost, _settings.SmtpPort, SecureSocketOptions.StartTls);

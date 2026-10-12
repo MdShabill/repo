@@ -1,13 +1,10 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.Brands;
-using ConstructionApplication.Core.DataModels.Material;
-using ConstructionApplication.Core.DataModels.MaterialPurchase;
-using ConstructionApplication.Core.DataModels.Suppliers;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructEase.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructEase.WebApp.Controllers
 {

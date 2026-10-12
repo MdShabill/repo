@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.Core.DataModels.SiteScopeStatus
+﻿namespace ConstructionApplication.Core.DataModels
 {
     public class SiteScopeStatus
     {

@@ -1,6 +1,6 @@
 ﻿using ConstructionApplication.Core.Enums;
 
-namespace ConstructionApplication.Core.DataModels.ServiceProviders
+namespace ConstructionApplication.Core.DataModels
 {
     public class ServiceProviderName
     {

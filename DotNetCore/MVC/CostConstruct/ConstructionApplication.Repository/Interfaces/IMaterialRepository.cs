@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.Material;
+﻿using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.Interfaces
 {

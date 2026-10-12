@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.Core.DataModels.Suppliers
+﻿namespace ConstructionApplication.Core.DataModels
 {
     public class Supplier
     {

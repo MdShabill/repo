@@ -1,12 +1,10 @@
 ﻿// Path: ConstructEase.WebApp/APIControllers/DailyAttendanceAPIController.cs
 using AutoMapper;
-using ConstructionApplication.Core.DataModels.CostMaster;
-using ConstructionApplication.Core.DataModels.DailyAttendance;
-using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructEase.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructEase.WebApp.APIControllers
 {

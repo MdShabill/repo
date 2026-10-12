@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ConstructEase.WebApp.ViewModels;
-using ConstructionApplication.Core.DataModels.CostMaster;
+using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

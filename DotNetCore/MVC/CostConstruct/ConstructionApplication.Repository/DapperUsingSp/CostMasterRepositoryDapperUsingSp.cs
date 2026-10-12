@@ -1,4 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.CostMaster;
+﻿using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Repository.Interfaces;
 using Dapper;
 using System.Data;

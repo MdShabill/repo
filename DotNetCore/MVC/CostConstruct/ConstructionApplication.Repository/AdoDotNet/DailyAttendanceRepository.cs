@@ -1,5 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.DailyAttendance;
-using ConstructionApplication.Core.DataModels.ServiceProviders;
+﻿using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Repository.Interfaces;
 using System.Data;
 using System.Data.SqlClient;

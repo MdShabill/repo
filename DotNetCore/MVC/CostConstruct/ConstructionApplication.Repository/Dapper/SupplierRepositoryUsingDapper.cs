@@ -1,5 +1,4 @@
-﻿using ConstructionApplication.Core.DataModels.Suppliers;
-using ConstructionApplication.Repository.Interfaces;
+﻿using ConstructionApplication.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.Dapper
 {

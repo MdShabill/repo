@@ -1,10 +1,10 @@
-﻿using ConstructionApplication.Core.DataModels.AddressType;
-using ConstructionApplication.Repository.Interfaces;
+﻿using ConstructionApplication.Repository.Interfaces;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Data;
 using System.Data.SqlClient;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Repository.Dapper
 {

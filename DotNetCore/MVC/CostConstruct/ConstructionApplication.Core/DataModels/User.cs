@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConstructionApplication.Core.DataModels.Usres
+namespace ConstructionApplication.Core.DataModels
 {
     public class User
     {

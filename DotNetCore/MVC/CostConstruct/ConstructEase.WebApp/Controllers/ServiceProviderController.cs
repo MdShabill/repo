@@ -1,17 +1,11 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.Address;
-using ConstructionApplication.Core.DataModels.AddressType;
-using ConstructionApplication.Core.DataModels.ServiceProviders;
-using ConstructionApplication.Core.DataModels.Country;
-using ConstructionApplication.Core.DataModels.ServiceTypes;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructEase.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
 using System.Transactions;
-using ConstructionApplication.Repository.AdoDotNet;
-using Microsoft.Extensions.DependencyInjection;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructEase.WebApp.Controllers
 {
@@ -47,8 +41,8 @@ namespace ConstructEase.WebApp.Controllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider>();
-                cfg.CreateMap<ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider, ServiceProviderVm>();
+                cfg.CreateMap<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProvider>();
+                cfg.CreateMap<ConstructionApplication.Core.DataModels.ServiceProvider, ServiceProviderVm>();
             });
 
             _imapper = configuration.CreateMapper();
@@ -58,8 +52,8 @@ namespace ConstructEase.WebApp.Controllers
         [SessionCheck]
         public IActionResult Index(int? serviceTypeId, int? id)
         {
-            List<ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(serviceTypeId, id);
-            List<ServiceProviderVm> serviceProviderVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider>, List<ServiceProviderVm>>(serviceProviders);
+            List<ConstructionApplication.Core.DataModels.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(serviceTypeId, id);
+            List<ServiceProviderVm> serviceProviderVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.ServiceProvider>, List<ServiceProviderVm>>(serviceProviders);
             ViewBag.ServiceProviderCount = serviceProviderVm.Count;
             return View(serviceProviderVm);
         }
@@ -87,7 +81,7 @@ namespace ConstructEase.WebApp.Controllers
 
             string uniqueFileName = ValidateAndUploadFile(serviceProviderVm);
 
-            ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider serviceProvider = _imapper.Map<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider>(serviceProviderVm);
+            ConstructionApplication.Core.DataModels.ServiceProvider serviceProvider = _imapper.Map<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProvider>(serviceProviderVm);
             serviceProvider.ImageName = uniqueFileName;
             serviceProvider.ServiceProviderId = _serviceProviderRepository.Add(serviceProvider);
             if (serviceProvider.ServiceProviderId > 0)
@@ -108,7 +102,7 @@ namespace ConstructEase.WebApp.Controllers
                 return NotFound();
             }
 
-            List<ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(null, id);
+            List<ConstructionApplication.Core.DataModels.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(null, id);
             if (serviceProviders.Count == 0)
             {
                 return NotFound();
@@ -133,7 +127,7 @@ namespace ConstructEase.WebApp.Controllers
                 return View("Edit", serviceProviderVm);
             }
 
-            ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider serviceProvider = _imapper.Map<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProviders.ServiceProvider>(serviceProviderVm);
+            ConstructionApplication.Core.DataModels.ServiceProvider serviceProvider = _imapper.Map<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProvider>(serviceProviderVm);
             int affectedRowCount = _serviceProviderRepository.Update(serviceProvider);
 
             if (affectedRowCount > 0)

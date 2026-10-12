@@ -1,4 +1,4 @@
-﻿namespace ConstructionApplication.Core.DataModels.Country
+﻿namespace ConstructionApplication.Core.DataModels
 {
     public class Country
     {

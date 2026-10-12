@@ -1,15 +1,10 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Core.DataModels.ServiceProviders;
-using ConstructionApplication.Core.DataModels.CostMaster;
-using ConstructionApplication.Core.DataModels.DailyAttendance;
-using ConstructionApplication.Core.DataModels.ServiceTypes;
-using ConstructionApplication.Core.DataModels.Site;
-using ConstructionApplication.Repository.AdoDotNet;
 using ConstructionApplication.Repository.Interfaces;
 using ConstructionApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructionApplication.Controllers
 {
@@ -130,7 +125,7 @@ namespace ConstructionApplication.Controllers
 
             {
                 CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(ServiceTypeId, SiteId);
-                List<Core.DataModels.ServiceProviders.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(ServiceTypeId, null)
+                List<Core.DataModels.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(ServiceTypeId, null)
                 .Where(c => c.ServiceTypeId == ServiceTypeId)
                 .ToList();
 
@@ -140,7 +135,7 @@ namespace ConstructionApplication.Controllers
                     serviceProviders = serviceProviders
                 });
             }
-            return base.Json(new { cost = 0, serviceProviders = new List<Core.DataModels.ServiceProviders.ServiceProvider>() });
+            return base.Json(new { cost = 0, serviceProviders = new List<Core.DataModels.ServiceProvider>() });
         }
 
         [HttpPost]

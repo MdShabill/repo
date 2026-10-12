@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using ConstructEase.WebApp.APIControllers.APIViewModels;
 using ConstructEase.WebApp.Services;
-using ConstructionApplication.Core.DataModels.Address;
-using ConstructionApplication.Core.DataModels.ServiceProviders;
+using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -59,11 +58,11 @@ namespace ConstructEase.WebApp.APIControllers
 
             var configuration = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<ConstructionApplication.Core.DataModels.Site.Site, SiteAPIDTO>();
+                cfg.CreateMap<Site, SiteAPIDTO>();
 
-                cfg.CreateMap<SiteAPIDTO, ConstructionApplication.Core.DataModels.Site.Site>();
+                cfg.CreateMap<SiteAPIDTO, Site>();
 
-                cfg.CreateMap<ConstructionApplication.Core.DataModels.Site.Site, SiteAPIVm>();
+                cfg.CreateMap<Site, SiteAPIVm>();
             });
             _imapper = configuration.CreateMapper();
         }
@@ -76,18 +75,18 @@ namespace ConstructEase.WebApp.APIControllers
             {
                 const string cacheKey = "AllSites";
 
-                List<ConstructionApplication.Core.DataModels.Site.Site> sites;
+                List<Site> sites;
 
                 if (!_cache.TryGetValue(cacheKey, out sites))
                 {
                     sites = _siteRepository.GetAllSites();
 
-                    var cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10));
+                    MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10));
 
                     _cache.Set(cacheKey, sites, cacheEntryOptions);
                 }
 
-                var siteApiVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>,List<SiteAPIDTO>>(sites);
+                List<SiteAPIDTO> siteApiVm = _imapper.Map<List<Site>,List<SiteAPIDTO>>(sites);
 
                 _logger.LogInformation("\nTotal Site: {TotalSite}", sites?.Count ?? 0);
 
@@ -137,9 +136,9 @@ namespace ConstructEase.WebApp.APIControllers
                     });
                 }
 
-                var sites = _siteRepository.GetSites(search, statusId, fromDate, toDate, budgetFrom, budgetTo);
+                List<Site> sites = _siteRepository.GetSites(search, statusId, fromDate, toDate, budgetFrom, budgetTo);
 
-                var siteApiVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.Site.Site>, List<SiteAPIDTO>>(sites);
+                List<SiteAPIDTO> siteApiVm = _imapper.Map<List<Site>, List<SiteAPIDTO>>(sites);
 
                 _logger.LogInformation("\nTotal Site: {TotalSite}", sites?.Count ?? 0);
 
@@ -162,7 +161,7 @@ namespace ConstructEase.WebApp.APIControllers
             _logger.LogInformation("API Action: SelectSite | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
             try
             {
-                var selectedSite = _siteRepository.GetSiteById(id);
+                Site selectedSite = _siteRepository.GetSiteById(id);
 
                 if (selectedSite == null)
                 {
@@ -194,7 +193,7 @@ namespace ConstructEase.WebApp.APIControllers
                     return BadRequest("Invalid data");
                 }
 
-                var site = _imapper.Map<SiteAPIDTO,ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
+                Site site = _imapper.Map<SiteAPIDTO,Site>(siteApiDto);
 
                 site.Id = _siteRepository.Create(site);
 
@@ -243,9 +242,9 @@ namespace ConstructEase.WebApp.APIControllers
                 // Save selected work scopes
                 if (siteApiDto.SelectedScopes?.Count > 0)
                 {
-                    var mappedScopes = new List<(int, int, string?)>();
+                    List<(int, int, string?)> mappedScopes = new List<(int, int, string?)>();
 
-                    foreach (var scope in siteApiDto.SelectedScopes)
+                    foreach (ScopeSaveItem scope in siteApiDto.SelectedScopes)
                     {
                         mappedScopes.Add((scope.SiteScopeMasterId, scope.ScopeStatusId, scope.Remarks));
                     }
@@ -256,7 +255,7 @@ namespace ConstructEase.WebApp.APIControllers
 
                 string siteStatusName = "Not Provided";
 
-                var siteStatuses = _siteStatusRepository.GetAll();
+                List<SiteStatus> siteStatuses = _siteStatusRepository.GetAll();
 
                 foreach (var status in siteStatuses)
                 {
@@ -291,10 +290,10 @@ namespace ConstructEase.WebApp.APIControllers
                 }
 
                 // Prepare work scopes for email
-                var siteScopes = _siteScopeRepository.GetBySiteId(site.Id);
+                List<SiteScope> siteScopes = _siteScopeRepository.GetBySiteId(site.Id);
                 string workScope = "";
 
-                foreach (var scope in siteScopes)
+                foreach (SiteScope scope in siteScopes)
                 {
                     if (string.IsNullOrWhiteSpace(scope.ScopeName))
                         continue;
@@ -354,12 +353,12 @@ namespace ConstructEase.WebApp.APIControllers
 
             try
             {
-                var selectedSite = _siteRepository.GetSiteById(id);
+                Site selectedSite = _siteRepository.GetSiteById(id);
 
                 if (selectedSite == null)
                     return NotFound("Site not found");
 
-                var siteApiVm =_imapper.Map< ConstructionApplication.Core.DataModels.Site.Site, SiteAPIVm>(selectedSite);
+                SiteAPIVm siteApiVm =_imapper.Map< Site, SiteAPIVm>(selectedSite);
 
                 siteApiVm.MasterMasonIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes>{ServiceTypes.MasterMasion});
 
@@ -376,11 +375,11 @@ namespace ConstructEase.WebApp.APIControllers
                 siteApiVm.TilerIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes>{ServiceTypes.Tiler});
 
 
-                var scopes = _siteScopeRepository.GetBySiteId(id);
+                List<SiteScope> scopes = _siteScopeRepository.GetBySiteId(id);
 
                 siteApiVm.Scopes = new List<SiteScopeVm>();
 
-                foreach (var scope in scopes)
+                foreach (SiteScope scope in scopes)
                 {
                     SiteScopeVm scopeVm = new SiteScopeVm
                     {
@@ -421,18 +420,18 @@ namespace ConstructEase.WebApp.APIControllers
                     return BadRequest("Invalid site data.");
 
                 // 1. Get original database values before updating.
-                var oldSite = _siteRepository.GetSiteById(siteApiDto.Id);
+                Site oldSite = _siteRepository.GetSiteById(siteApiDto.Id);
 
                 if (oldSite == null)
                     return NotFound("Site not found.");
 
-                var oldScopes = _siteScopeRepository.GetBySiteId(siteApiDto.Id);
-                var allSiteStatuses = _siteStatusRepository.GetAll();
-                var allScopeStatuses = _siteScopeRepository.GetAllStatuses();
-                var allScopeMasters = _siteScopeMasterRepository.GetAll();
+                List<SiteScope> oldScopes = _siteScopeRepository.GetBySiteId(siteApiDto.Id);
+                List<SiteStatus> allSiteStatuses = _siteStatusRepository.GetAll();
+                List<SiteScopeStatus> allScopeStatuses = _siteScopeRepository.GetAllStatuses();
+                List<SiteScopeMaster> allScopeMasters = _siteScopeMasterRepository.GetAll();
 
-                var changes = new List<SiteUpdateChange>();
-                var newScopes = siteApiDto.SelectedScopes ?? new();
+                List<SiteUpdateChange> changes = new List<SiteUpdateChange>();
+                List<ScopeSaveItem> newScopes = siteApiDto.SelectedScopes ?? new();
 
                 // 2. Check Site Status.
                 if (oldSite.SiteStatusId != siteApiDto.SiteStatusId)
@@ -470,11 +469,11 @@ namespace ConstructEase.WebApp.APIControllers
                 }
 
                 // 4. Check removed scopes and changed scope statuses.
-                foreach (var oldScope in oldScopes)
+                foreach (SiteScope oldScope in oldScopes)
                 {
                     ScopeSaveItem? matchingScope = null;
 
-                    foreach (var newScope in newScopes)
+                    foreach (ScopeSaveItem newScope in newScopes)
                     {
                         if (newScope.SiteScopeMasterId == oldScope.SiteScopeId)
                         {
@@ -504,7 +503,7 @@ namespace ConstructEase.WebApp.APIControllers
                         string oldStatus = oldScope.StatusName ?? "Not Provided";
                         string newStatus = "Not Provided";
 
-                        foreach (var status in allScopeStatuses)
+                        foreach (SiteScopeStatus status in allScopeStatuses)
                         {
                             if (status.Id == matchingScope.ScopeStatusId)
                             {
@@ -523,11 +522,11 @@ namespace ConstructEase.WebApp.APIControllers
                 }
 
                 // 5. Check newly added scopes.
-                foreach (var newScope in newScopes)
+                foreach (ScopeSaveItem newScope in newScopes)
                 {
                     bool alreadyExists = false;
 
-                    foreach (var oldScope in oldScopes)
+                    foreach (SiteScope oldScope in oldScopes)
                     {
                         if (oldScope.SiteScopeId == newScope.SiteScopeMasterId)
                         {
@@ -540,7 +539,7 @@ namespace ConstructEase.WebApp.APIControllers
                     {
                         string scopeName = $"Scope #{newScope.SiteScopeMasterId}";
 
-                        foreach (var master in allScopeMasters)
+                        foreach (SiteScopeMaster master in allScopeMasters)
                         {
                             if (master.Id == newScope.SiteScopeMasterId)
                             {
@@ -558,7 +557,7 @@ namespace ConstructEase.WebApp.APIControllers
                     }
                 }
 
-                var site = _imapper.Map<SiteAPIDTO,ConstructionApplication.Core.DataModels.Site.Site>(siteApiDto);
+                Site site = _imapper.Map<SiteAPIDTO,Site>(siteApiDto);
 
                 int affectedRows = _siteRepository.Update(site);
 
@@ -584,9 +583,9 @@ namespace ConstructEase.WebApp.APIControllers
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteApiDto.SelectedTilerIds ?? new List<int>());
 
                 // 9. Save selected work scopes.
-                var mappedScopes = new List<(int, int, string?)>();
+                List<(int, int, string?)> mappedScopes = new List<(int, int, string?)>();
 
-                foreach (var scope in newScopes)
+                foreach (ScopeSaveItem scope in newScopes)
                 {
                     mappedScopes.Add((scope.SiteScopeMasterId, scope.ScopeStatusId, scope.Remarks));
                 }
@@ -674,16 +673,16 @@ namespace ConstructEase.WebApp.APIControllers
 
             try
             {
-                var statuses = _siteStatusRepository.GetAll();
-                var addressTypes = _addressTypeRepository.GetAll();
-                var countries = _countryRepository.GetAllCountries();
-                var scopeMasters = _siteScopeMasterRepository.GetAll();
-                var scopeStatuses = _siteScopeRepository.GetAllStatuses();
+                List<SiteStatus> statuses = _siteStatusRepository.GetAll();
+                List<AddressType> addressTypes = _addressTypeRepository.GetAll();
+                List<Country> countries = _countryRepository.GetAllCountries();
+                List<SiteScopeMaster> scopeMasters = _siteScopeMasterRepository.GetAll();
+                List<SiteScopeStatus> scopeStatuses = _siteScopeRepository.GetAllStatuses();
 
                 // Site Statuses
-                var statusItems = new List<DropdownItemDTO>();
+                List<DropdownItemDTO> statusItems = new List<DropdownItemDTO>();
 
-                foreach (var status in statuses)
+                foreach (SiteStatus status in statuses)
                 {
                     statusItems.Add(new DropdownItemDTO
                     {
@@ -693,9 +692,9 @@ namespace ConstructEase.WebApp.APIControllers
                 }
 
                 // Address Types
-                var addressTypeItems = new List<DropdownItemDTO>();
+                List<DropdownItemDTO> addressTypeItems = new List<DropdownItemDTO>();
 
-                foreach (var addressType in addressTypes)
+                foreach (AddressType addressType in addressTypes)
                 {
                     addressTypeItems.Add(new DropdownItemDTO
                     {
@@ -705,9 +704,9 @@ namespace ConstructEase.WebApp.APIControllers
                 }
 
                 // Countries
-                var countryItems = new List<DropdownItemDTO>();
+                List<DropdownItemDTO> countryItems = new List<DropdownItemDTO>();
 
-                foreach (var country in countries)
+                foreach (Country country in countries)
                 {
                     countryItems.Add(new DropdownItemDTO
                     {
@@ -717,9 +716,9 @@ namespace ConstructEase.WebApp.APIControllers
                 }
 
                 // Work Scope Masters
-                var scopeMasterItems = new List<DropdownItemDTO>();
+                List<DropdownItemDTO> scopeMasterItems = new List<DropdownItemDTO>();
 
-                foreach (var scope in scopeMasters)
+                foreach (SiteScopeMaster scope in scopeMasters)
                 {
                     scopeMasterItems.Add(new DropdownItemDTO
                     {
@@ -729,9 +728,9 @@ namespace ConstructEase.WebApp.APIControllers
                 }
 
                 // Work Scope Statuses
-                var scopeStatusItems = new List<DropdownItemDTO>();
+                List<DropdownItemDTO> scopeStatusItems = new List<DropdownItemDTO>();
 
-                foreach (var scopeStatus in scopeStatuses)
+                foreach (SiteScopeStatus scopeStatus in scopeStatuses)
                 {
                     scopeStatusItems.Add(new DropdownItemDTO
                     {
@@ -740,7 +739,7 @@ namespace ConstructEase.WebApp.APIControllers
                     });
                 }
 
-                var response = new SiteDropdownDTO
+                SiteDropdownDTO response = new SiteDropdownDTO
                 {
                     Statuses = statusItems, AddressTypes = addressTypeItems, Countries = countryItems,
                     ScopeMasters = scopeMasterItems, ScopeStatuses = scopeStatusItems
@@ -759,8 +758,6 @@ namespace ConstructEase.WebApp.APIControllers
             }
         }
 
-
-
         [HttpGet("service-providers")]
         public IActionResult GetServiceProviders()
         {
@@ -768,45 +765,45 @@ namespace ConstructEase.WebApp.APIControllers
 
             try
             {
-                var allServiceProviders =_serviceProviderRepository.GetAllServiceProviders();
+                List<ServiceProviderName> allServiceProviders =_serviceProviderRepository.GetAllServiceProviders();
 
-                var masterMasons = new List<object>();
-                var electricians = new List<object>();
-                var labours = new List<object>();
-                var plumbers = new List<object>();
-                var painters = new List<object>();
-                var carpenters = new List<object>();
-                var tilers = new List<object>();
+                List<object> masterMasons = new List<object>();
+                List<object> electricians = new List<object>();
+                List<object> labours = new List<object>();
+                List<object> plumbers = new List<object>();
+                List<object> painters = new List<object>();
+                List<object> carpenters = new List<object>();
+                List<object> tilers = new List<object>();
 
-                foreach (var serviceProvider in allServiceProviders)
+                foreach (ServiceProviderName serviceProvider in allServiceProviders)
                 {
                     if (serviceProvider.ServiceTypeId == (int)ServiceTypes.MasterMasion)
                     {
-                        masterMasons.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
+                        masterMasons.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Electrician)
                     {
-                        electricians.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
+                        electricians.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Labour)
                     {
-                        labours.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
+                        labours.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Plumber)
                     {
-                        plumbers.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
+                        plumbers.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Painter)
                     {
-                        painters.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
+                        painters.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Carpenter)
                     {
-                        carpenters.Add(new {id = serviceProvider.Id,name = serviceProvider.Name});
+                        carpenters.Add(new { id = serviceProvider.Id,name = serviceProvider.Name});
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Tiler)
                     {
-                        tilers.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
+                        tilers.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
                     }
                 }
 
