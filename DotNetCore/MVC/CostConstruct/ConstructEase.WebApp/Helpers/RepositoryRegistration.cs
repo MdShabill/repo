@@ -76,8 +76,8 @@ namespace ConstructEase.WebApp.Helpers
             services.AddScoped<IUserRepository>(svc => new UserRepositoryUsingDapper(connectionString,
             svc.GetRequiredService<ILogger<UserRepositoryUsingDapper>>()));
 
-            services.AddScoped<ISiteRepository>(svc => new SiteRepositoryUsingDapper(connectionString,
-            svc.GetRequiredService<ILogger<SiteRepositoryUsingDapper>>()));
+            services.AddScoped<ISiteRepository>(svc => new SiteRepositoryUsingDapper(connectionString));
+            //svc.GetRequiredService<ILogger<SiteRepositoryUsingDapper>>()));
 
             services.AddScoped<ISiteScopeMasterRepository>(provider => new SiteScopeMasterRepositoryUsingDapper(connectionString,
             provider.GetRequiredService<ILogger<SiteScopeMasterRepositoryUsingDapper>>()));

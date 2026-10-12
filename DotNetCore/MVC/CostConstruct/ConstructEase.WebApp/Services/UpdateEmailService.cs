@@ -1,0 +1,133 @@
+﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using System.Diagnostics;
+using System.Net;
+
+namespace ConstructEase.WebApp.Services
+{
+    public class UpdateEmailService
+    {
+        private readonly EmailSettings _settings;
+        private readonly ILogger<UpdateEmailService> _logger;
+
+        public UpdateEmailService(IOptions<EmailSettings> settings,
+                                  ILogger<UpdateEmailService> logger)
+        {
+            _settings = settings.Value;
+            _logger = logger;
+        }
+
+        public async Task SendAsync(string siteName, string updatedBy, DateTime updatedAt, List<SiteUpdateChange> changes)
+        {
+            if (changes == null || changes.Count == 0)
+                return;
+
+            var timer = Stopwatch.StartNew();
+
+            try
+            {
+                string safeSiteName = WebUtility.HtmlEncode(siteName);
+                string safeUpdatedBy = WebUtility.HtmlEncode(string.IsNullOrWhiteSpace(updatedBy) ? "System" : updatedBy);
+
+                string safeRecipient = WebUtility.HtmlEncode(string.IsNullOrWhiteSpace(_settings.ToName) ? "User" : _settings.ToName);
+
+                string rows = string.Join("", changes.Select(change => $"""
+                    <tr>
+                        <td style="padding:10px;border-bottom:1px solid #eeeeee;">
+                            <strong>{WebUtility.HtmlEncode(change.FieldName)}</strong>
+                        </td>
+                        <td style="padding:10px;border-bottom:1px solid #eeeeee;">
+                            {WebUtility.HtmlEncode(change.OldValue)}
+                        </td>
+                        <td style="padding:10px;border-bottom:1px solid #eeeeee;">
+                            {WebUtility.HtmlEncode(change.NewValue)}
+                        </td>
+                    </tr>
+                    """));
+
+                string body = $"""
+                    <!DOCTYPE html>
+                    <html>
+                    <body style="margin:0;padding:24px;background:#f5f3ee;
+                                 font-family:Arial,Helvetica,sans-serif;color:#333;">
+                        <table width="100%" cellpadding="0" cellspacing="0"
+                               style="max-width:700px;margin:auto;background:#fff;">
+                            <tr>
+                                <td style="padding:24px;background:#1a2e44;color:#fff;">
+                                    <h2 style="margin:0;">BUILDER LEDGER</h2>
+                                    <p style="margin:6px 0 0;">
+                                        Construction Management System
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:24px;">
+                                    <p>Hello <strong>{safeRecipient}</strong>,</p>
+
+                                    <h3 style="color:#1a2e44;">
+                                        Construction Site Updated
+                                    </h3>
+
+                                    <p>
+                                        Important changes were made to
+                                        <strong>{safeSiteName}</strong>.
+                                    </p>
+
+                                    <table width="100%" cellpadding="0" cellspacing="0"
+                                           style="border-collapse:collapse;font-size:14px;">
+                                        <tr style="background:#f0a500;color:#fff;">
+                                            <th align="left" style="padding:10px;">Field</th>
+                                            <th align="left" style="padding:10px;">Previous Value</th>
+                                            <th align="left" style="padding:10px;">New Value</th>
+                                        </tr>
+                                        {rows}
+                                    </table>
+
+                                    <p style="margin-top:24px;">
+                                        <strong>Updated By:</strong> {safeUpdatedBy}<br>
+                                        <strong>Updated At:</strong> {updatedAt:dd MMMM yyyy, hh:mm tt}
+                                    </p>
+
+                                    <p style="font-size:14px;line-height:1.6;">
+                                        Regards,<br>
+                                        <strong>Builder Ledger</strong><br>
+                                        Construction Management System
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>
+                    """;
+
+                var message = new MimeMessage();
+
+                message.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
+
+                message.To.Add(new MailboxAddress(_settings.ToName, _settings.ToEmail));
+
+                message.Subject = $"Site Updated - {siteName}";
+                message.Body = new BodyBuilder { HtmlBody = body }.ToMessageBody();
+
+                using var smtp = new SmtpClient();
+
+                await smtp.ConnectAsync(_settings.SmtpHost, _settings.SmtpPort, SecureSocketOptions.StartTls);
+
+                await smtp.AuthenticateAsync(_settings.SenderEmail, _settings.SenderPassword);
+
+                await smtp.SendAsync(message);
+                await smtp.DisconnectAsync(true);
+
+                _logger.LogInformation("Update email sent for site {SiteName} in {ElapsedMs} ms", siteName, timer.ElapsedMilliseconds);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,"Failed to send update email for site {SiteName}", siteName);
+
+                throw;
+            }
+        }
+    }
+}

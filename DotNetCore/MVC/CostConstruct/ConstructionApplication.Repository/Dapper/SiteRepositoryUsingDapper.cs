@@ -15,13 +15,12 @@ namespace ConstructionApplication.Repository.Dapper
     public class SiteRepositoryUsingDapper : ISiteRepository
     {
         private readonly string _connectionString;
-        private readonly ILogger<SiteRepositoryUsingDapper> _logger;
+        //private readonly ILogger<SiteRepositoryUsingDapper> _logger;
 
-        public SiteRepositoryUsingDapper(string connectionString,
-               ILogger<SiteRepositoryUsingDapper> logger)
+        public SiteRepositoryUsingDapper(string connectionString /*, ILogger<SiteRepositoryUsingDapper> logger*/)
         {
             _connectionString = connectionString;
-            _logger = logger;
+            //_logger = logger;
         }
 
         public List<Site> GetAllSites()
@@ -29,45 +28,25 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 string query = @"SELECT 
-                                    Sites.Id, Sites.Name, Sites.ContactName, Sites.ContactNumber,
-                                    Sites.StartedDate, Sites.SiteStatusId, Sites.ExpectedBudget, 
-                                    Sites.ExpectedCompletionDate, SiteStatus.Status, 
-                                    Addresses.AddressLine1, Addresses.AddressTypeId, 
-                                    AddressTypes.Name AS AddressTypes, Addresses.CountryId, 
-                                    Countries.Name AS CountryName, Addresses.PinCode
-                                FROM 
-                                    Sites
-                                LEFT JOIN 
-                                    SiteStatus ON Sites.SiteStatusId = SiteStatus.Id
-                                LEFT JOIN 
-                                    Addresses ON Sites.Id = Addresses.SiteId
-                                LEFT JOIN   
-                                    AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
-                                LEFT JOIN 
-                                    Countries ON Addresses.CountryId = Countries.Id";
+                         Sites.Id, Sites.Name, Sites.ContactName, Sites.ContactNumber,
+                         Sites.StartedDate, Sites.SiteStatusId, Sites.ExpectedBudget, 
+                         Sites.ExpectedCompletionDate, SiteStatus.Status, 
+                         Addresses.AddressLine1, Addresses.AddressTypeId, 
+                         AddressTypes.Name AS AddressTypes, Addresses.CountryId, 
+                         Countries.Name AS CountryName, Addresses.PinCode
+                     FROM 
+                         Sites
+                     LEFT JOIN 
+                         SiteStatus ON Sites.SiteStatusId = SiteStatus.Id
+                     LEFT JOIN 
+                         Addresses ON Sites.Id = Addresses.SiteId
+                     LEFT JOIN   
+                         AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
+                     LEFT JOIN 
+                         Countries ON Addresses.CountryId = Countries.Id";
 
-                Stopwatch dbTimer = Stopwatch.StartNew();
-
-                try
-                {
-                    var result = db.Query<Site>(query).AsList();
-
-                    dbTimer.Stop();
-
-                    _logger.LogInformation("\nDatabase: SELECT All Sites | Time: {ElapsedMs} ms",
-                        dbTimer.ElapsedMilliseconds);
-
-                    return result;
-                }
-                catch (Exception ex)
-                {
-                    dbTimer.Stop();
-
-                    _logger.LogError(ex,"\nDatabase: SELECT All Sites | Failed | Time: {ElapsedMs} ms",
-                                     dbTimer.ElapsedMilliseconds);
-
-                    throw;
-                }
+                var result = db.Query<Site>(query).AsList();
+                return result;
             }
         }
 
@@ -99,16 +78,14 @@ namespace ConstructionApplication.Repository.Dapper
 
                     WHERE
                         (
-                            @Search IS NULL
-                            OR @Search = ''
+                            @Search IS NULL OR @Search = ''
                             OR Sites.Name LIKE '%' + @Search + '%'
                             OR Sites.ContactName LIKE '%' + @Search + '%'
                         )
 
                         AND
                         (
-                            @StatusId IS NULL
-                            OR Sites.SiteStatusId = @StatusId
+                            @StatusId IS NULL OR Sites.SiteStatusId = @StatusId
                         )
 
                         AND
@@ -116,8 +93,7 @@ namespace ConstructionApplication.Repository.Dapper
                             @FromDate IS NULL
                             OR
                             (
-                                Sites.ExpectedCompletionDate IS NULL
-                                OR Sites.ExpectedCompletionDate >= @FromDate
+                                Sites.ExpectedCompletionDate IS NULL OR Sites.ExpectedCompletionDate >= @FromDate
                             )
                         )
 
@@ -126,55 +102,26 @@ namespace ConstructionApplication.Repository.Dapper
                             @ToDate IS NULL
                             OR
                             (
-                                Sites.StartedDate IS NULL
-                                OR Sites.StartedDate <= @ToDate
+                                Sites.StartedDate IS NULL OR Sites.StartedDate <= @ToDate
                             )
                         )
 
                         AND
                         (
-                            @BudgetFrom IS NULL
-                            OR Sites.ExpectedBudget >= @BudgetFrom
+                            @BudgetFrom IS NULL OR Sites.ExpectedBudget >= @BudgetFrom
                         )
 
                         AND
                         (
-                            @BudgetTo IS NULL
-                            OR Sites.ExpectedBudget <= @BudgetTo
+                            @BudgetTo IS NULL OR Sites.ExpectedBudget <= @BudgetTo
                         )";
 
-                var parameters = new
-                {
-                    Search = string.IsNullOrWhiteSpace(search) ? null : search.Trim(),
-                    StatusId = statusId,
-                    FromDate = fromDate?.Date,
-                    ToDate = toDate?.Date,
-                    BudgetFrom = budgetFrom,
-                    BudgetTo = budgetTo
+                var parameters = new {Search = string.IsNullOrWhiteSpace(search) ? null : search.Trim(),
+                                      StatusId = statusId, FromDate = fromDate?.Date, ToDate = toDate?.Date,
+                                      BudgetFrom = budgetFrom, BudgetTo = budgetTo
                 };
-
-                Stopwatch dbTimer = Stopwatch.StartNew();
-
-                try
-                {
-                    var result =
-                        db.Query<Site>(query, parameters).AsList();
-
-                    dbTimer.Stop();
-
-                    _logger.LogInformation("\nDatabase: SELECT Filtered Sites | Time: {ElapsedMs} ms",
-                        dbTimer.ElapsedMilliseconds);
-
-                    return result;
-                }
-                catch (Exception ex)
-                {
-                    dbTimer.Stop();
-
-                    _logger.LogError(ex, "\nDatabase: SELECT Filtered Sites | Failed | Time: {ElapsedMs} ms",
-                                     dbTimer.ElapsedMilliseconds);
-                    throw;
-                }
+                var result = db.Query<Site>(query, parameters).AsList();
+                return result;
             }
         }
 
@@ -183,45 +130,27 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 string query = @"SELECT 
-                                    Sites.Id, Sites.Name, Sites.ContactName, Sites.ContactNumber,
-                                    Sites.StartedDate, Sites.ExpectedBudget, 
-                                    Sites.ExpectedCompletionDate, Sites.SiteStatusId, 
-                                    SiteStatus.Status, Addresses.AddressLine1, 
-                                    AddressTypes.Name AS AddressTypes, Countries.Name AS CountryName, 
-                                    Addresses.PinCode
-                                FROM 
-                                    Sites
-                                LEFT JOIN 
-                                    SiteStatus ON Sites.SiteStatusId = SiteStatus.Id
-                                LEFT JOIN 
-                                    Addresses ON Sites.Id = Addresses.SiteId
-                                LEFT JOIN 
-                                    AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
-                                LEFT JOIN 
-                                    Countries ON Addresses.CountryId = Countries.Id
-                                WHERE Sites.Id = @Id";
+                        Sites.Id, Sites.Name, Sites.ContactName, Sites.ContactNumber,
+                        Sites.StartedDate, Sites.ExpectedBudget, 
+                        Sites.ExpectedCompletionDate, Sites.SiteStatusId, 
+                        SiteStatus.Status, Addresses.AddressLine1, 
+                        AddressTypes.Name AS AddressTypes, Countries.Name AS CountryName, 
+                        Addresses.PinCode
+                    FROM 
+                        Sites
+                    LEFT JOIN 
+                        SiteStatus ON Sites.SiteStatusId = SiteStatus.Id
+                    LEFT JOIN 
+                        Addresses ON Sites.Id = Addresses.SiteId
+                    LEFT JOIN 
+                        AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
+                    LEFT JOIN 
+                        Countries ON Addresses.CountryId = Countries.Id
+                    WHERE Sites.Id = @Id";
 
-                Stopwatch dbTimer = Stopwatch.StartNew();
+                var result = db.QueryFirstOrDefault<Site>(query, new { Id = id });
 
-                try
-                {
-                    var result = db.QueryFirstOrDefault<Site>(query, new { Id = id });
-
-                    dbTimer.Stop();
-
-                    _logger.LogInformation("\nDatabase: SELECT Site By ID | Time: {ElapsedMs} ms",
-                        dbTimer.ElapsedMilliseconds);
-
-                    return result;
-                }
-                catch (Exception ex)
-                {
-                    dbTimer.Stop();
-
-                    _logger.LogError(ex, "\nDatabase: SELECT Site By ID | Failed | Time: {ElapsedMs} ms",
-                                     dbTimer.ElapsedMilliseconds);
-                    throw;
-                }
+                return result;
             }
         }
 
@@ -230,50 +159,20 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 string insertQuery = @"
-                                     INSERT INTO Sites 
-                                       (Name, ContactName, ContactNumber, StartedDate, SiteStatusId, 
-                                            Note, ExpectedBudget, ExpectedCompletionDate)
-                                     VALUES 
-                                       (@Name, @ContactName, @ContactNumber, @StartedDate, @SiteStatusId, 
-                                            @Note, @ExpectedBudget, @ExpectedCompletionDate);
-                                     SELECT CAST(SCOPE_IDENTITY() as int);";
+                    INSERT INTO Sites 
+                      (Name, ContactName, ContactNumber, StartedDate, SiteStatusId, 
+                           Note, ExpectedBudget, ExpectedCompletionDate)
+                    VALUES 
+                      (@Name, @ContactName, @ContactNumber, @StartedDate, @SiteStatusId, 
+                           @Note, @ExpectedBudget, @ExpectedCompletionDate);
+                    SELECT CAST(SCOPE_IDENTITY() as int);";
 
-                Stopwatch dbTimer = Stopwatch.StartNew();
+                int insertedId = db.ExecuteScalar<int>(insertQuery, new {site.Name, site.ContactName,
+                    site.ContactNumber, site.StartedDate, site.SiteStatusId,
+                    Note = string.IsNullOrEmpty(site.Note)? null : site.Note,
+                    site.ExpectedBudget, site.ExpectedCompletionDate});
 
-                try
-                {
-                    int insertedId =db.ExecuteScalar<int>(insertQuery,
-                            new
-                            {
-                                site.Name,
-                                site.ContactName,
-                                site.ContactNumber,
-                                site.StartedDate,
-                                site.SiteStatusId,
-                                Note = string.IsNullOrEmpty(site.Note)? null
-                                    : site.Note,
-                                site.ExpectedBudget,
-                                site.ExpectedCompletionDate
-                            });
-
-                    dbTimer.Stop();
-
-                    _logger.LogInformation(
-                        "\nDatabase: INSERT Site | Time: {ElapsedMs} ms",
-                        dbTimer.ElapsedMilliseconds);
-
-                    return insertedId;
-                }
-                catch (Exception ex)
-                {
-                    dbTimer.Stop();
-
-                    _logger.LogError(
-                        ex,
-                        "\nDatabase: INSERT Site | Failed | Time: {ElapsedMs} ms",
-                        dbTimer.ElapsedMilliseconds);
-                    throw;
-                }
+                return insertedId;
             }
         }
 
@@ -282,49 +181,15 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 string updateQuery = @"UPDATE Sites SET
-                                        Name = @Name,
-                                        ContactName = @ContactName,
-                                        ContactNumber = @ContactNumber,
-                                        StartedDate = @StartedDate,
-                                        SiteStatusId = @SiteStatusId,
-                                        Note = @Note,
-                                        ExpectedBudget = @ExpectedBudget,
-                                        ExpectedCompletionDate = @ExpectedCompletionDate
-                                       WHERE Id = @Id";
+                    Name = @Name, ContactName = @ContactName, ContactNumber = @ContactNumber,
+                    StartedDate = @StartedDate, SiteStatusId = @SiteStatusId, Note = @Note,
+                    ExpectedBudget = @ExpectedBudget, ExpectedCompletionDate = @ExpectedCompletionDate
+                    WHERE Id = @Id";
 
-                Stopwatch dbTimer = Stopwatch.StartNew();
-
-                try
-                {
-                    int affectedRows = db.Execute(updateQuery,
-                            new
-                            {
-                                site.Id,
-                                site.Name,
-                                site.ContactName,
-                                site.ContactNumber,
-                                site.StartedDate,
-                                site.SiteStatusId,
-                                Note = string.IsNullOrEmpty(site.Note) ? null : site.Note,
-                                site.ExpectedBudget,
-                                site.ExpectedCompletionDate
-                            });
-
-                    dbTimer.Stop();
-
-                    _logger.LogInformation("\nDatabase: UPDATE Site | Time: {ElapsedMs} ms",
-                        dbTimer.ElapsedMilliseconds);
-
-                    return affectedRows;
-                }
-                catch (Exception ex)
-                {
-                    dbTimer.Stop();
-
-                    _logger.LogError(ex, "\nDatabase: UPDATE Site | Failed | Time: {ElapsedMs} ms",
-                                     dbTimer.ElapsedMilliseconds);
-                    throw;
-                }
+                int affectedRows = db.Execute(updateQuery, new{site.Id, site.Name, site.ContactName, site.ContactNumber,
+                                              site.StartedDate, site.SiteStatusId, Note = string.IsNullOrEmpty(site.Note) ? null : site.Note,
+                                              site.ExpectedBudget,site.ExpectedCompletionDate});
+                return affectedRows;
             }
         }
 
@@ -340,31 +205,17 @@ namespace ConstructionApplication.Repository.Dapper
 
                     try
                     {
-                        db.Execute("DELETE FROM Addresses WHERE SiteId = @SiteId", new { SiteId = siteId },
-                            transaction);
+                        db.Execute("DELETE FROM Addresses WHERE SiteId = @SiteId", new { SiteId = siteId }, transaction);
 
-                        db.Execute("DELETE FROM SiteServiceProviders WHERE SiteId = @SiteId", new { SiteId = siteId },
-                            transaction);
+                        db.Execute("DELETE FROM SiteServiceProviders WHERE SiteId = @SiteId", new { SiteId = siteId }, transaction);
 
-                        db.Execute("DELETE FROM Sites WHERE Id = @Id", new { Id = siteId },
-                            transaction);
+                        db.Execute("DELETE FROM Sites WHERE Id = @Id", new { Id = siteId }, transaction);
 
                         transaction.Commit();
-
-                        dbTimer.Stop();
-
-                        _logger.LogInformation("\nDatabase: DELETE Site | Time: {ElapsedMs} ms",
-                            dbTimer.ElapsedMilliseconds);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        dbTimer.Stop();
-
                         transaction.Rollback();
-
-                        _logger.LogError(ex, "\nDatabase: DELETE Site | Failed | Time: {ElapsedMs} ms",
-                                         dbTimer.ElapsedMilliseconds);
-                        throw;
                     }
                 }
             }
@@ -374,100 +225,50 @@ namespace ConstructionApplication.Repository.Dapper
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                string query = @"SELECT 
-                                    ServiceProviderId 
-                                 FROM 
-                                    SiteServiceProviders
-                                 WHERE 
-                                    SiteId = @SiteId 
-                                 AND 
-                                    ServiceTypeId IN @ServiceTypeIds";
+                string query = @"SELECT ServiceProviderId FROM SiteServiceProviders
+                                 WHERE SiteId = @SiteId 
+                                 AND ServiceTypeId IN @ServiceTypeIds";
 
                 var serviceTypeIds = serviceTypes.Select(x => (int)x).ToList();
 
-                Stopwatch dbTimer = Stopwatch.StartNew();
-
-                try
-                {
-                    var result = db.Query<int>(query,
-                            new
-                            {
-                                SiteId = siteId,
-                                ServiceTypeIds = serviceTypeIds
-                            }).ToList();
-
-                    dbTimer.Stop();
-
-                    _logger.LogInformation("\nDatabase: SELECT Service Provider IDs | Time: {ElapsedMs} ms",
-                        dbTimer.ElapsedMilliseconds);
-
-                    return result;
-                }
-                catch (Exception ex)
-                {
-                    dbTimer.Stop();
-
-                    _logger.LogError(ex, "\nDatabase: SELECT Service Provider IDs | Failed | Time: {ElapsedMs} ms",
-                                     dbTimer.ElapsedMilliseconds);
-                    throw;
-                }
+                var result = db.Query<int>(query, new {SiteId = siteId, ServiceTypeIds = serviceTypeIds}).ToList();
+                return result;
             }
         }
 
         // Approach: 1
-        public void AddAndUpdateSiteServiceProviderBridge(int siteId, ServiceTypes serviceType,
-                                                          List<int> serviceProviderIds)
+        public void AddAndUpdateSiteServiceProviderBridge(int siteId, ServiceTypes serviceType, List<int> serviceProviderIds)
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                string deleteQuery = @"DELETE 
-                                       FROM 
-                                            SiteServiceProviders 
-                                       WHERE 
-                                            SiteId = @SiteId 
-                                       AND 
-                                            ServiceTypeId = @ServiceTypeId";
+                db.Open();
 
-                string insertQuery = @"INSERT INTO 
-                                            SiteServiceProviders 
-                                                (SiteId, ServiceProviderId, ServiceTypeId)
-                                            VALUES 
-                                                (@SiteId, @ServiceProviderId, @ServiceTypeId)";
-
-                Stopwatch dbTimer = Stopwatch.StartNew();
-
-                try
+                using (var transaction = db.BeginTransaction())
                 {
-                    db.Execute(deleteQuery,
-                        new
-                        {
-                            SiteId = siteId,
-                            ServiceTypeId = (int)serviceType
-                        });
-
-                    for (int i = 0; i < serviceProviderIds.Count; i++)
+                    try
                     {
-                        db.Execute(insertQuery,
-                            new
-                            {
-                                SiteId = siteId,
-                                ServiceProviderId = serviceProviderIds[i],
-                                ServiceTypeId = (int)serviceType
-                            });
+                        string deleteQuery = @"DELETE FROM SiteServiceProviders
+                                               WHERE SiteId = @SiteId
+                                               AND ServiceTypeId = @ServiceTypeId";
+
+                        string insertQuery = @"INSERT INTO SiteServiceProviders
+                                               (SiteId, ServiceProviderId, ServiceTypeId)
+                                               VALUES
+                                               (@SiteId, @ServiceProviderId, @ServiceTypeId)";
+
+                        db.Execute(deleteQuery, new {SiteId = siteId, ServiceTypeId = (int)serviceType}, transaction);
+
+                        foreach (int providerId in serviceProviderIds)
+                        {
+                            db.Execute(insertQuery, new {SiteId = siteId, ServiceProviderId = providerId, ServiceTypeId = (int)serviceType},transaction);
+                        }
+                        transaction.Commit();
                     }
-
-                    dbTimer.Stop();
-
-                    _logger.LogInformation("\nDatabase: DELETE/INSERT Site Service Providers | Time: {ElapsedMs} ms",
-                        dbTimer.ElapsedMilliseconds);
-                }
-                catch (Exception ex)
-                {
-                    dbTimer.Stop();
-
-                    _logger.LogError(ex, "\nDatabase: DELETE/INSERT Site Service Providers | Failed | Time: {ElapsedMs} ms",
-                                     dbTimer.ElapsedMilliseconds);
-                    throw;
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
                 }
             }
         }
