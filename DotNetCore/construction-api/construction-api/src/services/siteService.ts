@@ -5,6 +5,11 @@ export interface SiteDropdownDto   { id: number; name: string; }
 export interface DropdownItem      { id: number; name: string; }
 export interface ProviderOption    { id: number; name: string; }
 
+interface KeyValuePairOption { key: number; value: string; }
+
+export type ProviderApiOption = ProviderOption | KeyValuePairOption;
+
+
 // NEW
 export interface ScopeMasterOption { id: number; name: string; }
 export interface ScopeStatusOption { id: number; name: string; }
@@ -97,13 +102,13 @@ export interface DropdownResponse {
 }
 
 export interface ServiceProviderResponse {
-  masterMasons: ProviderOption[];
-  electricians: ProviderOption[];
-  labours:      ProviderOption[];
-  plumbers:     ProviderOption[];
-  painters:     ProviderOption[];
-  carpenters:   ProviderOption[];
-  tilers:       ProviderOption[];
+  masterMasons: ProviderApiOption[];
+  electricians: ProviderApiOption[];
+  labours: ProviderOption[];
+  plumbers: ProviderOption[];
+  painters: ProviderOption[];
+  carpenters: ProviderOption[];
+  tilers: ProviderOption[];
 }
 
 export interface SiteFilterParams {

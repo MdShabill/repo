@@ -1,13 +1,8 @@
 // Path: src/components/SiteAdd.tsx
 import { useEffect, useState }     from "react";
 import { useNavigate, Link }       from "react-router-dom";
-import {
-  getDropdownData, getServiceProviders, createSite,
-} from "../services/siteService";
-import type {
-  DropdownItem, ProviderOption,
-  ScopeMasterOption, ScopeStatusOption, ScopeItemDto,
-} from "../services/siteService";
+import { getDropdownData, getServiceProviders, createSite, } from "../services/siteService";
+import type { DropdownItem, ProviderApiOption, ProviderOption,  ScopeMasterOption, ScopeStatusOption, ScopeItemDto, } from "../services/siteService";
 
 // ── Checkbox Dropdown Component (existing) ──────────────────────
 interface CheckboxGroupProps {
@@ -99,6 +94,11 @@ function SiteAdd() {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [submitting,   setSubmitting]   = useState(false);
+  const normalizeProviderOptions = (
+  items: ProviderApiOption[]): ProviderOption[] => items.map((item) => ({
+    id: "key" in item ? item.key : item.id,
+    name: "value" in item ? item.value : item.name,
+  }));
 
   useEffect(() => {
     Promise.all([getDropdownData(), getServiceProviders()])
@@ -108,9 +108,11 @@ function SiteAdd() {
         setCountries(dd.countries);
         setScopeMasters(dd.scopeMasters);
         setScopeStatuses(dd.scopeStatuses);
-        setMasons(sp.masterMasons);
+
+        setMasons(normalizeProviderOptions(sp.masterMasons));
+        setElectricians(normalizeProviderOptions(sp.electricians));
+
         setLabours(sp.labours);
-        setElectricians(sp.electricians);
         setPlumbers(sp.plumbers);
         setPainters(sp.painters);
         setCarpenters(sp.carpenters);

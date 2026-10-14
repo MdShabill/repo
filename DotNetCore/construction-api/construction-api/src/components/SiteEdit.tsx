@@ -1,19 +1,8 @@
 // Path: src/components/SiteEdit.tsx
 import { useEffect, useState }              from "react";
 import { useNavigate, useParams, Link }    from "react-router-dom";
-import {
-  getDropdownData,
-  getServiceProviders,
-  getSiteById,
-  updateSite,
-} from "../services/siteService";
-import type {
-  DropdownItem,
-  ProviderOption,
-  ScopeMasterOption,
-  ScopeStatusOption,
-  ScopeItemDto,
-} from "../services/siteService";
+import { getDropdownData, getServiceProviders, getSiteById, updateSite, } from "../services/siteService";
+import type { DropdownItem, ProviderApiOption, ProviderOption, ScopeMasterOption, ScopeStatusOption, ScopeItemDto, } from "../services/siteService";
 
 // ── Reusable CheckboxDropdown — same as SiteAdd ─────────────────
 interface CheckboxGroupProps {
@@ -128,6 +117,11 @@ function SiteEdit() {
   const [painters,     setPainters]     = useState<ProviderOption[]>([]);
   const [carpenters,   setCarpenters]   = useState<ProviderOption[]>([]);
   const [tilers,       setTilers]       = useState<ProviderOption[]>([]);
+  const normalizeProviderOptions = (
+    items: ProviderApiOption[]): ProviderOption[] => items.map((item) => ({
+      id: "key" in item ? item.key : item.id,
+      name: "value" in item ? item.value : item.name,
+    }));
 
   // NEW — Scopes
   const [selectedScopes, setSelectedScopes] = useState<ScopeItemDto[]>([]);
@@ -153,9 +147,9 @@ function SiteEdit() {
         setScopeStatuses(dd.scopeStatuses);
 
         // SP options
-        setMasons(sp.masterMasons);
+        setMasons(normalizeProviderOptions(sp.masterMasons));
+        setElectricians(normalizeProviderOptions(sp.electricians));
         setLabours(sp.labours);
-        setElectricians(sp.electricians);
         setPlumbers(sp.plumbers);
         setPainters(sp.painters);
         setCarpenters(sp.carpenters);
