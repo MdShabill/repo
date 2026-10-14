@@ -242,17 +242,13 @@ namespace ConstructEase.WebApp.APIControllers
                 // Save selected work scopes
                 if (siteApiDto.SelectedScopes?.Count > 0)
                 {
-                    List<(int, int, string?)> mappedScopes = new List<(int, int, string?)>();
-
+                    List<(int, int, string?)> mappedScopes = new();
                     foreach (ScopeSaveItem scope in siteApiDto.SelectedScopes)
                     {
                         mappedScopes.Add((scope.SiteScopeMasterId, scope.ScopeStatusId, scope.Remarks));
                     }
-
                     _siteScopeRepository.SaveScopes(site.Id, mappedScopes);
                 }
-
-
                 string siteStatusName = "Not Provided";
 
                 List<SiteStatus> siteStatuses = _siteStatusRepository.GetAll();
@@ -267,7 +263,6 @@ namespace ConstructEase.WebApp.APIControllers
                 }
 
                 // Prepare site address for email
-
                 string siteAddress = "";
 
                 if (!string.IsNullOrWhiteSpace(siteApiDto.AddressLine1))
@@ -290,7 +285,7 @@ namespace ConstructEase.WebApp.APIControllers
                 }
 
                 // Prepare work scopes for email
-                List<SiteScope> siteScopes = _siteScopeRepository.GetBySiteId(site.Id);
+                List<SiteScope> siteScopes = _siteScopeRepository.Get(site.Id);
                 string workScope = "";
 
                 foreach (SiteScope scope in siteScopes)
@@ -314,9 +309,9 @@ namespace ConstructEase.WebApp.APIControllers
                 try
                 {
                     await _emailService.SendNewSiteNotificationAsync(
-                        site.Id, site.Name ?? "Not Provided", site.ContactName ?? "Not Provided", site.ContactNumber ?? "Not Provided",
-                        siteStatusName, site.ExpectedBudget, site.StartedDate, site.ExpectedCompletionDate, siteAddress,
-                        workScope, site.Note, addedByName);
+                        site.Id, site.Name ?? "Not Provided", site.ContactName ?? "Not Provided", 
+                        site.ContactNumber ?? "Not Provided", siteStatusName, site.ExpectedBudget, 
+                        site.StartedDate, site.ExpectedCompletionDate, siteAddress, workScope, site.Note, addedByName);
 
                     return Ok(new
                     {
@@ -375,7 +370,7 @@ namespace ConstructEase.WebApp.APIControllers
                 siteApiVm.TilerIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes>{ServiceTypes.Tiler});
 
 
-                List<SiteScope> scopes = _siteScopeRepository.GetBySiteId(id);
+                List<SiteScope> scopes = _siteScopeRepository.Get(id);
 
                 siteApiVm.Scopes = new List<SiteScopeVm>();
 
@@ -391,10 +386,8 @@ namespace ConstructEase.WebApp.APIControllers
                         Remarks = scope.Remarks,
                         CompletedDate = scope.CompletedDate
                     };
-
                     siteApiVm.Scopes.Add(scopeVm);
                 }
-
                 return Ok(siteApiVm);
             }
             catch (Exception ex)
@@ -425,12 +418,13 @@ namespace ConstructEase.WebApp.APIControllers
                 if (oldSite == null)
                     return NotFound("Site not found.");
 
-                List<SiteScope> oldScopes = _siteScopeRepository.GetBySiteId(siteApiDto.Id);
+                List<SiteScope> oldScopes = _siteScopeRepository.Get(siteApiDto.Id);
+
                 List<SiteStatus> allSiteStatuses = _siteStatusRepository.GetAll();
                 List<SiteScopeStatus> allScopeStatuses = _siteScopeRepository.GetAllStatuses();
                 List<SiteScopeMaster> allScopeMasters = _siteScopeMasterRepository.GetAll();
-
-                List<SiteUpdateChange> changes = new List<SiteUpdateChange>();
+                
+                List<SiteUpdateChange> changes = new();
                 List<ScopeSaveItem> newScopes = siteApiDto.SelectedScopes ?? new();
 
                 // 2. Check Site Status.
@@ -493,7 +487,6 @@ namespace ConstructEase.WebApp.APIControllers
                             OldValue = scopeName,
                             NewValue = "Removed"
                         });
-
                         continue;
                     }
 
@@ -583,7 +576,7 @@ namespace ConstructEase.WebApp.APIControllers
                 _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteApiDto.SelectedTilerIds ?? new List<int>());
 
                 // 9. Save selected work scopes.
-                List<(int, int, string?)> mappedScopes = new List<(int, int, string?)>();
+                List<(int, int, string?)> mappedScopes = new();
 
                 foreach (ScopeSaveItem scope in newScopes)
                 {
@@ -767,23 +760,24 @@ namespace ConstructEase.WebApp.APIControllers
             {
                 List<ServiceProviderName> allServiceProviders =_serviceProviderRepository.GetAllServiceProviders();
 
-                List<object> masterMasons = new List<object>();
-                List<object> electricians = new List<object>();
-                List<object> labours = new List<object>();
-                List<object> plumbers = new List<object>();
-                List<object> painters = new List<object>();
-                List<object> carpenters = new List<object>();
-                List<object> tilers = new List<object>();
+                List<KeyValuePair<int, string>> masterMasons = new();
+                List<KeyValuePair<int, string>> electricians = new();
+
+                List<object> labours = new();
+                List<object> plumbers = new();
+                List<object> painters = new();
+                List<object> carpenters = new();
+                List<object> tilers = new();
 
                 foreach (ServiceProviderName serviceProvider in allServiceProviders)
                 {
                     if (serviceProvider.ServiceTypeId == (int)ServiceTypes.MasterMasion)
                     {
-                        masterMasons.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
+                        masterMasons.Add(new KeyValuePair<int, string>( serviceProvider.Id, serviceProvider.Name));
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Electrician)
                     {
-                        electricians.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
+                        electricians.Add(new KeyValuePair<int, string>(serviceProvider.Id, serviceProvider.Name));
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Labour)
                     {

@@ -15,12 +15,9 @@ namespace ConstructionApplication.Repository.Dapper
     public class SiteRepositoryUsingDapper : ISiteRepository
     {
         private readonly string _connectionString;
-        //private readonly ILogger<SiteRepositoryUsingDapper> _logger;
-
-        public SiteRepositoryUsingDapper(string connectionString /*, ILogger<SiteRepositoryUsingDapper> logger*/)
+        public SiteRepositoryUsingDapper(string connectionString)
         {
             _connectionString = connectionString;
-            //_logger = logger;
         }
 
         public List<Site> GetAllSites()
@@ -64,57 +61,27 @@ namespace ConstructionApplication.Repository.Dapper
                     FROM 
                         Sites
 
-                    LEFT JOIN SiteStatus
-                        ON Sites.SiteStatusId = SiteStatus.Id
+                    LEFT JOIN SiteStatus ON Sites.SiteStatusId = SiteStatus.Id
+                    LEFT JOIN Addresses ON Sites.Id = Addresses.SiteId
+                    LEFT JOIN AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
+                    LEFT JOIN CountriesON Addresses.CountryId = Countries.Id
 
-                    LEFT JOIN Addresses
-                        ON Sites.Id = Addresses.SiteId
-
-                    LEFT JOIN AddressTypes
-                        ON Addresses.AddressTypeId = AddressTypes.Id
-
-                    LEFT JOIN Countries
-                        ON Addresses.CountryId = Countries.Id
-
-                    WHERE
-                        (
-                            @Search IS NULL OR @Search = ''
-                            OR Sites.Name LIKE '%' + @Search + '%'
-                            OR Sites.ContactName LIKE '%' + @Search + '%'
+                    WHERE(@Search IS NULL OR @Search = ''
+                          OR Sites.Name LIKE '%' + @Search + '%'
+                          OR Sites.ContactName LIKE '%' + @Search + '%'
                         )
-
-                        AND
-                        (
-                            @StatusId IS NULL OR Sites.SiteStatusId = @StatusId
+                        AND(@StatusId IS NULL OR Sites.SiteStatusId = @StatusId
                         )
-
-                        AND
-                        (
-                            @FromDate IS NULL
-                            OR
-                            (
-                                Sites.ExpectedCompletionDate IS NULL OR Sites.ExpectedCompletionDate >= @FromDate
-                            )
+                        AND(@FromDate IS NULL
+                            OR(Sites.ExpectedCompletionDate IS NULL OR Sites.ExpectedCompletionDate >= @FromDate)
                         )
-
                         AND
-                        (
-                            @ToDate IS NULL
-                            OR
-                            (
-                                Sites.StartedDate IS NULL OR Sites.StartedDate <= @ToDate
-                            )
+                        (@ToDate IS NULL
+                         OR(Sites.StartedDate IS NULL OR Sites.StartedDate <= @ToDate)
                         )
-
-                        AND
-                        (
-                            @BudgetFrom IS NULL OR Sites.ExpectedBudget >= @BudgetFrom
+                        AND(@BudgetFrom IS NULL OR Sites.ExpectedBudget >= @BudgetFrom
                         )
-
-                        AND
-                        (
-                            @BudgetTo IS NULL OR Sites.ExpectedBudget <= @BudgetTo
-                        )";
+                        AND(@BudgetTo IS NULL OR Sites.ExpectedBudget <= @BudgetTo)";
 
                 var parameters = new {Search = string.IsNullOrWhiteSpace(search) ? null : search.Trim(),
                                       StatusId = statusId, FromDate = fromDate?.Date, ToDate = toDate?.Date,

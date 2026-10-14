@@ -81,12 +81,10 @@ namespace ConstructionApplication.Helpers
             services.AddScoped<ISiteScopeMasterRepository>(provider => new SiteScopeMasterRepositoryUsingDapper(connectionString,
             provider.GetRequiredService<ILogger<SiteScopeMasterRepositoryUsingDapper>>()));
 
-            services.AddScoped<ISiteScopeRepository>(provider => new SiteScopeRepositoryUsingDapper(connectionString,
-            provider.GetRequiredService<ILogger<SiteScopeRepositoryUsingDapper>>()));
+            services.AddScoped<ISiteScopeRepository>(provider => new SiteScopeRepositoryUsingDapper(connectionString));
 
-            services.AddScoped<IAddressRepository>(svc => new AddressRepositoryUsingDapper(connectionString,
-            svc.GetRequiredService<ILogger<AddressRepositoryUsingDapper>>()));
-
+            services.AddScoped<IAddressRepository>(svc => new AddressRepositoryUsingDapper(connectionString));
+            
             services.AddScoped<ICountryRepository>(svc => new CountryRepositoryUsingDapper(connectionString,
             svc.GetRequiredService<ILogger<CountryRepositoryUsingDapper>>()));
 
