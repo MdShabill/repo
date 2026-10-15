@@ -6,8 +6,9 @@ using ConstructionApplication.Core.Enums;
 using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace ConstructEase.WebApp.APIControllers
 {
@@ -27,41 +28,42 @@ namespace ConstructEase.WebApp.APIControllers
         private readonly ISiteScopeRepository           _siteScopeRepository;
         private readonly ILogger<SiteAPIController>     _logger;
         private readonly IEmailService                  _emailService;
-        private readonly UpdateEmailService             _updateEmailService;
+        private readonly SiteUpdateEmailService         _updateEmailService;
+        private readonly SiteDeleteEmailService         _siteDeleteEmailService;
 
         public SiteAPIController(
-            ISiteStatusRepository           siteStatusRepository,
-            IAddressRepository              addressRepository,
-            IAddressTypeRepository          addressTypeRepository,
-            ICountryRepository              countryRepository,
-            IServiceProviderRepository      serviceProviderRepository,
-            ISiteRepository                 siteRepository,
-            IMemoryCache                    cache,
-            ISiteScopeMasterRepository      siteScopeMasterRepository,
-            ISiteScopeRepository            siteScopeRepository,
-            ILogger<SiteAPIController>      logger,
-            IEmailService                   emailService,
-            UpdateEmailService              updateEmailService)
+            ISiteStatusRepository         siteStatusRepository,
+            IAddressRepository            addressRepository,
+            IAddressTypeRepository        addressTypeRepository,
+            ICountryRepository            countryRepository,
+            IServiceProviderRepository    serviceProviderRepository,
+            ISiteRepository               siteRepository,
+            IMemoryCache                  cache,
+            ISiteScopeMasterRepository    siteScopeMasterRepository,
+            ISiteScopeRepository          siteScopeRepository,
+            ILogger<SiteAPIController>    logger,
+            IEmailService                 emailService,
+            SiteUpdateEmailService        updateEmailService,
+            SiteDeleteEmailService        siteDeleteEmailService)
         {
-            _siteRepository                 = siteRepository;
-            _siteStatusRepository           = siteStatusRepository;
-            _addressRepository              = addressRepository;
-            _addressTypeRepository          = addressTypeRepository;
-            _countryRepository              = countryRepository;
-            _serviceProviderRepository      = serviceProviderRepository;
-            _cache = cache;
-            _siteScopeMasterRepository      = siteScopeMasterRepository;
-            _siteScopeRepository            = siteScopeRepository;
-            _logger                         = logger;
-            _emailService                   = emailService;
-            _updateEmailService             = updateEmailService;
+            _siteRepository             = siteRepository;
+            _siteStatusRepository       = siteStatusRepository;
+            _addressRepository          = addressRepository;
+            _addressTypeRepository      = addressTypeRepository;
+            _countryRepository          = countryRepository;
+            _serviceProviderRepository  = serviceProviderRepository;
+            _cache                      = cache;
+            _siteScopeMasterRepository  = siteScopeMasterRepository;
+            _siteScopeRepository        = siteScopeRepository;
+            _logger                     = logger;
+            _emailService               = emailService;
+            _updateEmailService         = updateEmailService;
+            _siteDeleteEmailService     = siteDeleteEmailService;
 
-            var configuration = new MapperConfiguration(cfg =>
+            MapperConfiguration configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Site, SiteAPIDTO>();
-
                 cfg.CreateMap<SiteAPIDTO, Site>();
-
                 cfg.CreateMap<Site, SiteAPIVm>();
             });
             _imapper = configuration.CreateMapper();
@@ -71,22 +73,20 @@ namespace ConstructEase.WebApp.APIControllers
         public IActionResult GetAllSites()
         {
             _logger.LogInformation("API Action: GetAllSites | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
+
             try
             {
                 const string cacheKey = "AllSites";
 
                 List<Site> sites;
-
                 if (!_cache.TryGetValue(cacheKey, out sites))
                 {
                     sites = _siteRepository.GetAllSites();
-
-                    MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10));
-
+                    MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(10));
                     _cache.Set(cacheKey, sites, cacheEntryOptions);
                 }
-
-                List<SiteAPIDTO> siteApiVm = _imapper.Map<List<Site>,List<SiteAPIDTO>>(sites);
+                List<SiteAPIDTO> siteApiVm = _imapper.Map<List<Site>, List<SiteAPIDTO>>(sites);
 
                 _logger.LogInformation("\nTotal Site: {TotalSite}", sites?.Count ?? 0);
 
@@ -99,45 +99,34 @@ namespace ConstructEase.WebApp.APIControllers
             }
             finally
             {
-                _logger.LogInformation("\nAPI Action: GetAllSites | Completed" + DateTime.Now.ToString("HH:mm:ss.fff"));
+                _logger.LogInformation("\nAPI Action: GetAllSites | Completed {CompletedAt}" + DateTime.Now.ToString("HH:mm:ss.fff"));
             }
         }
 
         [HttpGet("filter")]
-        public IActionResult FilterSites(string? search, int? statusId, DateTime? fromDate,
-                                         DateTime? toDate, decimal? budgetFrom, decimal? budgetTo)
+        public IActionResult FilterSites(string? search, int? statusId, DateTime? fromDate, DateTime? toDate, 
+                                         decimal? budgetFrom, decimal? budgetTo)
         {
-            _logger.LogInformation("API Action: FilterSites | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
-
+            _logger.LogInformation("API Action: FilterSites | Invoked: {InvokedAt}",DateTime.Now.ToString("HH:mm:ss.fff"));
             try
             {
                 if (fromDate.HasValue && toDate.HasValue && fromDate > toDate)
-                {
                     return BadRequest("From Date cannot be greater than To Date.");
-                }
 
                 if (budgetFrom.HasValue && budgetFrom < 0)
-                {
                     return BadRequest("Budget From cannot be negative.");
-                }
 
                 if (budgetTo.HasValue && budgetTo < 0)
-                {
                     return BadRequest("Budget To cannot be negative.");
-                }
 
                 if (budgetFrom.HasValue && budgetTo.HasValue && budgetFrom > budgetTo)
                 {
                     _logger.LogInformation("\nError: Budget From cannot be greater than Budget To | Exception: None");
 
-                    return BadRequest(new
-                    {
-                        message = "Budget From cannot be greater than Budget To."
-                    });
+                    return BadRequest("Budget From cannot be greater than Budget To.");
                 }
 
                 List<Site> sites = _siteRepository.GetSites(search, statusId, fromDate, toDate, budgetFrom, budgetTo);
-
                 List<SiteAPIDTO> siteApiVm = _imapper.Map<List<Site>, List<SiteAPIDTO>>(sites);
 
                 _logger.LogInformation("\nTotal Site: {TotalSite}", sites?.Count ?? 0);
@@ -151,7 +140,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             finally
             {
-                _logger.LogInformation("\nAPI Action: FilterSites | Completed" + DateTime.Now.ToString("HH:mm:ss.fff"));
+                _logger.LogInformation("\nAPI Action: FilterSites" + DateTime.Now.ToString("HH:mm:ss.fff"));
             }
         }
 
@@ -159,14 +148,13 @@ namespace ConstructEase.WebApp.APIControllers
         public IActionResult SelectSite(int id)
         {
             _logger.LogInformation("API Action: SelectSite | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
+
             try
             {
                 Site selectedSite = _siteRepository.GetSiteById(id);
-
                 if (selectedSite == null)
-                {
                     return NotFound("Site not found");
-                }
+
                 return Ok(selectedSite);
             }
             catch (Exception ex)
@@ -176,159 +164,86 @@ namespace ConstructEase.WebApp.APIControllers
             }
             finally
             {
-                _logger.LogInformation("\nAPI Action: SelectSite | Completed" + DateTime.Now.ToString("HH:mm:ss.fff"));
+                _logger.LogInformation("\nAPI Action: SelectSite" + DateTime.Now.ToString("HH:mm:ss.fff"));
             }
         }
 
 
         [HttpPost("add")]
-        public async Task<IActionResult> Add(SiteAPIDTO siteApiDto)
+        public IActionResult Add(SiteAPIDTO siteApiDto)
         {
             _logger.LogInformation("API Action: Add | Started: {StartedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
 
             try
             {
                 if (siteApiDto == null)
-                {
                     return BadRequest("Invalid data");
-                }
 
-                Site site = _imapper.Map<SiteAPIDTO,Site>(siteApiDto);
-
+                Site site = _imapper.Map<SiteAPIDTO, Site>(siteApiDto);
                 site.Id = _siteRepository.Create(site);
 
                 if (site.Id <= 0)
-                {
                     return StatusCode(500, "Failed to create site");
-                }
 
                 AddAddressIfPresent(site.Id, siteApiDto);
 
                 if (siteApiDto.SelectedMasterMasonIds?.Count > 0)
                 {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteApiDto.SelectedMasterMasonIds);
+                    _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteApiDto.SelectedMasterMasonIds);
                 }
 
                 if (siteApiDto.SelectedElectricianIds?.Count > 0)
                 {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteApiDto.SelectedElectricianIds);
+                    _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteApiDto.SelectedElectricianIds);
                 }
 
                 if (siteApiDto.SelectedLabourIds?.Count > 0)
                 {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteApiDto.SelectedLabourIds);
+                    _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteApiDto.SelectedLabourIds);
                 }
 
                 if (siteApiDto.SelectedPlumberIds?.Count > 0)
                 {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteApiDto.SelectedPlumberIds);
+                    _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteApiDto.SelectedPlumberIds);
                 }
 
                 if (siteApiDto.SelectedPainterIds?.Count > 0)
                 {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteApiDto.SelectedPainterIds);
+                    _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteApiDto.SelectedPainterIds);
                 }
 
                 if (siteApiDto.SelectedCarpenterIds?.Count > 0)
                 {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteApiDto.SelectedCarpenterIds);
+                    _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteApiDto.SelectedCarpenterIds);
                 }
 
                 if (siteApiDto.SelectedTilerIds?.Count > 0)
                 {
-                    _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteApiDto.SelectedTilerIds);
+                    _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteApiDto.SelectedTilerIds);
                 }
 
-                // Save selected work scopes
                 if (siteApiDto.SelectedScopes?.Count > 0)
                 {
                     List<(int, int, string?)> mappedScopes = new();
+
                     foreach (ScopeSaveItem scope in siteApiDto.SelectedScopes)
                     {
-                        mappedScopes.Add((scope.SiteScopeMasterId, scope.ScopeStatusId, scope.Remarks));
+                        mappedScopes.Add((scope.SiteScopeMasterId, scope.ScopeStatusId,scope.Remarks));
                     }
                     _siteScopeRepository.SaveScopes(site.Id, mappedScopes);
                 }
-                string siteStatusName = "Not Provided";
 
-                List<SiteStatus> siteStatuses = _siteStatusRepository.GetAll();
-
-                foreach (var status in siteStatuses)
-                {
-                    if (status.Id == site.SiteStatusId)
-                    {
-                        siteStatusName = status.Status ?? "Not Provided";
-                        break;
-                    }
-                }
-
-                // Prepare site address for email
-                string siteAddress = "";
-
-                if (!string.IsNullOrWhiteSpace(siteApiDto.AddressLine1))
-                    siteAddress = siteApiDto.AddressLine1;
-
-                if (!string.IsNullOrWhiteSpace(siteApiDto.CountryName))
-                {
-                    if (siteAddress != "")
-                        siteAddress += ", ";
-
-                    siteAddress += siteApiDto.CountryName;
-                }
-
-                if (siteApiDto.PinCode.HasValue)
-                {
-                    if (siteAddress != "")
-                        siteAddress += ", ";
-
-                    siteAddress += siteApiDto.PinCode.Value.ToString();
-                }
-
-                // Prepare work scopes for email
-                List<SiteScope> siteScopes = _siteScopeRepository.Get(site.Id);
-                string workScope = "";
-
-                foreach (SiteScope scope in siteScopes)
-                {
-                    if (string.IsNullOrWhiteSpace(scope.ScopeName))
-                        continue;
-
-                    if (workScope.Contains(scope.ScopeName))
-                        continue;
-
-                    if (workScope != "")
-                        workScope += " · ";
-
-                    workScope += scope.ScopeName;
-                }
-
-                // Get logged-in user's name
                 string addedByName = User?.Identity?.Name ?? "System";
 
-                // Send email notification
-                try
-                {
-                    await _emailService.SendNewSiteNotificationAsync(
-                        site.Id, site.Name ?? "Not Provided", site.ContactName ?? "Not Provided", 
-                        site.ContactNumber ?? "Not Provided", siteStatusName, site.ExpectedBudget, 
-                        site.StartedDate, site.ExpectedCompletionDate, siteAddress, workScope, site.Note, addedByName);
+                // Start email processing without waiting for SMTP to finish.
+                SendSiteAddEmail(site, siteApiDto, addedByName);
 
-                    return Ok(new
-                    {
-                        message = "Site was successfully saved and the notification email was sent.",
-                        siteId = site.Id,
-                        emailSent = true
-                    });
-                }
-                catch (Exception)
+                // Return the site-save response without waiting for email delivery.
+                return Ok(new
                 {
-                    return Ok(new
-                    {
-                        message = "Site was successfully saved, but the notification email could not be sent.",
-                        siteId = site.Id,
-                        emailSent = false
-                    });
-                }
+                    message = "Site was successfully saved.",
+                    siteId = site.Id
+                });
             }
             catch (Exception ex)
             {
@@ -337,9 +252,10 @@ namespace ConstructEase.WebApp.APIControllers
             }
             finally
             {
-                _logger.LogInformation("\nAPI Action: Add | Completed" + DateTime.Now.ToString("HH:mm:ss.fff"));
+                _logger.LogInformation("API Action: Add" + DateTime.Now.ToString("HH:mm:ss.fff"));
             }
         }
+
 
         [HttpGet("edit/{id}")]
         public IActionResult Edit(int id)
@@ -353,30 +269,21 @@ namespace ConstructEase.WebApp.APIControllers
                 if (selectedSite == null)
                     return NotFound("Site not found");
 
-                SiteAPIVm siteApiVm =_imapper.Map< Site, SiteAPIVm>(selectedSite);
-
-                siteApiVm.MasterMasonIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes>{ServiceTypes.MasterMasion});
-
-                siteApiVm.ElectricianIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes>{ServiceTypes.Electrician});
-
-                siteApiVm.LabourIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes>{ServiceTypes.Labour});
-
-                siteApiVm.PlumberIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes>{ServiceTypes.Plumber});
-
-                siteApiVm.PainterIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes>{ServiceTypes.Painter});
-
-                siteApiVm.CarpenterIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes>{ServiceTypes.Carpenter});
-
-                siteApiVm.TilerIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes>{ServiceTypes.Tiler});
-
+                SiteAPIVm siteApiVm = _imapper.Map<Site, SiteAPIVm>(selectedSite);
+                siteApiVm.MasterMasonIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.MasterMasion });
+                siteApiVm.ElectricianIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Electrician });
+                siteApiVm.LabourIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Labour });
+                siteApiVm.PlumberIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Plumber });
+                siteApiVm.PainterIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Painter });
+                siteApiVm.CarpenterIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Carpenter });
+                siteApiVm.TilerIds = _siteRepository.GetServiceProviderIdsByTypes(id, new List<ServiceTypes> { ServiceTypes.Tiler });
 
                 List<SiteScope> scopes = _siteScopeRepository.Get(id);
-
                 siteApiVm.Scopes = new List<SiteScopeVm>();
 
                 foreach (SiteScope scope in scopes)
                 {
-                    SiteScopeVm scopeVm = new SiteScopeVm
+                    SiteScopeVm scopeVm = new()
                     {
                         Id = scope.Id,
                         SiteScopeMasterId = scope.SiteScopeId,
@@ -397,10 +304,9 @@ namespace ConstructEase.WebApp.APIControllers
             }
             finally
             {
-                _logger.LogInformation("\nAPI Action: Edit | Completed" + DateTime.Now.ToString("HH:mm:ss.fff"));
+                _logger.LogInformation("\nAPI Action: Edit" + DateTime.Now.ToString("HH:mm:ss.fff"));
             }
         }
-
 
         [HttpPost("update")]
         public async Task<IActionResult> Update([FromBody] SiteAPIDTO siteApiDto)
@@ -412,173 +318,33 @@ namespace ConstructEase.WebApp.APIControllers
                 if (siteApiDto == null || siteApiDto.Id <= 0)
                     return BadRequest("Invalid site data.");
 
-                // 1. Get original database values before updating.
                 Site oldSite = _siteRepository.GetSiteById(siteApiDto.Id);
-
-                if (oldSite == null)
-                    return NotFound("Site not found.");
 
                 List<SiteScope> oldScopes = _siteScopeRepository.Get(siteApiDto.Id);
 
-                List<SiteStatus> allSiteStatuses = _siteStatusRepository.GetAll();
-                List<SiteScopeStatus> allScopeStatuses = _siteScopeRepository.GetAllStatuses();
-                List<SiteScopeMaster> allScopeMasters = _siteScopeMasterRepository.GetAll();
-                
-                List<SiteUpdateChange> changes = new();
-                List<ScopeSaveItem> newScopes = siteApiDto.SelectedScopes ?? new();
-
-                // 2. Check Site Status.
-                if (oldSite.SiteStatusId != siteApiDto.SiteStatusId)
-                {
-                    string oldStatus = "Not Provided";
-                    string newStatus = "Not Provided";
-
-                    foreach (var status in allSiteStatuses)
-                    {
-                        if (status.Id == oldSite.SiteStatusId)
-                            oldStatus = status.Status ?? "Not Provided";
-
-                        if (status.Id == siteApiDto.SiteStatusId)
-                            newStatus = status.Status ?? "Not Provided";
-                    }
-
-                    changes.Add(new SiteUpdateChange
-                    {
-                        FieldName = "Site Status",
-                        OldValue = oldStatus,
-                        NewValue = newStatus
-                    });
-                }
-
-                // 3. Check Expected Budget.
-                if (oldSite.ExpectedBudget != siteApiDto.ExpectedBudget)
-                {
-                    changes.Add(new SiteUpdateChange
-                    {
-                        FieldName = "Expected Budget", OldValue = oldSite.ExpectedBudget.HasValue
-                            ? $"₹{oldSite.ExpectedBudget.Value:N0}" : "Not Provided",
-
-                        NewValue = siteApiDto.ExpectedBudget.HasValue ? $"₹{siteApiDto.ExpectedBudget.Value:N0}" : "Not Provided"
-                    });
-                }
-
-                // 4. Check removed scopes and changed scope statuses.
-                foreach (SiteScope oldScope in oldScopes)
-                {
-                    ScopeSaveItem? matchingScope = null;
-
-                    foreach (ScopeSaveItem newScope in newScopes)
-                    {
-                        if (newScope.SiteScopeMasterId == oldScope.SiteScopeId)
-                        {
-                            matchingScope = newScope;
-                            break;
-                        }
-                    }
-
-                    string scopeName = oldScope.ScopeName ?? $"Scope #{oldScope.SiteScopeId}";
-
-                    // Scope removed.
-                    if (matchingScope == null)
-                    {
-                        changes.Add(new SiteUpdateChange
-                        {
-                            FieldName = "Work Scope Removed",
-                            OldValue = scopeName,
-                            NewValue = "Removed"
-                        });
-                        continue;
-                    }
-
-                    // Scope status changed.
-                    if (oldScope.ScopeStatusId != matchingScope.ScopeStatusId)
-                    {
-                        string oldStatus = oldScope.StatusName ?? "Not Provided";
-                        string newStatus = "Not Provided";
-
-                        foreach (SiteScopeStatus status in allScopeStatuses)
-                        {
-                            if (status.Id == matchingScope.ScopeStatusId)
-                            {
-                                newStatus = status.StatusName ?? "Not Provided";
-                                break;
-                            }
-                        }
-
-                        changes.Add(new SiteUpdateChange
-                        {
-                            FieldName = $"Work Scope Status - {scopeName}",
-                            OldValue = oldStatus,
-                            NewValue = newStatus
-                        });
-                    }
-                }
-
-                // 5. Check newly added scopes.
-                foreach (ScopeSaveItem newScope in newScopes)
-                {
-                    bool alreadyExists = false;
-
-                    foreach (SiteScope oldScope in oldScopes)
-                    {
-                        if (oldScope.SiteScopeId == newScope.SiteScopeMasterId)
-                        {
-                            alreadyExists = true;
-                            break;
-                        }
-                    }
-
-                    if (!alreadyExists)
-                    {
-                        string scopeName = $"Scope #{newScope.SiteScopeMasterId}";
-
-                        foreach (SiteScopeMaster master in allScopeMasters)
-                        {
-                            if (master.Id == newScope.SiteScopeMasterId)
-                            {
-                                scopeName = master.ScopeName ?? scopeName;
-                                break;
-                            }
-                        }
-
-                        changes.Add(new SiteUpdateChange
-                        {
-                            FieldName = "Work Scope Added",
-                            OldValue = "Not Assigned",
-                            NewValue = scopeName
-                        });
-                    }
-                }
-
-                Site site = _imapper.Map<SiteAPIDTO,Site>(siteApiDto);
-
+                Site site = _imapper.Map<SiteAPIDTO, Site>(siteApiDto);
                 int affectedRows = _siteRepository.Update(site);
 
                 if (affectedRows <= 0)
                     return StatusCode(500, "Site update failed.");
 
-                // 7. Save address.
+                // Save address.
                 AddAddressIfPresent(site.Id, siteApiDto);
 
-                // 8. Save service provider assignments. These changes do NOT trigger an email.
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteApiDto.SelectedMasterMasonIds ?? new List<int>());
+                // Save service provider assignments.
+                _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id,ServiceTypes.MasterMasion, siteApiDto.SelectedMasterMasonIds ?? new List<int>());
+                _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteApiDto.SelectedElectricianIds ?? new List<int>());
+                _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteApiDto.SelectedLabourIds ?? new List<int>());
+                _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteApiDto.SelectedPlumberIds ?? new List<int>());
+                _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteApiDto.SelectedPainterIds ?? new List<int>());
+                _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteApiDto.SelectedCarpenterIds ?? new List<int>());
+                _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteApiDto.SelectedTilerIds ?? new List<int>());
 
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteApiDto.SelectedElectricianIds ?? new List<int>());
-
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteApiDto.SelectedLabourIds ?? new List<int>());
-
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteApiDto.SelectedPlumberIds ?? new List<int>());
-
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteApiDto.SelectedPainterIds ?? new List<int>());
-
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteApiDto.SelectedCarpenterIds ?? new List<int>());
-
-                _siteRepository.AddAndUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteApiDto.SelectedTilerIds ?? new List<int>());
-
-                // 9. Save selected work scopes.
+                // Save selected work scopes.
                 List<(int, int, string?)> mappedScopes = new();
+                List<ScopeSaveItem> selectedScopes = siteApiDto.SelectedScopes ?? new List<ScopeSaveItem>();
 
-                foreach (ScopeSaveItem scope in newScopes)
+                foreach (ScopeSaveItem scope in selectedScopes)
                 {
                     mappedScopes.Add((scope.SiteScopeMasterId, scope.ScopeStatusId, scope.Remarks));
                 }
@@ -588,30 +354,15 @@ namespace ConstructEase.WebApp.APIControllers
                 // Refresh cached sites.
                 _cache.Remove("AllSites");
 
-                // 10. Send one email only when an important change exists.
-                bool emailSent = false;
+                // Compare old and new data and send notification email.
+                bool emailSent = await SendSiteUpdateEmail(siteApiDto, oldSite, oldScopes);
 
-                if (changes.Count > 0)
-                {
-                    try
-                    {
-                        await _updateEmailService.SendAsync(site.Name ?? oldSite.Name ?? "Unnamed Site", 
-                                                            User?.Identity?.Name ?? "System", DateTime.Now, changes);
-                        emailSent = true;
-                    }
-                    catch (Exception emailException)
-                    {
-                        _logger.LogError(emailException, "Site {SiteId} updated, but notification email failed.", site.Id);
-                    }
-                }
-
-                _logger.LogInformation("Site {SiteId} updated. Important changes: {ChangeCount}. Email sent: {EmailSent}", site.Id, changes.Count, emailSent);
+                _logger.LogInformation("Site {SiteId} updated. Email sent: {EmailSent}", site.Id, emailSent);
 
                 return Ok(new
                 {
                     message = "Site updated successfully.",
                     siteId = site.Id,
-                    importantChanges = changes.Count,
                     emailSent
                 });
             }
@@ -622,27 +373,35 @@ namespace ConstructEase.WebApp.APIControllers
             }
             finally
             {
-                _logger.LogInformation("API Action: Update " + DateTime.Now.ToString("HH:mm:ss.fff"));
+                _logger.LogInformation("API Action: Update" + DateTime.Now.ToString("HH:mm:ss.fff"));
             }
         }
 
         [HttpDelete("{siteId}")]
-        public IActionResult Delete(int siteId)
+        public async Task<IActionResult> Delete(int siteId)
         {
             _logger.LogInformation("API Action: Delete | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
 
             try
             {
                 if (siteId <= 0)
-                {
                     return BadRequest();
-                }
+
+                Site? site = _siteRepository.GetSiteById(siteId);
+
+                if (site == null)
+                    return NotFound();
+
+                string siteName = site.Name ?? "Not Provided";
+                string deletedBy = User.Identity?.Name ?? "System";
+                DateTime deletedAt = DateTime.Now;
 
                 _siteScopeRepository.SaveScopes(siteId, new List<(int, int, string?)>());
 
-                _addressRepository.Delete(0,siteId);
-
+                _addressRepository.Delete(0, siteId);
                 _siteRepository.Delete(siteId);
+
+                await _siteDeleteEmailService.SendAsync(siteId, siteName, deletedBy, deletedAt);
 
                 return NoContent();
             }
@@ -653,8 +412,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             finally
             {
-                _logger.LogInformation(
-                    "\nAPI Action: Delete | Completed" + DateTime.Now.ToString("HH:mm:ss.fff"));
+                _logger.LogInformation("API Action: Delete" + DateTime.Now.ToString("HH:mm:ss.fff"));
             }
         }
 
@@ -663,7 +421,6 @@ namespace ConstructEase.WebApp.APIControllers
         public IActionResult GetDropdownData()
         {
             _logger.LogInformation("API Action: GetDropdownData | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
-
             try
             {
                 List<SiteStatus> statuses = _siteStatusRepository.GetAll();
@@ -672,72 +429,52 @@ namespace ConstructEase.WebApp.APIControllers
                 List<SiteScopeMaster> scopeMasters = _siteScopeMasterRepository.GetAll();
                 List<SiteScopeStatus> scopeStatuses = _siteScopeRepository.GetAllStatuses();
 
-                // Site Statuses
-                List<DropdownItemDTO> statusItems = new List<DropdownItemDTO>();
-
+                List<DropdownItemDTO> statusItems = new();
                 foreach (SiteStatus status in statuses)
                 {
                     statusItems.Add(new DropdownItemDTO
                     {
-                        Id = status.Id,
-                        Name = status.Status
+                        Id = status.Id, Name = status.Status
                     });
                 }
 
-                // Address Types
-                List<DropdownItemDTO> addressTypeItems = new List<DropdownItemDTO>();
-
+                List<DropdownItemDTO> addressTypeItems = new();
                 foreach (AddressType addressType in addressTypes)
                 {
                     addressTypeItems.Add(new DropdownItemDTO
                     {
-                        Id = addressType.Id,
-                        Name = addressType.Name
+                        Id = addressType.Id, Name = addressType.Name
                     });
                 }
 
-                // Countries
-                List<DropdownItemDTO> countryItems = new List<DropdownItemDTO>();
-
+                List<DropdownItemDTO> countryItems = new();
                 foreach (Country country in countries)
                 {
                     countryItems.Add(new DropdownItemDTO
                     {
-                        Id = country.Id,
-                        Name = country.Name
+                        Id = country.Id, Name = country.Name
                     });
                 }
 
-                // Work Scope Masters
-                List<DropdownItemDTO> scopeMasterItems = new List<DropdownItemDTO>();
-
+                List<DropdownItemDTO> scopeMasterItems = new();
                 foreach (SiteScopeMaster scope in scopeMasters)
                 {
                     scopeMasterItems.Add(new DropdownItemDTO
                     {
-                        Id = scope.Id,
-                        Name = scope.ScopeName
+                        Id = scope.Id, Name = scope.ScopeName
                     });
                 }
 
-                // Work Scope Statuses
-                List<DropdownItemDTO> scopeStatusItems = new List<DropdownItemDTO>();
-
+                List<DropdownItemDTO> scopeStatusItems = new();
                 foreach (SiteScopeStatus scopeStatus in scopeStatuses)
                 {
                     scopeStatusItems.Add(new DropdownItemDTO
                     {
-                        Id = scopeStatus.Id,
-                        Name = scopeStatus.StatusName
+                        Id = scopeStatus.Id, Name = scopeStatus.StatusName
                     });
                 }
-
-                SiteDropdownDTO response = new SiteDropdownDTO
-                {
-                    Statuses = statusItems, AddressTypes = addressTypeItems, Countries = countryItems,
-                    ScopeMasters = scopeMasterItems, ScopeStatuses = scopeStatusItems
-                };
-
+                SiteDropdownDTO response = new() { Statuses = statusItems, AddressTypes = addressTypeItems, Countries = countryItems,
+                                                   ScopeMasters = scopeMasterItems, ScopeStatuses = scopeStatusItems};
                 return Ok(response);
             }
             catch (Exception ex)
@@ -754,15 +491,12 @@ namespace ConstructEase.WebApp.APIControllers
         [HttpGet("service-providers")]
         public IActionResult GetServiceProviders()
         {
-            _logger.LogInformation("API Action: GetServiceProviders | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
-
+            _logger.LogInformation("API Action: GetServiceProviders | Invoked: {InvokedAt}",DateTime.Now.ToString("HH:mm:ss.fff"));
             try
             {
-                List<ServiceProviderName> allServiceProviders =_serviceProviderRepository.GetAllServiceProviders();
-
+                List<ServiceProviderName> allServiceProviders = _serviceProviderRepository.GetAllServiceProviders();
                 List<KeyValuePair<int, string>> masterMasons = new();
                 List<KeyValuePair<int, string>> electricians = new();
-
                 List<object> labours = new();
                 List<object> plumbers = new();
                 List<object> painters = new();
@@ -773,7 +507,7 @@ namespace ConstructEase.WebApp.APIControllers
                 {
                     if (serviceProvider.ServiceTypeId == (int)ServiceTypes.MasterMasion)
                     {
-                        masterMasons.Add(new KeyValuePair<int, string>( serviceProvider.Id, serviceProvider.Name));
+                        masterMasons.Add(new KeyValuePair<int, string>(serviceProvider.Id, serviceProvider.Name));
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Electrician)
                     {
@@ -781,29 +515,26 @@ namespace ConstructEase.WebApp.APIControllers
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Labour)
                     {
-                        labours.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
+                        labours.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Plumber)
                     {
-                        plumbers.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
+                        plumbers.Add(new{id = serviceProvider.Id, name = serviceProvider.Name});
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Painter)
                     {
-                        painters.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
+                        painters.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Carpenter)
                     {
-                        carpenters.Add(new { id = serviceProvider.Id,name = serviceProvider.Name});
+                        carpenters.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
                     }
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Tiler)
                     {
-                        tilers.Add(new { id = serviceProvider.Id, name = serviceProvider.Name});
+                        tilers.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
                     }
                 }
-
-                var response = new{masterMasons, electricians, labours, plumbers, painters, carpenters, tilers};
-
-                return Ok(response);
+                return Ok(new {masterMasons, electricians, labours, plumbers, painters, carpenters, tilers});
             }
             catch (Exception ex)
             {
@@ -820,7 +551,6 @@ namespace ConstructEase.WebApp.APIControllers
         public IActionResult UpdateScopeStatus([FromBody] UpdateScopeStatusDto dto)
         {
             _logger.LogInformation("API Action: UpdateScopeStatus | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
-
             try
             {
                 if (dto == null || dto.SiteScopeId <= 0 || dto.ScopeStatusId <= 0)
@@ -842,7 +572,222 @@ namespace ConstructEase.WebApp.APIControllers
             }
             finally
             {
-                _logger.LogInformation("\nAPI Action: UpdateScopeStatus | Completed" + DateTime.Now.ToString("HH:mm:ss.fff"));
+                _logger.LogInformation("\nAPI Action: UpdateScopeStatus" + DateTime.Now.ToString("HH:mm:ss.fff"));
+            }
+        }
+
+        private async Task SendSiteAddEmail(Site site, SiteAPIDTO siteApiDto, string addedByName)
+        {
+            try
+            {
+                string siteStatusName = "Not Provided";
+                List<SiteStatus> siteStatuses = _siteStatusRepository.GetAll();
+
+                foreach (SiteStatus status in siteStatuses)
+                {
+                    if (status.Id == site.SiteStatusId)
+                    {
+                        siteStatusName = status.Status ?? "Not Provided";
+                        break;
+                    }
+                }
+                string siteAddress = "";
+
+                if (!string.IsNullOrWhiteSpace(siteApiDto.AddressLine1))
+                    siteAddress = siteApiDto.AddressLine1;
+
+                if (!string.IsNullOrWhiteSpace(siteApiDto.CountryName))
+                {
+                    if (siteAddress != "")
+                        siteAddress += ", ";
+                    siteAddress += siteApiDto.CountryName;
+                }
+
+                if (siteApiDto.PinCode.HasValue)
+                {
+                    if (siteAddress != "")
+                        siteAddress += ", ";
+                    siteAddress += siteApiDto.PinCode.Value.ToString();
+                }
+
+                List<SiteScope> siteScopes = _siteScopeRepository.Get(site.Id);
+                string workScope = "";
+
+                foreach (SiteScope scope in siteScopes)
+                {
+                    if (string.IsNullOrWhiteSpace(scope.ScopeName))
+                        continue;
+
+                    if (workScope.Contains(scope.ScopeName))
+                        continue;
+
+                    if (workScope != "")
+                        workScope += " · ";
+                    workScope += scope.ScopeName;
+                }
+
+                await _emailService.SendNewSiteNotificationAsync(
+                    site.Id, site.Name ?? "Not Provided", site.ContactName ?? "Not Provided",
+                    site.ContactNumber ?? "Not Provided", siteStatusName, site.ExpectedBudget,
+                    site.StartedDate, site.ExpectedCompletionDate, siteAddress, workScope,
+                    site.Note ?? "", addedByName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Email: New Site Notification | Failed | Site ID: {SiteId}", site.Id);
+            }
+        }
+
+        private async Task<bool> SendSiteUpdateEmail(SiteAPIDTO siteApiDto, Site oldSite, List<SiteScope> oldScopes)
+        {
+            if (oldSite == null)
+                return false;
+
+            List<SiteUpdateChange> changes = new();
+            List<ScopeSaveItem> newScopes = siteApiDto.SelectedScopes ?? new List<ScopeSaveItem>();
+
+            // Check site status.
+            if (oldSite.SiteStatusId != siteApiDto.SiteStatusId)
+            {
+                string oldStatus = "Not Provided";
+                string newStatus = "Not Provided";
+
+                List<SiteStatus> allSiteStatuses = _siteStatusRepository.GetAll();
+
+                foreach (SiteStatus status in allSiteStatuses)
+                {
+                    if (status.Id == oldSite.SiteStatusId)
+                        oldStatus = status.Status ?? "Not Provided";
+
+                    if (status.Id == siteApiDto.SiteStatusId)
+                        newStatus = status.Status ?? "Not Provided";
+                }
+
+                changes.Add(new SiteUpdateChange
+                {
+                    FieldName = "Site Status",
+                    OldValue = oldStatus,
+                    NewValue = newStatus
+                });
+            }
+
+            // Check expected budget.
+            if (oldSite.ExpectedBudget != siteApiDto.ExpectedBudget)
+            {
+                changes.Add(new SiteUpdateChange
+                {
+                    FieldName = "Expected Budget",
+                    OldValue = oldSite.ExpectedBudget.HasValue
+                        ? $"₹{oldSite.ExpectedBudget.Value:N0}" : "Not Provided",
+                    NewValue = siteApiDto.ExpectedBudget.HasValue
+                        ? $"₹{siteApiDto.ExpectedBudget.Value:N0}" : "Not Provided"
+                });
+            }
+
+            // Check removed scopes and changed scope statuses.
+            List<SiteScopeStatus> allScopeStatuses = _siteScopeRepository.GetAllStatuses();
+            foreach (SiteScope oldScope in oldScopes)
+            {
+                ScopeSaveItem? matchingScope = null;
+
+                foreach (ScopeSaveItem newScope in newScopes)
+                {
+                    if (newScope.SiteScopeMasterId == oldScope.SiteScopeId)
+                    {
+                        matchingScope = newScope;
+                        break;
+                    }
+                }
+
+                string scopeName =
+                    oldScope.ScopeName ?? $"Scope #{oldScope.SiteScopeId}";
+
+                if (matchingScope == null)
+                {
+                    changes.Add(new SiteUpdateChange
+                    {
+                        FieldName = "Work Scope Removed",
+                        OldValue = scopeName,
+                        NewValue = "Removed"
+                    });
+
+                    continue;
+                }
+
+                if (oldScope.ScopeStatusId != matchingScope.ScopeStatusId)
+                {
+                    string oldStatus = oldScope.StatusName ?? "Not Provided";
+                    string newStatus = "Not Provided";
+
+                    foreach (SiteScopeStatus status in allScopeStatuses)
+                    {
+                        if (status.Id == matchingScope.ScopeStatusId)
+                        {
+                            newStatus = status.StatusName ?? "Not Provided";
+                            break;
+                        }
+                    }
+
+                    changes.Add(new SiteUpdateChange
+                    {
+                        FieldName = $"Work Scope Status - {scopeName}",
+                        OldValue = oldStatus,
+                        NewValue = newStatus
+                    });
+                }
+            }
+
+            // Check newly added scopes.
+            List<SiteScopeMaster> allScopeMasters = _siteScopeMasterRepository.GetAll();
+
+            foreach (ScopeSaveItem newScope in newScopes)
+            {
+                bool alreadyExists = false;
+
+                foreach (SiteScope oldexistingScope in oldScopes)
+                {
+                    if (oldexistingScope.SiteScopeId == newScope.SiteScopeMasterId)
+                    {
+                        alreadyExists = true;
+                        break;
+                    }
+                }
+
+                if (alreadyExists)
+                    continue;
+
+                string scopeName = $"Scope #{newScope.SiteScopeMasterId}";
+
+                foreach (SiteScopeMaster master in allScopeMasters)
+                {
+                    if (master.Id == newScope.SiteScopeMasterId)
+                    {
+                        scopeName = master.ScopeName ?? scopeName;
+                        break;
+                    }
+                }
+
+                changes.Add(new SiteUpdateChange
+                {
+                    FieldName = "Work Scope Added",
+                    OldValue = "Not Assigned",
+                    NewValue = scopeName
+                });
+            }
+
+            if (changes.Count == 0)
+                return false;
+
+            try
+            {
+                await _updateEmailService.SendAsync(siteApiDto.Name ?? oldSite.Name ?? "Unnamed Site",
+                                                    User?.Identity?.Name ?? "System", DateTime.Now, changes);
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 
@@ -853,86 +798,29 @@ namespace ConstructEase.WebApp.APIControllers
                 || siteApiDto.CountryId > 0
                 || siteApiDto.PinCode > 0)
             {
-                Address address = new Address(0,
+                Address address = new Address(
+                    0,
                     siteApiDto.AddressLine1,
                     siteApiDto.AddressTypeId ?? 0,
                     siteApiDto.CountryId ?? 0,
                     siteApiDto.PinCode ?? 0,
-                    siteId
-                );
+                    siteId);
+
                 _addressRepository.InsertOrUpdateAddress(address);
             }
         }
 
-        //    // ============================================================
-        //    // METHOD TIMING HELPER - RETURN VALUE
-        //    // ============================================================
-
-        //    private T ExecuteAndLog<T>(
-        //        string methodName,
-        //        Func<T> action)
-        //    {
-        //        Stopwatch methodTimer = Stopwatch.StartNew();
-
-        //        try
-        //        {
-        //            return action();
-        //        }
-        //        finally
-        //        {
-        //            methodTimer.Stop();
-
-        //            _logger.LogInformation(
-        //                "\nMethod: {Method} | Time: {ElapsedMs} ms",
-        //                methodName,
-        //                methodTimer.ElapsedMilliseconds);
-        //        }
-        //    }
-
-        //    // ============================================================
-        //    // METHOD TIMING HELPER - VOID METHOD
-        //    // ============================================================
-
-        //    private void ExecuteAndLog(
-        //        string methodName,
-        //        Action action)
-        //    {
-        //        Stopwatch methodTimer = Stopwatch.StartNew();
-
-        //        try
-        //        {
-        //            action();
-        //        }
-        //        finally
-        //        {
-        //            methodTimer.Stop();
-
-        //            _logger.LogInformation(
-        //                "\nMethod: {Method} | Time: {ElapsedMs} ms",
-        //                methodName,
-        //                methodTimer.ElapsedMilliseconds);
-        //        }
-        //    }
-
-        // ============================================================
-        // EXCEPTION LOGGING
-        // ============================================================
-
         private void LogException(string actionName, Exception ex)
         {
             _logger.LogError(ex, "\nError: API Action {Action} failed | Exception: {ExceptionType}: {ExceptionMessage}",
-                             actionName,
-                             ex.GetType().Name,
-                             ex.Message);
+                             actionName, ex.GetType().Name, ex.Message);
         }
     }
 
     public class UpdateScopeStatusDto
     {
         public int SiteScopeId { get; set; }
-
         public int ScopeStatusId { get; set; }
-
         public string? Remarks { get; set; }
     }
 }

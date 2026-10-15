@@ -183,6 +183,7 @@ namespace ConstructionApplication.Repository.Dapper
                     catch (Exception)
                     {
                         transaction.Rollback();
+                        throw;
                     }
                 }
             }
@@ -204,7 +205,7 @@ namespace ConstructionApplication.Repository.Dapper
         }
 
         // Approach: 1
-        public void AddAndUpdateSiteServiceProviderBridge(int siteId, ServiceTypes serviceType, List<int> serviceProviderIds)
+        public void AddAOrUpdateSiteServiceProviderBridge(int siteId, ServiceTypes serviceType, List<int> serviceProviderIds)
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
             {

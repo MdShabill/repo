@@ -11,53 +11,23 @@ namespace ConstructionApplication.Repository.Dapper
     public class SiteStatusRepositoryUsingDapper : ISiteStatusRepository
     {
         private readonly string _connectionString;
-        private readonly ILogger<SiteStatusRepositoryUsingDapper> _logger;
-
-        public SiteStatusRepositoryUsingDapper(string connectionString,
-               ILogger<SiteStatusRepositoryUsingDapper> logger)
+        public SiteStatusRepositoryUsingDapper(string connectionString)
         {
             _connectionString = connectionString;
-            _logger = logger;
         }
 
         public List<SiteStatus> GetAll()
         {
-            var methodStopwatch = Stopwatch.StartNew();
-
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 string sqlQuery = "SELECT Id, Status FROM SiteStatus";
-
-                var databaseStopwatch = Stopwatch.StartNew();
-
                 try
                 {
-                    var result = db.Query<SiteStatus>(sqlQuery).AsList();
-
-                    databaseStopwatch.Stop();
-
-                    _logger.LogInformation("Database: SELECT All Site Status | Time: {ElapsedMs} ms",
-                        databaseStopwatch.ElapsedMilliseconds);
-
-                    methodStopwatch.Stop();
-
-                    _logger.LogInformation("Method: ISiteStatusRepository.GetAll | Time: {ElapsedMs} ms",
-                        methodStopwatch.ElapsedMilliseconds);
-
+                    List<SiteStatus> result = db.Query<SiteStatus>(sqlQuery).AsList();
                     return result;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    databaseStopwatch.Stop();
-
-                    _logger.LogError(ex, "Database: SELECT All Site Status | Failed | Time: {ElapsedMs} ms",
-                        databaseStopwatch.ElapsedMilliseconds);
-
-                    methodStopwatch.Stop();
-
-                    _logger.LogInformation("Method: ISiteStatusRepository.GetAll | Time: {ElapsedMs} ms",
-                        methodStopwatch.ElapsedMilliseconds);
-
                     throw;
                 }
             }

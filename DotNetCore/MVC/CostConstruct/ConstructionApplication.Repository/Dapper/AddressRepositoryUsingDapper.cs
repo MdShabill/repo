@@ -21,9 +21,6 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string query = @"SELECT TOP 1 * FROM Addresses WHERE SiteId = @SiteId";
-
-                var databaseStopwatch = Stopwatch.StartNew();
-
                 try
                 {
                     var result = connection.QueryFirstOrDefault<Address>(query, new { SiteId = siteId });

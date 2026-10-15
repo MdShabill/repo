@@ -8,12 +8,12 @@ using System.Net;
 
 namespace ConstructEase.WebApp.Services
 {
-    public class UpdateEmailService
+    public class SiteUpdateEmailService
     {
         private readonly EmailSettings _settings;
-        private readonly ILogger<UpdateEmailService> _logger;
+        private readonly ILogger<SiteUpdateEmailService> _logger;
 
-        public UpdateEmailService(IOptions<EmailSettings> settings, ILogger<UpdateEmailService> logger)
+        public SiteUpdateEmailService(IOptions<EmailSettings> settings, ILogger<SiteUpdateEmailService> logger)
         {
             _settings = settings.Value;
             _logger = logger;
@@ -25,8 +25,7 @@ namespace ConstructEase.WebApp.Services
             if (changes == null || changes.Count == 0)
                 return;
 
-            var timer = Stopwatch.StartNew();
-
+            _logger.LogInformation("API Action: SiteUpdateEmailService | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
             try
             {
                 string safeSiteName = WebUtility.HtmlEncode(siteName);
@@ -138,7 +137,7 @@ namespace ConstructEase.WebApp.Services
                 await smtp.SendAsync(message);
                 await smtp.DisconnectAsync(true);
 
-                _logger.LogInformation("Update email sent for site {SiteName} in {ElapsedMs} ms", siteName, timer.ElapsedMilliseconds);
+                _logger.LogInformation("API Action: SiteUpdateEmailService | Invoked: {InvokedAt}" + DateTime.Now.ToString("HH:mm:ss.fff"));
             }
             catch (Exception ex)
             {

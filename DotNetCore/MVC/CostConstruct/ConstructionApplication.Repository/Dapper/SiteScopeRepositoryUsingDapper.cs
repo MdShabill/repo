@@ -16,7 +16,7 @@ namespace ConstructionApplication.Repository.Dapper
         }
         public List<SiteScope> Get(int siteId)
         {
-            using var connection = new SqlConnection(_connectionString);
+            using SqlConnection connection = new(_connectionString);
             try
             {
                 var result = connection.Query<SiteScope>(@"
@@ -46,7 +46,7 @@ namespace ConstructionApplication.Repository.Dapper
 
         public List<SiteScopeStatus> GetAllStatuses()
         {
-            using var connection = new SqlConnection(_connectionString);
+            using SqlConnection connection = new(_connectionString);
             try
             {
                 var result = connection.Query<SiteScopeStatus>("SELECT Id, StatusName FROM ScopeStatus ORDER BY Id").ToList();
@@ -60,7 +60,7 @@ namespace ConstructionApplication.Repository.Dapper
 
         public void SaveScopes(int siteId, List<(int scopeMasterId, int statusId, string? remarks)> scopes)
         {
-            using var connection = new SqlConnection(_connectionString);
+            using SqlConnection connection = new(_connectionString);
             try
             {
                 connection.Open();
@@ -101,10 +101,10 @@ namespace ConstructionApplication.Repository.Dapper
 
         public void UpdateScopeStatus(int id, int scopeStatusId, string? remarks, DateTime? completedDate)
         {
-            using var conn = new SqlConnection(_connectionString);
+            using SqlConnection connection = new(_connectionString);
             try
             {
-                conn.Execute(@"
+                connection.Execute(@"
                     UPDATE SiteScope
                     SET ScopeStatusId = @ScopeStatusId,
                         Remarks = @Remarks,

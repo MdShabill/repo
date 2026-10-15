@@ -11,13 +11,9 @@ namespace ConstructionApplication.Repository.Dapper
     public class CountryRepositoryUsingDapper : ICountryRepository
     {
         private readonly string _connectionString;
-        private readonly ILogger<CountryRepositoryUsingDapper> _logger;
-
-        public CountryRepositoryUsingDapper(string connectionString,
-               ILogger<CountryRepositoryUsingDapper> logger)
+        public CountryRepositoryUsingDapper(string connectionString)
         {
             _connectionString = connectionString;
-            _logger = logger;
         }
 
         public List<Country> GetAllCountries()
@@ -27,36 +23,13 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = "Select Id, Name From Countries";
-
-                var databaseStopwatch = Stopwatch.StartNew();
-
                 try
                 {
-                    var result = connection.Query<Country>(sqlQuery).ToList();
-
-                    databaseStopwatch.Stop();
-
-                    _logger.LogInformation("Database: SELECT All Countries | Time: {ElapsedMs} ms",
-                        databaseStopwatch.ElapsedMilliseconds);
-
-                    methodStopwatch.Stop();
-
-                    _logger.LogInformation("Method: ICountryRepository.GetAllCountries | Time: {ElapsedMs} ms",
-                        methodStopwatch.ElapsedMilliseconds);
-
+                    List<Country> result = connection.Query<Country>(sqlQuery).ToList();
                     return result;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    databaseStopwatch.Stop();
-
-                    _logger.LogError(ex, "Database: SELECT All Countries | Failed | Time: {ElapsedMs} ms",
-                                     databaseStopwatch.ElapsedMilliseconds);
-
-                    methodStopwatch.Stop();
-
-                    _logger.LogInformation("Method: ICountryRepository.GetAllCountries | Time: {ElapsedMs} ms",
-                        methodStopwatch.ElapsedMilliseconds);
                     throw;
                 }
             }

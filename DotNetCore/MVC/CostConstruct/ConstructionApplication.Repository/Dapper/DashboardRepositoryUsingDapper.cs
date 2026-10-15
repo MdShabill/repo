@@ -100,18 +100,14 @@ namespace ConstructionApplication.Repository.Dapper
 
                     -- ── LAST ACTIVITY ──
                     (SELECT MAX(Date) FROM MaterialPurchase  WHERE (@SiteId=0 OR SiteId=@SiteId)) AS LastMaterialActivity,
-                    (SELECT MAX(Date) FROM DailyAttendance   WHERE (@SiteId=0 OR SiteId=@SiteId)) AS LastAttendanceActivity
-            ";
+                    (SELECT MAX(Date) FROM DailyAttendance   WHERE (@SiteId=0 OR SiteId=@SiteId)) AS LastAttendanceActivity";
 
-            return connection.QuerySingleOrDefault<DashboardStats>(
-                sql,
-                new { SiteId = siteId }
-            ) ?? new DashboardStats();
+            return connection.QuerySingleOrDefault<DashboardStats>(sql,new { SiteId = siteId }) ?? new DashboardStats();
         }
 
         public List<SiteScope> GetScopeItems(int siteId)
         {
-            using var connection = new SqlConnection(_connectionString);
+            using SqlConnection connection = new(_connectionString);
 
             return connection.Query<SiteScope>(@"
                 SELECT
@@ -125,13 +121,13 @@ namespace ConstructionApplication.Repository.Dapper
                 JOIN  SiteScopeMaster sm ON ss.SiteScopeId   = sm.Id
                 JOIN  ScopeStatus    sc ON ss.ScopeStatusId  = sc.Id
                 WHERE ss.SiteId = @SiteId
-                ORDER BY sm.Id
-            ", new { SiteId = siteId }).ToList();
+                ORDER BY sm.Id", 
+                new { SiteId = siteId }).ToList();
         }
 
         public MonthlyActivityStats GetMonthlyActivity(int siteId, int month, int year)
         {
-            using var connection = new SqlConnection(_connectionString);
+            using SqlConnection connection = new(_connectionString);
 
             string sql = @"
                 SELECT

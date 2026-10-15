@@ -55,7 +55,9 @@ try
 
     builder.Services.AddScoped<IEmailService, EmailService>();
 
-    builder.Services.AddScoped<UpdateEmailService>();
+    builder.Services.AddScoped<SiteUpdateEmailService>();
+
+    builder.Services.AddScoped<SiteDeleteEmailService>();
 
     // CORS
     builder.Services.AddCors(options =>

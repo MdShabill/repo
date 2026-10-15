@@ -12,6 +12,6 @@ namespace ConstructionApplication.Repository.Interfaces
         public int Create(Site site);
         public void Delete(int siteId);
         public List<int> GetServiceProviderIdsByTypes(int siteId, List<ServiceTypes> serviceTypes);
-        public void AddAndUpdateSiteServiceProviderBridge(int siteId, ServiceTypes serviceType, List<int> serviceProviderIds);
+        public void AddAOrUpdateSiteServiceProviderBridge(int siteId, ServiceTypes serviceType, List<int> serviceProviderIds);
     }
 }
