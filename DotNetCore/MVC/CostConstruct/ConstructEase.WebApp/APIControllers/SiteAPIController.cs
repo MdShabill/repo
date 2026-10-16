@@ -82,11 +82,11 @@ namespace ConstructEase.WebApp.APIControllers
                 if (!_cache.TryGetValue(cacheKey, out sites))
                 {
                     sites = _siteRepository.GetAllSites();
-                    MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions()
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
                         .SetSlidingExpiration(TimeSpan.FromMinutes(10));
                     _cache.Set(cacheKey, sites, cacheEntryOptions);
                 }
-                List<SiteAPIDTO> siteApiVm = _imapper.Map<List<Site>, List<SiteAPIDTO>>(sites);
+                var siteApiVm = _imapper.Map<List<Site>, List<SiteAPIDTO>>(sites);
 
                 _logger.LogInformation("\nTotal Site: {TotalSite}", sites?.Count ?? 0);
 
@@ -94,7 +94,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             catch (Exception ex)
             {
-                LogException("GetAllSites", ex);
+                _logger.LogError(ex, "API action {Action} failed.", nameof(GetAllSites));
                 throw;
             }
             finally
@@ -127,7 +127,7 @@ namespace ConstructEase.WebApp.APIControllers
                 }
 
                 List<Site> sites = _siteRepository.GetSites(search, statusId, fromDate, toDate, budgetFrom, budgetTo);
-                List<SiteAPIDTO> siteApiVm = _imapper.Map<List<Site>, List<SiteAPIDTO>>(sites);
+                var siteApiVm = _imapper.Map<List<Site>, List<SiteAPIDTO>>(sites);
 
                 _logger.LogInformation("\nTotal Site: {TotalSite}", sites?.Count ?? 0);
 
@@ -135,7 +135,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             catch (Exception ex)
             {
-                LogException("FilterSites", ex);
+                _logger.LogError(ex, "API action {Action} failed.", nameof(FilterSites));
                 throw;
             }
             finally
@@ -159,7 +159,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             catch (Exception ex)
             {
-                LogException("SelectSite", ex);
+                _logger.LogError(ex, "API action {Action} failed.", nameof(SelectSite));
                 throw;
             }
             finally
@@ -188,39 +188,25 @@ namespace ConstructEase.WebApp.APIControllers
                 AddAddressIfPresent(site.Id, siteApiDto);
 
                 if (siteApiDto.SelectedMasterMasonIds?.Count > 0)
-                {
                     _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.MasterMasion, siteApiDto.SelectedMasterMasonIds);
-                }
 
                 if (siteApiDto.SelectedElectricianIds?.Count > 0)
-                {
                     _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Electrician, siteApiDto.SelectedElectricianIds);
-                }
 
                 if (siteApiDto.SelectedLabourIds?.Count > 0)
-                {
                     _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Labour, siteApiDto.SelectedLabourIds);
-                }
 
                 if (siteApiDto.SelectedPlumberIds?.Count > 0)
-                {
                     _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Plumber, siteApiDto.SelectedPlumberIds);
-                }
 
                 if (siteApiDto.SelectedPainterIds?.Count > 0)
-                {
                     _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Painter, siteApiDto.SelectedPainterIds);
-                }
 
                 if (siteApiDto.SelectedCarpenterIds?.Count > 0)
-                {
                     _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Carpenter, siteApiDto.SelectedCarpenterIds);
-                }
 
                 if (siteApiDto.SelectedTilerIds?.Count > 0)
-                {
                     _siteRepository.AddAOrUpdateSiteServiceProviderBridge(site.Id, ServiceTypes.Tiler, siteApiDto.SelectedTilerIds);
-                }
 
                 if (siteApiDto.SelectedScopes?.Count > 0)
                 {
@@ -236,18 +222,18 @@ namespace ConstructEase.WebApp.APIControllers
                 string addedByName = User?.Identity?.Name ?? "System";
 
                 // Start email processing without waiting for SMTP to finish.
-                SendSiteAddEmail(site, siteApiDto, addedByName);
+                _ = SiteAddedNotification(site, siteApiDto, addedByName);
 
                 // Return the site-save response without waiting for email delivery.
                 return Ok(new
                 {
-                    message = "Site was successfully saved.",
+                    message = "Site successfully saved",
                     siteId = site.Id
                 });
             }
             catch (Exception ex)
             {
-                LogException("Add", ex);
+                _logger.LogError(ex, "API action {Action} failed.", nameof(Add));
                 throw;
             }
             finally
@@ -299,7 +285,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             catch (Exception ex)
             {
-                LogException("Edit", ex);
+                _logger.LogError(ex, "API action {Action} failed.", nameof(Edit));
                 throw;
             }
             finally
@@ -342,7 +328,7 @@ namespace ConstructEase.WebApp.APIControllers
 
                 // Save selected work scopes.
                 List<(int, int, string?)> mappedScopes = new();
-                List<ScopeSaveItem> selectedScopes = siteApiDto.SelectedScopes ?? new List<ScopeSaveItem>();
+                List<ScopeSaveItem> selectedScopes = siteApiDto.SelectedScopes ?? new();
 
                 foreach (ScopeSaveItem scope in selectedScopes)
                 {
@@ -368,7 +354,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             catch (Exception ex)
             {
-                LogException("Update", ex);
+                _logger.LogError(ex, "API action {Action} failed.", nameof(Update));
                 throw;
             }
             finally
@@ -407,7 +393,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             catch (Exception ex)
             {
-                LogException("Delete", ex);
+                _logger.LogError(ex, "API action {Action} failed.", nameof(Delete));
                 throw;
             }
             finally
@@ -479,7 +465,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             catch (Exception ex)
             {
-                LogException("GetDropdownData", ex);
+                _logger.LogError(ex, "API action {Action} failed.", nameof(GetDropdownData));
                 throw;
             }
             finally
@@ -506,39 +492,31 @@ namespace ConstructEase.WebApp.APIControllers
                 foreach (ServiceProviderName serviceProvider in allServiceProviders)
                 {
                     if (serviceProvider.ServiceTypeId == (int)ServiceTypes.MasterMasion)
-                    {
                         masterMasons.Add(new KeyValuePair<int, string>(serviceProvider.Id, serviceProvider.Name));
-                    }
+
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Electrician)
-                    {
                         electricians.Add(new KeyValuePair<int, string>(serviceProvider.Id, serviceProvider.Name));
-                    }
+
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Labour)
-                    {
                         labours.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
-                    }
+
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Plumber)
-                    {
                         plumbers.Add(new{id = serviceProvider.Id, name = serviceProvider.Name});
-                    }
+
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Painter)
-                    {
                         painters.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
-                    }
+
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Carpenter)
-                    {
                         carpenters.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
-                    }
+
                     else if (serviceProvider.ServiceTypeId == (int)ServiceTypes.Tiler)
-                    {
                         tilers.Add(new {id = serviceProvider.Id, name = serviceProvider.Name});
-                    }
                 }
                 return Ok(new {masterMasons, electricians, labours, plumbers, painters, carpenters, tilers});
             }
             catch (Exception ex)
             {
-                LogException("GetServiceProviders", ex);
+                _logger.LogError(ex, "API action {Action} failed.", nameof(GetServiceProviders));
                 throw;
             }
             finally
@@ -567,7 +545,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             catch (Exception ex)
             {
-                LogException("UpdateScopeStatus", ex);
+                _logger.LogError(ex, "API action {Action} failed.", nameof(UpdateScopeStatus));
                 throw;
             }
             finally
@@ -576,7 +554,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
         }
 
-        private async Task SendSiteAddEmail(Site site, SiteAPIDTO siteApiDto, string addedByName)
+        private async Task SiteAddedNotification(Site site, SiteAPIDTO siteApiDto, string addedByName)
         {
             try
             {
@@ -634,7 +612,7 @@ namespace ConstructEase.WebApp.APIControllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Email: New Site Notification | Failed | Site ID: {SiteId}", site.Id);
+                _logger.LogError(ex, "API action {Action} failed.", nameof(SiteAddedNotification));
             }
         }
 
@@ -644,7 +622,7 @@ namespace ConstructEase.WebApp.APIControllers
                 return false;
 
             List<SiteUpdateChange> changes = new();
-            List<ScopeSaveItem> newScopes = siteApiDto.SelectedScopes ?? new List<ScopeSaveItem>();
+            List<ScopeSaveItem> newScopes = siteApiDto.SelectedScopes ?? new();
 
             // Check site status.
             if (oldSite.SiteStatusId != siteApiDto.SiteStatusId)
@@ -698,9 +676,7 @@ namespace ConstructEase.WebApp.APIControllers
                         break;
                     }
                 }
-
-                string scopeName =
-                    oldScope.ScopeName ?? $"Scope #{oldScope.SiteScopeId}";
+                string scopeName = oldScope.ScopeName ?? $"Scope #{oldScope.SiteScopeId}";
 
                 if (matchingScope == null)
                 {
@@ -808,12 +784,6 @@ namespace ConstructEase.WebApp.APIControllers
 
                 _addressRepository.InsertOrUpdateAddress(address);
             }
-        }
-
-        private void LogException(string actionName, Exception ex)
-        {
-            _logger.LogError(ex, "\nError: API Action {Action} failed | Exception: {ExceptionType}: {ExceptionMessage}",
-                             actionName, ex.GetType().Name, ex.Message);
         }
     }
 

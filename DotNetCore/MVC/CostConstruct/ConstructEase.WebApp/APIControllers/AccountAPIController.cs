@@ -15,8 +15,7 @@ namespace ConstructEase.WebApp.APIControllers
         private readonly IMapper _imapper;
         private readonly ILogger<AccountAPIController> _logger;
 
-        public AccountAPIController(IUserRepository userRepository,
-                                    ILogger<AccountAPIController> logger)
+        public AccountAPIController(IUserRepository userRepository, ILogger<AccountAPIController> logger)
         {
             _userRepository = userRepository;
             _logger = logger;
@@ -29,34 +28,44 @@ namespace ConstructEase.WebApp.APIControllers
             _imapper = configuration.CreateMapper();
         }
 
+
         [HttpPost("login")]
         public IActionResult Login(UserVm userVm)
         {
-            Stopwatch actionTimer = Stopwatch.StartNew();
-
-            _logger.LogInformation("\nAPI Action: {Action} | Invoked: {Time}", nameof(Login),
-                    DateTime.Now.ToString("HH:mm:ss.fff"));
+            _logger.LogInformation("API Action: Login | Invoked: {Time}", DateTime.Now.ToString("HH:mm:ss.fff"));
 
             try
             {
-                Stopwatch methodTimer = Stopwatch.StartNew();
-
+                if (userVm == null ||string.IsNullOrWhiteSpace(userVm.Email) 
+                    || string.IsNullOrWhiteSpace(userVm.Password))
+                {
+                    return BadRequest("Email and password are required.");
+                }
                 User user = _userRepository.GetUserDetailByEmail(userVm.Email);
 
-                methodTimer.Stop();
+                if (user == null)
+                {
+                    return Unauthorized("Invalid Email Or Password.");
+                }
 
-                _logger.LogInformation("\nMethod: {Method} | Time: {Time} ms",
-                    nameof(IUserRepository.GetUserDetailByEmail), methodTimer.ElapsedMilliseconds);
+                if (user.IsLocked)
+                {
+                    return StatusCode(StatusCodes.Status423Locked, "Your account has been locked. Kindly contact the administrator.");
+                }
 
-                Stopwatch updateTimer = Stopwatch.StartNew();
+                if (user.Password != userVm.Password)
+                {
+                    _userRepository.UpdateOnLoginFailed(userVm.Email);
 
+                    if (user.LoginFailedCount >= 2)
+                    {
+                        _userRepository.UpdateIsLocked(userVm.Email, true);
+
+                        return StatusCode(StatusCodes.Status423Locked, "Your account has been locked. Kindly contact the administrator.");
+                    }
+                    return Unauthorized("Invalid Email Or Password.");
+                }
                 _userRepository.UpdateOnLoginSuccessful(userVm.Email);
-
-                updateTimer.Stop();
-
-                _logger.LogInformation("\nMethod: {Method} | Time: {Time} ms",
-                    nameof(IUserRepository.UpdateOnLoginSuccessful), updateTimer.ElapsedMilliseconds);
-
 
                 return Ok(new UserVm
                 {
@@ -66,17 +75,13 @@ namespace ConstructEase.WebApp.APIControllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
-                    "API Action: {Action} | Failed", nameof(Login));
+                _logger.LogError(ex ,"API Action: {Action} | Failed", nameof(Login));
 
-                return StatusCode(500, "An error occurred while processing login.");
+                return StatusCode(StatusCodes.Status500InternalServerError,"An error occurred while processing login.");
             }
             finally
             {
-                actionTimer.Stop();
-
-                _logger.LogInformation("\nAPI Action: {Action} | Completed | Total Time: {Time} ms", nameof(Login),
-                    actionTimer.ElapsedMilliseconds);
+                _logger.LogInformation("API Action: Login" + DateTime.Now.ToString("HH:mm:ss.fff"));
             }
         }
     }
