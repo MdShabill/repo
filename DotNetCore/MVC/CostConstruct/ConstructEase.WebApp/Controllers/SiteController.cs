@@ -274,7 +274,7 @@ namespace ConstructEase.WebApp.Controllers
                     siteId
                 );
 
-                _addressRepository.InsertOrUpdateAddress(address);
+                _addressRepository.Upsert(address);
             }
             else
             {

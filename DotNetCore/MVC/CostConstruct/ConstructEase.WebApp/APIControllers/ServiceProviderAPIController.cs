@@ -12,40 +12,33 @@ namespace ConstructEase.WebApp.APIControllers
     [ApiController]
     public class ServiceProviderAPIController : ControllerBase
     {
-        private readonly IServiceProviderRepository _serviceProviderRepository;
-        private readonly IServiceTypeRepository _serviceTypeRepository;
-        private readonly IAddressRepository _addressRepository;
-        private readonly IAddressTypeRepository _addressTypeRepository;
-        private readonly ICountryRepository _countryRepository;
-        private readonly IDailyAttendanceRepository _dailyAttendanceRepository;
-        private readonly IMapper _imapper;
+        private readonly IServiceProviderRepository     _serviceProviderRepository;
+        private readonly IServiceTypeRepository         _serviceTypeRepository;
+        private readonly IAddressRepository             _addressRepository;
+        private readonly IAddressTypeRepository         _addressTypeRepository;
+        private readonly ICountryRepository             _countryRepository;
+        private readonly IDailyAttendanceRepository     _dailyAttendanceRepository;
+        private readonly IMapper                        _imapper;
 
         public ServiceProviderAPIController(
-            IServiceProviderRepository serviceProviderRepository,
-            IServiceTypeRepository serviceTypeRepository,
-            IAddressRepository addressRepository,
-            IAddressTypeRepository addressTypeRepository,
-            ICountryRepository countryRepository,
-            IDailyAttendanceRepository dailyAttendanceRepository)
+            IServiceProviderRepository      serviceProviderRepository,
+            IServiceTypeRepository          serviceTypeRepository,
+            IAddressRepository              addressRepository,
+            IAddressTypeRepository          addressTypeRepository,
+            ICountryRepository              countryRepository,
+            IDailyAttendanceRepository      dailyAttendanceRepository)
         {
-            _serviceProviderRepository = serviceProviderRepository;
-            _serviceTypeRepository = serviceTypeRepository;
-            _addressRepository = addressRepository;
-            _addressTypeRepository = addressTypeRepository;
-            _countryRepository = countryRepository;
-            _dailyAttendanceRepository = dailyAttendanceRepository;
+            _serviceProviderRepository    = serviceProviderRepository;
+            _serviceTypeRepository        = serviceTypeRepository;
+            _addressRepository            = addressRepository;
+            _addressTypeRepository        = addressTypeRepository;
+            _countryRepository            = countryRepository;
+            _dailyAttendanceRepository    = dailyAttendanceRepository;
 
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<
-                    ServiceProviderVm,
-                    ConstructionApplication.Core.DataModels.ServiceProvider
-                >();
-
-                cfg.CreateMap<
-                    ConstructionApplication.Core.DataModels.ServiceProvider,
-                    ServiceProviderVm
-                >();
+                cfg.CreateMap<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProvider>();
+                cfg.CreateMap<ConstructionApplication.Core.DataModels.ServiceProvider,ServiceProviderVm>();
             });
 
             _imapper = config.CreateMapper();
@@ -54,8 +47,10 @@ namespace ConstructEase.WebApp.APIControllers
         [HttpGet]
         public IActionResult Index(int? serviceTypeId, int? id)
         {
-            List<ConstructionApplication.Core.DataModels.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(serviceTypeId, id);
-            List<ServiceProviderVm> serviceProviderVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.ServiceProvider>, List<ServiceProviderVm>>(serviceProviders);
+            List<ConstructionApplication.Core.DataModels.ServiceProvider> serviceProviders = 
+            _serviceProviderRepository.GetAll(serviceTypeId, id);
+            var serviceProviderVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.ServiceProvider>, 
+            List<ServiceProviderVm>>(serviceProviders);
             return Ok(new
             {
                 items = serviceProviderVm,
@@ -70,7 +65,7 @@ namespace ConstructEase.WebApp.APIControllers
             if (serviceProviders.Count == 0)
                 return NotFound(new { message = "Service Provider not found" });
 
-            ServiceProviderVm serviceProviderVm = _imapper.Map<ServiceProviderVm>(serviceProviders.First());
+            var serviceProviderVm = _imapper.Map<ServiceProviderVm>(serviceProviders.First());
             return Ok(serviceProviderVm);
         }
 
@@ -108,13 +103,11 @@ namespace ConstructEase.WebApp.APIControllers
                 _imapper.Map<ServiceProviderVm, ConstructionApplication.Core.DataModels.ServiceProvider>(serviceProviderVm);
 
             int affectedRowCount = _serviceProviderRepository.Update(serviceProvider);
-
             if (affectedRowCount > 0)
             {
                 AddAddressIfPresent(id, serviceProviderVm);
                 return Ok(new { message = "Your Data updated successfully." });
             }
-
             return BadRequest(new { message = "Update failed." });
         }
 
@@ -151,7 +144,7 @@ namespace ConstructEase.WebApp.APIControllers
                     serviceProviderVm.PinCode ?? 0,
                     serviceProviderVm.SiteId
                 );
-                _addressRepository.InsertOrUpdateAddress(address);
+                _addressRepository.Upsert(address);
             }
             else
             {

@@ -12,24 +12,24 @@ namespace ConstructEase.WebApp.APIControllers
     [ApiController]
     public class DailyAttendanceAPIController : ControllerBase
     {
-        private readonly IDailyAttendanceRepository _dailyAttendanceRepository;
-        private readonly ICostMasterRepository _costMasterRepository;
-        private readonly IServiceTypeRepository _serviceTypeRepository;
-        private readonly IServiceProviderRepository _serviceProviderRepository;
-        private readonly IMapper _imapper;
+        private readonly IDailyAttendanceRepository     _dailyAttendanceRepository;
+        private readonly ICostMasterRepository          _costMasterRepository;
+        private readonly IServiceTypeRepository         _serviceTypeRepository;
+        private readonly IServiceProviderRepository     _serviceProviderRepository;
+        private readonly IMapper                        _imapper;
 
         public DailyAttendanceAPIController(
-            IDailyAttendanceRepository dailyAttendanceRepository,
-            ICostMasterRepository costMasterRepository,
-            IServiceTypeRepository serviceTypeRepository,
-            IServiceProviderRepository serviceProviderRepository)
+            IDailyAttendanceRepository      dailyAttendanceRepository,
+            ICostMasterRepository           costMasterRepository,
+            IServiceTypeRepository          serviceTypeRepository,
+            IServiceProviderRepository      serviceProviderRepository)
         {
-            _dailyAttendanceRepository = dailyAttendanceRepository;
-            _costMasterRepository = costMasterRepository;
-            _serviceTypeRepository = serviceTypeRepository;
-            _serviceProviderRepository = serviceProviderRepository;
+            _dailyAttendanceRepository    = dailyAttendanceRepository;
+            _costMasterRepository         = costMasterRepository;
+            _serviceTypeRepository        = serviceTypeRepository;
+            _serviceProviderRepository    = serviceProviderRepository;
 
-            var configuration = new AutoMapper.MapperConfiguration(cfg =>
+            MapperConfiguration configuration = new(cfg =>
             {
                 cfg.CreateMap<DailyAttendanceVm, DailyAttendance>();
                 cfg.CreateMap<DailyAttendance, DailyAttendanceVm>();
@@ -74,15 +74,10 @@ namespace ConstructEase.WebApp.APIControllers
             {
                 CostMaster costMaster = _costMasterRepository.GetActiveCostDetail(serviceTypeId, siteId);
 
-                var serviceProviders = _serviceProviderRepository
-                    .GetAll(serviceTypeId, null)
+                var serviceProviders = _serviceProviderRepository.GetAll(serviceTypeId, null)
                     .Where(c => c.ServiceTypeId == serviceTypeId)
-                    .Select(sp => new
-                    {
-                        serviceProviderId = sp.ServiceProviderId,
-                        serviceProviderName = sp.ServiceProviderName
-                    })
-                    .ToList();
+                    .Select(sp => new{serviceProviderId = sp.ServiceProviderId,serviceProviderName = sp.ServiceProviderName
+                    }).ToList();
 
                 return Ok(new
                 {

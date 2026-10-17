@@ -60,7 +60,7 @@ namespace ConstructEase.WebApp.APIControllers
             _updateEmailService         = updateEmailService;
             _siteDeleteEmailService     = siteDeleteEmailService;
 
-            MapperConfiguration configuration = new MapperConfiguration(cfg =>
+            MapperConfiguration configuration = new(cfg =>
             {
                 cfg.CreateMap<Site, SiteAPIDTO>();
                 cfg.CreateMap<SiteAPIDTO, Site>();
@@ -774,15 +774,14 @@ namespace ConstructEase.WebApp.APIControllers
                 || siteApiDto.CountryId > 0
                 || siteApiDto.PinCode > 0)
             {
-                Address address = new Address(
-                    0,
+                Address address = new(0,
                     siteApiDto.AddressLine1,
                     siteApiDto.AddressTypeId ?? 0,
                     siteApiDto.CountryId ?? 0,
                     siteApiDto.PinCode ?? 0,
                     siteId);
 
-                _addressRepository.InsertOrUpdateAddress(address);
+                _addressRepository.Upsert(address);
             }
         }
     }

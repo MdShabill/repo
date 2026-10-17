@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ConstructEase.WebApp.APIControllers.ApiEndpoints;
 using ConstructEase.WebApp.ViewModels;
 using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Repository.Interfaces;
@@ -12,21 +13,21 @@ namespace ConstructEase.WebApp.APIControllers
     [ApiController]
     public class CostMasterAPIController : ControllerBase
     {
-        private readonly ICostMasterRepository _costMasterRepository;
-        private readonly IServiceTypeRepository _serviceTypeRepository;
-        private readonly ISiteRepository _siteRepository;
-        private readonly IMapper _imapper;
+        private readonly ICostMasterRepository      _costMasterRepository;
+        private readonly IServiceTypeRepository     _serviceTypeRepository;
+        private readonly ISiteRepository            _siteRepository;
+        private readonly IMapper                    _imapper;
 
         public CostMasterAPIController(
-            ICostMasterRepository costMasterRepository,
-            IServiceTypeRepository serviceTypeRepository,
-            ISiteRepository siteRepository)
+             ICostMasterRepository       costMasterRepository,
+             IServiceTypeRepository      serviceTypeRepository,
+             ISiteRepository             siteRepository)
         {
-            _costMasterRepository = costMasterRepository;
-            _serviceTypeRepository = serviceTypeRepository;
-            _siteRepository = siteRepository;
+            _costMasterRepository      = costMasterRepository;
+            _serviceTypeRepository     = serviceTypeRepository;
+            _siteRepository            = siteRepository;
 
-            var configuration = new MapperConfiguration(cfg =>
+            MapperConfiguration configuration = new(cfg =>
             {
                 cfg.CreateMap<AddNewCostMasterVm, CostMaster>();
                 cfg.CreateMap<CostMaster, CostMasterVm>();
@@ -36,21 +37,9 @@ namespace ConstructEase.WebApp.APIControllers
             _imapper = configuration.CreateMapper();
         }
 
-        // Site ID is sent from React as a header or query param since there's
-        // no server-side session in a stateless API. We read it from the
-        // "X-Site-Id" header set by the React axios interceptor.
-        private int GetSiteId()
-        {
-            if (Request.Headers.TryGetValue("X-Site-Id", out var siteIdHeader)
-                && int.TryParse(siteIdHeader, out var siteId))
-            {
-                return siteId;
-            }
-            return 0;
-        }
-
+        
         // GET /api/CostMasterAPI?serviceTypeId=3
-        [HttpGet]
+        [HttpGet(CostMasterAPIEnpoints.Index)]
         public IActionResult Index([FromQuery] int? serviceTypeId)
         {
             int siteId = GetSiteId();
@@ -79,7 +68,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         // GET /api/CostMasterAPI/GetActiveCost?serviceTypeId=3
-        [HttpGet("GetActiveCost")]
+        [HttpGet(CostMasterAPIEnpoints.GetActiveCost)]
         public IActionResult GetActiveCost(int serviceTypeId)
         {
             int siteId = GetSiteId();
@@ -99,7 +88,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         // GET /api/CostMasterAPI/5
-        [HttpGet("{id}")]
+        [HttpGet(CostMasterAPIEnpoints.GetById)]
         public IActionResult GetById(int id)
         {
             int siteId = GetSiteId();
@@ -115,7 +104,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         // POST /api/CostMasterAPI
-        [HttpPost]
+        [HttpPost(CostMasterAPIEnpoints.Add)]
         public IActionResult Add([FromBody] AddNewCostMasterVm costMasterVm)
         {
             int siteId = GetSiteId();
@@ -131,7 +120,7 @@ namespace ConstructEase.WebApp.APIControllers
 
             costMasterVm.SiteId = siteId;
 
-            CostMaster costMaster = _imapper.Map<AddNewCostMasterVm, CostMaster>(costMasterVm);
+            var costMaster = _imapper.Map<AddNewCostMasterVm, CostMaster>(costMasterVm);
             int affectedRowCount = _costMasterRepository.Create(costMaster);
 
             if (affectedRowCount > 0)
@@ -141,7 +130,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         // PUT /api/CostMasterAPI/5
-        [HttpPut("{id}")]
+        [HttpPut(CostMasterAPIEnpoints.Update)]
         public IActionResult Update(int id, [FromBody] AddNewCostMasterVm costMasterVm)
         {
             int siteId = GetSiteId();
@@ -158,7 +147,7 @@ namespace ConstructEase.WebApp.APIControllers
             costMasterVm.Id = id;
             costMasterVm.SiteId = siteId;
 
-            CostMaster costMaster = _imapper.Map<AddNewCostMasterVm, CostMaster>(costMasterVm);
+            var costMaster = _imapper.Map<AddNewCostMasterVm, CostMaster>(costMasterVm);
             int affectedRowCount = _costMasterRepository.Update(costMaster);
 
             if (affectedRowCount > 0)
@@ -168,7 +157,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         // DELETE /api/CostMasterAPI/5
-        [HttpDelete("{id}")]
+        [HttpDelete(CostMasterAPIEnpoints.Delete)]
         public IActionResult Delete(int id)
         {
             int siteId = GetSiteId();
@@ -177,6 +166,19 @@ namespace ConstructEase.WebApp.APIControllers
 
             _costMasterRepository.Delete(id, siteId);
             return Ok(new { message = "Your Data Has Been Deleted successfully." });
+        }
+
+        // Site ID is sent from React as a header or query param since there's
+        // no server-side session in a stateless API. We read it from the
+        // "X-Site-Id" header set by the React axios interceptor.
+        private int GetSiteId()
+        {
+            if (Request.Headers.TryGetValue("X-Site-Id", out var siteIdHeader)
+                && int.TryParse(siteIdHeader, out var siteId))
+            {
+                return siteId;
+            }
+            return 0;
         }
 
         private string ValidationDetail(AddNewCostMasterVm costMasterVm)

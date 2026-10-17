@@ -33,7 +33,7 @@ namespace ConstructionApplication.Repository.Dapper
             }
         }
 
-        public void InsertOrUpdateAddress(Address address)
+        public void Upsert(Address address)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {

@@ -240,7 +240,7 @@ namespace ConstructionApplication.Controllers
                     siteVm.PinCode ?? 0,
                     siteId
                 );
-                _addressRepository.InsertOrUpdateAddress(address);
+                _addressRepository.Upsert(address);
             }
             else
             {

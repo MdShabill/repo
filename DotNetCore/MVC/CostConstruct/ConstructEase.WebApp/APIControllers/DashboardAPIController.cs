@@ -1,6 +1,7 @@
 ﻿// Path: ConstructEase.WebApp/APIControllers/DashboardAPIController.cs
 using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using ConstructionApplication.Core.DataModels;
 
 namespace ConstructEase.WebApp.APIControllers
 {
@@ -18,7 +19,7 @@ namespace ConstructEase.WebApp.APIControllers
         [HttpGet("stats")]
         public IActionResult GetStats([FromQuery] int siteId = 0)
         {
-            var stats = _dashboardRepository.GetStats(siteId);
+            DashboardStats stats = _dashboardRepository.GetStats(siteId);
 
             bool hasSiteInfo = siteId > 0 && stats.SiteName != null;
 
@@ -117,7 +118,7 @@ namespace ConstructEase.WebApp.APIControllers
             if (siteId <= 0)
                 return BadRequest(new { message = "Site ID is required." });
 
-            var items = _dashboardRepository.GetScopeItems(siteId);
+            List<SiteScope> items = _dashboardRepository.GetScopeItems(siteId);
             return Ok(items);
         }
 
@@ -133,7 +134,7 @@ namespace ConstructEase.WebApp.APIControllers
             if (year < 2000 || year > DateTime.Now.Year)
                 return BadRequest(new { message = "Invalid year." });
 
-            var result = _dashboardRepository.GetMonthlyActivity(siteId, month, year);
+            MonthlyActivityStats result = _dashboardRepository.GetMonthlyActivity(siteId, month, year);
 
             return Ok(new
             {

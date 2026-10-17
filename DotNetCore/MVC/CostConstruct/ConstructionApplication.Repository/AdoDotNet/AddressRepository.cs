@@ -47,7 +47,7 @@ namespace ConstructionApplication.Repository.AdoDotNet
             return null;
         }
 
-        public void InsertOrUpdateAddress(Address address)
+        public void Upsert(Address address)
         {
             using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {

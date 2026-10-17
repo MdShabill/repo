@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ConstructEase.WebApp.APIControllers.ApiEndpoints;
 using ConstructEase.WebApp.ViewModels;
 using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Repository.Interfaces;
@@ -29,7 +30,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
 
-        [HttpPost("login")]
+        [HttpPost(AccountAPIEndpoints.Login)]
         public IActionResult Login(UserVm userVm)
         {
             _logger.LogInformation("API Action: Login | Invoked: {Time}", DateTime.Now.ToString("HH:mm:ss.fff"));

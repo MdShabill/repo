@@ -12,22 +12,22 @@ namespace ConstructEase.WebApp.APIControllers
     [ApiController]
     public class MaterialPurchaseAPIController : ControllerBase
     {
-        private readonly IMaterialPurchaseRepository _materialPurchaseRepository;
-        private readonly ISupplierRepository _supplierRepository;
-        private readonly IMaterialRepository _materialRepository;
-        private readonly IBrandRepository _brandRepository;
-        private readonly IMapper _imapper;
+        private readonly IMaterialPurchaseRepository    _materialPurchaseRepository;
+        private readonly ISupplierRepository            _supplierRepository;
+        private readonly IMaterialRepository            _materialRepository;
+        private readonly IBrandRepository               _brandRepository;
+        private readonly IMapper                        _imapper;
 
         public MaterialPurchaseAPIController(
-            IMaterialPurchaseRepository materialPurchaseRepository,
-            ISupplierRepository supplierRepository,
-            IMaterialRepository materialRepository,
-            IBrandRepository brandRepository)
+            IMaterialPurchaseRepository     materialPurchaseRepository,
+            ISupplierRepository             supplierRepository,
+            IMaterialRepository             materialRepository,
+            IBrandRepository                brandRepository)
         {
-            _materialPurchaseRepository = materialPurchaseRepository;
-            _supplierRepository = supplierRepository;
-            _materialRepository = materialRepository;
-            _brandRepository = brandRepository;
+            _materialPurchaseRepository   = materialPurchaseRepository;
+            _supplierRepository           = supplierRepository;
+            _materialRepository           = materialRepository;
+            _brandRepository              = brandRepository;
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -46,19 +46,14 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         [HttpGet]
-        public IActionResult Index(
-            [FromQuery] DateTime? dateFrom,
-            [FromQuery] DateTime? dateTo,
-            [FromQuery] int? materialId,
-            [FromQuery] int? supplierId,
-            [FromQuery] int? brandId)
+        public IActionResult Index([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo,
+               [FromQuery] int? materialId, [FromQuery] int? supplierId, [FromQuery] int? brandId)
         {
             int siteId = GetSiteId();
             if (siteId <= 0)
                 return BadRequest(new { message = "No site selected." });
 
-            var list = _materialPurchaseRepository
-                .GetAll(siteId, dateFrom, dateTo, materialId, supplierId, brandId);
+            List<MaterialPurchase> list = _materialPurchaseRepository .GetAll(siteId, dateFrom, dateTo, materialId, supplierId, brandId);
 
             var result = _imapper.Map<List<MaterialPurchaseVm>>(list);
 
@@ -74,14 +69,11 @@ namespace ConstructEase.WebApp.APIControllers
         {
             return Ok(new
             {
-                suppliers = _supplierRepository.GetAll()
-                    .Select(s => new { id = s.Id, name = s.Name }),
+                suppliers = _supplierRepository.GetAll().Select(suppliers => new { id = suppliers.Id, name = suppliers.Name }),
 
-                materials = _materialRepository.GetAll()
-                    .Select(m => new { id = m.Id, name = m.Name }),
+                materials = _materialRepository.GetAll().Select(materials => new { id = materials.Id, name = materials.Name }),
 
-                brands = _brandRepository.GetAll()
-                    .Select(b => new { id = b.Id, name = b.Name })
+                brands = _brandRepository.GetAll().Select(brands => new { id = brands.Id, name = brands.Name })
             });
         }
 

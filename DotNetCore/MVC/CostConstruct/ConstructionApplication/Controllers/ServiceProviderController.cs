@@ -283,7 +283,7 @@ namespace ConstructionApplication.Controllers
                     serviceProviderVm.PinCode ?? 0,
                     serviceProviderVm.SiteId
                 );
-                _addressRepository.InsertOrUpdateAddress(address);
+                _addressRepository.Upsert(address);
             }
             else
             {
