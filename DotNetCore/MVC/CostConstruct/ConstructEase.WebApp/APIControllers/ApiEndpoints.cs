@@ -4,7 +4,7 @@
     {
         public class CostMasterAPIEnpoints
         {
-            public const string Index = "Index";
+            public const string Index = "";
             public const string GetActiveCost = "GetActiveCost";
             public const string GetById = "{id:int}";
             public const string Add = "";

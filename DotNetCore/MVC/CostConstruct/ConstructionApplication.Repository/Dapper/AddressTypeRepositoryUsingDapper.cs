@@ -22,16 +22,9 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = "Select Id, Name From AddressTypes";
-                try
-                {
-                    List<AddressType> result = connection.Query<AddressType>(sqlQuery).ToList();
-
-                    return result;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                
+                List<AddressType> result = connection.Query<AddressType>(sqlQuery).ToList();
+                return result;
             }
         }
     }

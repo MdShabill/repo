@@ -40,7 +40,7 @@ namespace ConstructEase.WebApp.APIControllers
         
         // GET /api/CostMasterAPI?serviceTypeId=3
         [HttpGet(CostMasterAPIEnpoints.Index)]
-        public IActionResult Index([FromQuery] int? serviceTypeId)
+        public IActionResult Index(int? serviceTypeId)
         {
             int siteId = GetSiteId();
             if (siteId <= 0)
@@ -190,9 +190,8 @@ namespace ConstructEase.WebApp.APIControllers
                 return "Page not submitted, please enter correct Inputs";
             }
 
-            if (costMasterVm.Cost == null ||
-                costMasterVm.Cost <= 0 ||
-                !Regex.IsMatch(costMasterVm.Cost.Value.ToString("0.##"), @"^\d+(\.\d{1,2})?$"))
+            if (costMasterVm.Cost == null || costMasterVm.Cost <= 0 
+                || !Regex.IsMatch(costMasterVm.Cost.Value.ToString("0.##"), @"^\d+(\.\d{1,2})?$"))
             {
                 return "Cost must be a positive number with up to 2 decimal places and cannot contain alphabets or special characters.";
             }

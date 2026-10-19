@@ -46,8 +46,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         [HttpGet]
-        public IActionResult Index([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo,
-               [FromQuery] int? materialId, [FromQuery] int? supplierId, [FromQuery] int? brandId)
+        public IActionResult Index(DateTime? dateFrom, DateTime? dateTo, int? materialId, int? supplierId, int? brandId)
         {
             int siteId = GetSiteId();
             if (siteId <= 0)
@@ -57,11 +56,7 @@ namespace ConstructEase.WebApp.APIControllers
 
             var result = _imapper.Map<List<MaterialPurchaseVm>>(list);
 
-            return Ok(new
-            {
-                items = result,
-                totalCount = result.Count
-            });
+            return Ok(new {items = result, totalCount = result.Count});
         }
 
         [HttpGet("dropdown-data")]
@@ -78,7 +73,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         [HttpGet("material-info")]
-        public IActionResult GetMaterialInfo([FromQuery] int materialId)
+        public IActionResult GetMaterialInfo(int materialId)
         {
             if (materialId <= 0)
                 return BadRequest(new { message = "Invalid material id" });
@@ -128,17 +123,13 @@ namespace ConstructEase.WebApp.APIControllers
         private string Validate(MaterialPurchaseVm vm)
         {
             if (vm.MaterialId <= 0 || vm.SupplierId <= 0 || vm.BrandId <= 0
-                || vm.Quantity <= 0
-                || string.IsNullOrEmpty(vm.UnitOfMeasure)
-                || vm.Date == default
-                || vm.Date > DateTime.Now
-                || vm.MaterialCost <= 0
-                || vm.DeliveryCharge < 0)
+                || vm.Quantity <= 0 || string.IsNullOrEmpty(vm.UnitOfMeasure)
+                || vm.Date == default || vm.Date > DateTime.Now
+                || vm.MaterialCost <= 0 || vm.DeliveryCharge < 0)
                 return "Please provide valid input for all required fields.";
 
             if (string.IsNullOrEmpty(vm.PhoneNumber)
-                || vm.PhoneNumber.Length != 10
-                || !Regex.IsMatch(vm.PhoneNumber, @"^\d{10}$"))
+                || vm.PhoneNumber.Length != 10 || !Regex.IsMatch(vm.PhoneNumber, @"^\d{10}$"))
                 return "Supplier Phone Number must be numeric and exactly 10 digits long.";
 
             if (!Regex.IsMatch(vm.Quantity.ToString(), @"^\d+$"))

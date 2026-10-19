@@ -153,8 +153,7 @@ namespace ConstructionApplication.Repository.Dapper
                         WHERE  MONTH(Date) = @Month
                           AND  YEAR(Date)  = @Year
                           AND  (@SiteId = 0 OR SiteId = @SiteId)
-                    ) AS MonthlyAttendance
-            ";
+                    ) AS MonthlyAttendance";
 
             return connection.QuerySingleOrDefault<MonthlyActivityStats>(
                 sql, new { SiteId = siteId, Month = month, Year = year }

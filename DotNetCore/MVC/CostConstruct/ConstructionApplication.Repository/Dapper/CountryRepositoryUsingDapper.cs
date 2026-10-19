@@ -23,15 +23,9 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string sqlQuery = "Select Id, Name From Countries";
-                try
-                {
-                    List<Country> result = connection.Query<Country>(sqlQuery).ToList();
-                    return result;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                
+                List<Country> result = connection.Query<Country>(sqlQuery).ToList();
+                return result;
             }
         }
     }

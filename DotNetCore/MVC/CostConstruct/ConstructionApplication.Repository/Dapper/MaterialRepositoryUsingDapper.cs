@@ -30,8 +30,7 @@ namespace ConstructionApplication.Repository.Dapper
             {
                 string sqlQuery = @"SELECT 
                         Id, UnitOfMeasure, UnitPrice 
-                        FROM 
-                            Materials
+                        FROM Materials
                         WHERE Id = @id";
 
                 return connection.QueryFirstOrDefault<Material>(sqlQuery, new { id = Id }) ?? new Material();

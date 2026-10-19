@@ -18,15 +18,9 @@ namespace ConstructionApplication.Repository.Dapper
         public List<SiteScopeMaster> GetAll()
         {
             using var conn = new SqlConnection(_connectionString);
-            try
-            {
-                var result = conn.Query<SiteScopeMaster>("SELECT Id, ScopeName FROM SiteScopeMaster ORDER BY Id").ToList();
-                return result;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            var result = conn.Query<SiteScopeMaster>("SELECT Id, ScopeName FROM SiteScopeMaster ORDER BY Id").ToList();
+            return result;
         }
     }
 }

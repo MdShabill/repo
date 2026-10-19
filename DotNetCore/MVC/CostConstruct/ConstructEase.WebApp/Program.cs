@@ -1,11 +1,7 @@
 using Serilog;
 using ConstructEase.WebApp.Helpers;
-using ConstructionApplication.Repository.AdoDotNet;
-using ConstructionApplication.Repository.AdoDotNetUsingSp;
-using ConstructionApplication.Repository.Dapper;
-using ConstructionApplication.Repository.DapperUsingSp;
-using ConstructionApplication.Repository.Interfaces;
 using ConstructEase.WebApp.Services;
+using ConstructEase.WebApp.ExceptionHandling;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -105,16 +101,17 @@ try
         repositoryRegistration.RegisterDapperUsingSpRepositories(builder.Services, CostConstructDBConnectionString);
     }
 
+    // Global exception handling
+    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+    builder.Services.AddProblemDetails();
+
     WebApplication app = builder.Build();
 
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
+    app.UseExceptionHandler();
+
+    if (!app.Environment.IsDevelopment())
     {
-        app.UseDeveloperExceptionPage();
-    }
-    else
-    {
-        app.UseExceptionHandler("/Home/Error");
         app.UseHsts();
     }
 
@@ -132,7 +129,9 @@ try
 
     app.MapControllers();
 
-    app.MapControllerRoute(name: "default", pattern: "{controller=Account}/{action=Login}/{id?}");
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Account}/{action=Login}/{id?}");
 
     app.Run();
 }

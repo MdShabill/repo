@@ -51,11 +51,7 @@ namespace ConstructEase.WebApp.APIControllers
             _serviceProviderRepository.GetAll(serviceTypeId, id);
             var serviceProviderVm = _imapper.Map<List<ConstructionApplication.Core.DataModels.ServiceProvider>, 
             List<ServiceProviderVm>>(serviceProviders);
-            return Ok(new
-            {
-                items = serviceProviderVm,
-                totalCount = serviceProviderVm.Count
-            });
+            return Ok(new {items = serviceProviderVm, totalCount = serviceProviderVm.Count});
         }
 
         [HttpGet("{id}")]
@@ -147,9 +143,7 @@ namespace ConstructEase.WebApp.APIControllers
                 _addressRepository.Upsert(address);
             }
             else
-            {
                 _addressRepository.Delete(serviceProviderId, null);
-            }
         }
 
         private string Validate(ServiceProviderVm serviceProviderVm)

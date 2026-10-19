@@ -168,10 +168,6 @@ namespace ConstructionApplication.Repository.Dapper
 
                 using (var transaction = db.BeginTransaction())
                 {
-                    Stopwatch dbTimer = Stopwatch.StartNew();
-
-                    try
-                    {
                         db.Execute("DELETE FROM Addresses WHERE SiteId = @SiteId", new { SiteId = siteId }, transaction);
 
                         db.Execute("DELETE FROM SiteServiceProviders WHERE SiteId = @SiteId", new { SiteId = siteId }, transaction);
@@ -179,12 +175,7 @@ namespace ConstructionApplication.Repository.Dapper
                         db.Execute("DELETE FROM Sites WHERE Id = @Id", new { Id = siteId }, transaction);
 
                         transaction.Commit();
-                    }
-                    catch (Exception)
-                    {
                         transaction.Rollback();
-                        throw;
-                    }
                 }
             }
         }
@@ -213,8 +204,6 @@ namespace ConstructionApplication.Repository.Dapper
 
                 using (var transaction = db.BeginTransaction())
                 {
-                    try
-                    {
                         string deleteQuery = @"DELETE FROM SiteServiceProviders
                                                WHERE SiteId = @SiteId
                                                AND ServiceTypeId = @ServiceTypeId";
@@ -231,12 +220,7 @@ namespace ConstructionApplication.Repository.Dapper
                             db.Execute(insertQuery, new {SiteId = siteId, ServiceProviderId = providerId, ServiceTypeId = (int)serviceType},transaction);
                         }
                         transaction.Commit();
-                    }
-                    catch
-                    {
                         transaction.Rollback();
-                        throw;
-                    }
                 }
             }
         }

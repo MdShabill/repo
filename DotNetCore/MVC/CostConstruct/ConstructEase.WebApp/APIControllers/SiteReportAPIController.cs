@@ -19,64 +19,17 @@ namespace ConstructEase.WebApp.Controllers
         [HttpPost("generate-pdf")]
         public async Task<IActionResult> GeneratePdf([FromBody] GeneratePdfRequest request)
         {
-            if (request == null ||
-                string.IsNullOrWhiteSpace(request.Html))
-            {
-                return BadRequest(
-                    "HTML content is required."
-                );
-            }
+            if (request == null ||string.IsNullOrWhiteSpace(request.Html))
+                return BadRequest("HTML content is required.");
 
-            try
-            {
-                var pdfBytes =
-                    await _pdfService.GeneratePdfAsync(
-                        request.Html
-                    );
+            var pdfBytes =await _pdfService.GeneratePdfAsync(request.Html);
 
-                var fileName =
-                    string.IsNullOrWhiteSpace(
-                        request.FileName)
-                        ? "site-report.pdf"
-                        : request.FileName;
+            var fileName =string.IsNullOrWhiteSpace(request.FileName) ? "site-report.pdf": request.FileName;
 
-                if (!fileName.EndsWith(
-                        ".pdf",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    fileName += ".pdf";
-                }
+            if (!fileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                fileName += ".pdf";
 
-                return File(
-                    pdfBytes,
-                    "application/pdf",
-                    fileName
-                );
-            }
-            catch (PlaywrightException ex)
-            {
-                return StatusCode(
-                    500,
-                    new
-                    {
-                        message =
-                            "Playwright PDF generation failed.",
-                        error = ex.Message
-                    }
-                );
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(
-                    500,
-                    new
-                    {
-                        message =
-                            "PDF generation failed.",
-                        error = ex.Message
-                    }
-                );
-            }
-        }
+            return File(pdfBytes, "application/pdf" ,fileName);
+       }
     }
 }

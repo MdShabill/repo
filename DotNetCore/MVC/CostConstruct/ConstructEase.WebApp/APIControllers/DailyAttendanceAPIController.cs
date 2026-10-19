@@ -76,8 +76,8 @@ namespace ConstructEase.WebApp.APIControllers
 
                 var serviceProviders = _serviceProviderRepository.GetAll(serviceTypeId, null)
                     .Where(c => c.ServiceTypeId == serviceTypeId)
-                    .Select(sp => new{serviceProviderId = sp.ServiceProviderId,serviceProviderName = sp.ServiceProviderName
-                    }).ToList();
+                    .Select(sp => new{serviceProviderId = sp.ServiceProviderId,
+                                      serviceProviderName = sp.ServiceProviderName}).ToList();
 
                 return Ok(new
                 {

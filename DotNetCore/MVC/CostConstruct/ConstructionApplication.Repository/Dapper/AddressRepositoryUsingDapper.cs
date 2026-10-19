@@ -21,15 +21,9 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 string query = @"SELECT TOP 1 * FROM Addresses WHERE SiteId = @SiteId";
-                try
-                {
-                    var result = connection.QueryFirstOrDefault<Address>(query, new { SiteId = siteId });
-                    return result;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                
+                var result = connection.QueryFirstOrDefault<Address>(query, new { SiteId = siteId });
+                return result;
             }
         }
 
@@ -37,64 +31,39 @@ namespace ConstructionApplication.Repository.Dapper
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                try
+                bool isServiceProvider = address.ServiceProviderId > 0;
+                bool isSite = address.SiteId > 0;
+
+                string checkQuery = @"SELECT COUNT(*) FROM Addresses 
+                                      WHERE " + (isServiceProvider? "ServiceProviderId = @Id" : "SiteId = @Id");
+                int addressCount;
+                addressCount = connection.ExecuteScalar<int>(checkQuery,
+                      new{Id = isServiceProvider ? address.ServiceProviderId : address.SiteId});
+                
+
+                if (addressCount > 0)
                 {
-                    bool isServiceProvider = address.ServiceProviderId > 0;
-                    bool isSite = address.SiteId > 0;
-
-                    string checkQuery = @"SELECT COUNT(*) FROM Addresses 
-                                          WHERE " + (isServiceProvider? "ServiceProviderId = @Id" : "SiteId = @Id");
-                    int addressCount;
-                    try
-                    {
-                        addressCount = connection.ExecuteScalar<int>(checkQuery,
-                            new{Id = isServiceProvider ? address.ServiceProviderId : address.SiteId});
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-
-                    if (addressCount > 0)
-                    {
-                        string updateQuery = @"UPDATE Addresses SET 
-                               AddressLine1 = @AddressLine1, AddressTypeId = @AddressTypeId,
-                               CountryId = @CountryId, PinCode = @PinCode
-                               WHERE " + (isServiceProvider ? "ServiceProviderId = @Id" : "SiteId = @Id"
-                        );
-                        try
-                        {
-                            connection.Execute(updateQuery, new{address.AddressLine1, address.AddressTypeId,
-                                               address.CountryId, address.PinCode, Id = isServiceProvider 
-                                               ? address.ServiceProviderId : address.SiteId});
-                        }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
-                    }
-                    else
-                    {
-                        string insertQuery = @"
-                               INSERT INTO Addresses 
-                                   (ServiceProviderId, SiteId, AddressLine1, AddressTypeId, CountryId, PinCode)
-                               VALUES 
-                                   (@ServiceProviderId, @SiteId, @AddressLine1, @AddressTypeId, @CountryId, @PinCode)";
-                        try
-                        {
-                            connection.Execute(insertQuery, new{ServiceProviderId = isServiceProvider 
-                                ? (int?)address.ServiceProviderId : null, SiteId = isSite ? (int?)address.SiteId : null,
-                                    address.AddressLine1, address.AddressTypeId, address.CountryId, address.PinCode});
-                        }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
-                    }
+                    string updateQuery = @"UPDATE Addresses SET 
+                           AddressLine1 = @AddressLine1, AddressTypeId = @AddressTypeId,
+                           CountryId = @CountryId, PinCode = @PinCode
+                           WHERE " + (isServiceProvider ? "ServiceProviderId = @Id" : "SiteId = @Id"
+                    );
+                    
+                    connection.Execute(updateQuery, new{address.AddressLine1, address.AddressTypeId,
+                                       address.CountryId, address.PinCode, Id = isServiceProvider 
+                                       ? address.ServiceProviderId : address.SiteId});
                 }
-                catch
+                else
                 {
-                    throw;
+                    string insertQuery = @"
+                           INSERT INTO Addresses 
+                               (ServiceProviderId, SiteId, AddressLine1, AddressTypeId, CountryId, PinCode)
+                           VALUES 
+                               (@ServiceProviderId, @SiteId, @AddressLine1, @AddressTypeId, @CountryId, @PinCode)";
+                    
+                     connection.Execute(insertQuery, new{ServiceProviderId = isServiceProvider 
+                         ? (int?)address.ServiceProviderId : null, SiteId = isSite ? (int?)address.SiteId : null,
+                         address.AddressLine1, address.AddressTypeId, address.CountryId, address.PinCode});
                 }
             }
         }

@@ -21,15 +21,9 @@ namespace ConstructionApplication.Repository.Dapper
             using (IDbConnection db = new SqlConnection(_connectionString))
             {
                 string sqlQuery = "SELECT Id, Status FROM SiteStatus";
-                try
-                {
-                    List<SiteStatus> result = db.Query<SiteStatus>(sqlQuery).AsList();
-                    return result;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                
+                List<SiteStatus> result = db.Query<SiteStatus>(sqlQuery).AsList();
+                return result;
             }
         }
     }

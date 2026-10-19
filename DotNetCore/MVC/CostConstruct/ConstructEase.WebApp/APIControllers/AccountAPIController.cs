@@ -35,55 +35,32 @@ namespace ConstructEase.WebApp.APIControllers
         {
             _logger.LogInformation("API Action: Login | Invoked: {Time}", DateTime.Now.ToString("HH:mm:ss.fff"));
 
-            try
+            if (userVm == null ||string.IsNullOrWhiteSpace(userVm.Email) 
+                || string.IsNullOrWhiteSpace(userVm.Password))
+                return BadRequest("Email and password are required.");
+
+            User user = _userRepository.GetUserDetailByEmail(userVm.Email);
+            if (user == null)
+                return Unauthorized("Invalid Email Or Password.");
+
+            if (user.IsLocked)
+                return StatusCode(StatusCodes.Status423Locked, "Your account has been locked. Kindly contact the administrator.");
+
+            if (user.Password != userVm.Password)
             {
-                if (userVm == null ||string.IsNullOrWhiteSpace(userVm.Email) 
-                    || string.IsNullOrWhiteSpace(userVm.Password))
-                {
-                    return BadRequest("Email and password are required.");
-                }
-                User user = _userRepository.GetUserDetailByEmail(userVm.Email);
+                _userRepository.UpdateOnLoginFailed(userVm.Email);
 
-                if (user == null)
+                if (user.LoginFailedCount >= 2)
                 {
-                    return Unauthorized("Invalid Email Or Password.");
-                }
+                    _userRepository.UpdateIsLocked(userVm.Email, true);
 
-                if (user.IsLocked)
-                {
                     return StatusCode(StatusCodes.Status423Locked, "Your account has been locked. Kindly contact the administrator.");
                 }
-
-                if (user.Password != userVm.Password)
-                {
-                    _userRepository.UpdateOnLoginFailed(userVm.Email);
-
-                    if (user.LoginFailedCount >= 2)
-                    {
-                        _userRepository.UpdateIsLocked(userVm.Email, true);
-
-                        return StatusCode(StatusCodes.Status423Locked, "Your account has been locked. Kindly contact the administrator.");
-                    }
-                    return Unauthorized("Invalid Email Or Password.");
-                }
-                _userRepository.UpdateOnLoginSuccessful(userVm.Email);
-
-                return Ok(new UserVm
-                {
-                    FullName = user.Name,
-                    Email = user.Email
-                });
+                return Unauthorized("Invalid Email Or Password.");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex ,"API Action: {Action} | Failed", nameof(Login));
+            _userRepository.UpdateOnLoginSuccessful(userVm.Email);
 
-                return StatusCode(StatusCodes.Status500InternalServerError,"An error occurred while processing login.");
-            }
-            finally
-            {
-                _logger.LogInformation("API Action: Login" + DateTime.Now.ToString("HH:mm:ss.fff"));
-            }
+            return Ok(new UserVm {FullName = user.Name, Email = user.Email});
         }
     }
 }

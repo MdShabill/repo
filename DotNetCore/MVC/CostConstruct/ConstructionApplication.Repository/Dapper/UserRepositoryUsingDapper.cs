@@ -28,16 +28,8 @@ namespace ConstructionApplication.Repository.Dapper
                              WHERE 
                                 Email = @email
                              ORDER BY Id DESC";
-            try
-            {
-                User user = db.QueryFirstOrDefault<User>(query, new { email });
-
-                return user;
-            }
-            catch
-            {
-                throw;
-            }
+            User user = db.QueryFirstOrDefault<User>(query, new { email });
+            return user;
         }
 
         public void UpdateOnLoginSuccessful(string email)
@@ -51,57 +43,37 @@ namespace ConstructionApplication.Repository.Dapper
                           LoginFailedCount = 0
                         WHERE 
                             Email = @email";
-            try
-            {
-                db.Execute(query, new { email });
-            }
-            catch
-            {
-                throw;
-            }
+            
+            db.Execute(query, new { email });
         }
 
         public void UpdateOnLoginFailed(string email)
         {
-            try
+            using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                using (IDbConnection db = new SqlConnection(_connectionString))
-                {
-                    string query = @"
-                             UPDATE Users
-                             SET 
-                                LoginFailedCount = ISNULL(LoginFailedCount, 0) + 1,
-                                LastFailedLoginDate = GETDATE()
-                             WHERE 
-                                Email = @Email";
+                string query = @"
+                         UPDATE Users
+                         SET 
+                            LoginFailedCount = ISNULL(LoginFailedCount, 0) + 1,
+                            LastFailedLoginDate = GETDATE()
+                         WHERE 
+                            Email = @Email";
 
-                    db.Execute(query, new { Email = email });
-                }
-            }
-            catch (Exception)
-            {
-                throw;
+                db.Execute(query, new { Email = email });
             }
         }
 
         public void UpdateIsLocked(string email, bool isLocked)
         {
-            try
+            using (IDbConnection db = new SqlConnection(_connectionString))
             {
-                using (IDbConnection db = new SqlConnection(_connectionString))
-                {
-                    string query = @"
-                            UPDATE Users
-                             SET 
-                                IsLocked = @isLocked
-                             WHERE 
-                                Email = @email";
-                    db.Execute(query, new {email, isLocked});
-                }
-            }
-            catch (Exception)
-            {
-                throw;
+                string query = @"
+                        UPDATE Users
+                         SET 
+                            IsLocked = @isLocked
+                         WHERE 
+                            Email = @email";
+                db.Execute(query, new {email, isLocked});
             }
         }
     }

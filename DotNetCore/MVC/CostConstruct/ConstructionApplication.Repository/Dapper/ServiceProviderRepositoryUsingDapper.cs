@@ -49,10 +49,8 @@ namespace ConstructionApplication.Repository.Dapper
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                string sqlQuery = @" SELECT 
-                                        Id, Name, ServiceTypeId
-                                     FROM 
-                                        ServiceProviders";
+                string sqlQuery = @" SELECT Id, Name, ServiceTypeId
+                                     FROM ServiceProviders";
 
                 return connection.Query<ServiceProviderName>(sqlQuery).ToList();
             }
@@ -82,10 +80,7 @@ namespace ConstructionApplication.Repository.Dapper
                     DELETE FROM ServiceProviders
                     WHERE Id = @ServiceProviderId";
 
-                connection.Execute(
-                    sqlQuery,
-                    new { ServiceProviderId = serviceProviderId }
-                );
+                connection.Execute(sqlQuery, new { ServiceProviderId = serviceProviderId });
             }
         }
 
