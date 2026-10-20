@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
-using ConstructionApplication.Repository.Interfaces;
+using ConstructEase.WebApp.APIControllers.ApiEndpoints;
 using ConstructEase.WebApp.ViewModels;
+using ConstructionApplication.Core.DataModels;
+using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using System.Transactions;
-using ConstructionApplication.Core.DataModels;
 
 namespace ConstructEase.WebApp.APIControllers
 {
@@ -44,7 +45,7 @@ namespace ConstructEase.WebApp.APIControllers
             _imapper = config.CreateMapper();
         }
 
-        [HttpGet]
+        [HttpGet(ServiceProviderAPIEnpoints.Index)]
         public IActionResult Index(int? serviceTypeId, int? id)
         {
             List<ConstructionApplication.Core.DataModels.ServiceProvider> serviceProviders = 
@@ -54,7 +55,7 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(new {items = serviceProviderVm, totalCount = serviceProviderVm.Count});
         }
 
-        [HttpGet("{id}")]
+        [HttpGet(ServiceProviderAPIEnpoints.GetById)]
         public IActionResult GetById(int id)
         {
             List<ConstructionApplication.Core.DataModels.ServiceProvider> serviceProviders = _serviceProviderRepository.GetAll(null, id);
@@ -65,7 +66,7 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(serviceProviderVm);
         }
 
-        [HttpPost]
+        [HttpPost(ServiceProviderAPIEnpoints.Add)]
         public IActionResult Add([FromBody]  ServiceProviderVm serviceProviderVm)
         {
             string error = Validate(serviceProviderVm);
@@ -86,7 +87,7 @@ namespace ConstructEase.WebApp.APIControllers
             return StatusCode(500, new { message = "Failed to insert record" });
         }
 
-        [HttpPut("{id}")]
+        [HttpPut(ServiceProviderAPIEnpoints.Update)]
         public IActionResult Update(int id, [FromBody] ServiceProviderVm serviceProviderVm)
         {
             string error = Validate(serviceProviderVm);
@@ -107,7 +108,7 @@ namespace ConstructEase.WebApp.APIControllers
             return BadRequest(new { message = "Update failed." });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete(ServiceProviderAPIEnpoints.Delete)]
         public IActionResult Delete(int id)
         {
             using var transaction = new TransactionScope();
@@ -123,6 +124,22 @@ namespace ConstructEase.WebApp.APIControllers
             {
                 return StatusCode(500, new { message = ex.Message });
             }
+        }
+
+        [HttpGet(ServiceProviderAPIEnpoints.DropdownData)]
+        public IActionResult GetDropdownData()
+        {
+            return Ok(new
+            {
+                serviceTypes = _serviceTypeRepository.GetAll()
+                    .Select(s => new { id = s.Id, name = s.Name }),
+
+                addressTypes = _addressTypeRepository.GetAll()
+                    .Select(a => new { id = a.Id, name = a.Name }),
+
+                countries = _countryRepository.GetAllCountries()
+                    .Select(c => new { id = c.Id, name = c.Name })
+            });
         }
 
         private void AddAddressIfPresent(int serviceProviderId, ServiceProviderVm serviceProviderVm)
@@ -173,22 +190,6 @@ namespace ConstructEase.WebApp.APIControllers
                 return "Job Category is required.";
 
             return null;
-        }
-
-        [HttpGet("dropdown-data")]
-        public IActionResult GetDropdownData()
-        {
-            return Ok(new
-            {
-                serviceTypes = _serviceTypeRepository.GetAll()
-                    .Select(s => new { id = s.Id, name = s.Name }),
-
-                addressTypes = _addressTypeRepository.GetAll()
-                    .Select(a => new { id = a.Id, name = a.Name }),
-
-                countries = _countryRepository.GetAllCountries()
-                    .Select(c => new { id = c.Id, name = c.Name })
-            });
         }
     }
 }

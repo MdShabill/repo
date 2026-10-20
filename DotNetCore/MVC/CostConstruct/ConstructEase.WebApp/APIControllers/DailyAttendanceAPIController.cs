@@ -1,10 +1,11 @@
 ﻿// Path: ConstructEase.WebApp/APIControllers/DailyAttendanceAPIController.cs
 using AutoMapper;
-using ConstructionApplication.Repository.Interfaces;
+using ConstructEase.WebApp.APIControllers.ApiEndpoints;
 using ConstructEase.WebApp.ViewModels;
+using ConstructionApplication.Core.DataModels;
+using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
-using ConstructionApplication.Core.DataModels;
 
 namespace ConstructEase.WebApp.APIControllers
 {
@@ -37,19 +38,8 @@ namespace ConstructEase.WebApp.APIControllers
             _imapper = configuration.CreateMapper();
         }
 
-        // Site comes from React header (no server session in stateless API)
-        private int GetSiteId()
-        {
-            if (Request.Headers.TryGetValue("X-Site-Id", out var siteIdHeader)
-                && int.TryParse(siteIdHeader, out var siteId))
-            {
-                return siteId;
-            }
-            return 0;
-        }
-
         // GET /api/DailyAttendanceAPI?dateFrom=2023-01-01&dateTo=2023-12-31
-        [HttpGet]
+        [HttpGet(DilyAttendanceAPIEnpoints.Index)]
         public IActionResult Index([FromQuery] DateTime? dateFrom, [FromQuery] DateTime? dateTo)
         {
             int siteId = GetSiteId();
@@ -63,7 +53,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         // GET /api/DailyAttendanceAPI/GetCostByServiceType?serviceTypeId=3
-        [HttpGet("GetCostByServiceType")]
+        [HttpGet(DilyAttendanceAPIEnpoints.GetCostByServiceType)]
         public IActionResult GetCostByServiceType(int serviceTypeId = 0)
         {
             int siteId = GetSiteId();
@@ -79,11 +69,7 @@ namespace ConstructEase.WebApp.APIControllers
                     .Select(sp => new{serviceProviderId = sp.ServiceProviderId,
                                       serviceProviderName = sp.ServiceProviderName}).ToList();
 
-                return Ok(new
-                {
-                    cost = costMaster?.Cost ?? 0,
-                    serviceProviders
-                });
+                return Ok(new {cost = costMaster?.Cost ?? 0, serviceProviders});
             }
 
             return Ok(new { cost = 0, serviceProviders = new List<object>() });
@@ -91,7 +77,7 @@ namespace ConstructEase.WebApp.APIControllers
 
         // GET /api/DailyAttendanceAPI/dropdown-data
         // Mirrors DropDownSelectList() — service types + cost per type for auto-fill
-        [HttpGet("dropdown-data")]
+        [HttpGet(DilyAttendanceAPIEnpoints.GetDropdownData)]
         public IActionResult GetDropdownData()
         {
             int siteId = GetSiteId();
@@ -115,7 +101,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
         // POST /api/DailyAttendanceAPI
-        [HttpPost]
+        [HttpPost(DilyAttendanceAPIEnpoints.Add)]
         public IActionResult Add([FromBody] DailyAttendanceVm dailyAttendanceVm)
         {
             int siteId = GetSiteId();
@@ -161,6 +147,17 @@ namespace ConstructEase.WebApp.APIControllers
                 return "Total Worker must be a valid positive number and cannot contain any special characters or alphabets.";
 
             return null;
+        }
+
+        // Site comes from React header (no server session in stateless API)
+        private int GetSiteId()
+        {
+            if (Request.Headers.TryGetValue("X-Site-Id", out var siteIdHeader)
+                && int.TryParse(siteIdHeader, out var siteId))
+            {
+                return siteId;
+            }
+            return 0;
         }
     }
 }

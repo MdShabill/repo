@@ -1,10 +1,11 @@
 ﻿// Path: ConstructEase.WebApp/APIControllers/MaterialPurchaseAPIController.cs
 using AutoMapper;
-using ConstructionApplication.Repository.Interfaces;
+using ConstructEase.WebApp.APIControllers.ApiEndpoints;
 using ConstructEase.WebApp.ViewModels;
+using ConstructionApplication.Core.DataModels;
+using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
-using ConstructionApplication.Core.DataModels;
 
 namespace ConstructEase.WebApp.APIControllers
 {
@@ -37,15 +38,7 @@ namespace ConstructEase.WebApp.APIControllers
             _imapper = config.CreateMapper();
         }
 
-        private int GetSiteId()
-        {
-            if (Request.Headers.TryGetValue("X-Site-Id", out var val)
-                && int.TryParse(val, out var id))
-                return id;
-            return 0;
-        }
-
-        [HttpGet]
+        [HttpGet(MaterialPurchaseAPIEnpoints.Index)]
         public IActionResult Index(DateTime? dateFrom, DateTime? dateTo, int? materialId, int? supplierId, int? brandId)
         {
             int siteId = GetSiteId();
@@ -59,7 +52,7 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(new {items = result, totalCount = result.Count});
         }
 
-        [HttpGet("dropdown-data")]
+        [HttpGet(MaterialPurchaseAPIEnpoints.DropdownData)]
         public IActionResult GetDropdownData()
         {
             return Ok(new
@@ -72,7 +65,7 @@ namespace ConstructEase.WebApp.APIControllers
             });
         }
 
-        [HttpGet("material-info")]
+        [HttpGet(MaterialPurchaseAPIEnpoints.GetMaterialInfo)]
         public IActionResult GetMaterialInfo(int materialId)
         {
             if (materialId <= 0)
@@ -89,7 +82,7 @@ namespace ConstructEase.WebApp.APIControllers
             });
         }
 
-        [HttpPost]
+        [HttpPost(MaterialPurchaseAPIEnpoints.Add)]
         public IActionResult Add([FromBody] MaterialPurchaseVm vm)
         {
             int siteId = GetSiteId();
@@ -110,7 +103,7 @@ namespace ConstructEase.WebApp.APIControllers
             return StatusCode(500, new { message = "Failed to insert record" });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete(MaterialPurchaseAPIEnpoints.Delete)]
         public IActionResult Delete(int id)
         {
             if (id <= 0)
@@ -139,6 +132,14 @@ namespace ConstructEase.WebApp.APIControllers
                 return "Delivery Charge must be a non-negative decimal value.";
 
             return null;
+        }
+
+        private int GetSiteId()
+        {
+            if (Request.Headers.TryGetValue("X-Site-Id", out var val)
+                && int.TryParse(val, out var id))
+                return id;
+            return 0;
         }
     }
 }

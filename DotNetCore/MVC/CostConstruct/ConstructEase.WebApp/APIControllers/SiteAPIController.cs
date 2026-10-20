@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ConstructEase.WebApp.APIControllers.ApiEndpoints;
 using ConstructEase.WebApp.APIControllers.APIViewModels;
 using ConstructEase.WebApp.Services;
 using ConstructionApplication.Core.DataModels;
@@ -69,7 +70,7 @@ namespace ConstructEase.WebApp.APIControllers
             _imapper = configuration.CreateMapper();
         }
 
-        [HttpGet("GetAllSites")]
+        [HttpGet(SiteAPIEnpoints.GetAllSites)]
         public IActionResult GetAllSites()
         {
             _logger.LogInformation("API Action: GetAllSites | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
@@ -92,7 +93,7 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(siteApiVm);
         }
 
-        [HttpGet("filter")]
+        [HttpGet(SiteAPIEnpoints.FilterSites)]
         public IActionResult FilterSites(string? search, int? statusId, DateTime? fromDate, DateTime? toDate, 
                                          decimal? budgetFrom, decimal? budgetTo)
         {
@@ -118,7 +119,7 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(siteApiVm);
         }
 
-        [HttpGet("select-site")]
+        [HttpGet(SiteAPIEnpoints.SelectSite)]
         public IActionResult SelectSite(int id)
         {
             _logger.LogInformation("API Action: SelectSite | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
@@ -131,7 +132,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
 
-        [HttpPost("add")]
+        [HttpPost(SiteAPIEnpoints.Add)]
         public IActionResult Add(SiteAPIDTO siteApiDto)
         {
             _logger.LogInformation("API Action: Add | Started: {StartedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
@@ -193,7 +194,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
 
-        [HttpGet("edit/{id}")]
+        [HttpGet(SiteAPIEnpoints.Edit)]
         public IActionResult Edit(int id)
         {
             _logger.LogInformation("API Action: Edit | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
@@ -232,7 +233,7 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(siteApiVm);
         }
 
-        [HttpPost("update")]
+        [HttpPost(SiteAPIEnpoints.Update)]
         public async Task<IActionResult> Update([FromBody] SiteAPIDTO siteApiDto)
         {
             _logger.LogInformation("API Action: Update | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
@@ -289,7 +290,7 @@ namespace ConstructEase.WebApp.APIControllers
             });
         }
 
-        [HttpDelete("{siteId}")]
+        [HttpDelete(SiteAPIEnpoints.Delete)]
         public async Task<IActionResult> Delete(int siteId)
         {
             _logger.LogInformation("API Action: Delete | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
@@ -317,7 +318,7 @@ namespace ConstructEase.WebApp.APIControllers
         }
 
 
-        [HttpGet("dropdown-data")]
+        [HttpGet(SiteAPIEnpoints.DropdownData)]
         public IActionResult GetDropdownData()
         {
             _logger.LogInformation("API Action: GetDropdownData | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));
@@ -377,7 +378,7 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(response);
         }
 
-        [HttpGet("service-providers")]
+        [HttpGet(SiteAPIEnpoints.GetServiceProviders)]
         public IActionResult GetServiceProviders()
         {
             _logger.LogInformation("API Action: GetServiceProviders | Invoked: {InvokedAt}",DateTime.Now.ToString("HH:mm:ss.fff"));
@@ -417,7 +418,7 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(new {masterMasons, electricians, labours, plumbers, painters, carpenters, tilers});
         }
 
-        [HttpPatch("scope-status")]
+        [HttpPatch(SiteAPIEnpoints.UpdateScopeStatus)]
         public IActionResult UpdateScopeStatus([FromBody] UpdateScopeStatusDto dto)
         {
             _logger.LogInformation("API Action: UpdateScopeStatus | Invoked: {InvokedAt}", DateTime.Now.ToString("HH:mm:ss.fff"));

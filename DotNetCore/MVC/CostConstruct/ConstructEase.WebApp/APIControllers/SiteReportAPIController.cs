@@ -1,4 +1,5 @@
-﻿using ConstructEase.WebApp.DTOs;
+﻿using ConstructEase.WebApp.APIControllers.ApiEndpoints;
+using ConstructEase.WebApp.DTOs;
 using ConstructEase.WebApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Playwright;
@@ -16,7 +17,7 @@ namespace ConstructEase.WebApp.Controllers
             _pdfService = pdfService;
         }
 
-        [HttpPost("generate-pdf")]
+        [HttpPost(SiteReportAPIEnpoints.GeneratePdf)]
         public async Task<IActionResult> GeneratePdf([FromBody] GeneratePdfRequest request)
         {
             if (request == null ||string.IsNullOrWhiteSpace(request.Html))

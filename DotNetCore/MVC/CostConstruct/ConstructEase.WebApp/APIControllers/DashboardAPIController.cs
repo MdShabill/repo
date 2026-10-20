@@ -1,7 +1,8 @@
 ﻿// Path: ConstructEase.WebApp/APIControllers/DashboardAPIController.cs
+using ConstructEase.WebApp.APIControllers.ApiEndpoints;
+using ConstructionApplication.Core.DataModels;
 using ConstructionApplication.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using ConstructionApplication.Core.DataModels;
 
 namespace ConstructEase.WebApp.APIControllers
 {
@@ -16,7 +17,7 @@ namespace ConstructEase.WebApp.APIControllers
             _dashboardRepository = dashboardRepository;
         }
 
-        [HttpGet("stats")]
+        [HttpGet(DashbordAPIEnpoints.GetStats)]
         public IActionResult GetStats([FromQuery] int siteId = 0)
         {
             DashboardStats stats = _dashboardRepository.GetStats(siteId);
@@ -112,7 +113,7 @@ namespace ConstructEase.WebApp.APIControllers
             });
         }
 
-        [HttpGet("scope-items")]
+        [HttpGet(DashbordAPIEnpoints.GetScopeItems)]
         public IActionResult GetScopeItems([FromQuery] int siteId)
         {
             if (siteId <= 0)
@@ -122,7 +123,7 @@ namespace ConstructEase.WebApp.APIControllers
             return Ok(items);
         }
 
-        [HttpGet("monthly-activity")]
+        [HttpGet(DashbordAPIEnpoints.GetMonthlyActivity)]
         public IActionResult GetMonthlyActivity( int siteId, int month, int year)
         {
             if (siteId <= 0)
