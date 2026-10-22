@@ -40,10 +40,10 @@ try
     builder.Services.AddSession();
 
     // PDF service
-    builder.Services.AddSingleton<ConstructEase.WebApp.Services.SiteReportPdfService>();
+    //builder.Services.AddSingleton<ConstructEase.WebApp.Services.SiteReportPdfService>();
 
-    builder.Services.AddHostedService(sp => sp.GetRequiredService<ConstructEase.WebApp.Services.SiteReportPdfService>()
-    );
+    //builder.Services.AddHostedService(sp => sp.GetRequiredService<ConstructEase.WebApp.Services.SiteReportPdfService>()
+    //);
 
     // Email service
     builder.Services.Configure<EmailSettings>(
@@ -68,16 +68,16 @@ try
                         "https://mango-flower-08e682c00.4.azurestaticapps.net"
                     )
                     .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .WithExposedHeaders(
-                        "X-PDF-Total-Ms",
-                        "X-PDF-Playwright-Ms",
-                        "X-PDF-Chromium-Ms",
-                        "X-PDF-NewPage-Ms",
-                        "X-PDF-SetContent-Ms",
-                        "X-PDF-ExtraWait-Ms",
-                        "X-PDF-PdfAsync-Ms"
-                    );
+                    .AllowAnyMethod();
+                    //.WithExposedHeaders(
+                    //    "X-PDF-Total-Ms",
+                    //    "X-PDF-Playwright-Ms",
+                    //    "X-PDF-Chromium-Ms",
+                    //    "X-PDF-NewPage-Ms",
+                    //    "X-PDF-SetContent-Ms",
+                    //    "X-PDF-ExtraWait-Ms",
+                    //    "X-PDF-PdfAsync-Ms"
+                    //);
             });
     });
 
