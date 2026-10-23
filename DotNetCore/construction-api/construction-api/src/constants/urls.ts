@@ -1,0 +1,83 @@
+//Path: src/constants/urls.ts
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL || "https://localhost:7036/api"
+).replace(/\/$/, "");
+
+// Backend API URLs
+export const API_URLS = {
+  account: {
+    login: `${API_BASE_URL}/AccountAPI/login`,
+  },
+
+  site: {
+    base: `${API_BASE_URL}/SiteAPI`,
+    add: `${API_BASE_URL}/SiteAPI/add`,
+    update: `${API_BASE_URL}/SiteAPI/update`,
+    delete: (id: number) => `${API_BASE_URL}/SiteAPI/${id}`,
+    all: `${API_BASE_URL}/SiteAPI/GetAllSites`,
+    select: (id: number) => `${API_BASE_URL}/SiteAPI/select-site?id=${id}`,
+    edit: (id: number) => `${API_BASE_URL}/SiteAPI/edit/${id}`,
+    dropdown: `${API_BASE_URL}/SiteAPI/dropdown-data`,
+    providers: `${API_BASE_URL}/SiteAPI/service-providers`,
+    filter: `${API_BASE_URL}/SiteAPI/filter`,
+    scopeStatus: `${API_BASE_URL}/SiteAPI/scope-status`,
+  },
+
+  costMaster: {
+    base: `${API_BASE_URL}/CostMasterAPI`,
+    activeCost: `${API_BASE_URL}/CostMasterAPI/GetActiveCost`,
+    byId: (id: number) => `${API_BASE_URL}/CostMasterAPI/${id}`,
+  },
+
+  attendance: {
+    base: `${API_BASE_URL}/DailyAttendanceAPI`,
+    dropdown: `${API_BASE_URL}/DailyAttendanceAPI/dropdown-data`,
+    costByServiceType: `${API_BASE_URL}/DailyAttendanceAPI/GetCostByServiceType`,
+  },
+
+  dashboard: {
+    stats: `${API_BASE_URL}/DashboardAPI/stats`,
+    scopeItems: `${API_BASE_URL}/DashboardAPI/scope-items`,
+    monthlyActivity: `${API_BASE_URL}/DashboardAPI/monthly-activity`,
+  },
+
+  materialPurchase: {
+    base: `${API_BASE_URL}/MaterialPurchaseAPI`,
+    dropdown: `${API_BASE_URL}/MaterialPurchaseAPI/dropdown-data`,
+    materialInfo: `${API_BASE_URL}/MaterialPurchaseAPI/material-info`,
+  },
+
+  serviceProvider: {
+    base: `${API_BASE_URL}/ServiceProviderAPI`,
+    dropdown: `${API_BASE_URL}/ServiceProviderAPI/dropdown-data`,
+  },
+};
+
+// Frontend page routes
+export const APP_ROUTES = {
+  root: "/",
+  login: "/login",
+  home: "/home",
+  sites: "/sites",
+  siteDetail: "/site-detail/:id",
+  siteAdd: "/site-add",
+  siteEdit: "/site-edit/:id",
+  noSiteSelected: "/no-site-selected",
+  costMaster: "/cost-master",
+  costMasterAdd: "/cost-master/add",
+  costMasterEdit: "/cost-master/edit/:id",
+  attendance: "/attendance",
+  attendanceAdd: "/attendance/add",
+  material: "/material",
+  materialAdd: "/material/add",
+  serviceProvider: "/service-provider",
+  serviceProviderAdd: "/service-provider/add",
+  serviceProviderEdit: "/service-provider/edit/:id",
+};
+
+export const APP_PATHS = {
+  siteDetail: (id: number) => `/site-detail/${id}`,
+  siteEdit: (id: number) => `/site-edit/${id}`,
+  costMasterEdit: (id: number) => `/cost-master/edit/${id}`,
+  serviceProviderEdit: (id: number) => `/service-provider/edit/${id}`,
+};

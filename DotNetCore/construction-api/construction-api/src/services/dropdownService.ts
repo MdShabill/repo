@@ -1,8 +1,7 @@
-const DROPDOWN_URL =
-  "https://localhost:7036/api/SiteAPI/dropdown-data";
+import { API_URLS } from "../constants/urls";
 
 export const getDropdownData = async () => {
-  const res = await fetch(DROPDOWN_URL);
+  const res = await fetch(API_URLS.site.dropdown);
   if (!res.ok) throw new Error("Failed to fetch dropdown");
   return res.json();
 };

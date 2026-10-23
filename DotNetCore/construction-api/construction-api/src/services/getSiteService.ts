@@ -1,3 +1,6 @@
+//Path: src/services/getSiteService.ts
+import { API_URLS } from "../constants/urls";
+
 export interface SiteDto {
   id: number;
   name: string;
@@ -10,39 +13,14 @@ export interface SiteDto {
   pinCode?: number;
 }
 
-const API_BASE =
-  "https://localhost:7036/api/SiteAPI";
-
-export const getAllSites =
-async (): Promise<SiteDto[]> => {
-
-  const response =
-    await fetch(
-      `${API_BASE}/GetAllSites`
-    );
-
-  if (!response.ok) {
-    throw new Error(
-      "Failed to fetch sites"
-    );
-  }
-
-  return await response.json();
+export const getAllSites = async (): Promise<SiteDto[]> => {
+  const res = await fetch(API_URLS.site.all);
+  if (!res.ok) throw new Error("Failed to fetch sites");
+  return res.json();
 };
 
-export const getSiteById =
-async (id: number) => {
-
-  const response =
-    await fetch(
-      `${API_BASE}/select-site?id=${id}`
-    );
-
-  if (!response.ok) {
-    throw new Error(
-      "Site not found"
-    );
-  }
-
-  return await response.json();
+export const getSiteById = async (id: number) => {
+  const res = await fetch(API_URLS.site.select(id));
+  if (!res.ok) throw new Error("Site not found");
+  return res.json();
 };

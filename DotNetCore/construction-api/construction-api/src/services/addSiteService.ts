@@ -1,3 +1,5 @@
+import { API_URLS } from "../constants/urls";
+
 export interface SiteCreateDto {
   name: string;
   startedDate: string;
@@ -18,8 +20,7 @@ export interface SiteCreateDto {
   selectedTilerIds: number[];
 }
 
-const ADD_API_URL =
-  "https://localhost:7036/api/SiteAPI/add";
+const ADD_API_URL = API_URLS.site.add;
 
 export const addSite = async (
   site: SiteCreateDto
