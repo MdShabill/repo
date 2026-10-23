@@ -8,18 +8,22 @@ namespace ConstructEase.WebApp.ViewModels
         public int Id { get; set; }
         public int SiteId { get; set; }
 
-        [Required(ErrorMessage = "Please enter Site Name")]
+        //[Required(ErrorMessage = "Please enter Site Name")]
         public string Name { get; set; }
+        public string? ContactName { get; set; }
+        public string? ContactNumber { get; set; }
 
         public DateTime StartedDate { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "Please Select Site Status")]
+        //[Range(1, int.MaxValue, ErrorMessage = "Please Select Site Status")]
         public int SiteStatusId { get; set; }
 
         public string? Status { get; set; }
         public string? Note { get; set; }
 
         public int ServiceProviderId { get; set; }
+        public decimal? ExpectedBudget { get; set; }
+        public DateTime? ExpectedCompletionDate { get; set; }
         public string? DisplayName { get; set; }
         public string? AddressLine1 { get; set; }
         public int? AddressTypeId { get; set; }

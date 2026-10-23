@@ -104,36 +104,81 @@
         }
         <form asp-action="Add" method="post">
 
+
             <div class="row">
 
                 <!-- Created Date -->
                 <div class="col-md-6 mb-3">
-                    <label>Created Date</label>
+                    <label asp-for="StartedDate">Created Date</label>
                     <input asp-for="StartedDate" class="form-control" type="date" />
+                    <span asp-validation-for="StartedDate" class="text-danger"></span>
                 </div>
 
                 <!-- Site Name -->
                 <div class="col-md-6 mb-3">
-                    <label>Site Name</label>
-                    <input asp-for="Name" class="form-control" placeholder="Enter site name" />
+                    <label asp-for="Name">Site Name</label>
+                    <input asp-for="Name" class="form-control"
+                           placeholder="Enter site name" required />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
-                <!-- Status -->
+                <!-- Contact Name: Required by your Azure database -->
                 <div class="col-md-6 mb-3">
-                    <label>Site Status</label>
-                    @Html.DropDownListFor(model => model.SiteStatusId, 
-                        (SelectList)ViewBag.SiteStatus, "-- SELECT STATUS --", new { @class = "form-control" })
+                    <label asp-for="ContactName">Contact Name</label>
+                    <input asp-for="ContactName" class="form-control"
+                           placeholder="Enter contact person name" required />
+                    <span asp-validation-for="ContactName" class="text-danger"></span>
+                </div>
+
+                <!-- Contact Number -->
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ContactNumber">Contact Number</label>
+                    <input asp-for="ContactNumber" class="form-control"
+                           placeholder="Enter contact number" />
+                    <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                </div>
+
+                <!-- Site Status -->
+                <div class="col-md-6 mb-3">
+                    <label asp-for="SiteStatusId">Site Status</label>
+                    @Html.DropDownListFor(
+                    model => model.SiteStatusId,
+                                        (SelectList)ViewBag.SiteStatus,
+                                        "-- SELECT STATUS --",
+                                        new { @class = "form-control" })
                     <span asp-validation-for="SiteStatusId" class="text-danger"></span>
                 </div>
 
                 <!-- Note -->
                 <div class="col-md-6 mb-3">
-                    <label>Note</label>
-                    <input asp-for="Note" class="form-control" placeholder="Enter Note" />
+                    <label asp-for="Note">Note</label>
+                    <input asp-for="Note" class="form-control"
+                           placeholder="Enter note" />
+                    <span asp-validation-for="Note" class="text-danger"></span>
+                </div>
+
+                <!-- Expected Budget -->
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ExpectedBudget">Expected Budget</label>
+                    <input asp-for="ExpectedBudget" class="form-control"
+                           type="number" step="0.01" min="0"
+                           placeholder="Enter expected budget" />
+                    <span asp-validation-for="ExpectedBudget" class="text-danger"></span>
+                </div>
+
+                <!-- Expected Completion Date -->
+                <div class="col-md-6 mb-3">
+                    <label asp-for="ExpectedCompletionDate">
+                        Expected Completion Date
+                    </label>
+                    <input asp-for="ExpectedCompletionDate"
+                           class="form-control" type="date" />
+                    <span asp-validation-for="ExpectedCompletionDate"
+                          class="text-danger"></span>
                 </div>
 
             </div>
+
 
             <!-- Workers Section -->
             <div class="row mt-2">

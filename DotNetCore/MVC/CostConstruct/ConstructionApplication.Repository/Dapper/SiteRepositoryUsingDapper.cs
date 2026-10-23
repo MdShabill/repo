@@ -160,6 +160,7 @@ namespace ConstructionApplication.Repository.Dapper
             }
         }
 
+
         public void Delete(int siteId)
         {
             using (IDbConnection db = new SqlConnection(_connectionString))
@@ -168,17 +169,28 @@ namespace ConstructionApplication.Repository.Dapper
 
                 using (var transaction = db.BeginTransaction())
                 {
-                        db.Execute("DELETE FROM Addresses WHERE SiteId = @SiteId", new { SiteId = siteId }, transaction);
+                    try
+                    {
+                        db.Execute("DELETE FROM Addresses WHERE SiteId = @SiteId", new { SiteId = siteId },
+                            transaction);
 
-                        db.Execute("DELETE FROM SiteServiceProviders WHERE SiteId = @SiteId", new { SiteId = siteId }, transaction);
+                        db.Execute("DELETE FROM SiteServiceProviders WHERE SiteId = @SiteId", new { SiteId = siteId },
+                            transaction);
 
-                        db.Execute("DELETE FROM Sites WHERE Id = @Id", new { Id = siteId }, transaction);
+                        db.Execute("DELETE FROM Sites WHERE Id = @Id",new { Id = siteId },
+                            transaction);
 
                         transaction.Commit();
+                    }
+                    catch
+                    {
                         transaction.Rollback();
+                        throw;
+                    }
                 }
             }
         }
+
 
         public List<int> GetServiceProviderIdsByTypes(int siteId, List<ServiceTypes> serviceTypes)
         {
@@ -204,23 +216,31 @@ namespace ConstructionApplication.Repository.Dapper
 
                 using (var transaction = db.BeginTransaction())
                 {
+                    try
+                    {
                         string deleteQuery = @"DELETE FROM SiteServiceProviders
                                                WHERE SiteId = @SiteId
-                                               AND ServiceTypeId = @ServiceTypeId";
+                                                AND ServiceTypeId = @ServiceTypeId";
 
                         string insertQuery = @"INSERT INTO SiteServiceProviders
-                                               (SiteId, ServiceProviderId, ServiceTypeId)
+                                                (SiteId, ServiceProviderId, ServiceTypeId)
                                                VALUES
-                                               (@SiteId, @ServiceProviderId, @ServiceTypeId)";
+                                                (@SiteId, @ServiceProviderId, @ServiceTypeId)";
 
-                        db.Execute(deleteQuery, new {SiteId = siteId, ServiceTypeId = (int)serviceType}, transaction);
+                        db.Execute(deleteQuery, new{SiteId = siteId,ServiceTypeId = (int)serviceType}, transaction);
 
                         foreach (int providerId in serviceProviderIds)
                         {
-                            db.Execute(insertQuery, new {SiteId = siteId, ServiceProviderId = providerId, ServiceTypeId = (int)serviceType},transaction);
+                            db.Execute(insertQuery, new{SiteId = siteId,ServiceProviderId = providerId,
+                                                        ServiceTypeId = (int)serviceType}, transaction);
                         }
                         transaction.Commit();
+                    }
+                    catch
+                    {
                         transaction.Rollback();
+                        throw;
+                    }
                 }
             }
         }
