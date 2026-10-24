@@ -65,7 +65,7 @@ try
                     .WithOrigins(
                         "http://localhost:5173",
                         "https://constructionapp1.azurewebsites.net",
-                        "https://mango-flower-08e682c00.4.azurestaticapps.net"
+                        "https://thankful-hill-0fc21d61e.5.azurestaticapps.net"
                     )
                     .AllowAnyHeader()
                     .AllowAnyMethod();
