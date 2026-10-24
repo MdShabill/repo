@@ -7,4 +7,6 @@
 :r dbo\MasterScripts\Suppliers.sql
 :r dbo\MasterScripts\Users.sql
 :r dbo\MasterScripts\Materials.sql
+:r dbo\MasterScripts\ScopeStatus.sql
+:r dbo\MasterScripts\SiteScopeMaster.sql
 

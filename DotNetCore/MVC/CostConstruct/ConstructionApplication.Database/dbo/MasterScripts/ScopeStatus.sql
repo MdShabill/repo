@@ -7,7 +7,8 @@ USING (VALUES
       (1, 'Pending'),
       (2, 'In Progress'),
       (3, 'Completed'),
-      (4, 'On Hold')
+      (4, 'On Hold'),
+      (5, 'Not Started')
       ) AS src ([Id], [StatusName])
 
 ON trgt.[Id] = src.[Id]
