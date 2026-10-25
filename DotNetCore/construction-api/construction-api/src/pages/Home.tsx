@@ -130,7 +130,15 @@ function Home() {
       {/* ═══ HERO + DASHBOARD ═══ */}
       <section style={{ background: "linear-gradient(135deg, #1c2e46 0%, #0F172A 100%)", padding: "32px 24px 28px" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-          <div className="hero-row" style={{ display: "flex", alignItems: "flex-start", gap: "28px" }}>
+          <style>{`
+          .hero-row { display: block !important; }
+          .hero-side { width: 100%; }
+          @media (max-width: 640px) {
+            .hero-side { flex-wrap: wrap; }
+            .hero-side > div { flex: 1 1 calc(50% - 10px) !important; }
+          }
+        `}</style>
+          <div className="hero-row" style={{ display: "block" }}>
 
             {/* LEFT */}
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -146,6 +154,19 @@ function Home() {
               <h1 style={{ fontSize: "clamp(22px, 5vw, 32px)", fontWeight: 700, color: "#fff", lineHeight: 1.2, margin: "0 0 24px" }}>
                 Control every rupee, <span style={{ color: "#F59E0B" }}>every site, every day.</span>
               </h1>
+
+              <div className="hero-side" style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
+                {sideCards.map((c) => (
+                  <div key={c.title} style={{ ...card, flex: 1, minWidth: 0, minHeight: "92px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                    <div>
+                      <p style={{ ...label, fontSize: "10px" }}>{c.title}</p>
+                      <p style={t(statsLoading ? "13px" : "22px", statsLoading ? "#94A3B8" : "#fff", { fontWeight: statsLoading ? 400 : 700 })}>{statsLoading ? "Loading..." : c.value}</p>
+                    </div>
+                    {!statsLoading && <p style={t("11px", c.subColor, { marginTop: "8px" })}>{c.sub}</p>}
+                  </div>
+                ))}
+              </div>
+
 
               {stats?.hasSiteInfo && !statsLoading && (
                 <div>
@@ -332,20 +353,7 @@ function Home() {
               )}
             </div>
 
-            {/* RIGHT — 3 compact stat cards */}
-            <div className="hero-side" style={{ flexShrink: 0, width: "180px", display: "flex", flexDirection: "column", gap: "10px", alignSelf: "flex-start", marginTop: "68px" }}>
-              {sideCards.map((c) => (
-                <div key={c.title} style={{ ...card, minHeight: "92px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                  <div>
-                    <p style={{ ...label, fontSize: "10px" }}>{c.title}</p>
-                    <p style={t(statsLoading ? "13px" : "22px", statsLoading ? "#94A3B8" : "#fff", { fontWeight: statsLoading ? 400 : 700 })}>
-                      {statsLoading ? "Loading..." : c.value}
-                    </p>
-                  </div>
-                  {!statsLoading && <p style={t("11px", c.subColor, { marginTop: "8px" })}>{c.sub}</p>}
-                </div>
-              ))}
-            </div>
+
           </div>
         </div>
       </section>
