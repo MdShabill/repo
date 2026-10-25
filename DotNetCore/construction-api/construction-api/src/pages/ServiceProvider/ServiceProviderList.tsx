@@ -1,8 +1,10 @@
+//Path: src/pages/ServiceProvider/ServiceProviderList.tsx
 import { useEffect, useState }   from "react";
 import { Link, useLocation }     from "react-router-dom";
 import { getServiceProviders, deleteServiceProvider }
   from "../../services/serviceProviderService";
 import type { ServiceProviderDto } from "../../services/serviceProviderService";
+import PageHeader from "../../components/PageHeader";
 
 function ServiceProviderList() {
   const location = useLocation();
@@ -45,39 +47,12 @@ function ServiceProviderList() {
           padding: "25px", boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
         }}>
 
-          {/* Header — 3 column grid matching MVC */}
-          <div style={{
-            display: "grid", gridTemplateColumns: "1fr auto 1fr",
-            alignItems: "center", marginBottom: "20px",
-          }}>
-            <div>
-              <div style={{
-                display: "inline-block", background: "#1E3A5F", color: "#fff",
-                padding: "8px 16px", borderRadius: "20px", fontWeight: 500,
-              }}>
-                Total Service Providers&nbsp;
-                <span style={{
-                  background: "#F59E0B", padding: "4px 10px",
-                  borderRadius: "12px", marginLeft: "4px",
-                }}>
-                  {totalCount}
-                </span>
-              </div>
-            </div>
-
-            <div style={{ fontSize: "28px", fontWeight: 600, color: "#1E293B" }}>
-              Service Providers / Vendor
-            </div>
-
-            <div style={{ textAlign: "right" }}>
-              <Link to="/service-provider/add" style={{
-                background: "#F59E0B", color: "#fff", padding: "10px 18px",
-                borderRadius: "10px", textDecoration: "none", fontWeight: 500,
-              }}>
-                + Add New
-              </Link>
-            </div>
-          </div>
+          {/* CHANGE 2: old 3-column header replaced by PageHeader */}
+          <PageHeader
+            title="Service Providers / Vendor"
+            addTo="/service-provider/add"
+            badge={<span className="badge-pill">Total Service Providers <b>{totalCount}</b></span>}
+          />
 
           {/* Messages */}
           {successMessage && (
@@ -93,7 +68,8 @@ function ServiceProviderList() {
           {loading ? (
             <p style={{ textAlign: "center", padding: "30px" }}>Loading...</p>
           ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse", borderRadius: "12px", overflow: "hidden" }}>
+            // CHANGE 3a: className="stack-table"
+            <table className="stack-table" style={{ width: "100%", borderCollapse: "collapse", borderRadius: "12px", overflow: "hidden" }}>
               <thead style={{ background: "#1E3A5F", color: "#fff" }}>
                 <tr>
                   {["Service Type","Name","Gender","Mobile","Referred By","Address","Action"].map((h) => (
@@ -108,15 +84,16 @@ function ServiceProviderList() {
                     onMouseEnter={(e) => (e.currentTarget.style.background = "#f9fafb")}
                     onMouseLeave={(e) => (e.currentTarget.style.background = "")}
                   >
-                    <td style={{ padding: "12px", fontSize: "16px" }}>{item.serviceTypes}</td>
-                    <td style={{ padding: "12px", fontSize: "16px" }}>{item.serviceProviderName}</td>
-                    <td style={{ padding: "12px", fontSize: "16px" }}>{item.gender}</td>
-                    <td style={{ padding: "12px", fontSize: "16px" }}>{item.mobileNumber}</td>
-                    <td style={{ padding: "12px", fontSize: "16px" }}>{item.referredBy}</td>
-                    <td style={{ padding: "12px", fontSize: "16px", color: "#64748B" }}>
+                    {/* CHANGE 3b: data-label on every td */}
+                    <td data-label="Service Type" style={{ padding: "12px", fontSize: "16px" }}>{item.serviceTypes}</td>
+                    <td data-label="Name"         style={{ padding: "12px", fontSize: "16px" }}>{item.serviceProviderName}</td>
+                    <td data-label="Gender"       style={{ padding: "12px", fontSize: "16px" }}>{item.gender}</td>
+                    <td data-label="Mobile"       style={{ padding: "12px", fontSize: "16px" }}>{item.mobileNumber}</td>
+                    <td data-label="Referred By"  style={{ padding: "12px", fontSize: "16px" }}>{item.referredBy}</td>
+                    <td data-label="Address"      style={{ padding: "12px", fontSize: "16px", color: "#64748B" }}>
                       {formatAddress(item)}
                     </td>
-                    <td style={{ padding: "12px", width: "140px" }}>
+                    <td data-label="Action" style={{ padding: "12px", width: "140px" }}>
                       <Link
                         to={`/service-provider/edit/${item.serviceProviderId}`}
                         style={{ color: "#16A34A", fontWeight: 500, textDecoration: "none", marginRight: "8px" }}
@@ -136,7 +113,7 @@ function ServiceProviderList() {
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan={7} style={{ textAlign: "center", padding: "20px", color: "#888" }}>
+                    <td data-label="" colSpan={7} style={{ textAlign: "center", padding: "20px", color: "#888" }}>
                       No Service Providers found.
                     </td>
                   </tr>

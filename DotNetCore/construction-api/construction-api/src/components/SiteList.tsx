@@ -1,139 +1,52 @@
+// Path: src/components/SiteList.tsx
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { getAllSites, filterSites, getDropdownData, deleteSite, } from "../services/siteService";
-import type { SiteListDto, DropdownItem, } from "../services/siteService";
+import { getAllSites, filterSites, getDropdownData, deleteSite } from "../services/siteService";
+import type { SiteListDto, DropdownItem } from "../services/siteService";
+import PageHeader from "./PageHeader";
+
+type Filter = "status" | "date" | "budget";
+
+const fmt = (d: string) => new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+const addressText = (s: SiteListDto) => [s.addressTypes, s.addressLine1, s.countryName, s.pinCode].filter(Boolean).join(" - ") || "—";
+
+const filterBtn = (active: boolean, minWidth: string): React.CSSProperties => ({
+  minWidth, padding: "10px 14px", borderRadius: "9px", border: "1px solid #CBD5E1",
+  background: active ? "#FFF7E6" : "#fff", color: "#334155", cursor: "pointer", fontSize: "14px", textAlign: "left",
+});
+const popStyle = (width: string, padding: string): React.CSSProperties => ({
+  position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 20, width, background: "#fff",
+  border: "1px solid #E2E8F0", borderRadius: "10px", boxShadow: "0 10px 25px rgba(0,0,0,0.15)", padding,
+});
+const popInput: React.CSSProperties = { width: "100%", padding: "9px 10px", border: "1px solid #CBD5E1", borderRadius: "7px", outline: "none", marginBottom: "12px" };
+const popLabel: React.CSSProperties = { display: "block", fontSize: "13px", fontWeight: 500, color: "#475569", marginBottom: "5px" };
+const th: React.CSSProperties = { padding: "10px 12px", textAlign: "left", fontSize: "14px", fontWeight: 600, whiteSpace: "nowrap", borderRight: "3px solid rgba(255,255,255,0.95)" };
+const cell = (extra: React.CSSProperties = {}): React.CSSProperties => ({ padding: "8px 12px", textAlign: "left", verticalAlign: "middle", borderRight: "1px solid #E5E7EB", ...extra });
 
 function SiteList() {
   const location = useLocation();
-
   const [sites, setSites] = useState<SiteListDto[]>([]);
+  const [statuses, setStatuses] = useState<DropdownItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [statuses, setStatuses] = useState<DropdownItem[]>([]);
-
   const [search, setSearch] = useState("");
-  const [selectedStatusId, setSelectedStatusId] = useState<
-    number | undefined
-  >(undefined);
-
+  const [statusId, setStatusId] = useState<number | undefined>();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-
   const [budgetFrom, setBudgetFrom] = useState("");
   const [budgetTo, setBudgetTo] = useState("");
+  const [openFilter, setOpenFilter] = useState<Filter | null>(null);
+  const [expandAddress, setExpandAddress] = useState(false);
 
-  const [openFilter, setOpenFilter] = useState<
-    "status" | "date" | "budget" | null
-  >(null);
+  const successMessage = (location.state as { success?: string })?.success ?? "";
 
-  const [expandAddressColumn, setExpandAddressColumn] = useState(false);
-
-  const successMessage =
-    (location.state as { success?: string })?.success ?? "";
-
-  /* =========================================================
-     LOAD INITIAL SITE DATA
-  ========================================================= */
-
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  /* =========================================================
-     LOAD STATUS DROPDOWN
-  ========================================================= */
-
-  useEffect(() => {
-    getDropdownData()
-      .then((data) => {
-        setStatuses(data.statuses ?? []);
-      })
-      .catch((err: Error) => {
-        setError(err.message);
-      });
-  }, []);
-
-  const loadInitialData = async () => {
+  // Shared loader: runs a fetch, updates the list, closes any open popup
+  const run = async (fn: () => Promise<SiteListDto[]>) => {
     try {
       setLoading(true);
       setError("");
-
-      const data = await getAllSites();
-      setSites(data);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /* =========================================================
-     APPLY FILTERS
-  ========================================================= */
-
-  const handleApplyFilters = async () => {
-    setError("");
-
-    /* ---------- DATE VALIDATION ---------- */
-
-    if (fromDate && toDate && fromDate > toDate) {
-      setError("From Date cannot be greater than To Date.");
-      return;
-    }
-
-    /* ---------- BUDGET VALIDATION ---------- */
-
-    const parsedBudgetFrom =
-      budgetFrom.trim() !== ""
-        ? Number(budgetFrom)
-        : undefined;
-
-    const parsedBudgetTo =
-      budgetTo.trim() !== ""
-        ? Number(budgetTo)
-        : undefined;
-
-    if (
-      parsedBudgetFrom !== undefined &&
-      (Number.isNaN(parsedBudgetFrom) || parsedBudgetFrom < 0)
-    ) {
-      setError("Budget From cannot be negative.");
-      return;
-    }
-
-    if (
-      parsedBudgetTo !== undefined &&
-      (Number.isNaN(parsedBudgetTo) || parsedBudgetTo < 0)
-    ) {
-      setError("Budget To cannot be negative.");
-      return;
-    }
-
-    if (
-      parsedBudgetFrom !== undefined &&
-      parsedBudgetTo !== undefined &&
-      parsedBudgetFrom > parsedBudgetTo
-    ) {
-      setError(
-        "Budget From cannot be greater than Budget To."
-      );
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const data = await filterSites({
-        search: search.trim() || undefined,
-        statusId: selectedStatusId,
-        fromDate: fromDate || undefined,
-        toDate: toDate || undefined,
-        budgetFrom: parsedBudgetFrom,
-        budgetTo: parsedBudgetTo,
-      });
-
-      setSites(data);
+      setSites(await fn());
       setOpenFilter(null);
     } catch (err) {
       setError((err as Error).message);
@@ -142,1182 +55,216 @@ function SiteList() {
     }
   };
 
-  /* =========================================================
-     CLEAR ALL FILTERS
-  ========================================================= */
+  useEffect(() => {
+    run(getAllSites);
+    getDropdownData().then((d) => setStatuses(d.statuses ?? [])).catch((e: Error) => setError(e.message));
+  }, []);
 
-  const handleClearFilters = async () => {
-    setSearch("");
-    setSelectedStatusId(undefined);
+  const toNum = (v: string) => (v.trim() !== "" ? Number(v) : undefined);
+  const params = (status = statusId) => ({
+    search: search.trim() || undefined, statusId: status,
+    fromDate: fromDate || undefined, toDate: toDate || undefined,
+    budgetFrom: toNum(budgetFrom), budgetTo: toNum(budgetTo),
+  });
 
-    setFromDate("");
-    setToDate("");
-
-    setBudgetFrom("");
-    setBudgetTo("");
-
-    setOpenFilter(null);
-    setError("");
-
-    try {
-      setLoading(true);
-
-      const data = await getAllSites();
-      setSites(data);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
+  const handleApply = () => {
+    const p = params();
+    const bad = (n?: number) => n !== undefined && (Number.isNaN(n) || n < 0);
+    if (fromDate && toDate && fromDate > toDate) return setError("From Date cannot be greater than To Date.");
+    if (bad(p.budgetFrom)) return setError("Budget From cannot be negative.");
+    if (bad(p.budgetTo)) return setError("Budget To cannot be negative.");
+    if (p.budgetFrom !== undefined && p.budgetTo !== undefined && p.budgetFrom > p.budgetTo)
+      return setError("Budget From cannot be greater than Budget To.");
+    run(() => filterSites(p));
   };
 
-  /* =========================================================
-     STATUS APPLY
-  ========================================================= */
+  const handleStatus = (id?: number) => { setStatusId(id); run(() => filterSites(params(id))); };
 
-  const handleStatusChange = async (
-    statusId: number | undefined
-  ) => {
-    setSelectedStatusId(statusId);
-
-    setError("");
-
-    try {
-      setLoading(true);
-
-      const data = await filterSites({
-        search: search.trim() || undefined,
-        statusId,
-        fromDate: fromDate || undefined,
-        toDate: toDate || undefined,
-        budgetFrom:
-          budgetFrom.trim() !== ""
-            ? Number(budgetFrom)
-            : undefined,
-        budgetTo:
-          budgetTo.trim() !== ""
-            ? Number(budgetTo)
-            : undefined,
-      });
-
-      setSites(data);
-      setOpenFilter(null);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
+  const handleClear = () => {
+    setSearch(""); setStatusId(undefined); setFromDate(""); setToDate(""); setBudgetFrom(""); setBudgetTo("");
+    run(getAllSites);
   };
 
-  /* =========================================================
-     DELETE
-  ========================================================= */
-
-  const handleDelete = async (siteId: number) => {
-    if (!window.confirm("Are you sure you want to delete this site?")) {
-      return;
-    }
-
+  const handleDelete = async (id: number) => {
+    if (!window.confirm("Are you sure you want to delete this site?")) return;
     try {
-      await deleteSite(siteId);
-
-      setSites((prev) =>
-        prev.filter((s) => s.id !== siteId)
-      );
+      await deleteSite(id);
+      setSites((prev) => prev.filter((s) => s.id !== id));
     } catch (err) {
       setError((err as Error).message);
     }
   };
 
-  /* =========================================================
-     DATE FORMAT
-  ========================================================= */
+  const hasFilters = search.trim() !== "" || statusId !== undefined || fromDate || toDate || budgetFrom || budgetTo;
+  const statusName = statuses.find((s) => s.id === statusId)?.name ?? "";
 
-  const fmt = (d: string) =>
-    new Date(d).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+  // Render helpers (plain functions, not components, so inputs keep focus)
+  const field = (lbl: string, val: string, set: (v: string) => void, type: string, ph?: string) => (
+    <>
+      <label style={popLabel}>{lbl}</label>
+      <input type={type} min={type === "number" ? "0" : undefined} value={val} placeholder={ph} onChange={(e) => set(e.target.value)} style={popInput} />
+    </>
+  );
+  const actions = (onClear: () => void) => (
+    <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+      <button type="button" onClick={onClear} style={{ padding: "8px 12px", borderRadius: "7px", border: "1px solid #CBD5E1", background: "#fff", color: "#475569", cursor: "pointer" }}>Clear</button>
+      <button type="button" onClick={handleApply} style={{ padding: "8px 14px", borderRadius: "7px", border: "none", background: "#F59E0B", color: "#fff", cursor: "pointer", fontWeight: 500 }}>Apply</button>
+    </div>
+  );
+  const dropdown = (name: Filter, text: string, active: boolean, minWidth: string, popup: React.ReactNode) => (
+    <div className="filter-wrap" style={{ position: "relative" }}>
+      <button type="button" onClick={() => setOpenFilter(openFilter === name ? null : name)} style={filterBtn(active, minWidth)}>
+        {text}<span style={{ float: "right", marginLeft: "10px" }}>▾</span>
+      </button>
+      {openFilter === name && popup}
+    </div>
+  );
+  const statusItem = (id: number | undefined, text: string) => (
+    <button key={text} type="button" onClick={() => handleStatus(id)}
+      style={{ width: "100%", textAlign: "left", border: "none", background: statusId === id ? "#FFF7E6" : "#fff", padding: "9px 10px", borderRadius: "7px", cursor: "pointer", color: "#334155" }}>
+      {text}
+    </button>
+  );
 
-  /* =========================================================
-     ADDRESS
-  ========================================================= */
-
-  const getAddressText = (site: SiteListDto) =>
-    [
-      site.addressTypes,
-      site.addressLine1,
-      site.countryName,
-      site.pinCode,
-    ]
-      .filter(Boolean)
-      .join(" - ") || "—";
-
-  /* =========================================================
-     SELECTED STATUS NAME
-  ========================================================= */
-
-  const selectedStatusName =
-    statuses.find(
-      (status) => status.id === selectedStatusId
-    )?.name ?? "";
-
-  /* =========================================================
-     ACTIVE FILTER CHECK
-  ========================================================= */
-
-  const hasActiveFilters =
-    search.trim() !== "" ||
-    selectedStatusId !== undefined ||
-    fromDate !== "" ||
-    toDate !== "" ||
-    budgetFrom !== "" ||
-    budgetTo !== "";
+  const HEADERS = ["Site Name", "Started Date", "Status", "Contact Name", "Contact Number", "Address", "Action"];
 
   return (
-    <div
-      style={{
-        background:
-          "linear-gradient(135deg, #1E3A5F, #0F172A)",
-        minHeight: "100vh",
-      }}
-    >
-      <div style={{ padding: "30px" }}>
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: "18px",
-            padding: "25px",
-            boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
-          }}
-        >
-          {/* =================================================
-              HEADER
-          ================================================= */}
+    <div style={{ background: "linear-gradient(135deg, #1E3A5F, #0F172A)", minHeight: "100vh" }}>
+      <div className="page-pad" style={{ padding: "30px" }}>
+        <div className="page-card" style={{ background: "#fff", borderRadius: "18px", padding: "25px", boxShadow: "0 10px 25px rgba(0,0,0,0.15)" }}>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              alignItems: "center",
-              marginBottom: "20px",
-            }}
-          >
-            {/* TOTAL SITES */}
+          <PageHeader title="Site List" addTo="/site-add" badge={<span className="badge-pill">Total Sites <b>{sites.length}</b></span>} />
 
-            <div>
-              <div
-                style={{
-                  display: "inline-block",
-                  background: "#1E3A5F",
-                  color: "#fff",
-                  padding: "8px 16px",
-                  borderRadius: "20px",
-                  fontWeight: 500,
-                }}
-              >
-                Total Sites
-
-                <span
-                  style={{
-                    background: "#F59E0B",
-                    padding: "4px 10px",
-                    borderRadius: "12px",
-                    marginLeft: "6px",
-                  }}
-                >
-                  {sites.length}
-                </span>
-              </div>
-            </div>
-
-            {/* TITLE */}
-
-            <div
-              style={{
-                textAlign: "center",
-                fontSize: "26px",
-                fontWeight: 600,
-                color: "#1E293B",
-              }}
-            >
-              Site List
-            </div>
-
-            {/* ADD NEW */}
-
-            <div style={{ textAlign: "right" }}>
-              <Link
-                to="/site-add"
-                style={{
-                  display: "inline-block",
-                  background: "#F59E0B",
-                  color: "#fff",
-                  padding: "10px 18px",
-                  borderRadius: "10px",
-                  textDecoration: "none",
-                  fontWeight: 500,
-                }}
-              >
-                + Add New
-              </Link>
-            </div>
-          </div>
-
-          {/* =================================================
-              FILTER BAR
-          ================================================= */}
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              marginBottom: "20px",
-              flexWrap: "wrap",
-            }}
-          >
-            {/* ================= SEARCH ================= */}
-
-            <div
-              style={{
-                flex: "1 1 280px",
-                minWidth: "250px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  border: "1px solid #CBD5E1",
-                  borderRadius: "9px",
-                  overflow: "hidden",
-                  background: "#fff",
-                }}
-              >
-                <span
-                  style={{
-                    paddingLeft: "12px",
-                    color: "#64748B",
-                    fontSize: "16px",
-                  }}
-                >
-                  🔍
-                </span>
-
+          {/* ── Filter bar ── */}
+          <div className="filter-bar" style={{ position: "relative", display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
+            <div style={{ flex: "1 1 240px", minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", border: "1px solid #CBD5E1", borderRadius: "9px", overflow: "hidden", background: "#fff" }}>
+                <span style={{ paddingLeft: "12px", color: "#64748B", fontSize: "16px" }}>🔍</span>
                 <input
-                  type="text"
-                  value={search}
-                  onChange={(e) =>
-                    setSearch(e.target.value)
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleApplyFilters();
-                    }
-                  }}
-                  placeholder="Search Site Name or Contact Name"
-                  style={{
-                    width: "100%",
-                    border: "none",
-                    outline: "none",
-                    padding: "10px 12px 10px 8px",
-                    fontSize: "14px",
-                  }}
+                  type="text" value={search} placeholder="Search Site Name or Contact Name"
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleApply()}
+                  style={{ width: "100%", border: "none", outline: "none", padding: "10px 12px 10px 8px", fontSize: "14px" }}
                 />
               </div>
             </div>
 
-            {/* ================= STATUS ================= */}
+            {dropdown("status", statusName || "Status", statusId !== undefined, "130px",
+              <div className="filter-pop" style={popStyle("220px", "8px")}>
+                {statusItem(undefined, "All Statuses")}
+                {statuses.map((s) => statusItem(s.id, s.name))}
+              </div>
+            )}
 
-            <div style={{ position: "relative" }}>
-              <button
-                type="button"
-                onClick={() =>
-                  setOpenFilter(
-                    openFilter === "status"
-                      ? null
-                      : "status"
-                  )
-                }
-                style={{
-                  minWidth: "130px",
-                  padding: "10px 14px",
-                  borderRadius: "9px",
-                  border: "1px solid #CBD5E1",
-                  background:
-                    selectedStatusId !== undefined
-                      ? "#FFF7E6"
-                      : "#fff",
-                  color: "#334155",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  textAlign: "left",
-                }}
-              >
-                {selectedStatusName || "Status"}
-                <span
-                  style={{
-                    float: "right",
-                    marginLeft: "10px",
-                  }}
-                >
-                  ▾
-                </span>
-              </button>
+            {dropdown("date", "Date", !!(fromDate || toDate), "110px",
+              <div className="filter-pop" style={popStyle("280px", "15px")}>
+                <div style={{ fontWeight: 600, color: "#1E293B", marginBottom: "12px" }}>Date</div>
+                {field("From Date", fromDate, setFromDate, "date")}
+                {field("To Date", toDate, setToDate, "date")}
+                {actions(() => { setFromDate(""); setToDate(""); })}
+              </div>
+            )}
 
-              {openFilter === "status" && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "calc(100% + 6px)",
-                    left: 0,
-                    zIndex: 20,
-                    width: "220px",
-                    background: "#fff",
-                    border: "1px solid #E2E8F0",
-                    borderRadius: "10px",
-                    boxShadow:
-                      "0 10px 25px rgba(0,0,0,0.15)",
-                    padding: "8px",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleStatusChange(undefined)
-                    }
-                    style={{
-                      width: "100%",
-                      textAlign: "left",
-                      border: "none",
-                      background:
-                        selectedStatusId === undefined
-                          ? "#F8FAFC"
-                          : "#fff",
-                      padding: "9px 10px",
-                      borderRadius: "7px",
-                      cursor: "pointer",
-                      color: "#475569",
-                    }}
-                  >
-                    All Statuses
-                  </button>
+            {dropdown("budget", "Budget", !!(budgetFrom || budgetTo), "115px",
+              <div className="filter-pop" style={popStyle("280px", "15px")}>
+                <div style={{ fontWeight: 600, color: "#1E293B", marginBottom: "12px" }}>Budget</div>
+                {field("From Amount", budgetFrom, setBudgetFrom, "number", "Minimum budget")}
+                {field("To Amount", budgetTo, setBudgetTo, "number", "Maximum budget")}
+                {actions(() => { setBudgetFrom(""); setBudgetTo(""); })}
+              </div>
+            )}
 
-                  {statuses.map((status) => (
-                    <button
-                      key={status.id}
-                      type="button"
-                      onClick={() =>
-                        handleStatusChange(status.id)
-                      }
-                      style={{
-                        width: "100%",
-                        textAlign: "left",
-                        border: "none",
-                        background:
-                          selectedStatusId === status.id
-                            ? "#FFF7E6"
-                            : "#fff",
-                        padding: "9px 10px",
-                        borderRadius: "7px",
-                        cursor: "pointer",
-                        color: "#334155",
-                      }}
-                    >
-                      {status.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* ================= DATE ================= */}
-
-            <div style={{ position: "relative" }}>
-              <button
-                type="button"
-                onClick={() =>
-                  setOpenFilter(
-                    openFilter === "date"
-                      ? null
-                      : "date"
-                  )
-                }
-                style={{
-                  minWidth: "110px",
-                  padding: "10px 14px",
-                  borderRadius: "9px",
-                  border: "1px solid #CBD5E1",
-                  background:
-                    fromDate || toDate
-                      ? "#FFF7E6"
-                      : "#fff",
-                  color: "#334155",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  textAlign: "left",
-                }}
-              >
-                Date
-                <span
-                  style={{
-                    float: "right",
-                    marginLeft: "10px",
-                  }}
-                >
-                  ▾
-                </span>
-              </button>
-
-              {openFilter === "date" && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "calc(100% + 6px)",
-                    left: 0,
-                    zIndex: 20,
-                    width: "280px",
-                    background: "#fff",
-                    border: "1px solid #E2E8F0",
-                    borderRadius: "10px",
-                    boxShadow:
-                      "0 10px 25px rgba(0,0,0,0.15)",
-                    padding: "15px",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      color: "#1E293B",
-                      marginBottom: "12px",
-                    }}
-                  >
-                    Date
-                  </div>
-
-                  {/* FROM DATE */}
-
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      color: "#475569",
-                      marginBottom: "5px",
-                    }}
-                  >
-                    From Date
-                  </label>
-
-                  <input
-                    type="date"
-                    value={fromDate}
-                    onChange={(e) =>
-                      setFromDate(e.target.value)
-                    }
-                    style={{
-                      width: "100%",
-                      boxSizing: "border-box",
-                      padding: "9px 10px",
-                      border:
-                        "1px solid #CBD5E1",
-                      borderRadius: "7px",
-                      outline: "none",
-                      marginBottom: "12px",
-                    }}
-                  />
-
-                  {/* TO DATE */}
-
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      color: "#475569",
-                      marginBottom: "5px",
-                    }}
-                  >
-                    To Date
-                  </label>
-
-                  <input
-                    type="date"
-                    value={toDate}
-                    onChange={(e) =>
-                      setToDate(e.target.value)
-                    }
-                    style={{
-                      width: "100%",
-                      boxSizing: "border-box",
-                      padding: "9px 10px",
-                      border:
-                        "1px solid #CBD5E1",
-                      borderRadius: "7px",
-                      outline: "none",
-                      marginBottom: "14px",
-                    }}
-                  />
-
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      gap: "8px",
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFromDate("");
-                        setToDate("");
-                      }}
-                      style={{
-                        padding: "8px 12px",
-                        borderRadius: "7px",
-                        border:
-                          "1px solid #CBD5E1",
-                        background: "#fff",
-                        color: "#475569",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Clear
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleApplyFilters}
-                      style={{
-                        padding: "8px 14px",
-                        borderRadius: "7px",
-                        border: "none",
-                        background: "#F59E0B",
-                        color: "#fff",
-                        cursor: "pointer",
-                        fontWeight: 500,
-                      }}
-                    >
-                      Apply
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* ================= BUDGET ================= */}
-
-            <div style={{ position: "relative" }}>
-              <button
-                type="button"
-                onClick={() =>
-                  setOpenFilter(
-                    openFilter === "budget"
-                      ? null
-                      : "budget"
-                  )
-                }
-                style={{
-                  minWidth: "115px",
-                  padding: "10px 14px",
-                  borderRadius: "9px",
-                  border: "1px solid #CBD5E1",
-                  background:
-                    budgetFrom || budgetTo
-                      ? "#FFF7E6"
-                      : "#fff",
-                  color: "#334155",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  textAlign: "left",
-                }}
-              >
-                Budget
-                <span
-                  style={{
-                    float: "right",
-                    marginLeft: "10px",
-                  }}
-                >
-                  ▾
-                </span>
-              </button>
-
-              {openFilter === "budget" && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "calc(100% + 6px)",
-                    left: 0,
-                    zIndex: 20,
-                    width: "280px",
-                    background: "#fff",
-                    border: "1px solid #E2E8F0",
-                    borderRadius: "10px",
-                    boxShadow:
-                      "0 10px 25px rgba(0,0,0,0.15)",
-                    padding: "15px",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      color: "#1E293B",
-                      marginBottom: "12px",
-                    }}
-                  >
-                    Budget
-                  </div>
-
-                  {/* FROM AMOUNT */}
-
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      color: "#475569",
-                      marginBottom: "5px",
-                    }}
-                  >
-                    From Amount
-                  </label>
-
-                  <input
-                    type="number"
-                    min="0"
-                    value={budgetFrom}
-                    onChange={(e) =>
-                      setBudgetFrom(e.target.value)
-                    }
-                    placeholder="Minimum budget"
-                    style={{
-                      width: "100%",
-                      boxSizing: "border-box",
-                      padding: "9px 10px",
-                      border:
-                        "1px solid #CBD5E1",
-                      borderRadius: "7px",
-                      outline: "none",
-                      marginBottom: "12px",
-                    }}
-                  />
-
-                  {/* TO AMOUNT */}
-
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      color: "#475569",
-                      marginBottom: "5px",
-                    }}
-                  >
-                    To Amount
-                  </label>
-
-                  <input
-                    type="number"
-                    min="0"
-                    value={budgetTo}
-                    onChange={(e) =>
-                      setBudgetTo(e.target.value)
-                    }
-                    placeholder="Maximum budget"
-                    style={{
-                      width: "100%",
-                      boxSizing: "border-box",
-                      padding: "9px 10px",
-                      border:
-                        "1px solid #CBD5E1",
-                      borderRadius: "7px",
-                      outline: "none",
-                      marginBottom: "14px",
-                    }}
-                  />
-
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      gap: "8px",
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setBudgetFrom("");
-                        setBudgetTo("");
-                      }}
-                      style={{
-                        padding: "8px 12px",
-                        borderRadius: "7px",
-                        border:
-                          "1px solid #CBD5E1",
-                        background: "#fff",
-                        color: "#475569",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Clear
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleApplyFilters}
-                      style={{
-                        padding: "8px 14px",
-                        borderRadius: "7px",
-                        border: "none",
-                        background: "#F59E0B",
-                        color: "#fff",
-                        cursor: "pointer",
-                        fontWeight: 500,
-                      }}
-                    >
-                      Apply
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* ================= SEARCH/APPLY ================= */}
-
-            <button
-              type="button"
-              onClick={handleApplyFilters}
-              style={{
-                padding: "10px 16px",
-                borderRadius: "9px",
-                border: "none",
-                background: "#1E3A5F",
-                color: "#fff",
-                cursor: "pointer",
-                fontWeight: 500,
-              }}
-            >
+            <button type="button" onClick={handleApply} 
+              style={{ padding: "10px 16px", borderRadius: "9px", border: "none", 
+                background: "#1E3A5F", color: "#fff", cursor: "pointer", fontWeight: 500 }}>
               Apply
             </button>
-
-            {/* ================= CLEAR ================= */}
-
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={handleClearFilters}
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: "9px",
-                  border: "1px solid #CBD5E1",
-                  background: "#fff",
-                  color: "#475569",
-                  cursor: "pointer",
-                  fontWeight: 500,
-                }}
-              >
+            {hasFilters && (
+              <button type="button" onClick={handleClear} 
+                style={{ padding: "10px 14px", borderRadius: "9px", border: "1px solid #CBD5E1", 
+                  background: "#fff", color: "#475569", cursor: "pointer", fontWeight: 500 }}>
                 Clear
               </button>
             )}
           </div>
 
-          {/* =================================================
-              SUCCESS MESSAGE
-          ================================================= */}
-
-          {successMessage && (
-            <div
-              style={{
-                color: "#16A34A",
-                marginBottom: "10px",
-                fontWeight: 500,
-              }}
-            >
-              {successMessage}
-            </div>
-          )}
-
-          {/* =================================================
-              ERROR MESSAGE
-          ================================================= */}
-
+          {successMessage && <div 
+            style={{ color: "#16A34A", marginBottom: "10px", fontWeight: 500 }}>{successMessage}</div>}
           {error && (
-            <div
-              style={{
-                color: "#DC2626",
-                background: "#FEF2F2",
-                border: "1px solid #FECACA",
-                padding: "9px 12px",
-                borderRadius: "7px",
-                marginBottom: "12px",
-              }}
-            >
+            <div style={{ color: "#DC2626", 
+              background: "#FEF2F2", border: "1px solid #FECACA", padding: "9px 12px", 
+              borderRadius: "7px", marginBottom: "12px" }}>
               {error}
             </div>
           )}
 
-          {/* =================================================
-              TABLE
-          ================================================= */}
-
+          {/* ── Table ── */}
           {loading ? (
-            <p
-              style={{
-                textAlign: "center",
-                padding: "20px",
-              }}
-            >
-              Loading...
-            </p>
+            <p style={{ textAlign: "center", padding: "20px" }}>Loading...</p>
           ) : (
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                borderRadius: "12px",
-                overflow: "hidden",
-                tableLayout: "fixed",
-              }}
-            >
-              {/* ================= COLUMN WIDTHS ================= */}
-
+            <table className="stack-table" 
+              style={{ width: "100%", borderCollapse: "collapse", borderRadius: "12px", overflow: "hidden", tableLayout: "fixed" }}>
               <colgroup>
-                <col style={{ width: "14%" }} />
-                <col style={{ width: "11%" }} />
-                <col style={{ width: "14%" }} />
-                <col style={{ width: "13%" }} />
-                <col style={{ width: "13%" }} />
-
-                <col
-                  style={{
-                    width: expandAddressColumn
-                      ? "25%"
-                      : "15%",
-                    transition: "width 0.3s ease",
-                  }}
-                />
-
-                <col style={{ width: "10%" }} />
+                {["14%", "11%", "14%", "13%", "13%", expandAddress ? "25%" : "15%", "10%"].map((w, i) => (
+                  <col key={i} style={{ width: w, transition: "width 0.3s ease" }} />
+                ))}
               </colgroup>
-
-              {/* ================= TABLE HEADER ================= */}
-
-              <thead
-                style={{
-                  background: "#1E3A5F",
-                  color: "#fff",
-                }}
-              >
+              <thead style={{ background: "#1E3A5F", color: "#fff" }}>
                 <tr>
-                  <th
-                    style={{
-                      padding: "10px 12px",
-                      textAlign: "left",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      whiteSpace: "nowrap",
-                      borderRight:
-                        "3px solid rgba(255,255,255,0.95)",
-                    }}
-                  >
-                    Site Name
-                  </th>
-
-                  <th
-                    style={{
-                      padding: "10px 12px",
-                      textAlign: "left",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      whiteSpace: "nowrap",
-                      borderRight:
-                        "3px solid rgba(255,255,255,0.95)",
-                    }}
-                  >
-                    Started Date
-                  </th>
-
-                  <th
-                    style={{
-                      padding: "10px 12px",
-                      textAlign: "left",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      whiteSpace: "nowrap",
-                      borderRight:
-                        "3px solid rgba(255,255,255,0.95)",
-                    }}
-                  >
-                    Status
-                  </th>
-
-                  <th
-                    style={{
-                      padding: "10px 12px",
-                      textAlign: "left",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      whiteSpace: "nowrap",
-                      borderRight:
-                        "3px solid rgba(255,255,255,0.95)",
-                    }}
-                  >
-                    Contact Name
-                  </th>
-
-                  <th
-                    style={{
-                      padding: "10px 12px",
-                      textAlign: "left",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      whiteSpace: "nowrap",
-                      borderRight:
-                        "3px solid rgba(255,255,255,0.95)",
-                    }}
-                  >
-                    Contact Number
-                  </th>
-
-                  <th
-                    style={{
-                      padding: "10px 12px",
-                      textAlign: "left",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      whiteSpace: "nowrap",
-                      borderRight:
-                        "3px solid rgba(255,255,255,0.95)",
-                    }}
-                  >
-                    Address
-                  </th>
-
-                  <th
-                    style={{
-                      padding: "10px 12px",
-                      textAlign: "left",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    Action
-                  </th>
+                  {HEADERS.map((h, i) => <th key={h} 
+                  style={{ ...th, borderRight: i === HEADERS.length - 1 ? "none" : th.borderRight }}>{h}</th>)}
                 </tr>
               </thead>
-
-              {/* ================= TABLE BODY ================= */}
-
               <tbody>
-                {sites.length > 0 ? (
-                  sites.map((site, index) => (
-                    <tr
-                      key={site.id}
-                      style={{
-                        borderBottom:
-                          "1px solid #E5E7EB",
-                        background:
-                          index % 2 === 1
-                            ? "#F3F4F6"
-                            : "#FFFFFF",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background =
-                          "#F9FAFB";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background =
-                          index % 2 === 1
-                            ? "#F3F4F6"
-                            : "#FFFFFF";
-                      }}
-                    >
-                      {/* ================= SITE NAME ================= */}
-
-                      <td
-                        style={{
-                          padding: "8px 12px",
-                          textAlign: "left",
-                          verticalAlign: "middle",
-                          borderRight:
-                            "1px solid #E5E7EB",
-                        }}
-                      >
-                        <Link
-                          to={`/site-detail/${site.id}`}
-                          style={{
-                            color: "inherit",
-                            textDecoration: "none",
-                            fontWeight: "inherit",
-                          }}
-                        >
-                          <b>{site.name}</b>
-                        </Link>
+                {sites.length > 0 ? sites.map((s, i) => {
+                  const bg = i % 2 ? "#F3F4F6" : "#FFFFFF";
+                  return (
+                    <tr key={s.id} style={{ borderBottom: "1px solid #E5E7EB", background: bg }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#F9FAFB")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = bg)}>
+                      <td data-label={HEADERS[0]} style={cell()}>
+                        <Link to={`/site-detail/${s.id}`} 
+                          style={{ color: "inherit", textDecoration: "none" }}><b>{s.name}</b></Link>
                       </td>
-
-                      {/* ================= STARTED DATE ================= */}
-
+                      <td data-label={HEADERS[1]} 
+                        style={cell({ whiteSpace: "nowrap" })}>{s.startedDate ? fmt(s.startedDate) : "—"}</td>
+                      <td data-label={HEADERS[2]} 
+                        style={cell()}>{s.status ?? "—"}</td>
+                      <td data-label={HEADERS[3]} 
+                        style={cell()}>{s.contactName ?? "—"}</td>
+                      <td data-label={HEADERS[4]} 
+                        style={cell({ whiteSpace: "nowrap" })}>{s.contactNumber ?? "—"}</td>
                       <td
-                        style={{
-                          padding: "8px 12px",
-                          textAlign: "left",
-                          verticalAlign: "middle",
-                          borderRight:
-                            "1px solid #E5E7EB",
-                          whiteSpace: "nowrap",
-                        }}
+                        data-label={HEADERS[5]}
+                        onClick={() => setExpandAddress((c) => !c)}
+                        title={expandAddress ? "Click to collapse Address column" : "Click to expand Address column"}
+                        style={cell({
+                          color: "#64748B", cursor: "pointer", overflow: "hidden",
+                          whiteSpace: expandAddress ? "normal" : "nowrap",
+                          textOverflow: expandAddress ? "clip" : "ellipsis",
+                          wordBreak: expandAddress ? "break-word" : "normal",
+                        })}
                       >
-                        {site.startedDate
-                          ? fmt(site.startedDate)
-                          : "—"}
+                        {addressText(s)}
                       </td>
-
-                      {/* ================= STATUS ================= */}
-
-                      <td
-                        style={{
-                          padding: "8px 12px",
-                          textAlign: "left",
-                          verticalAlign: "middle",
-                          borderRight:
-                            "1px solid #E5E7EB",
-                        }}
-                      >
-                        {site.status ?? "—"}
-                      </td>
-
-                      {/* ================= CONTACT NAME ================= */}
-
-                      <td
-                        style={{
-                          padding: "8px 12px",
-                          textAlign: "left",
-                          verticalAlign: "middle",
-                          borderRight:
-                            "1px solid #E5E7EB",
-                        }}
-                      >
-                        {site.contactName ?? "—"}
-                      </td>
-
-                      {/* ================= CONTACT NUMBER ================= */}
-
-                      <td
-                        style={{
-                          padding: "8px 12px",
-                          textAlign: "left",
-                          verticalAlign: "middle",
-                          borderRight:
-                            "1px solid #E5E7EB",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {site.contactNumber ?? "—"}
-                      </td>
-
-                      {/* ================= ADDRESS ================= */}
-
-                      <td
-                        onClick={() =>
-                          setExpandAddressColumn(
-                            (current) => !current
-                          )
-                        }
-                        title={
-                          expandAddressColumn
-                            ? "Click to collapse Address column"
-                            : "Click to expand Address column"
-                        }
-                        style={{
-                          padding: "8px 12px",
-                          textAlign: "left",
-                          verticalAlign: "middle",
-                          color: "#64748B",
-                          cursor: "pointer",
-                          width: expandAddressColumn
-                            ? "25%"
-                            : "15%",
-                          whiteSpace:
-                            expandAddressColumn
-                              ? "normal"
-                              : "nowrap",
-                          overflow: "hidden",
-                          textOverflow:
-                            expandAddressColumn
-                              ? "clip"
-                              : "ellipsis",
-                          wordBreak:
-                            expandAddressColumn
-                              ? "break-word"
-                              : "normal",
-                          borderRight:
-                            "1px solid #E5E7EB",
-                          transition:
-                            "width 0.3s ease",
-                        }}
-                      >
-                        {getAddressText(site)}
-                      </td>
-
-                      {/* ================= ACTION ================= */}
-
-                      <td
-                        style={{
-                          padding: "8px 12px",
-                          textAlign: "left",
-                          verticalAlign: "middle",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        <Link
-                          to={`/site-edit/${site.id}`}
-                          style={{
-                            color: "#16A34A",
-                            fontWeight: 500,
-                            textDecoration: "none",
-                            marginRight: "8px",
-                          }}
-                        >
-                          Edit
-                        </Link>
-
+                      <td data-label={HEADERS[6]} style={cell({ whiteSpace: "nowrap", borderRight: "none" })}>
+                        <Link to={`/site-edit/${s.id}`} 
+                        style={{ color: "#16A34A", fontWeight: 500, textDecoration: "none" }}>Edit</Link>
                         {" | "}
-
-                        <button
-                          onClick={() =>
-                            handleDelete(site.id)
-                          }
-                          style={{
-                            color: "#DC2626",
-                            fontWeight: 500,
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            padding: 0,
-                            marginLeft: "8px",
-                          }}
-                        >
+                        <button 
+                          onClick={() => handleDelete(s.id)} 
+                          style={{ color: "#DC2626", fontWeight: 500, 
+                          background: "none", border: "none", cursor: "pointer", padding: 0 }}>
                           Delete
                         </button>
                       </td>
                     </tr>
-                  ))
-                ) : (
+                  );
+                }) : (
                   <tr>
-                    <td
-                      colSpan={7}
-                      style={{
-                        textAlign: "center",
-                        padding: "15px",
-                        color: "#888",
-                      }}
-                    >
-                      No site records found.
-                    </td>
+                    <td data-label="" colSpan={7} 
+                    style={{ textAlign: "center", padding: "15px", color: "#888" }}
+                    >No site records found.</td>
                   </tr>
                 )}
               </tbody>

@@ -2,26 +2,26 @@
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
-import { getNavbarSites }    from "../services/siteService";
+import { getNavbarSites } from "../services/siteService";
 import type { SiteDropdownDto } from "../services/siteService";
 
 import { useEffect, useState } from "react";
-import { useAuth }             from "../context/Authcontext";
-import { useSite }             from "../context/Sitecontext";
+import { useAuth } from "../context/Authcontext";
+import { useSite } from "../context/Sitecontext";
 
 function Navbar() {
-  const { user, logout }                = useAuth();
+  const { user, logout } = useAuth();
   const { selectedSite, setSelectedSite } = useSite();
-  const navigate                        = useNavigate();
-  //const location                        = useLocation();   // ← NEW
+  const navigate = useNavigate();
 
-  const [sites,        setSites]        = useState<SiteDropdownDto[]>([]);
+  const [sites, setSites] = useState<SiteDropdownDto[]>([]);
   const [pendingSiteId, setPendingSiteId] = useState<string>(
     selectedSite ? String(selectedSite.id) : ""
   );
 
-  // Dark navbar only on home page
-  //const isHomePage = location.pathname === "/home";   // ← NEW
+  // Mobile menu state
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
 
   useEffect(() => { loadSites(); }, []);
 
@@ -39,6 +39,7 @@ function Navbar() {
   };
 
   const handleLogout = () => {
+    closeMenu();
     logout();
     navigate("/login");
   };
@@ -54,61 +55,76 @@ function Navbar() {
       return;
     }
     setSelectedSite(site);
+    closeMenu();
     navigate("/home");
   };
 
   return (
-    // isHomePage ? dark variant : default white
     <nav className="ce-navbar">
       <div className="ce-container">
 
         {/* Logo */}
-        <Link to="/home" className="ce-brand">
+        <Link to="/home" className="ce-brand" onClick={closeMenu}>
           <img src="/UploadedImage/WebSiteLogo.jpg" alt="Builder Ledger" />
         </Link>
 
-        {/* Menu */}
-        <ul className="ce-nav-links">
-          <li><Link to="/home">Home</Link></li>
-          <li><Link to="/cost-master">Cost Master</Link></li>
-          <li><Link to="/attendance">Attendance</Link></li>
-          <li><Link to="/material">Material</Link></li>
-          <li><Link to="/service-provider">Service Provider</Link></li>
-          <li><Link to="/sites">Site</Link></li>
-        </ul>
+        {/* Hamburger (visible only on small screens) */}
+        <button
+          type="button"
+          className="ce-toggle"
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((o) => !o)}
+        >
+          {menuOpen ? "✕" : "☰"}
+        </button>
 
-        {/* Right */}
-        <div className="ce-right">
-          <span className="ce-site-label">SITE</span>
+        {/* Collapsible area: menu + site selector + user */}
+        <div className={`ce-collapse ${menuOpen ? "open" : ""}`}>
 
-          <select
-            className="ce-select"
-            value={pendingSiteId}
-            onChange={(e) => setPendingSiteId(e.target.value)}
-          >
-            <option value="">-- Select Site --</option>
-            {sites.map((site) => (
-              <option key={site.id} value={site.id}>
-                {site.name}
-              </option>
-            ))}
-          </select>
+          {/* Menu */}
+          <ul className="ce-nav-links">
+            <li><Link to="/home" onClick={closeMenu}>Home</Link></li>
+            <li><Link to="/cost-master" onClick={closeMenu}>Cost Master</Link></li>
+            <li><Link to="/attendance" onClick={closeMenu}>Attendance</Link></li>
+            <li><Link to="/material" onClick={closeMenu}>Material</Link></li>
+            <li><Link to="/service-provider" onClick={closeMenu}>Service Provider</Link></li>
+            <li><Link to="/sites" onClick={closeMenu}>Site</Link></li>
+          </ul>
 
-          <button className="ce-go" onClick={handleGo}>
-            Go
-          </button>
+          {/* Right */}
+          <div className="ce-right">
+            <span className="ce-site-label">SITE</span>
 
-          <div className="ce-divider" />
+            <select
+              className="ce-select"
+              value={pendingSiteId}
+              onChange={(e) => setPendingSiteId(e.target.value)}
+            >
+              <option value="">-- Select Site --</option>
+              {sites.map((site) => (
+                <option key={site.id} value={site.id}>
+                  {site.name}
+                </option>
+              ))}
+            </select>
 
-          <span className="ce-user">
-            Welcome, {user?.fullName || "User"}
-          </span>
+            <button className="ce-go" onClick={handleGo}>
+              Go
+            </button>
 
-          <button className="ce-logout" onClick={handleLogout}>
-            Log Out
-          </button>
+            <div className="ce-divider" />
+
+            <span className="ce-user">
+              Welcome, {user?.fullName || "User"}
+            </span>
+
+            <button className="ce-logout" onClick={handleLogout}>
+              Log Out
+            </button>
+          </div>
+
         </div>
-
       </div>
     </nav>
   );
