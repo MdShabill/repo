@@ -130,15 +130,7 @@ function Home() {
       {/* ═══ HERO + DASHBOARD ═══ */}
       <section style={{ background: "linear-gradient(135deg, #1c2e46 0%, #0F172A 100%)", padding: "32px 24px 28px" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-          <style>{`
-          .hero-row { display: block !important; }
-          .hero-side { width: 100%; }
-          @media (max-width: 640px) {
-            .hero-side { flex-wrap: wrap; }
-            .hero-side > div { flex: 1 1 calc(50% - 10px) !important; }
-          }
-        `}</style>
-          <div className="hero-row" style={{ display: "block" }}>
+          <div className="hero-row" style={{ display: "flex", alignItems: "flex-start", gap: "28px" }}>
 
             {/* LEFT */}
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -154,19 +146,6 @@ function Home() {
               <h1 style={{ fontSize: "clamp(22px, 5vw, 32px)", fontWeight: 700, color: "#fff", lineHeight: 1.2, margin: "0 0 24px" }}>
                 Control every rupee, <span style={{ color: "#F59E0B" }}>every site, every day.</span>
               </h1>
-
-              <div className="hero-side" style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
-                {sideCards.map((c) => (
-                  <div key={c.title} style={{ ...card, flex: 1, minWidth: 0, minHeight: "92px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <div>
-                      <p style={{ ...label, fontSize: "10px" }}>{c.title}</p>
-                      <p style={t(statsLoading ? "13px" : "22px", statsLoading ? "#94A3B8" : "#fff", { fontWeight: statsLoading ? 400 : 700 })}>{statsLoading ? "Loading..." : c.value}</p>
-                    </div>
-                    {!statsLoading && <p style={t("11px", c.subColor, { marginTop: "8px" })}>{c.sub}</p>}
-                  </div>
-                ))}
-              </div>
-
 
               {stats?.hasSiteInfo && !statsLoading && (
                 <div>
@@ -353,7 +332,20 @@ function Home() {
               )}
             </div>
 
-
+            {/* RIGHT — 3 compact stat cards */}
+            <div className="hero-side" style={{ flexShrink: 0, width: "180px", display: "flex", flexDirection: "column", gap: "10px", alignSelf: "flex-start", marginTop: "68px" }}>
+              {sideCards.map((c) => (
+                <div key={c.title} style={{ ...card, minHeight: "92px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                  <div>
+                    <p style={{ ...label, fontSize: "10px" }}>{c.title}</p>
+                    <p style={t(statsLoading ? "13px" : "22px", statsLoading ? "#94A3B8" : "#fff", { fontWeight: statsLoading ? 400 : 700 })}>
+                      {statsLoading ? "Loading..." : c.value}
+                    </p>
+                  </div>
+                  {!statsLoading && <p style={t("11px", c.subColor, { marginTop: "8px" })}>{c.sub}</p>}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -361,18 +353,26 @@ function Home() {
       {/* ═══ FEATURES ═══ */}
       <section style={{
         position: "relative", overflow: "hidden", padding: "64px 24px 78px",
-        background: "radial-gradient(circle at 12% 5%, rgba(30,136,229,0.10), transparent 28%), radial-gradient(circle at 88% 15%, rgba(30,136,229,0.08), transparent 28%), linear-gradient(180deg, #ffffff 0%, #f5f9fd 100%)",
+        background: 
+        "radial-gradient(circle at 12% 5%, rgba(30,136,229,0.10), transparent 28%), radial-gradient(circle at 88% 15%, rgba(30,136,229,0.08), transparent 28%), linear-gradient(180deg, #ffffff 0%, #f5f9fd 100%)",
       }}>
-        <div style={{ position: "absolute", width: "220px", height: "220px", borderRadius: "50%", background: "rgba(30,136,229,0.07)", top: "-100px", left: "-100px" }} />
-        <div style={{ position: "absolute", width: "280px", height: "280px", borderRadius: "50%", background: "rgba(30,136,229,0.045)", bottom: "-160px", right: "-100px" }} />
+        <div style={{ 
+          position: "absolute", width: "220px", height: "220px", borderRadius: "50%", 
+          background: "rgba(30,136,229,0.07)", top: "-100px", left: "-100px" }} />
+        <div style={{ 
+          position: "absolute", width: "280px", height: "280px", borderRadius: "50%", 
+          background: "rgba(30,136,229,0.045)", bottom: "-160px", right: "-100px" }} />
 
         <div style={{ position: "relative", maxWidth: "1100px", margin: "0 auto" }}>
           <div style={{ marginBottom: "34px" }}>
-            <p style={t("12px", "#3678B7", { fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.8px", marginBottom: "10px" })}>
+            <p style={t("12px", "#3678B7", { 
+              fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.8px", marginBottom: "10px" })}>
               WHAT BUILDERLEDGER DOES
             </p>
-            <div style={{ width: "48px", height: "4px", borderRadius: "4px", background: "#F59E0B", marginBottom: "14px" }} />
-            <h2 style={{ fontSize: "clamp(24px, 5vw, 32px)", fontWeight: 700, color: "#102E52", margin: "0 0 10px", lineHeight: 1.2 }}>
+            <div style={{ 
+              width: "48px", height: "4px", borderRadius: "4px", background: "#F59E0B", marginBottom: "14px" }} />
+            <h2 style={{ 
+              fontSize: "clamp(24px, 5vw, 32px)", fontWeight: 700, color: "#102E52", margin: "0 0 10px", lineHeight: 1.2 }}>
               Everything your site needs, in one system
             </h2>
             <p style={{ fontSize: "15px", color: "#47627F", maxWidth: "650px", lineHeight: 1.65, margin: 0 }}>
@@ -387,8 +387,12 @@ function Home() {
       </section>
 
       {/* ═══ FOOTER ═══ */}
-      <footer style={{ position: "relative", background: "linear-gradient(135deg, #1c3554 0%, #10233D 100%)", padding: "34px 24px", textAlign: "center", overflow: "hidden" }}>
-        <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+      <footer style={{ 
+        position: "relative", background: "linear-gradient(135deg, #1c3554 0%, #10233D 100%)", 
+        padding: "34px 24px", textAlign: "center", overflow: "hidden" }}>
+        <div style={{ 
+          position: "relative", display: "flex", justifyContent: "center", 
+          alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
           <span style={{
             width: "22px", height: "22px", borderRadius: "50%", border: "2px solid #F59E0B", display: "inline-flex",
             alignItems: "center", justifyContent: "center", color: "#F59E0B", fontSize: "11px", fontWeight: 700,
@@ -447,10 +451,6 @@ function FeatureCard({ type, title, description }: { type: FeatureType; title: s
         <h3 style={{ fontSize: "17px", fontWeight: 700, color: "#12345A", margin: "3px 0 10px", lineHeight: 1.25 }}>{title}</h3>
         <p style={{ fontSize: "13.5px", color: "#466482", lineHeight: 1.65, margin: 0 }}>{description}</p>
       </div>
-      <div style={{
-        position: "absolute", right: "18px", top: "27px", width: "34px", height: "34px", borderRadius: "50%",
-        background: soft, color: accent, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px",
-      }}>→</div>
     </div>
   );
 }
