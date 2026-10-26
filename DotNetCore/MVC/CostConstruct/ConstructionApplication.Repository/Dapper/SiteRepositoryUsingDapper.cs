@@ -64,7 +64,7 @@ namespace ConstructionApplication.Repository.Dapper
                     LEFT JOIN SiteStatus ON Sites.SiteStatusId = SiteStatus.Id
                     LEFT JOIN Addresses ON Sites.Id = Addresses.SiteId
                     LEFT JOIN AddressTypes ON Addresses.AddressTypeId = AddressTypes.Id
-                    LEFT JOIN CountriesON Addresses.CountryId = Countries.Id
+                    LEFT JOIN Countries ON Addresses.CountryId = Countries.Id
 
                     WHERE(@Search IS NULL OR @Search = ''
                           OR Sites.Name LIKE '%' + @Search + '%'
