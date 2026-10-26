@@ -24,7 +24,7 @@ function ServiceProviderList() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this service Provider?")) return;
+    if (!window.confirm("Are you sure you want to delete this workforce member?")) return;
     try {
       await deleteServiceProvider(id);
       setRecords((prev) => prev.filter((r) => r.serviceProviderId !== id));
@@ -49,9 +49,9 @@ function ServiceProviderList() {
 
           {/* CHANGE 2: old 3-column header replaced by PageHeader */}
           <PageHeader
-            title="Service Providers / Vendor"
+            title="Contractors"
             addTo="/service-provider/add"
-            badge={<span className="badge-pill">Total Service Providers <b>{totalCount}</b></span>}
+            badge={<span className="badge-pill">Total Contractors <b>{totalCount}</b></span>}
           />
 
           {/* Messages */}
@@ -114,7 +114,7 @@ function ServiceProviderList() {
                 )) : (
                   <tr>
                     <td data-label="" colSpan={7} style={{ textAlign: "center", padding: "20px", color: "#888" }}>
-                      No Service Providers found.
+                      No Contractors members found.
                     </td>
                   </tr>
                 )}

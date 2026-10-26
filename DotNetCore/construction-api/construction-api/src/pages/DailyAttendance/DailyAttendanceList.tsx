@@ -13,7 +13,7 @@ const pill = (v: React.ReactNode) => (
     borderRadius: "8px" }}>{v}</span>
 );
 const dateInput: React.CSSProperties = { width: "150px", borderRadius: "8px", padding: "6px 10px", border: "1px solid #ddd" };
-const HEADERS = ["Date", "Service Type", "Service Providers", "Total Worker", "Amount Per Worker", "Total Amount"];
+const HEADERS = [ "Date", "Job Category", "Workforce Member", "Total Workers", "Amount Per Worker", "Total Amount",];
 
 function DailyAttendanceList() {
   const location = useLocation();

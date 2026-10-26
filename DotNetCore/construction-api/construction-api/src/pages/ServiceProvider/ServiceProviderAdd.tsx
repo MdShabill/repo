@@ -36,30 +36,58 @@ function ServiceProviderAdd() {
       .catch((err: Error) => setErrorMessage(err.message));
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage("");
-    setSubmitting(true);
-    try {
-      await addServiceProvider({
-        serviceProviderName: name,
-        serviceTypeId:  Number(serviceTypeId),
-        gender,
-        dob,
-        mobileNumber:   mobile,
-        referredBy,
-        addressLine1:   addressLine1 || undefined,
-        addressTypeId:  addressTypeId ? Number(addressTypeId) : undefined,
-        countryId:      countryId     ? Number(countryId)     : undefined,
-        pinCode:        pinCode       ? Number(pinCode)       : undefined,
+  
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setErrorMessage("");
+
+  // Validate before calling the API
+  const isValid =
+    name.trim().length > 0 &&
+    dob.trim().length > 0 &&
+    /^\d{10}$/.test(mobile.trim()) &&
+    referredBy.trim().length > 0 &&
+    serviceTypeId !== "";
+
+  if (!isValid) {
+    setErrorMessage(
+      "Please provide valid input for all required fields."
+    );
+    return;
+  }
+
+  setSubmitting(true);
+
+  try {
+    await addServiceProvider({
+      serviceProviderName: name.trim(),
+      serviceTypeId: Number(serviceTypeId),
+      gender,
+      dob,
+      mobileNumber: mobile.trim(),
+      referredBy: referredBy.trim(),
+      addressLine1: addressLine1 || undefined,
+      addressTypeId: addressTypeId
+        ? Number(addressTypeId)
+        : undefined,
+      countryId: countryId
+        ? Number(countryId)
+        : undefined,
+      pinCode: pinCode ? Number(pinCode) : undefined,
+    });
+
+    navigate("/service-provider", {
+        state: {
+          success: "Workforce member added successfully.",
+        },
       });
-      navigate("/service-provider", { state: { success: "Your ServiceProvider Data Added successfully." } });
     } catch (err) {
       setErrorMessage((err as Error).message);
-    } finally {
+   } finally {
       setSubmitting(false);
-    }
+   }
   };
+
 
   const inputStyle: React.CSSProperties = {
     width: "100%", borderRadius: "10px", padding: "10px",
@@ -76,7 +104,7 @@ function ServiceProviderAdd() {
         borderRadius: "18px", padding: "30px", boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
       }}>
         <div style={{ textAlign: "center", fontSize: "28px", fontWeight: 600, color: "#1E293B", marginBottom: "25px" }}>
-          Service Provider
+          Add Workforce Member
         </div>
 
         {errorMessage && (
@@ -90,7 +118,7 @@ function ServiceProviderAdd() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px 25px" }}>
 
             <div>
-              <label style={labelStyle}>Service Provider Name</label>
+              <label style={labelStyle}>Workforce Member Name</label>
               <input value={name} onChange={(e) => setName(e.target.value)}
                 maxLength={15} style={inputStyle} />
             </div>
@@ -98,7 +126,7 @@ function ServiceProviderAdd() {
             <div>
               <label style={labelStyle}>Gender</label>
               <div style={{ display: "flex", gap: "12px", alignItems: "center", paddingTop: "8px" }}>
-                {["Male","Female","Transgender","Others"].map((g) => (
+                {["Male","Female","Others"].map((g) => (
                   <label key={g} style={{ fontWeight: 400, cursor: "pointer", display: "flex", gap: "4px" }}>
                     <input type="radio" value={g} checked={gender === g}
                       onChange={() => setGender(g)} />

@@ -72,7 +72,7 @@ function ServiceProviderEdit() {
         countryId:      countryId     ? Number(countryId)     : undefined,
         pinCode:        pinCode       ? Number(pinCode)       : undefined,
       });
-      navigate("/service-provider", { state: { success: "Your Data updated successfully." } });
+      navigate("/service-provider", { state: { success: "Workforce member updated successfully." } });
     } catch (err) {
       setErrorMessage((err as Error).message);
     } finally {
@@ -101,7 +101,7 @@ function ServiceProviderEdit() {
         borderRadius: "18px", padding: "30px", boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
       }}>
         <div style={{ textAlign: "center", fontSize: "28px", fontWeight: 600, color: "#1E293B", marginBottom: "25px" }}>
-          Service Provider Update
+          Edit Workforce Member
         </div>
 
         {errorMessage && (
@@ -112,7 +112,7 @@ function ServiceProviderEdit() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
 
             <div>
-              <label style={labelStyle}>Service Provider Name</label>
+              <label style={labelStyle}>Workforce Member Name</label>
               <input value={name} onChange={(e) => setName(e.target.value)}
                 maxLength={15} style={inputStyle} />
             </div>

@@ -107,8 +107,14 @@ function SiteList() {
   );
   const actions = (onClear: () => void) => (
     <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
-      <button type="button" onClick={onClear} style={{ padding: "8px 12px", borderRadius: "7px", border: "1px solid #CBD5E1", background: "#fff", color: "#475569", cursor: "pointer" }}>Clear</button>
-      <button type="button" onClick={handleApply} style={{ padding: "8px 14px", borderRadius: "7px", border: "none", background: "#F59E0B", color: "#fff", cursor: "pointer", fontWeight: 500 }}>Apply</button>
+      <button type="button" onClick={onClear} 
+        style={{ 
+          padding: "8px 12px", borderRadius: "7px", border: "1px solid #CBD5E1", 
+          background: "#fff", color: "#475569", cursor: "pointer" }}>Clear</button>
+      <button type="button" onClick={handleApply} 
+        style={{ 
+          padding: "8px 14px", borderRadius: "7px", border: "none", 
+          background: "#F59E0B", color: "#fff", cursor: "pointer", fontWeight: 500 }}>Apply</button>
     </div>
   );
   const dropdown = (name: Filter, text: string, active: boolean, minWidth: string, popup: React.ReactNode) => (
@@ -157,13 +163,18 @@ function SiteList() {
             )}
 
             {dropdown("date", "Date", !!(fromDate || toDate), "110px",
-              <div className="filter-pop" style={popStyle("280px", "15px")}>
-                <div style={{ fontWeight: 600, color: "#1E293B", marginBottom: "12px" }}>Date</div>
-                {field("From Date", fromDate, setFromDate, "date")}
-                {field("To Date", toDate, setToDate, "date")}
-                {actions(() => { setFromDate(""); setToDate(""); })}
-              </div>
-            )}
+            <div className="filter-pop" style={popStyle("280px", "15px")}>
+              {field("From Date", fromDate, setFromDate, "date")}
+              {field("To Date", toDate, setToDate, "date")}
+
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button type="button" onClick={() => { setFromDate(""); setToDate("");}}
+              style={{ padding: "8px 12px", borderRadius: "7px", border: "1px solid #CBD5E1",
+                      background: "#fff", color: "#475569", cursor: "pointer", }}> Clear
+            </button>
+          </div>
+       </div>
+      )}
 
             {dropdown("budget", "Budget", !!(budgetFrom || budgetTo), "115px",
               <div className="filter-pop" style={popStyle("280px", "15px")}>

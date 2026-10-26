@@ -413,7 +413,7 @@ const FEATURES: { type: FeatureType; title: string; description: string }[] = [
   { type: "cost", title: "Cost master", description: "Define standard rates for materials, labour, and equipment. All transactions reference these rates automatically." },
   { type: "attendance", title: "Attendance tracking", description: "Record daily worker attendance per site. Calculate wages, overtime, and absenteeism across your workforce." },
   { type: "material", title: "Material reports", description: "Track every purchase, quantity, brand, supplier, and cost. Identify overspend and compare against budget." },
-  { type: "service", title: "Service providers", description: "Manage your contractors, workers, and service providers in one centralized system." },
+  { type: "service", title: "Workforce", description: "Manage your contractors, workers, and workforce members in one centralized system."},
   { type: "reports", title: "Site-wise reports", description: "View construction activity and financial information site by site." },
   { type: "expense", title: "Expense control", description: "Track expenses and maintain better control over your construction budget." },
 ];

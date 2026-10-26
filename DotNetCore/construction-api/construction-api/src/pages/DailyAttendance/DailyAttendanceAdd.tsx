@@ -149,7 +149,7 @@ function DailyAttendanceAdd() {
                 onChange={(e) => handleServiceTypeChange(e.target.value)}
                 style={inputStyle}
               >
-                <option value="">-- Select Service Type --</option>
+                <label style={labelStyle}>Contractor</label>
                 {serviceTypes.map((s) => (
                   <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
@@ -157,7 +157,7 @@ function DailyAttendanceAdd() {
             </div>
 
             <div>
-              <label style={labelStyle}>Service Provider Name</label>
+              <label style={labelStyle}>Contractor Name</label>
               <select
                 value={serviceProviderId}
                 onChange={(e) => setServiceProviderId(e.target.value)}

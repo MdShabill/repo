@@ -8,7 +8,6 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -129,18 +128,6 @@ function Login() {
                   )}
                 </button>
               </div>
-            </div>
-
-            {/* Remember Me */}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "24px" }}>
-              <input
-                type="checkbox" id="rememberMe" checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                style={{ width: "16px", height: "16px", accentColor: "#F59E0B", cursor: "pointer" }}
-              />
-              <label htmlFor="rememberMe" style={{ fontSize: "14px", color: "#374151", cursor: "pointer" }}>
-                Remember Me
-              </label>
             </div>
 
             <button

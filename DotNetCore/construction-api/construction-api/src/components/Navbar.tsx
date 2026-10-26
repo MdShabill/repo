@@ -88,7 +88,7 @@ function Navbar() {
             <li><Link to="/cost-master" onClick={closeMenu}>Cost Master</Link></li>
             <li><Link to="/attendance" onClick={closeMenu}>Attendance</Link></li>
             <li><Link to="/material" onClick={closeMenu}>Material</Link></li>
-            <li><Link to="/service-provider" onClick={closeMenu}>Service Provider</Link></li>
+            <li><Link to="/service-provider" onClick={closeMenu}>Contractors</Link></li>
             <li><Link to="/sites" onClick={closeMenu}>Site</Link></li>
           </ul>
 
