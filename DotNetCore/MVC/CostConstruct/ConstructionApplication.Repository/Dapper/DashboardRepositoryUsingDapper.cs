@@ -45,8 +45,15 @@ namespace ConstructionApplication.Repository.Dapper
 
                     (
                         SELECT COUNT(*) FROM Sites
-                        WHERE  SiteStatusId IN (1, 2)
+                        WHERE SiteStatusId IN (1, 2)
                     ) AS ActiveSites,
+
+                    (
+                        SELECT COUNT(*)
+                        FROM Sites s
+                        INNER JOIN SiteStatus ss ON s.SiteStatusId = ss.Id
+                        WHERE ss.Status = 'On Hold'
+                    ) AS HoldSites,
 
                     (
                         SELECT COUNT(*) FROM SiteScope

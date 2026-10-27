@@ -11,6 +11,7 @@ namespace ConstructionApplication.Core.DataModels
         // ── OVERVIEW (always all sites) ──────────────
         public int TotalSites { get; set; }
         public int ActiveSites { get; set; }
+        public int HoldSites { get; set; }
         public int TotalPendingScopes { get; set; }
 
         // ── THIS MONTH (filtered by site) ────────────

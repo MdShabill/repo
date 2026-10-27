@@ -73,6 +73,7 @@ namespace ConstructEase.WebApp.APIControllers
                 // Overview (siteId = 0)
                 totalSites = stats.TotalSites,
                 activeSites = stats.ActiveSites,
+                holdSites = stats.HoldSites,
                 totalPendingScopes = stats.TotalPendingScopes,
 
                 // This month
