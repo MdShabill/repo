@@ -104,7 +104,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         borderRadius: "18px", padding: "30px", boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
       }}>
         <div style={{ textAlign: "center", fontSize: "28px", fontWeight: 600, color: "#1E293B", marginBottom: "25px" }}>
-          Add Workforce Member
+          Add Contractor
         </div>
 
         {errorMessage && (
@@ -118,7 +118,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px 25px" }}>
 
             <div>
-              <label style={labelStyle}>Workforce Member Name</label>
+              <label style={labelStyle}>Contractor Name</label>
               <input value={name} onChange={(e) => setName(e.target.value)}
                 maxLength={15} style={inputStyle} />
             </div>

@@ -101,7 +101,7 @@ function ServiceProviderEdit() {
         borderRadius: "18px", padding: "30px", boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
       }}>
         <div style={{ textAlign: "center", fontSize: "28px", fontWeight: 600, color: "#1E293B", marginBottom: "25px" }}>
-          Edit Workforce Member
+          Edit Contractor
         </div>
 
         {errorMessage && (
@@ -112,7 +112,7 @@ function ServiceProviderEdit() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
 
             <div>
-              <label style={labelStyle}>Workforce Member Name</label>
+              <label style={labelStyle}>Contractor Name</label>
               <input value={name} onChange={(e) => setName(e.target.value)}
                 maxLength={15} style={inputStyle} />
             </div>

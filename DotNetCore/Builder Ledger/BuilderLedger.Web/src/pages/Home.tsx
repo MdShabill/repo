@@ -140,12 +140,37 @@ function Home() {
                 padding: "4px 12px", borderRadius: "20px", marginBottom: "16px",
               }}>
                 <span style={{ width: "7px", height: "7px", background: "#F59E0B", borderRadius: "50%", display: "inline-block" }} />
-                Construction management platform
+                Construction Management Platform
               </div>
 
               <h1 style={{ fontSize: "clamp(22px, 5vw, 32px)", fontWeight: 700, color: "#fff", lineHeight: 1.2, margin: "0 0 24px" }}>
-                Control every rupee, <span style={{ color: "#F59E0B" }}>every site, every day.</span>
+                Control Every Rupee, <span style={{ color: "#F59E0B" }}>Every Site, Every Day.</span>
               </h1>
+
+              {siteId === 0 && (
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "15px", maxWidth: "630px", }}>
+                {[
+                  { title: "Total Sites", value: stats?.totalSites, color: "#FFFFFF" },
+                  { title: "Active Sites", value: stats?.activeSites, color: "#4ADE80" },
+                  { title: "Hold Sites", value: stats?.holdSites, color: "#FBBF24" },
+                ].map((item) => (
+                  <div key={item.title} style={{ ...card, aspectRatio: "1 / 0.85", display: "flex", flexDirection: "column",
+                        justifyContent: "center", alignItems: "center", padding: "20px", minWidth: 0,
+                  }}>
+                  <p style={label}>{item.title}</p>
+                  <p style={t("32px", item.color, { fontWeight: 600 })}>
+                  {statsLoading ? "..." : item.value ?? 0}</p>
+                </div>
+              ))}
+            </div>
+
+              <p style={{ color: "#FFFFFF", fontSize: "17px", fontWeight: 800, margin: "20px 0 24px", lineHeight: 1.6,}}>
+                  Select Any Site To Explore My{" "}
+                <span style={{ color: "#F59E0B" }}> Builder Ladger Dashbord </span>
+              </p>
+            </>
+            )}
 
               {stats?.hasSiteInfo && !statsLoading && (
                 <div>

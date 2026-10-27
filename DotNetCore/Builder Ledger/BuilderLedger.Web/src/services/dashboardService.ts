@@ -3,7 +3,7 @@ import { API_URLS } from "../constants/urls";
 
 export interface DashboardStatsDto {
   totalMaterialSpend: number; totalPurchases: number; totalAttendanceWorkers: number;
-  totalSites: number; activeSites: number; totalPendingScopes: number;
+  totalSites: number; activeSites: number; holdSites: number; totalPendingScopes: number;
   thisMonthSpend: number; thisMonthPurchases: number; thisMonthAttendance: number;
   hasSiteInfo: boolean; siteName?: string; siteStatus?: string; siteStartedDate?: string; siteExpectedCompletion?: string;
   expectedBudget?: number; budgetRemaining?: number; budgetUtilizationPercent?: number;
